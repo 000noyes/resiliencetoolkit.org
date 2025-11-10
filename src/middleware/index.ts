@@ -35,6 +35,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     // Only require auth for protected paths (not pending page)
     if (isProtectedRoute) {
       const authRequired = await isAuthRequired();
+      console.log(`[Middleware] Auth check for ${pathname}: authRequired=${authRequired}, hasSession=${!!session}`);
 
       if (authRequired && !session) {
         const loginUrl = buildLoginUrl(pathname);
@@ -48,6 +49,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     // Early access check ONLY for protected routes (not pending page)
     if (isProtectedRoute && session) {
       const earlyAccessRequired = await isEarlyAccessRequired();
+      console.log(`[Middleware] Early access check for ${pathname}: earlyAccessRequired=${earlyAccessRequired}`);
 
       if (earlyAccessRequired) {
         const hasEarlyAccess = await checkEarlyAccess(session.user.email);
@@ -94,9 +96,10 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
   // Control browser features
+  // Note: interest-cohort removed as it's deprecated in modern browsers
   headers.set(
     'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(self), interest-cohort=()'
+    'camera=(), microphone=(), geolocation=(self)'
   );
 
   // Strict Transport Security (HTTPS only)

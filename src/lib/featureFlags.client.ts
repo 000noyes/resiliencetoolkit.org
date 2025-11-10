@@ -66,7 +66,7 @@ export function initClientFlags() {
   try {
     Flagsmith.init({
       environmentID: FLAGSMITH_ENV_KEY,
-      cacheFlags: true,
+      cacheFlags: false, // Disable caching to ensure fresh flags on every load
       enableAnalytics: false, // Disable to avoid tracking
       onChange: (oldFlags, params) => {
         console.log('[FeatureFlags] Flags updated:', params.flagsChanged);
