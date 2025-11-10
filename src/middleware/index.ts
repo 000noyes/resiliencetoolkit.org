@@ -14,7 +14,7 @@
 
 import type { MiddlewareHandler } from 'astro';
 import { getServerSession } from '../lib/supabase-server';
-import { isAuthRequired, isEarlyAccessRequired, checkEarlyAccess } from '../lib/featureFlags';
+import { isAuthRequired, isEarlyAccessRequired, checkEarlyAccess } from '../lib/featureFlags.server';
 import { buildLoginUrl } from '../lib/validateRedirect';
 
 export const onRequest: MiddlewareHandler = async (context, next) => {

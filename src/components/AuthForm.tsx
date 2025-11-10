@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { signIn, signUp } from '@/lib/supabase';
-import { PASSWORD_MIN_LENGTH } from '@/lib/featureFlags';
+import { PASSWORD_MIN_LENGTH } from '@/lib/featureFlags.client';
 
 interface AuthFormProps {
   mode: 'signin' | 'signup';

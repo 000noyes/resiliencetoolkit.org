@@ -1,20 +1,18 @@
 /**
- * Feature Flags Library
+ * Feature Flags Library - SERVER-SIDE ONLY
  *
- * This module provides a unified interface for Flagsmith feature flags
- * with server-side and client-side support.
+ * This module provides server-side feature flag functionality using the
+ * Node.js-only Flagsmith SDK. NOT safe for client-side use or hydration.
  *
  * Security considerations:
  * - Server-side SDK is used for auth-related decisions (trusted)
- * - Client-side SDK is used for UI features only (untrusted)
  * - Always defaults to most restrictive settings on error
+ * - Use this for security-critical feature flag checks
  */
 
-import Flagsmith from 'flagsmith';
 import { Flagsmith as FlagsmithNode } from 'flagsmith-nodejs';
 
 // Environment variables
-const FLAGSMITH_ENV_KEY = import.meta.env.PUBLIC_FLAGSMITH_ENVIRONMENT_KEY;
 const FLAGSMITH_SERVER_KEY = import.meta.env.FLAGSMITH_SERVER_KEY;
 
 // Feature flag keys (centralized for type safety)
@@ -42,47 +40,8 @@ const DEFAULTS = {
 // Constants for non-flag settings
 export const PASSWORD_MIN_LENGTH = 8; // Hardcoded - no need for remote config
 
-// Client-side Flagsmith instance (cached)
-let clientInstance: typeof Flagsmith | null = null;
-
 // Server-side Flagsmith instance (cached)
 let serverInstance: FlagsmithNode | null = null;
-
-/**
- * Initialize client-side Flagsmith SDK
- * Use this for UI features only - NOT for auth decisions
- */
-export function initClientFlags() {
-  if (typeof window === 'undefined') {
-    console.warn('Attempted to initialize client flags on server-side');
-    return null;
-  }
-
-  if (clientInstance) {
-    return clientInstance;
-  }
-
-  if (!FLAGSMITH_ENV_KEY) {
-    console.warn('PUBLIC_FLAGSMITH_ENVIRONMENT_KEY not configured, using defaults');
-    return null;
-  }
-
-  try {
-    Flagsmith.init({
-      environmentID: FLAGSMITH_ENV_KEY,
-      cacheFlags: true,
-      enableAnalytics: false, // Disable to avoid tracking
-      onChange: (oldFlags, params) => {
-        console.log('[FeatureFlags] Flags updated:', params.flagsChanged);
-      },
-    });
-    clientInstance = Flagsmith;
-    return clientInstance;
-  } catch (error) {
-    console.error('[FeatureFlags] Failed to initialize client SDK:', error);
-    return null;
-  }
-}
 
 /**
  * Initialize server-side Flagsmith SDK
@@ -169,59 +128,8 @@ export async function getServerFlagNumber(
   }
 }
 
-/**
- * Get a boolean flag value (client-side)
- * Falls back to default if Flagsmith is unavailable
- */
-export function getClientFlag(
-  flagKey: string,
-  defaultValue: boolean = false
-): boolean {
-  try {
-    const sdk = initClientFlags();
-    if (!sdk) {
-      return (DEFAULTS[flagKey as keyof typeof DEFAULTS] as boolean) ?? defaultValue;
-    }
-
-    if (!sdk.hasFeature(flagKey)) {
-      return (DEFAULTS[flagKey as keyof typeof DEFAULTS] as boolean) ?? defaultValue;
-    }
-
-    const value = sdk.getValue(flagKey);
-    return Boolean(value);
-  } catch (error) {
-    console.error(`[FeatureFlags] Error fetching client flag "${flagKey}":`, error);
-    return (DEFAULTS[flagKey as keyof typeof DEFAULTS] as boolean) ?? defaultValue;
-  }
-}
-
-/**
- * Get a numeric flag value (client-side)
- */
-export function getClientFlagNumber(
-  flagKey: string,
-  defaultValue: number = 0
-): number {
-  try {
-    const sdk = initClientFlags();
-    if (!sdk) {
-      return (DEFAULTS[flagKey as keyof typeof DEFAULTS] as number) ?? defaultValue;
-    }
-
-    if (!sdk.hasFeature(flagKey)) {
-      return (DEFAULTS[flagKey as keyof typeof DEFAULTS] as number) ?? defaultValue;
-    }
-
-    const value = sdk.getValue(flagKey);
-    return Number(value);
-  } catch (error) {
-    console.error(`[FeatureFlags] Error fetching client flag "${flagKey}":`, error);
-    return (DEFAULTS[flagKey as keyof typeof DEFAULTS] as number) ?? defaultValue;
-  }
-}
-
 // =============================================================================
-// Convenience functions for common flags
+// Convenience functions for common flags (SERVER-SIDE)
 // =============================================================================
 
 /**
@@ -248,18 +156,10 @@ export async function isAutoCreateHubEnabled(): Promise<boolean> {
 }
 
 /**
- * Check if public module previews are enabled (CAN BE CLIENT-SIDE)
+ * Check if public module previews are enabled (SERVER-SIDE)
  */
 export async function showPublicModules(): Promise<boolean> {
   return getServerFlag(FeatureFlags.SHOW_PUBLIC_MODULES, false);
-}
-
-/**
- * Get sync interval in milliseconds (CLIENT-SIDE)
- * Used to determine how often to sync data with Supabase
- */
-export function getSyncInterval(): number {
-  return getClientFlagNumber(FeatureFlags.SYNC_INTERVAL_MS, 30000);
 }
 
 /**
@@ -267,21 +167,6 @@ export function getSyncInterval(): number {
  */
 export async function getSyncIntervalServer(): Promise<number> {
   return getServerFlagNumber(FeatureFlags.SYNC_INTERVAL_MS, 30000);
-}
-
-/**
- * Client-side version of isAuthRequired (for UI only)
- * DO NOT use this for actual auth decisions - use server-side version
- */
-export function isAuthRequiredClient(): boolean {
-  return getClientFlag(FeatureFlags.AUTH_REQUIRED, true);
-}
-
-/**
- * Client-side version of isGuestModeEnabled (for UI only)
- */
-export function isGuestModeEnabledClient(): boolean {
-  return getClientFlag(FeatureFlags.ENABLE_GUEST_MODE, false);
 }
 
 /**
@@ -309,10 +194,10 @@ export async function getAllServerFlags(): Promise<Record<string, any>> {
 }
 
 /**
- * Check if Flagsmith is properly configured
+ * Check if Flagsmith is properly configured (server-side check)
  */
 export function isFlagsmithConfigured(): boolean {
-  return !!(FLAGSMITH_ENV_KEY && FLAGSMITH_SERVER_KEY);
+  return !!FLAGSMITH_SERVER_KEY;
 }
 
 /**
@@ -322,7 +207,6 @@ export async function logFlagStatus() {
   const configured = isFlagsmithConfigured();
   console.log('[FeatureFlags] Configuration status:', {
     configured,
-    hasEnvKey: !!FLAGSMITH_ENV_KEY,
     hasServerKey: !!FLAGSMITH_SERVER_KEY,
   });
 

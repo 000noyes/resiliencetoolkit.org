@@ -36,13 +36,5 @@ export default defineConfig({
         '@/lib': '/src/lib',
       },
     },
-    ssr: {
-      noExternal: [],
-    },
-    build: {
-      rollupOptions: {
-        external: ['flagsmith-nodejs'],
-      },
-    },
   },
 });

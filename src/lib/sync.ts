@@ -42,7 +42,7 @@
 import { getUnsyncedTodos, getUnsyncedTableRows, markTodoSynced, markTableRowSynced } from './storage';
 import { syncTodo, syncTableRow, isSupabaseConfigured, getCurrentUser } from './supabase';
 import { getActiveHubId } from './createPersonalHub';
-import { getSyncInterval } from './featureFlags';
+import { getSyncInterval } from './featureFlags.client';
 
 /** Timer ID for the polling interval (null when not running) */
 let syncInterval: number | null = null;

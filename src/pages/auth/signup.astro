@@ -50,7 +50,7 @@ const redirectTo = getSafeRedirect(Astro.url.searchParams, 'redirect', '/dashboa
 <script>
   import { getOrCreatePersonalHub, setActiveHub } from '@/lib/createPersonalHub';
   import { onAuthStateChange } from '@/lib/supabase';
-  import { isAutoCreateHubEnabled } from '@/lib/featureFlags';
+  import { isAutoCreateHubEnabled } from '@/lib/featureFlags.client';
 
   // Handle successful signup with hub creation
   document.addEventListener('astro:page-load', () => {

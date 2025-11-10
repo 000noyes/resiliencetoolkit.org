@@ -12,7 +12,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { User, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { getSession, signOut, onAuthStateChange } from '../lib/supabase';
-import { initClientFlags, isAuthRequiredClient } from '../lib/featureFlags';
+import { initClientFlags, isAuthRequiredClient } from '../lib/featureFlags.client';
 import type { Session } from '@supabase/supabase-js';
 
 export default function UserMenu() {

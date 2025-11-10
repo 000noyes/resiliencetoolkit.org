@@ -20,7 +20,7 @@
  */
 
 import { getSession } from '../lib/supabase';
-import { isAuthRequired } from '../lib/featureFlags';
+import { isAuthRequired } from '../lib/featureFlags.server';
 import { buildLoginUrl } from '../lib/validateRedirect';
 
 // Server-side checks (runs before rendering)
