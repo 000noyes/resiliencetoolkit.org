@@ -76,7 +76,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://api.flagsmith.com https://edge.api.flagsmith.com https://*.supabase.co wss://*.supabase.co",
+    "connect-src 'self' https://api.flagsmith.com https://edge.api.flagsmith.com https://*.supabase.co wss://*.supabase.co https://api-gateway.umami.dev",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
