@@ -11,7 +11,7 @@ services:
 
     # Build configuration
     buildCommand: npm install -g pnpm && pnpm install && pnpm build
-    startCommand: node ./dist/server/entry.mjs
+    startCommand: HOST=0.0.0.0 node ./dist/server/entry.mjs
 
     # Health check endpoint (optional - uncomment if you add /health route)
     # healthCheckPath: /health

@@ -127,4 +127,4 @@ legacy_modules/
 # Temp ignore
 .storybook/
 docs/
-README.md
+src/stories/
