@@ -7,7 +7,7 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   // Production site URL - Update this with your actual domain after deployment
-  // site: 'https://yourdomain.com',
+  site: 'https://resiliencetoolkit-org.onrender.com',
 
   // Server-side rendering for auth-protected pages
   // Mark static pages with prerender: true if needed
