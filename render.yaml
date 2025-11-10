@@ -1,0 +1,52 @@
+# Render Blueprint for Resilience Hub Toolkit
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: resilience-hub-toolkit
+    runtime: node
+    region: oregon # Change to region closest to your users
+    plan: starter # Options: free, starter, standard, pro
+    branch: main # Git branch to deploy
+
+    # Build configuration
+    buildCommand: npm install -g pnpm && pnpm install && pnpm build
+    startCommand: node ./dist/server/entry.mjs
+
+    # Health check endpoint (optional - uncomment if you add /health route)
+    # healthCheckPath: /health
+
+    # Environment variables
+    # IMPORTANT: Set actual values in Render dashboard, NOT here
+    # These are placeholders for documentation only
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PUBLIC_SUPABASE_URL
+        sync: false # Set manually in dashboard
+
+      - key: PUBLIC_SUPABASE_ANON_KEY
+        sync: false # Set manually in dashboard
+
+      - key: PUBLIC_FLAGSMITH_ENVIRONMENT_KEY
+        sync: false # Set manually in dashboard
+
+      - key: FLAGSMITH_SERVER_KEY
+        sync: false # Set manually in dashboard
+
+    # Auto-deploy configuration
+    autoDeploy: true # Automatically deploy on git push
+
+    # Disk storage (optional - for persistent file storage)
+    # disk:
+    #   name: resilience-hub-data
+    #   mountPath: /opt/render/project/data
+    #   sizeGB: 1
+
+# Database configuration (if you move from Supabase to self-hosted Postgres)
+# databases:
+#   - name: resilience-hub-db
+#     databaseName: resilience_hub
+#     user: resilience_hub_user
+#     plan: starter # Options: starter, standard, pro

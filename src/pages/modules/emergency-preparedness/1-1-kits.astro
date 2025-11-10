@@ -1,0 +1,140 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.1",
+  title: "Emergency preparedness kits",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: null,
+  nextSection: { number: "1.2", title: "Food and water", slug: "1-2-food-water" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <!-- Household emergency supplies -->
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 30%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 70%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Household emergency supplies</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Households can prepare <a href="#">emergency plans</a> and <a href="#">emergency kits</a>,
+              as well as <a href="#">storing backup food</a> and water supplies.
+              <p>Food and water will need to be refreshed on a regular basis.</p>
+            </td>
+            <td>
+              <strong>Emergency Kit: keep this in your home</strong>
+              <div class="guide-table__checklist">
+                <Todo id="kit-water-food" moduleKey="emergency-preparedness-kits" client:load>
+                  Several days of water and non-perishable food, can opener
+                </Todo>
+                <Todo id="kit-phone-charger" moduleKey="emergency-preparedness-kits" client:load>
+                  Extra cell phone battery or charger
+                </Todo>
+                <Todo id="kit-weather-radio" moduleKey="emergency-preparedness-kits" client:load>
+                  Battery-powered or hand crank radio with NOAA weather tone alerts
+                </Todo>
+                <Todo id="kit-flashlight" moduleKey="emergency-preparedness-kits" client:load>
+                  Flashlight and extra batteries
+                </Todo>
+                <Todo id="kit-first-aid" moduleKey="emergency-preparedness-kits" client:load>
+                  First aid kit
+                </Todo>
+                <Todo id="kit-whistle" moduleKey="emergency-preparedness-kits" client:load>
+                  Whistle to signal for help
+                </Todo>
+                <Todo id="kit-dust-mask" moduleKey="emergency-preparedness-kits" client:load>
+                  Dust mask, to help filter contaminated air and plastic
+                </Todo>
+                <Todo id="kit-sheeting-duct-tape" moduleKey="emergency-preparedness-kits" client:load>
+                  Sheeting and duct tape to shelter-in-place
+                </Todo>
+                <Todo id="kit-sanitation" moduleKey="emergency-preparedness-kits" client:load>
+                  Personal sanitation supplies (incl. moist towelettes, garbage bags, and plastic ties)
+                </Todo>
+                <Todo id="kit-wrench" moduleKey="emergency-preparedness-kits" client:load>
+                  Non-sparking wrench or pliers to turn off utilities
+                </Todo>
+                <Todo id="kit-paper-maps" moduleKey="emergency-preparedness-kits" client:load>
+                  Local paper maps
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Individual emergency supplies</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Individuals in a household can prepare <a href="#">go bags</a>, which are easy to grab in
+              case you need to leave quickly.
+            </td>
+            <td>
+              <strong>Go Bag: Choose a sturdy and easy to carry bag.</strong>
+              <div class="guide-table__checklist">
+                <Todo id="go-bag-medications" moduleKey="emergency-preparedness-kits" client:load>
+                  Medications
+                </Todo>
+                <Todo id="go-bag-food" moduleKey="emergency-preparedness-kits" client:load>
+                  3 days of non-perishable food and cutlery
+                </Todo>
+                <Todo id="go-bag-documents" moduleKey="emergency-preparedness-kits" client:load>
+                  Important documents (ID, insurance, copy of lease/deed, car registration)
+                </Todo>
+                <Todo id="go-bag-first-aid" moduleKey="emergency-preparedness-kits" client:load>
+                  First aid kit
+                </Todo>
+                <Todo id="go-bag-chargers" moduleKey="emergency-preparedness-kits" client:load>
+                  Backup chargers and batteries
+                </Todo>
+                <Todo id="go-bag-flashlight" moduleKey="emergency-preparedness-kits" client:load>
+                  Battery-powered/hand crank flashlight and radio
+                </Todo>
+                <Todo id="go-bag-health-items" moduleKey="emergency-preparedness-kits" client:load>
+                  Personal health items (toothbrush, glasses, cane, menstrual products)
+                </Todo>
+                <Todo id="go-bag-map" moduleKey="emergency-preparedness-kits" client:load>
+                  Physical map of area with exit routes marked
+                </Todo>
+                <Todo id="go-bag-contacts" moduleKey="emergency-preparedness-kits" client:load>
+                  Physical list of emergency contacts and addresses
+                </Todo>
+                <Todo id="go-bag-respirators" moduleKey="emergency-preparedness-kits" client:load>
+                  High quality respirator masks
+                </Todo>
+                <Todo id="go-bag-cash" moduleKey="emergency-preparedness-kits" client:load>
+                  Cash in small bills
+                </Todo>
+                <Todo id="go-bag-marker" moduleKey="emergency-preparedness-kits" client:load>
+                  Permanent marker
+                </Todo>
+                <Todo id="go-bag-water" moduleKey="emergency-preparedness-kits" client:load>
+                  Water bottles
+                </Todo>
+                <Todo id="go-bag-space-blanket" moduleKey="emergency-preparedness-kits" client:load>
+                  Space blanket
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>

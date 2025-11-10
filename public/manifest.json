@@ -1,0 +1,14 @@
+{
+  "name": "Resilience Hub Toolkit",
+  "short_name": "Resilience Hub",
+  "description": "Local-first tools to organize people, places, and plans before, during, and after disasters",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8fd8c3",
+  "orientation": "portrait-primary",
+  "icons": [],
+  "categories": ["productivity", "utilities"],
+  "screenshots": [],
+  "shortcuts": []
+}

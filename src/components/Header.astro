@@ -1,0 +1,169 @@
+---
+/**
+ * Header Component - Updated for Resilience Toolkit UI Design System
+ *
+ * Layout: Logo left, primary navigation centered, utilities right.
+ * Primary CTA uses filled mint pill, secondary uses light outline.
+ */
+
+import ActionButton from './ActionButton.astro';
+// Wrapper keeps Astro's React renderer from invoking hook logic during detection.
+import UserMenuWrapper from './UserMenuWrapper.tsx';
+import { MapPinHouse, Sun, Moon, Menu } from 'lucide-react';
+
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/modules', label: 'Toolkit' },
+  { href: '/library', label: 'Library' },
+  { href: '/map', label: 'Map' },
+  { href: '/about', label: 'About' },
+];
+---
+
+<header class="bg-card border-b border-border sticky top-0 z-50 no-print shadow-ambient">
+  <div class="container mx-auto px-lg py-md">
+    <div class="flex items-center justify-between gap-8">
+      <!-- Logo (Left) -->
+      <a href="/" class="flex items-center gap-sm text-title font-medium text-foreground hover:text-primary transition-colors duration-default ease-default">
+        <MapPinHouse className="w-8 h-8" strokeWidth={1.5} />
+        <span class="hidden sm:inline">Resilience Hub</span>
+      </a>
+
+      <!-- Desktop Navigation (Centered) -->
+      <nav class="hidden md:flex items-center gap-lg flex-1 justify-center">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'text-body font-medium',
+              'transition-colors duration-default ease-default',
+              'hover:text-primary',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md px-2 py-1',
+              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                ? 'text-primary'
+                : 'text-muted-foreground'
+            ]}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Utilities (Right) -->
+      <div class="hidden md:flex items-center gap-sm">
+        <!-- Theme Toggle (Icon Button) -->
+        <button
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle theme"
+          class="inline-flex items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-muted hover:text-foreground transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <Sun id="theme-toggle-sun-icon" className="hidden w-5 h-5" strokeWidth={1.5} />
+          <Moon id="theme-toggle-moon-icon" className="w-5 h-5" strokeWidth={1.5} />
+        </button>
+
+        <!-- User Menu (client-side auth state) -->
+        <UserMenuWrapper client:load />
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-button"
+        class="md:hidden p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
+        aria-label="Toggle menu"
+      >
+        <Menu className="w-6 h-6" strokeWidth={1.5} />
+      </button>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav
+      id="mobile-menu"
+      class="hidden md:hidden mt-md pt-md border-t border-border"
+    >
+      <div class="flex flex-col gap-xs">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'block py-sm px-md rounded-lg',
+              'text-body font-medium',
+              'transition-colors duration-default ease-default',
+              'hover:bg-muted',
+              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                ? 'text-primary bg-primary/10'
+                : 'text-muted-foreground'
+            ]}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- Mobile User Menu -->
+      <div class="mt-md pt-md border-t border-border">
+        <UserMenuWrapper client:load />
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  mobileMenuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+
+  // Dark mode toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-toggle-sun-icon');
+  const moonIcon = document.getElementById('theme-toggle-moon-icon');
+  const html = document.documentElement;
+
+  // Check for saved theme preference or default to system preference
+  function getThemePreference(): string {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  // Update theme
+  function updateTheme(theme: string) {
+    if (theme === 'dark') {
+      html.classList.add('dark');
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      html.classList.remove('dark');
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  // Initialize theme on page load
+  const currentTheme = getThemePreference();
+  updateTheme(currentTheme);
+
+  // Toggle theme
+  themeToggle?.addEventListener('click', () => {
+    const isDark = html.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+
+    localStorage.setItem('theme', newTheme);
+    updateTheme(newTheme);
+  });
+
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      updateTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+</script>

@@ -1,0 +1,306 @@
+---
+/**
+ * Settings/Profile Page
+ *
+ * Allows users to manage their account settings:
+ * - Update full name
+ * - Change password
+ * - View account info
+ *
+ * Security: Protected by middleware
+ */
+
+// Enable server-side rendering for auth checks
+export const prerender = false;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { createServerSupabaseClient } from '../lib/supabase-server';
+import { User, Lock, Mail, Settings as SettingsIcon } from 'lucide-react';
+
+// Auth check
+const session = await Astro.locals.session || await (async () => {
+  const { getSession } = await import('../lib/supabase');
+  return await getSession();
+})();
+
+if (!session) {
+  return Astro.redirect('/auth/login?redirect=/settings');
+}
+
+// Fetch user data
+const supabaseServer = createServerSupabaseClient(Astro.cookies);
+
+const { data: profileData, error: profileError } = await supabaseServer
+  .from('profiles')
+  .select('*')
+  .eq('id', session.user.id)
+  .single();
+
+const profile = profileError ? null : profileData;
+const userName = profile?.full_name || session.user.user_metadata?.full_name || '';
+const userEmail = session.user.email || '';
+---
+
+<BaseLayout title="Settings - Resilience Hub Toolkit">
+  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <!-- Header -->
+    <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex items-center gap-3">
+          <SettingsIcon className="w-8 h-8 text-primary" />
+          <div>
+            <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">
+              Account Settings
+            </h1>
+            <p class="mt-1 text-gray-600 dark:text-gray-400">
+              Manage your account information and preferences
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="space-y-6">
+        <!-- Profile Information -->
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div class="flex items-center gap-2 mb-6">
+            <User className="w-5 h-5 text-primary" />
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+              Profile Information
+            </h2>
+          </div>
+
+          <form id="profile-form" class="space-y-4">
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email Address
+              </label>
+              <div class="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-gray-400" />
+                <input
+                  type="email"
+                  id="email"
+                  value={userEmail}
+                  disabled
+                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                />
+              </div>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                Email cannot be changed
+              </p>
+            </div>
+
+            <div>
+              <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                value={userName}
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Your full name"
+              />
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                class="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+
+            <div id="profile-message" class="hidden"></div>
+          </form>
+        </section>
+
+        <!-- Change Password -->
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div class="flex items-center gap-2 mb-6">
+            <Lock className="w-5 h-5 text-primary" />
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+              Change Password
+            </h2>
+          </div>
+
+          <form id="password-form" class="space-y-4">
+            <div>
+              <label for="newPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                New Password
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Enter new password"
+                minlength="8"
+                required
+              />
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                Must be at least 8 characters
+              </p>
+            </div>
+
+            <div>
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Confirm new password"
+                minlength="8"
+                required
+              />
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                class="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Update Password
+              </button>
+            </div>
+
+            <div id="password-message" class="hidden"></div>
+          </form>
+        </section>
+
+        <!-- Quick Links Back -->
+        <div class="flex gap-4">
+          <a
+            href="/dashboard"
+            class="text-primary hover:text-primary/80 flex items-center gap-2 text-sm font-medium"
+          >
+            ← Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { getSupabase } from '../lib/supabase';
+
+    const supabase = getSupabase();
+
+    // Profile form handler
+    const profileForm = document.getElementById('profile-form') as HTMLFormElement;
+    const profileMessage = document.getElementById('profile-message') as HTMLDivElement;
+
+    profileForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullNameInput = document.getElementById('fullName') as HTMLInputElement;
+      const fullName = fullNameInput.value.trim();
+
+      const submitButton = profileForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Saving...';
+
+      try {
+        // Update user metadata
+        const { error: metadataError } = await supabase.auth.updateUser({
+          data: { full_name: fullName }
+        });
+
+        if (metadataError) throw metadataError;
+
+        // Update profile table
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ full_name: fullName })
+            .eq('id', user.id);
+
+          if (profileError) throw profileError;
+        }
+
+        // Show success message
+        profileMessage.className = 'p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm';
+        profileMessage.textContent = 'Profile updated successfully!';
+        profileMessage.classList.remove('hidden');
+
+        setTimeout(() => {
+          profileMessage.classList.add('hidden');
+        }, 3000);
+      } catch (error) {
+        console.error('[Settings] Error updating profile:', error);
+        profileMessage.className = 'p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm';
+        profileMessage.textContent = error instanceof Error ? error.message : 'Failed to update profile';
+        profileMessage.classList.remove('hidden');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save Changes';
+      }
+    });
+
+    // Password form handler
+    const passwordForm = document.getElementById('password-form') as HTMLFormElement;
+    const passwordMessage = document.getElementById('password-message') as HTMLDivElement;
+
+    passwordForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const newPasswordInput = document.getElementById('newPassword') as HTMLInputElement;
+      const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+
+      const newPassword = newPasswordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      // Validate passwords match
+      if (newPassword !== confirmPassword) {
+        passwordMessage.className = 'p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm';
+        passwordMessage.textContent = 'Passwords do not match';
+        passwordMessage.classList.remove('hidden');
+        return;
+      }
+
+      // Validate password length
+      if (newPassword.length < 8) {
+        passwordMessage.className = 'p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm';
+        passwordMessage.textContent = 'Password must be at least 8 characters';
+        passwordMessage.classList.remove('hidden');
+        return;
+      }
+
+      const submitButton = passwordForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Updating...';
+
+      try {
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (error) throw error;
+
+        // Show success message
+        passwordMessage.className = 'p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm';
+        passwordMessage.textContent = 'Password updated successfully!';
+        passwordMessage.classList.remove('hidden');
+
+        // Clear form
+        passwordForm.reset();
+
+        setTimeout(() => {
+          passwordMessage.classList.add('hidden');
+        }, 3000);
+      } catch (error) {
+        console.error('[Settings] Error updating password:', error);
+        passwordMessage.className = 'p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm';
+        passwordMessage.textContent = error instanceof Error ? error.message : 'Failed to update password';
+        passwordMessage.classList.remove('hidden');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Update Password';
+      }
+    });
+  </script>
+</BaseLayout>

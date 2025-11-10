@@ -1,0 +1,93 @@
+---
+/**
+ * Card Component - Resilience Toolkit UI Design System
+ *
+ * Base card component with:
+ * - 24px padding
+ * - lg border radius
+ * - shadow-card elevation
+ * - Optional header with title, helper badge, and action slot
+ *
+ * Usage:
+ * <Card>
+ *   <div slot="header">
+ *     <h3>Card Title</h3>
+ *   </div>
+ *   <p>Card content goes here</p>
+ * </Card>
+ */
+
+interface Props {
+  class?: string;
+  title?: string;
+  helperBadge?: string;
+  noPadding?: boolean;
+}
+
+const {
+  class: className = '',
+  title,
+  helperBadge,
+  noPadding = false
+} = Astro.props;
+
+const hasHeader = title || Astro.slots.has('header') || Astro.slots.has('actions') || helperBadge;
+---
+
+<div
+  class:list={[
+    // Base card styles
+    'bg-card',
+    'border border-border',
+    'rounded-lg',
+    'shadow-card',
+    'transition-shadow duration-default ease-default',
+    'hover:shadow-raised',
+    className
+  ]}
+>
+  {hasHeader && (
+    <div class:list={[
+      'flex items-start justify-between gap-4',
+      'border-b border-border',
+      noPadding ? 'px-lg py-md' : 'pb-md'
+    ]}>
+      <div class="flex-1 min-w-0">
+        {Astro.slots.has('header') ? (
+          <slot name="header" />
+        ) : title ? (
+          <div class="flex items-center gap-2">
+            <h3 class="text-title font-medium text-foreground">
+              {title}
+            </h3>
+            {helperBadge && (
+              <span class="text-label text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                {helperBadge}
+              </span>
+            )}
+          </div>
+        ) : null}
+      </div>
+      {Astro.slots.has('actions') && (
+        <div class="flex items-center gap-2">
+          <slot name="actions" />
+        </div>
+      )}
+    </div>
+  )}
+
+  <div class:list={[
+    noPadding ? '' : 'p-lg'
+  ]}>
+    <slot />
+  </div>
+
+  {Astro.slots.has('footer') && (
+    <div class:list={[
+      'border-t border-border',
+      noPadding ? 'px-lg py-md' : 'pt-md'
+    ]}>
+      <slot name="footer" />
+    </div>
+  )}
+</div>

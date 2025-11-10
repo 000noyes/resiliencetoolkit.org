@@ -1,0 +1,126 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "2.2",
+  title: "Shared Tools",
+  moduleTitle: "Baseline Resilience",
+  modulePath: "/modules/baseline-resilience",
+  prevSection: { number: "2.1", title: "Basic Needs", slug: "2-1-basic-needs" },
+  nextSection: { number: "2.3", title: "Community Building", slug: "2-3-community-building" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <section>
+        <h2 class="text-title font-semibold mb-4">Tool lending library</h2>
+
+        <div class="space-y-4">
+          <Todo id="tool-directory" moduleKey="shared-tools" client:load>
+            Identify useful, higher cost, sharable tools and equipment that could be gathered in one space or a people with tools who are willing to lend them. Create a directory of this information.
+          </Todo>
+
+          <Todo id="tool-library-expansion" moduleKey="shared-tools" client:load>
+            If your area established a tool lending system during disaster response, consider building up a regularly available library for on-going use. See sections 1.3, 1.6, 1.11 for lists of tools useful for disaster response and recovery.
+          </Todo>
+
+          <Todo id="tool-library-research" moduleKey="shared-tools" client:load>
+            Read up on best practices and existing ways of doing this. New Suns Community Center (Thetford) and Cooperation Vermont (Marshfield) have tool libraries. See also: <a href="https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes">Library of Things toolkit from Shareable</a>, <a href="https://myturn.com/">myTurn</a> (online tool for managing tool sharing), and <a href="https://www.toollibraryalliance.org/">Tool Library Alliance</a> for lots of resources.
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Tech lending library</h2>
+        <p class="mb-4">These items may already be a part of your local library, or could be housed and managed through the library.</p>
+
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th style="width: 50%">
+                <strong>Systems</strong>
+              </th>
+              <th style="width: 50%">
+                <strong>Stuff</strong>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="guide-table__checklist">
+                  <Todo id="tech-availability" moduleKey="shared-tools" client:load>
+                    Ensure people know what is available and how to access it.
+                  </Todo>
+                  <Todo id="tech-long-term" moduleKey="shared-tools" client:load>
+                    Consider making more items available for longer-term use or facilitating direct trades/lends between community members with an extra laptop and someone who lost theirs in a house fire.
+                  </Todo>
+                  <Todo id="tech-directory" moduleKey="shared-tools" client:load>
+                    <a href="https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C">Create a directory of available items.</a>
+                  </Todo>
+                </div>
+              </td>
+              <td>
+                <strong>Potential items to include:</strong>
+                <div class="guide-table__checklist">
+                  <Todo id="tech-phones" moduleKey="shared-tools" client:load>
+                    Phones
+                  </Todo>
+                  <Todo id="tech-laptops" moduleKey="shared-tools" client:load>
+                    Laptops
+                  </Todo>
+                  <Todo id="tech-tablets" moduleKey="shared-tools" client:load>
+                    Tablets
+                  </Todo>
+                  <Todo id="tech-hotspots" moduleKey="shared-tools" client:load>
+                    Portable hotspots
+                  </Todo>
+                  <Todo id="tech-projectors" moduleKey="shared-tools" client:load>
+                    Projectors
+                  </Todo>
+                  <Todo id="tech-speakers" moduleKey="shared-tools" client:load>
+                    Speakers
+                  </Todo>
+                  <Todo id="tech-radios" moduleKey="shared-tools" client:load>
+                    AM/FM Radios
+                  </Todo>
+                  <Todo id="tech-weather-radios" moduleKey="shared-tools" client:load>
+                    Weather Radios
+                  </Todo>
+                  <Todo id="tech-walkie-talkies" moduleKey="shared-tools" client:load>
+                    Walkie talkies
+                  </Todo>
+                  <Todo id="tech-gps" moduleKey="shared-tools" client:load>
+                    GPS (non-vehicle)
+                  </Todo>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Internet and phone access</h2>
+
+        <div class="space-y-4">
+          <Todo id="internet-access" moduleKey="shared-tools" client:load>
+            Identify areas for public or low-cost internet access when home systems are down. This is commonly <a href="https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf">libraries</a>, town offices and schools.
+          </Todo>
+
+          <Todo id="internet-local-businesses" moduleKey="shared-tools" client:load>
+            Consider reaching out to local businesses that could be made more accessible during disaster (maybe in the town over or a less flood-prone area).
+          </Todo>
+
+          <Todo id="internet-solar-access" moduleKey="shared-tools" client:load>
+            Consider investing in a few portable, solar back-up power units as well as power banks that can be stored and ready in public spaces with wifi to create hotspots if phone service is cut out but internet can be accessed. Use tools like the Footprint Project for resources.
+          </Todo>
+
+          <Todo id="internet-mesh-networks" moduleKey="shared-tools" client:load>
+            <a href="https://docs.engnroom.org/digital-resilience-hub/meaningful-connectivity/alternative-tech-tools-for-knowledge-sharing/mesh-and-community-networks">Mesh Networks</a> can be established with limited required infrastructure and offer localized peer to peer secure communication and data sharing. Some examples: <a href="https://fognet.me/">Fognet</a> network, <a href="https://meshtastic.org/docs/introduction/">Meshtastic</a> - Low-power data sharing & communications network, <a href="https://www.youtube.com/watch?v=BpSkjRKGxyc">DIY Cellular Signal Booster</a> - No Electricity Required. <a href="https://docs.engnroom.org/digital-resilience-hub">More Information on digital resilience here.</a>
+          </Todo>
+        </div>
+      </section>
+</ModuleLayout>

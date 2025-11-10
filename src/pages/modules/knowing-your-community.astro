@@ -1,0 +1,316 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import EditableTable from '@/design-system/blocks/EditableTable';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "0.1",
+  title: "Knowing Your Community",
+  moduleTitle: "Knowing Your Community",
+  modulePath: "/modules",
+  prevSection: null,
+  nextSection: null
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <section>
+        <h2 class="text-title font-semibold mb-4">Find your regional partners</h2>
+        <p>Locate your Regional Planning Commission (RPC), Long Term Recovery Group (LTRG), and local supply hubs across Vermont.</p>
+
+        <!-- ArcGIS Map
+        <iframe
+          width="700"
+          height="600"
+          allow="local-network-access; geolocation"
+          title="CROS Map"
+          src="https://www.arcgis.com/apps/mapviewer/index.html?configurableview=true&webmap=f8de0ef4a49d4000b57e07f891a944b5&theme=light&legend=true&share=true&scroll=false&center=-72.879998,43.727942&scale=4622324.434309"
+          class="w-full rounded-lg border border-border"
+          loading="lazy"
+        ></iframe> -->
+
+        <div class="bg-muted p-8 rounded-lg text-center">
+          <p class="text-muted-foreground">Interactive asset map coming soon...</p>
+        </div>
+
+        <!-- Map Details  -->
+        <!-- <details class="mt-4 p-4 rounded-lg bg-surface-subtle border border-border">
+          <summary class="cursor-pointer font-medium text-text-primary">What's included on this map?</summary>
+          <p class="mt-2 text-body text-text-secondary">
+            This map shows Vermont counties, Regional Planning Commissions (RPCs), Long Term Recovery Groups (LTRGs), and local supply hubs—key partners in building community resilience.
+          </p>
+        </details> -->
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Organizing your community: who is here and what are they doing?</h2>
+
+        <p class="mb-6">The first step of organizing your community is thinking about who is in your community and the place where you live. You can do this activity alone, but it's best to do it with a few other people. They could be your friends, colleagues, neighbors, or someone else you just met who's excited about organizing your community to be more resilient.</p>
+
+        <EditableTable
+          moduleKey="knowing-community"
+          tableId="place-characteristics"
+          columns={['Prompt', 'Your Response']}
+          initialData={[
+            { 'Prompt': 'Write down three important things about your place/what life is like here.', 'Your Response': '' },
+            { 'Prompt': 'What are the biggest challenges in your place?', 'Your Response': '' },
+            { 'Prompt': 'What are the biggest assets in your place?', 'Your Response': '' },
+            { 'Prompt': 'Describe thriving conditions for your place. Use your imagination!', 'Your Response': '' }
+          ]}
+          client:load
+        />
+      </section>
+
+      <section>
+        <h3 class="text-heading font-semibold mb-4">Who is in your community/place?</h3>
+
+        <EditableTable
+          moduleKey="knowing-community"
+          tableId="community-roles"
+          columns={['Role', 'Name(s)']}
+          initialData={[
+            { 'Role': 'Long Term Recovery Group (LTRG) (groups established to support individuals after flooding)', 'Name(s)': '' },
+            { 'Role': 'Fire chief', 'Name(s)': '' },
+            { 'Role': 'Road crew', 'Name(s)': '' },
+            { 'Role': 'Emergency Management Director', 'Name(s)': '' },
+            { 'Role': 'Town clerk', 'Name(s)': '' },
+            { 'Role': 'Selectboard members', 'Name(s)': '' },
+            { 'Role': 'Mutual aid/neighbor to neighbor network leaders', 'Name(s)': '' },
+            { 'Role': 'Leaders/vocal people in your community', 'Name(s)': '' },
+            { 'Role': 'School principal', 'Name(s)': '' },
+            { 'Role': 'General store owner', 'Name(s)': '' },
+            { 'Role': 'State Senator*', 'Name(s)': '' },
+            { 'Role': 'State Representative(s)*', 'Name(s)': '' }
+          ]}
+          client:load
+        />
+
+        <p class="mt-2 text-body-small text-text-muted italic">*Find your legislators at legislature.vermont.gov/people/</p>
+      </section>
+
+      <section>
+        <h3 class="text-heading font-semibold mb-4">What other dynamics are present in your place?</h3>
+
+        <EditableTable
+          moduleKey="knowing-community"
+          tableId="community-dynamics"
+          columns={['Question', 'Your Response']}
+          initialData={[
+            { 'Question': 'Who do people listen to?', 'Your Response': '' },
+            { 'Question': 'Which voices are loudest?', 'Your Response': '' },
+            { 'Question': 'Who is always showing up to help?', 'Your Response': '' },
+            { 'Question': 'Who has been in your place the longest?', 'Your Response': '' },
+            { 'Question': 'Who is newest in your place?', 'Your Response': '' },
+            { 'Question': 'Who is struggling the most?', 'Your Response': '' },
+            { 'Question': 'Who is benefiting from how your place is right now?', 'Your Response': '' },
+            { 'Question': 'Who in your community might have different needs than most other people? What are those needs?', 'Your Response': '' }
+          ]}
+          client:load
+        />
+      </section>
+
+      <section>
+        <h3 class="text-heading font-semibold mb-4">Stuff and systems in your community</h3>
+
+        <EditableTable
+          moduleKey="knowing-community"
+          tableId="systems"
+          columns={['Question', 'Your Response']}
+          initialData={[
+            { 'Question': 'What emergency supplies are stored in your place, and where?', 'Your Response': '' },
+            { 'Question': 'What infrastructure is important to your place? Is it maintained?', 'Your Response': '' },
+            { 'Question': 'Are there places to gather? What places do people go to most often?', 'Your Response': '' },
+            { 'Question': 'Which systems in your place work well? Which work poorly?', 'Your Response': '' },
+            { 'Question': 'What/who are the active community groups, organizations, and town committees?', 'Your Response': '' },
+            { 'Question': 'How do people receive and share information (local news, social media, gathering places)?', 'Your Response': '' },
+            { 'Question': 'What essential services are available, and which are missing?', 'Your Response': '' }
+          ]}
+          client:load
+        />
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Knowing your ecosystem</h2>
+
+        <p class="mb-4">Check out the ANR atlas: <a href="https://anrmaps.vermont.gov/websites/anra5/">https://anrmaps.vermont.gov/websites/anra5/</a> for information on the hydrogeology, flood risk, and more in your Vermont community. Click on 'Layers' on the bottom left of the window, and turn on these layers by checking the boxes next to them:</p>
+
+        <ul class="list-disc pl-6 space-y-2 mb-6">
+          <li><em>FEMA flood layers</em> show where the edges of floods have gone</li>
+          <li><em>Soil hydrologic groups</em> show soil types, and help you imagine which locations will remain wet after flooding, because different types of soil drain more quickly than others.</li>
+          <li><em>Wetland delineations</em> show where the land is always also water</li>
+        </ul>
+
+        <EditableTable
+          moduleKey="knowing-community"
+          tableId="ecosystem"
+          columns={['Question', 'Your Response']}
+          initialData={[
+            { 'Question': 'What rivers and streams run through your place?', 'Your Response': '' },
+            { 'Question': 'Where does it get wet first?', 'Your Response': '' },
+            { 'Question': 'What else do you know about the ecosystem in your place?', 'Your Response': '' }
+          ]}
+          client:load
+        />
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Pod mapping</h2>
+
+        <p class="mb-4">This activity, developed by the <a href="https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view">Bay Area Transformative Justice Center</a>, can help identify your "pod" - who you can count on for support and connection in the everyday and during disaster. Interpersonal relationships help us move through stress or adrenaline; loved ones help us make sure we are taking care of ourselves, even while showing up to help others.</p>
+
+        <p class="mb-4">To start, write your name in the middle grey circle. The surrounding bold-outlined circles are your pod. Write the names of the people who are in your pod. We encourage people to write the names of actual individuals, instead of things such as "my church group" or "my neighbors."</p>
+
+        <p class="mb-4">The dotted lines surrounding your pod are people who are "movable." They are people that could be moved into your pod, but need a little more work. For example, you might need to build stronger relationships or trust with them.</p>
+
+        <p>The largest circles are community resources. For example: a local food shelf or sexual violence prevention org or a park with your favorite tree that you like to go sit with to take some deep breaths. Or really anyone or anything else you think of as a resource.</p>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Going deeper: finding the community work you want to do</h2>
+
+        <p class="mb-6">There are so many ways to support community resilience, and each person has a unique set of skills and interests to contribute. It can feel and be isolating to find yourself in a moment of disaster, not knowing who to turn to or how to help. The activities below can guide some of your personal preparedness for difficult times. Respond to the reflection questions below to spur your thinking. Check out this zine for more ideas.</p>
+
+        <EditableTable
+          moduleKey="knowing-community"
+          tableId="going-deeper"
+          columns={['Question', 'Your Response']}
+          initialData={[
+            { 'Question': 'What special skills do you have? What skills would you like to learn?', 'Your Response': '' },
+            { 'Question': 'What activities/work do you find rewarding? Think about things you do that other people consider difficult, but that you enjoy.', 'Your Response': '' },
+            { 'Question': 'Do you enjoy collaborating with people or working on projects alone?', 'Your Response': '' },
+            { 'Question': 'Do you like to spend time inside/outside? Working through a list of tasks, or imagining a new project? Do you enjoy words, numbers, visual art, or another medium?', 'Your Response': '' },
+            { 'Question': 'What problems are you most excited about solving?', 'Your Response': '' },
+            { 'Question': 'Who in your community inspires you? What do you find inspiring about them?', 'Your Response': '' }
+          ]}
+          client:load
+        />
+
+        <p class="mt-6 mb-4">Look at this (incomplete!) list of roles to play in a community, and check out the corresponding toolkit sections to see if any of this work appeals to you. Check out this list for more ideas.</p>
+
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th style="width: 60%">Roles in a community</th>
+              <th style="width: 40%">Toolkit section</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Working with children</td>
+              <td><a href="/modules/emergency-preparedness/1-8-special-populations">1.8</a></td>
+            </tr>
+            <tr>
+              <td>Helping people with health and wellbeing</td>
+              <td><a href="/modules/emergency-preparedness/1-3-medical">1.3</a>, <a href="/modules/emergency-preparedness/1-7-sanitation">1.7</a>, <a href="/modules/baseline-resilience/2-1-basic-needs">2.1</a></td>
+            </tr>
+            <tr>
+              <td>Maintaining infrastructure (roads, buildings, water systems)</td>
+              <td><a href="/modules/emergency-preparedness/1-4-power">1.4</a>, <a href="/modules/emergency-preparedness/1-5-shelter">1.5</a>, <a href="/modules/emergency-preparedness/1-9-response-plans">1.9</a>, <a href="/modules/emergency-preparedness/1-11-flood-recovery">1.11</a>, <a href="/modules/baseline-resilience/2-2-shared-tools">2.2</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Managing finances and administration</td>
+              <td><a href="/modules/emergency-preparedness/1-10-volunteers">1.10</a>, <a href="/modules/emergency-preparedness/1-13-financial-resources">1.13</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Mediating conflict and facilitating decision-making; Connecting people with each other and information; managing people and projects</td>
+              <td><a href="/modules/knowing-your-community">Knowing your community</a>, <a href="/modules/emergency-preparedness/1-9-response-plans">1.9</a>, <a href="/modules/emergency-preparedness/1-10-volunteers">1.10</a>, <a href="/modules/emergency-preparedness/1-12-mutual-aid">1.12</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Growing food/medicine, Preparing meals</td>
+              <td><a href="/modules/emergency-preparedness/1-2-food-water">1.2</a>, <a href="/modules/emergency-preparedness/1-5-shelter">1.5</a>, <a href="/modules/emergency-preparedness/1-8-special-populations">1.8</a>, <a href="/modules/emergency-preparedness/1-10-volunteers">1.10</a>, <a href="/modules/emergency-preparedness/1-12-mutual-aid">1.12</a>, <a href="/modules/baseline-resilience/2-1-basic-needs">2.1</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Building culture through art, spirituality, group activities; creating plans and visions for your community</td>
+              <td><a href="/modules/emergency-preparedness/1-9-response-plans">1.9</a>, <a href="/modules/emergency-preparedness/1-12-mutual-aid">1.12</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Specialized technical skills (construction, fixing machinery, plumbing, electrical work)</td>
+              <td><a href="/modules/emergency-preparedness/1-6-vehicles">1.6</a>, <a href="/modules/emergency-preparedness/1-9-response-plans">1.9</a>, <a href="/modules/emergency-preparedness/1-11-flood-recovery">1.11</a>, <a href="/modules/baseline-resilience/2-2-shared-tools">2.2</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Providing individual help to people (picking up groceries, offering rides, 1:1 emotional support)</td>
+              <td><a href="/modules/emergency-preparedness/1-5-shelter">1.5</a>, <a href="/modules/emergency-preparedness/1-6-vehicles">1.6</a>, <a href="/modules/emergency-preparedness/1-7-sanitation">1.7</a>, <a href="/modules/emergency-preparedness/1-8-special-populations">1.8</a>, <a href="/modules/emergency-preparedness/1-12-mutual-aid">1.12</a>, <a href="/modules/baseline-resilience/2-1-basic-needs">2.1</a></td>
+            </tr>
+            <tr>
+              <td>Stewarding ecosystems (river corridors, tree maintenance)</td>
+              <td><a href="/modules/knowing-your-community">Knowing your community</a>, <a href="/modules/emergency-preparedness/1-9-response-plans">1.9</a>, <a href="/modules/baseline-resilience/2-1-basic-needs">2.1</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Teaching skills/leading workshops</td>
+              <td><a href="/modules/knowing-your-community">Knowing your community</a>, <a href="/modules/emergency-preparedness/1-10-volunteers">1.10</a>, <a href="/modules/emergency-preparedness/1-11-flood-recovery">1.11</a>, <a href="/modules/baseline-resilience/2-2-shared-tools">2.2</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+            <tr>
+              <td>Organizing events</td>
+              <td><a href="/modules/knowing-your-community">Knowing your community</a>, <a href="/modules/emergency-preparedness/1-10-volunteers">1.10</a>, <a href="/modules/baseline-resilience/2-1-basic-needs">2.1</a>, <a href="/modules/baseline-resilience/2-3-community-building">2.3</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Bringing people together</h2>
+
+        <p class="mb-6">You can spend any amount of time organizing your community and building resilience. It will probably take 5-10 hours of conversations to get a group of about 10 people ready to organize with you. Meeting once a week can help build momentum, but you can also meet every other week or once a month.</p>
+
+        <p class="mb-4">Here are some things to consider when starting to organize your community:</p>
+
+        <ul class="list-disc pl-6 space-y-2 mb-6">
+          <li>What work is already happening to build resilience?</li>
+          <li>Of the people you mapped, how many do you know? Where can you go to know them better or introduce yourself?</li>
+          <li>Why are you excited about building resilience? Can you get comfortable talking about why you care about this to people you don't know well (yet)?</li>
+          <li>What problems are most discussed, or most important, to people in the place where you live? How can building resilience help address some of these problems?</li>
+          <li>Where can you start talking about building community resilience, and meet people who are interested in working on this with you?</li>
+        </ul>
+
+        <p class="mb-4">Once you have a few people - it can just be four or ten people! - you can get together and look at this toolkit. In order to have a meeting, you'll need</p>
+
+        <div class="space-y-4">
+          <Todo id="meeting-place" moduleKey="bringing-people-together" client:load>
+            A place to meet - preferably somewhere centrally located, comfortable, and accessible
+          </Todo>
+
+          <Todo id="food-and-beverage" moduleKey="bringing-people-together" client:load>
+            Food and/or beverages - maybe a local restaurant can donate a meal, or you can have people bring things potluck-style
+          </Todo>
+
+          <Todo id="note-taking" moduleKey="bringing-people-together" client:load>
+            A way to take notes
+          </Todo>
+
+          <Todo id="printed-toolkits" moduleKey="bringing-people-together" client:load>
+            Printed copies of the toolkit
+          </Todo>
+
+          <Todo id="agenda" moduleKey="bringing-people-together" client:load>
+            Prepare an agenda:
+            <ul class="list-disc pl-6 mt-2 space-y-1">
+              <li>Introduce yourself and share about why you feel it is important to build resilience to climate disaster and other disruptions in your community.</li>
+              <li>Invite everyone else to introduce themselves.</li>
+              <li>Talk about what you heard as a group: where are there shared priorities and interests? What kind of work are the people in this room interested in doing?</li>
+              <li>Take a look at the toolkit - share printed copies. Give people some time to read the introductory section and look through the toolkit.</li>
+              <li>Discuss what sections jump out as important or priorities in your community.</li>
+              <li>Revisit the 'mapping your community' exercise, or have a conversation about who is doing this work already in your community.</li>
+              <li>Determine if the group is interested in meeting again, and set a meeting time. Think about who else you want to invite.</li>
+            </ul>
+          </Todo>
+
+          <Todo id="facilitation-guides" moduleKey="bringing-people-together" client:load>
+            Check out more in-depth facilitation guides for using this toolkit at <a href="http://tinyurl.com/RHTmaterials">tinyurl.com/RHTmaterials.</a>
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">We started organizing. How do we know it's working?</h2>
+
+        <p class="mb-4">It can be hard to tell if you're making progress. Here are some signs your work is effective:</p>
+
+        <ul class="list-disc pl-6 space-y-2">
+          <li>More than four people attended your first meeting</li>
+          <li>Someone you haven't explicitly invited to participate heard about your work, and is excited to participate in the future</li>
+          <li>You received an email or a call from a town official asking what you're working on</li>
+          <li>You and one, two, or more people are energized and excited to keep working with this toolkit and talking to people in your community about it</li>
+        </ul>
+      </section>
+</ModuleLayout>

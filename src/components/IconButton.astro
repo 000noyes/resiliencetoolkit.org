@@ -1,0 +1,72 @@
+---
+/**
+ * IconButton Component - Resilience Toolkit UI Design System
+ *
+ * Circular icon-only button for toolbar actions (40px diameter).
+ * Supports both button and link variants.
+ *
+ * Usage:
+ * <IconButton aria-label="Settings">
+ *   <svg>...</svg>
+ * </IconButton>
+ *
+ * <IconButton href="/settings" aria-label="Settings">
+ *   <svg>...</svg>
+ * </IconButton>
+ */
+
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'default' | 'primary' | 'destructive';
+  disabled?: boolean;
+  class?: string;
+  'aria-label': string;
+}
+
+const {
+  href,
+  type = 'button',
+  variant = 'default',
+  disabled = false,
+  class: className = '',
+  'aria-label': ariaLabel
+} = Astro.props;
+
+const variantStyles = {
+  default: 'text-foreground hover:bg-muted hover:text-foreground',
+  primary: 'text-primary hover:bg-primary/10 hover:text-primary',
+  destructive: 'text-destructive hover:bg-destructive/10 hover:text-destructive'
+};
+
+const baseClasses = [
+  // Size and shape - 40px circle
+  'inline-flex items-center justify-center',
+  'w-10 h-10',
+  'rounded-full',
+
+  // Interaction states
+  'transition-colors duration-default ease-default',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+
+  // Variant styles
+  variantStyles[variant],
+
+  // Disabled state
+  disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
+
+  className
+];
+
+const Element = href ? 'a' : 'button';
+---
+
+<Element
+  href={href}
+  type={!href ? type : undefined}
+  disabled={!href && disabled}
+  aria-label={ariaLabel}
+  class:list={baseClasses}
+>
+  <slot />
+</Element>

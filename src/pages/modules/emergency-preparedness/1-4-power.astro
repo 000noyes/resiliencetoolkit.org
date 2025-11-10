@@ -1,0 +1,96 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.4",
+  title: "Power supply",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.3", title: "First aid and medical", slug: "1-3-medical" },
+  nextSection: { number: "1.5", title: "Warming/Cooling/Emergency Shelter", slug: "1-5-shelter" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 50%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 50%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Emergency/backup power</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="backup-power-storage" moduleKey="power-supply" client:load>
+                  Store backup power sources on a trailer or mobile platform to move away from disasters
+                  and towards areas of need.
+                </Todo>
+                <Todo id="power-inventory" moduleKey="power-supply" client:load>
+                  Keep track of your power sources with the <a href="#">Power Supply inventory</a> template.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <strong>Potential sources of backup power:</strong>
+              <div class="guide-table__checklist">
+                <Todo id="solar-panels" moduleKey="power-supply" client:load>
+                  Solar panels
+                </Todo>
+                <Todo id="deep-cycle-batteries" moduleKey="power-supply" client:load>
+                  Deep cycle batteries & inverters
+                </Todo>
+                <Todo id="propane-tanks" moduleKey="power-supply" client:load>
+                  Filled propane tanks
+                </Todo>
+                <Todo id="gas-tanks" moduleKey="power-supply" client:load>
+                  Gas tanks (non-ethanol with fuel stabilizer additive)
+                </Todo>
+                <Todo id="diesel-tanks-generators" moduleKey="power-supply" client:load>
+                  Diesel tanks and generators
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Solar emergency response trailer</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="mobile-disaster-trailer" moduleKey="power-supply" client:load>
+                  This trailer can serve as a mobile disaster response unit, be packed to best serve the
+                  crisis you're responding to, and provide power for tools, generators, or devices.
+                </Todo>
+                <Todo id="mobile-tool-library" moduleKey="power-supply" client:load>
+                  Consider hosting a tool library in a mobile trailer, so tools are easy to move to where
+                  they're needed.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="trailer-supplies" moduleKey="power-supply" client:load>
+                  Fill a movable trailer with emergency response supplies (see other entries with lists)
+                  that is also equipped with a solar panel.
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>

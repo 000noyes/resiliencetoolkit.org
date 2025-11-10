@@ -1,0 +1,74 @@
+---
+/**
+ * ActionButton Component - Resilience Toolkit UI Design System (Updated)
+ *
+ * Supports pill-shaped primary buttons with mint fill and shadow,
+ * plus outline secondary buttons and legacy rounded variants.
+ *
+ * Usage:
+ * <ActionButton variant="primary" pill>Start a Hub</ActionButton>
+ * <ActionButton variant="outline">Learn More</ActionButton>
+ */
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  pill?: boolean;
+  class?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  pill = false,
+  class: className = '',
+  type = 'button'
+} = Astro.props;
+
+// Design system variant styles with shadow and hover states
+const variantClasses = {
+  primary: 'bg-primary text-primary-foreground shadow-sm hover:shadow-raised hover:bg-primary/90',
+  secondary: 'bg-transparent border border-border text-foreground hover:bg-muted',
+  outline: 'bg-transparent border border-primary text-primary hover:bg-primary/10',
+};
+
+const sizeClasses = {
+  sm: 'px-4 py-2 text-body-small',
+  md: 'px-6 py-2.5 text-body',
+  lg: 'px-8 py-3 text-body-large',
+};
+
+const Element = href ? 'a' : 'button';
+---
+
+<Element
+  href={href}
+  type={!href ? type : undefined}
+  class:list={[
+    // Base classes
+    'inline-flex items-center justify-center',
+    'font-medium',
+    'transition-all duration-default ease-default',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+
+    // Active state: compress by -1px translateY
+    'active:translate-y-px',
+
+    // Border radius - pill or standard
+    pill ? 'rounded-full' : 'rounded-lg',
+
+    // Variant styles
+    variantClasses[variant],
+
+    // Size classes
+    sizeClasses[size],
+
+    // Custom classes
+    className
+  ]}
+>
+  <slot />
+</Element>

@@ -1,0 +1,336 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.2",
+  title: "Food and water",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.1", title: "Emergency preparedness kits", slug: "1-1-kits" },
+  nextSection: { number: "1.3", title: "First aid and medical", slug: "1-3-medical" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 50%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 50%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Backup food supply</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="backup-food-community" moduleKey="food-and-water" client:load>
+                  Create household and <a href="#">community backup stores</a> of food.
+                </Todo>
+                <Todo id="food-rotation" moduleKey="food-and-water" client:load>
+                  Rotate stock, perhaps in collaboration with a store or food shelf.
+                </Todo>
+                <Todo id="critter-safe-containers" moduleKey="food-and-water" client:load>
+                  Use critter and humidity safe containers
+                </Todo>
+              </div>
+              <p>
+                Consider sourcing and storing food that can be prepared and distributed at community
+                scale, especially in the 1-2 days during / after disaster.
+              </p>
+            </td>
+            <td>
+              <strong>Backup foods to store:</strong>
+              <div class="guide-table__checklist">
+                <Todo id="backup-canned-meats" moduleKey="food-and-water" client:load>
+                  Ready-to-eat canned meats, fruits, vegetables and a can opener
+                </Todo>
+                <Todo id="backup-protein-bars" moduleKey="food-and-water" client:load>
+                  Protein/fruit bars
+                </Todo>
+                <Todo id="backup-cereal" moduleKey="food-and-water" client:load>
+                  Dry cereal/granola
+                </Todo>
+                <Todo id="backup-peanut-butter" moduleKey="food-and-water" client:load>
+                  Peanut butter
+                </Todo>
+                <Todo id="backup-dried-fruit" moduleKey="food-and-water" client:load>
+                  Dried fruit
+                </Todo>
+                <Todo id="backup-juices" moduleKey="food-and-water" client:load>
+                  Canned juices
+                </Todo>
+                <Todo id="backup-milk" moduleKey="food-and-water" client:load>
+                  Non-perishable pasteurized milk
+                </Todo>
+                <Todo id="backup-high-energy" moduleKey="food-and-water" client:load>
+                  High-energy foods
+                </Todo>
+                <Todo id="backup-infant-food" moduleKey="food-and-water" client:load>
+                  Food for infants
+                </Todo>
+                <Todo id="backup-comfort-foods" moduleKey="food-and-water" client:load>
+                  Comfort/stress foods
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Community food infrastructure</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Identify <a href="#">community-scale equipment and infrastructure</a> for food security.
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="walk-in-cooler" moduleKey="food-and-water" client:load>
+                  Walk in cooler or freezer space
+                </Todo>
+                <Todo id="root-cellar" moduleKey="food-and-water" client:load>
+                  Root cellar
+                </Todo>
+                <Todo id="storage-warehouse" moduleKey="food-and-water" client:load>
+                  Storage or warehouse space for non-perishables and related supplies
+                </Todo>
+                <Todo id="kitchen-cooking-supplies" moduleKey="food-and-water" client:load>
+                  Kitchen/cooking supplies (large pots, spoons, ladles, knives, cutting boards, etc)
+                </Todo>
+                <Todo id="group-meal-kit" moduleKey="food-and-water" client:load>
+                  Group meal kit (plates, silverware, napkins, hand sanitizer or hand washing station)
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Water supply and storage</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>
+                If your municipality's central water system is down, plan for how to source large volumes
+                of water via wells or water trucks, and distribute via water stations in the community.
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="identify-water-sources" moduleKey="food-and-water" client:load>
+                  Identify local clean and potable water sources
+                </Todo>
+                <Todo id="store-water" moduleKey="food-and-water" client:load>
+                  Store 2-5 days of water
+                </Todo>
+                <Todo id="rotate-water" moduleKey="food-and-water" client:load>
+                  Rotate water stock every 6-12 months and store out of the heat and extreme cold.
+                </Todo>
+                <Todo id="backup-fill-method" moduleKey="food-and-water" client:load>
+                  Back-up method to fill up water jugs.
+                </Todo>
+                <Todo id="test-water" moduleKey="food-and-water" client:load>
+                  Test your water; test kits are available thru VT Department of Health.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <strong>Water storage vessels</strong>
+              <div class="guide-table__checklist">
+                <Todo id="ibc-totes" moduleKey="food-and-water" client:load>
+                  IBC totes (275 gallons)
+                </Todo>
+                <Todo id="five-gallon-buckets" moduleKey="food-and-water" client:load>
+                  5 gallon buckets
+                </Todo>
+                <Todo id="one-gallon-jugs" moduleKey="food-and-water" client:load>
+                  1 gallon jugs
+                </Todo>
+                <Todo id="spigots-pumps" moduleKey="food-and-water" client:load>
+                  Spigots and pumps (gas powered, AC powered, DC powered, hand powered)
+                </Todo>
+                <Todo id="water-filtration" moduleKey="food-and-water" client:load>
+                  Water filtration system (bleach, iodine, etc)
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Community meals</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>
+                Provide meals for communities during disaster and recovery. Feeding people is key to
+                sustaining response and relief efforts.
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="existing-meal-providers" moduleKey="food-and-water" client:load>
+                  If there are existing providers of community meals, ask them to cook large meals for
+                  distribution
+                </Todo>
+                <Todo id="meal-outreach" moduleKey="food-and-water" client:load>
+                  Conduct outreach to ask for meals from nearby restaurants, organizations and community
+                  meals in neighboring towns.
+                </Todo>
+                <Todo id="kitchen-directory" moduleKey="food-and-water" client:load>
+                  <a href="https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view?usp=drive_link">Create a
+                  directory</a> of, or <a href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">set up
+                  kitchens</a> in your community available for creating both community meals and possibly meal trains for
+                  individual household use. Local churches or restaurants might be able to offer access to
+                  a commercial kitchen, reusable plates and silverware, etc.
+                </Todo>
+                <Todo id="cooks-directory" moduleKey="food-and-water" client:load>
+                  <a href="https://drive.google.com/file/d/1at2VF06qMMKi3olVD4uNecniZZFnjKz0/view?usp=drive_link">Create a directory of
+                  cooks</a> who are prepared to meal share (cook extra) for households who have lost access to
+                  kitchens, food, water, etc
+                </Todo>
+                <Todo id="food-distribution-system" moduleKey="food-and-water" client:load>
+                  Establish a system to distribute food at volunteer coordination and supply pickup sites
+                </Todo>
+                <Todo id="meal-schedule" moduleKey="food-and-water" client:load>
+                  Set a daily and weekly schedule for meals, and get volunteers to sign-up for making or
+                  distributing meals
+                </Todo>
+                <Todo id="source-food-schedule" moduleKey="food-and-water" client:load>
+                  Source food to fill in distribution dates and times
+                </Todo>
+                <Todo id="safe-food-handling" moduleKey="food-and-water" client:load>
+                  Ensure <a href="https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html">safe food
+                  handling</a> at distribution centers - refrigeration/coolers for things to stay cold vs. crock pots
+                  and portable stoves to keep things warm.
+                </Todo>
+                <Todo id="food-access-directory" moduleKey="food-and-water" client:load>
+                  <a href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">Create a directory of food access
+                  points</a>, using a spreadsheet, <a href="http://tinyurl.com/freefoodbtv">google map</a>, or <a href="https://cdn.flowcode.com/prodassets/NEKCA_FoodAccess_Summer.24.2.pdf">other
+                  format</a>. Include resources like food shelves, free food distributions and meal sites, general and grocery
+                  stores, farmers' markets.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <strong>
+                Kitchen and meal distribution
+                <a href="https://www.albertahealthservices.ca/assets/info/nutrition/if-nfs-collective-kitchen-sample-kitchen-equipment-list.pdf">supplies</a>
+              </strong>
+              <div class="guide-table__checklist">
+                <Todo id="kitchen-walk-in-cooler" moduleKey="food-and-water" client:load>
+                  Walk-in cooler/refrigeration system
+                </Todo>
+                <Todo id="kitchen-chest-freezer" moduleKey="food-and-water" client:load>
+                  Chest freezer
+                </Todo>
+                <Todo id="kitchen-oven-range" moduleKey="food-and-water" client:load>
+                  Oven range, oven mitts
+                </Todo>
+                <Todo id="kitchen-food-processor" moduleKey="food-and-water" client:load>
+                  Food processor/blender
+                </Todo>
+                <Todo id="kitchen-water-access" moduleKey="food-and-water" client:load>
+                  Access to of potable water
+                </Todo>
+                <Todo id="kitchen-first-aid" moduleKey="food-and-water" client:load>
+                  First aid kit
+                </Todo>
+              </div>
+              <strong>Kitchen supplies</strong>
+              <div class="guide-table__checklist">
+                <Todo id="stock-pots" moduleKey="food-and-water" client:load>
+                  8 - 10 qt stock pots
+                </Todo>
+                <Todo id="frying-pans" moduleKey="food-and-water" client:load>
+                  10-12 inch frying pans
+                </Todo>
+                <Todo id="graters" moduleKey="food-and-water" client:load>
+                  Graters
+                </Todo>
+                <Todo id="salad-spinners" moduleKey="food-and-water" client:load>
+                  Salad spinners
+                </Todo>
+                <Todo id="colander-sieves" moduleKey="food-and-water" client:load>
+                  Colander/sieves
+                </Todo>
+                <Todo id="cutting-boards" moduleKey="food-and-water" client:load>
+                  Cutting boards
+                </Todo>
+                <Todo id="sharp-knives" moduleKey="food-and-water" client:load>
+                  Sharp knives of multiple dimensions
+                </Todo>
+                <Todo id="tea-kettle-coffee" moduleKey="food-and-water" client:load>
+                  Tea kettle, drip coffee maker
+                </Todo>
+                <Todo id="kitchen-utensils" moduleKey="food-and-water" client:load>
+                  Peelers, knives, spatulas, tongs, slotted spoons, thermometer, can openers, whisks,
+                  funnels
+                </Todo>
+                <Todo id="measuring-cups-spoons" moduleKey="food-and-water" client:load>
+                  Measuring cups and spoons, muffin tins, rolling pins, casserole dishes, roasting pans
+                </Todo>
+                <Todo id="serving-platters" moduleKey="food-and-water" client:load>
+                  Serving platters, bowls, plates and utensils
+                </Todo>
+                <Todo id="mixing-bowls" moduleKey="food-and-water" client:load>
+                  Mixing bowls
+                </Todo>
+                <Todo id="baking-sheets" moduleKey="food-and-water" client:load>
+                  Baking sheets, loaf pans
+                </Todo>
+                <Todo id="food-containers" moduleKey="food-and-water" client:load>
+                  Large food-grade containers for storing and transporting
+                </Todo>
+                <Todo id="meal-containers" moduleKey="food-and-water" client:load>
+                  Containers to bring meals home
+                </Todo>
+              </div>
+              <strong>Cleaning supplies</strong>
+              <div class="guide-table__checklist">
+                <Todo id="hand-dish-soap" moduleKey="food-and-water" client:load>
+                  hand and dish soap
+                </Todo>
+                <Todo id="bleach" moduleKey="food-and-water" client:load>
+                  Bleach
+                </Todo>
+                <Todo id="garbage-bags" moduleKey="food-and-water" client:load>
+                  garbage bags
+                </Todo>
+                <Todo id="pot-scrubbers" moduleKey="food-and-water" client:load>
+                  pot scrubbers
+                </Todo>
+                <Todo id="rubber-gloves" moduleKey="food-and-water" client:load>
+                  rubber gloves
+                </Todo>
+                <Todo id="dish-cloths" moduleKey="food-and-water" client:load>
+                  dish cloths
+                </Todo>
+                <Todo id="towels" moduleKey="food-and-water" client:load>
+                  towels
+                </Todo>
+              </div>
+              <strong>Food serving supplies</strong>
+              <div class="guide-table__checklist">
+                <Todo id="plates-bowls" moduleKey="food-and-water" client:load>
+                  Plates & Bowls
+                </Todo>
+                <Todo id="utensils-forks-knives" moduleKey="food-and-water" client:load>
+                  Utensils (forks, knives)
+                </Todo>
+                <Todo id="cups" moduleKey="food-and-water" client:load>
+                  Cups
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>

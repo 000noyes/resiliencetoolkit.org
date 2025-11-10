@@ -1,0 +1,183 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ActionButton from '@/components/ActionButton.astro';
+import { Printer, Download } from 'lucide-react';
+---
+
+<BaseLayout title="Save for Offline Use - Resilience Hub" description="Download or print toolkit modules to use without internet">
+  <div class="container mx-auto px-4 py-12 max-w-4xl">
+    <h1 class="text-4xl font-bold text-foreground mb-6">Save for Offline Use</h1>
+    <p class="text-lg text-muted-foreground mb-8">
+      You don't need internet to use this toolkit. Choose the option that works best for you:
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-12">
+      <!-- Option 1: Print -->
+      <div class="bg-card border border-border rounded-lg p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Printer className="w-6 h-6 text-primary" />
+          </div>
+          <h2 class="text-2xl font-semibold text-foreground">Print Individual Pages</h2>
+        </div>
+        <p class="text-muted-foreground mb-4">
+          Print any module page to fill out by hand or save as a PDF on your computer.
+        </p>
+        <ul class="space-y-2 text-sm text-muted-foreground mb-6">
+          <li class="flex items-start gap-2">
+            <span class="text-primary mt-1">✓</span>
+            <span>Works on any device</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary mt-1">✓</span>
+            <span>No installation needed</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary mt-1">✓</span>
+            <span>Fill out by hand or on computer</span>
+          </li>
+        </ul>
+        <div class="space-y-3">
+          <ActionButton href="/modules" variant="primary" size="md" class="w-full">
+            Browse Modules to Print
+          </ActionButton>
+          <p class="text-xs text-muted-foreground">
+            Look for the "Print this module" button on any page
+          </p>
+        </div>
+      </div>
+
+      <!-- Option 2: Download PDF -->
+      <div class="bg-card border border-border rounded-lg p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Download className="w-6 h-6 text-primary" />
+          </div>
+          <h2 class="text-2xl font-semibold text-foreground">Download Complete Toolkit</h2>
+        </div>
+        <p class="text-muted-foreground mb-4">
+          Get the entire toolkit as one PDF file to save on your device or print all at once.
+        </p>
+        <ul class="space-y-2 text-sm text-muted-foreground mb-6">
+          <li class="flex items-start gap-2">
+            <span class="text-primary mt-1">✓</span>
+            <span>All modules in one file</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary mt-1">✓</span>
+            <span>Save to phone, tablet, or computer</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-primary mt-1">✓</span>
+            <span>Easy to share with your team</span>
+          </li>
+        </ul>
+        <div class="space-y-3">
+          <ActionButton href="/downloads-and-templates" variant="primary" size="md" class="w-full">
+            Download PDF Workbook
+          </ActionButton>
+          <p class="text-xs text-muted-foreground">
+            Coming soon - we're creating the PDF version
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to Print Instructions -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold text-foreground mb-4">How to Print a Page</h2>
+      <div class="bg-card border border-border rounded-lg p-6">
+        <ol class="space-y-4">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">1</span>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">Go to any module page</h3>
+              <p class="text-sm text-muted-foreground">Browse the <a href="/modules" class="text-primary hover:underline">toolkit modules</a> and open the page you want to save.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">2</span>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">Click "Print this module"</h3>
+              <p class="text-sm text-muted-foreground">Look for the button near the top of the page. This opens a printer-friendly version.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">3</span>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">Print or save as PDF</h3>
+              <p class="text-sm text-muted-foreground">Choose your printer, or select "Save as PDF" to keep a digital copy on your device.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold text-foreground mb-6">Common Questions</h2>
+      <div class="space-y-4">
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Do I need internet to use the printed pages?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            No. Once you've printed a page or saved it as a PDF on your device, you can use it anytime without internet.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Can I fill out the PDF on my computer or phone?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Yes. After saving as PDF, you can open it with most PDF readers (like Adobe Reader, Preview on Mac, or Chrome) and type directly into it. You can also print it and fill out by hand.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            What's the difference between printing one page vs. downloading the whole toolkit?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Printing individual pages is great if you only need specific sections. Downloading the complete PDF gives you everything in one file, which is handy for sharing with your team or keeping a backup.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Will my information be saved if I fill out forms on this website?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Yes. Your information is saved on your device automatically (in your web browser's storage). It stays private and works even without internet. If you want to keep a backup, use the "Export local data" button on any module page to download your information.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            How do I save my work and use it on a different device?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            On any module page, click "Export local data" to download your information. You can then email it to yourself or save it to a USB drive to transfer to another device.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Does this work on my phone?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Yes. You can use this toolkit on any phone, tablet, or computer. The print and save features work on all devices.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <!-- Back to modules -->
+    <div class="text-center">
+      <ActionButton href="/modules" variant="outline" size="lg">
+        Back to All Modules
+      </ActionButton>
+    </div>
+  </div>
+</BaseLayout>

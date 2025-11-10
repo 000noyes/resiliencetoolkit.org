@@ -1,0 +1,73 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.10",
+  title: "Volunteer Management",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.9", title: "Community Emergency Response Plans", slug: "1-9-response-plans" },
+  nextSection: { number: "1.11", title: "Flood Recovery Supplies and Work", slug: "1-11-flood-recovery" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <h3 class="text-title font-semibold">Recruiting volunteers</h3>
+      <ul class="list-disc pl-6 space-y-3">
+        <li>Post about volunteer opportunities on Front Porch Forum, social media, and in your local paper.</li>
+        <li>See if a local restaurant can provide meals to volunteers.</li>
+        <li>Make lists of organizations and individuals in the community who are willing to volunteer and/or willing to coordinate volunteers during disaster:
+          <ul class="list-disc pl-6 mt-2 space-y-1">
+            <li>Mutual aid and neighbor-to-neighbor networks</li>
+            <li>Local companies that can offer employee volunteer hours</li>
+            <li>Faith communities</li>
+            <li>Schools</li>
+            <li>American Legion</li>
+            <li>Elks Club</li>
+            <li>Rotary Club</li>
+            <li><a href="https://www.healthvermont.gov/about-us/contact-us">AHS / VDH regional field Directors can be a conduit to local organizations</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 class="text-title font-semibold">Setting up volunteer shifts</h3>
+      <ul class="list-disc pl-6 space-y-3">
+        <li><a href="https://www.signupgenius.com/nonprofit-volunteer-management">SignUp Genius</a> is free and helpful for creating volunteer shifts. The paid version allows multiple volunteer coordinators to log in; you can cancel payment as soon as you're done using it. Download your data regularly to maintain a contact list. You can also use a <a href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9">shareable spreadsheet</a> on Google or Cryptpad.</li>
+        <li>Create specific time slots and tasks for people to help with.</li>
+        <li>Be clear on what physical abilities people need to be safe and also helpful.</li>
+        <li>Have a diversity of tasks to make space for everyone to engage.
+          <ul class="list-disc pl-6 mt-2">
+            <li>Assess if projects are within your team's "scope" or ability to help.—the home might be gone, it may be structurally unsound or dangerous, you may be unable to get permission from a landlord or homeowner to do work, etc.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 class="text-title font-semibold">Potential volunteer tasks for flood recovery</h3>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Holding down the supply/volunteer dispatch hub</li>
+        <li>Organizing supplies – especially tracking inventory and restocking Work Totes</li>
+        <li>Supply runs – gathering supplies purchasing or donations</li>
+        <li>Survivor outreach through knocking on doors (canvassing) and making phone calls</li>
+        <li>Data management – tracking projects, updating databases and/or volunteer and survivor contacts</li>
+        <li>Volunteer recruitment, training, and outreach</li>
+        <li>Mucking and gutting houses (see section 1.11)</li>
+        <li>Laundry – Expensive safety equipment like rubber-faced work gloves can be reused if washed, and P100 face masks can be reused if the mouthpiece is wiped with a sanitizing wipe</li>
+        <li>Mental health and child care support for flood survivors</li>
+        <li>Meal providers/servers</li>
+        <li>Caretaking for first responders, organizers and community leaders (meals, respite days, transportation, etc)</li>
+      </ul>
+
+      <h3 class="text-title font-semibold">Managing volunteers</h3>
+      <ul class="list-disc pl-6 space-y-3">
+        <li>People will want to bring children to the sites to help volunteer. Handle this on a case by case basis and do not send children to locations where there is a concern for bodily safety, such as mold.</li>
+        <li>Know what work needs to get done. Use <a href="http://crisiscleanup.org">Crisis Cleanup</a> and track projects in a spreadsheet.</li>
+        <li>Conduct interviews with homeowners to determine scope of work (this can be a volunteer task that precedes other volunteer tasks). Questions for these interviews are pre-loaded in Crisis Cleanup.</li>
+        <li>Create a work sheet for volunteers with info about where they're going, who they're meeting, and what they're doing. This helps coordinate multiple teams at once.</li>
+        <li>For legal/insurance reasons, have flood volunteers <a href="https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true">sign a waiver</a> regardless of the scope of their work. Link to your agreement wherever volunteers are signing up for shifts and have people sign agreements before starting work.</li>
+        <li>Tell volunteers what to bring to do the work (sunscreen, water, snacks, durable footwear, etc.)</li>
+        <li>Train volunteers in the tasks assigned each shift and include the importance of taking breaks and hydrating.</li>
+        <li>Organize volunteers into work crews of 3-6 people, ideally large enough so people can take breaks and not work for more than 5 hours. Coordinating work is challenging and situations shift but the more organized you can be, the more likely you'll be to retain volunteers.</li>
+        <li>Feed volunteers! Think about how else you can thank and appreciate them.</li>
+      </ul>
+</ModuleLayout>

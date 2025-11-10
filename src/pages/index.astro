@@ -1,0 +1,212 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ActionButton from '@/components/ActionButton.astro';
+import { BookOpen, Users, Siren, HeartPulse, Download } from 'lucide-react';
+
+// Featured modules for homepage
+const featuredModules = [
+  {
+    title: 'Introduction',
+    url: '/introduction',
+    icon: BookOpen,
+    summary: 'Learn what a Community Resilience Hub is and how to use this toolkit to strengthen disaster preparedness.'
+  },
+  {
+    title: 'Knowing Your Community',
+    url: '/modules/knowing-your-community',
+    icon: Users,
+    summary: 'Map community assets, identify vulnerable populations, and understand the unique characteristics of your area.'
+  },
+  {
+    title: 'Emergency Preparedness and Response',
+    url: '/modules/emergency-preparedness',
+    icon: Siren,
+    summary: 'Build emergency kits, create response plans, and prepare for immediate disaster response.'
+  },
+  {
+    title: 'Baseline Resilience',
+    url: '/modules/baseline-resilience',
+    icon: HeartPulse,
+    summary: 'Strengthen everyday community systems for food, shelter, tools, and mutual support.'
+  },
+  {
+    title: 'Downloads and Templates',
+    url: '/downloads-and-templates',
+    icon: Download,
+    summary: 'Access printable checklists, forms, and templates to support your hub\'s work.'
+  }
+];
+---
+
+<BaseLayout>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-b from-primary/10 to-background py-20">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold text-foreground mb-6">
+        Build a Community Resilience Hub
+      </h1>
+      <p class="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+        Local-first tools to organize people, places, and plans before, during, and after disasters.
+        Free, modular, and works without internet.
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <ActionButton href="/auth/signup" variant="primary" size="lg">
+          Get Started
+        </ActionButton>
+        <ActionButton href="/offline" variant="outline" size="lg">
+          Save for Offline
+        </ActionButton>
+      </div>
+      <p class="mt-4 text-sm text-muted-foreground">
+        Already have an account? <a href="/auth/login" class="text-primary hover:underline">Sign in</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="py-16 bg-card">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center text-foreground mb-12">
+        How It Works
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Before -->
+        <div class="text-center p-6">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+            <svg class="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-3">Before</h3>
+          <p class="text-muted-foreground">
+            Map assets, build networks, prepare supplies, and train volunteers before disaster strikes.
+          </p>
+        </div>
+
+        <!-- During -->
+        <div class="text-center p-6">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+            <svg class="w-8 h-8 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-3">During</h3>
+          <p class="text-muted-foreground">
+            Coordinate response, track needs, manage volunteers, and communicate with your community.
+          </p>
+        </div>
+
+        <!-- After -->
+        <div class="text-center p-6">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+            <svg class="w-8 h-8 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-3">After</h3>
+          <p class="text-muted-foreground">
+            Track recovery progress, support rebuilding, and strengthen long-term community resilience.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Modules -->
+  <section class="py-16">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-foreground">
+          Featured Modules
+        </h2>
+        <ActionButton href="/modules" variant="outline">
+          View All
+        </ActionButton>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredModules.map((module) => (
+          <a
+            href={module.url}
+            class="group block p-6 rounded-lg border border-border bg-card hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+          >
+            <div class="flex items-start gap-3 mb-3">
+              {module.icon && (
+                <module.icon className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+              )}
+              <h3 class="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                {module.title}
+              </h3>
+            </div>
+            {module.summary && (
+              <p class="text-sm text-muted-foreground line-clamp-2">
+                {module.summary}
+              </p>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Proof Section -->
+  <!-- <section class="py-16 bg-muted">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-3xl font-bold text-foreground mb-4">
+        Built with Frontline Organizers
+      </h2>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+        Developed collaboratively with community organizations and mutual aid groups
+        who have firsthand experience responding to disasters in Vermont and beyond.
+      </p>
+      <div class="flex flex-wrap justify-center gap-8 text-muted-foreground">
+        <div class="text-center">
+          <div class="text-3xl font-bold text-foreground">500+</div>
+          <div class="text-sm">Households Reached</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-foreground">50+</div>
+          <div class="text-sm">Volunteers Trained</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-foreground">100+</div>
+          <div class="text-sm">Kits Assembled</div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+
+  <!-- Offline CTA -->
+  <section class="py-16 bg-card">
+    <div class="container mx-auto px-4 text-center">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-3xl font-bold text-foreground mb-4">
+          Works Without Internet
+        </h2>
+        <p class="text-lg text-muted-foreground mb-6">
+          Print any page or download the complete toolkit to use without an internet connection.
+          Your information stays on your device and works anytime, anywhere.
+        </p>
+        <ActionButton href="/offline" variant="primary" size="lg">
+          Download or Print Pages
+        </ActionButton>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-20 bg-gradient-to-b from-background to-primary/10">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold text-foreground mb-4">
+        Start Today
+      </h2>
+      <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+        Begin building resilience in your community. The toolkit is free, open source,
+        and designed to work for communities of any size.
+      </p>
+      <ActionButton href="/auth/signup" variant="primary" size="lg">
+        Get Started
+      </ActionButton>
+    </div>
+  </section>
+</BaseLayout>

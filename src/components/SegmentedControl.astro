@@ -1,0 +1,51 @@
+---
+/**
+ * SegmentedControl Component - Resilience Toolkit UI Design System
+ *
+ * Rounded pill container with subtle outline.
+ * Active chip has filled mint background with bold label.
+ *
+ * Usage as React component since it needs client-side interactivity:
+ * Import and use SegmentedControl.tsx instead for full functionality.
+ *
+ * This Astro version is a static representation.
+ */
+
+interface Props {
+  options: string[];
+  activeIndex?: number;
+  class?: string;
+}
+
+const { options, activeIndex = 0, class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'inline-flex items-center gap-1',
+    'p-1',
+    'bg-muted/30',
+    'border border-border',
+    'rounded-full',
+    'shadow-ambient',
+    className
+  ]}
+>
+  {options.map((option, index) => (
+    <button
+      type="button"
+      class:list={[
+        'px-4 py-1.5',
+        'rounded-full',
+        'text-label font-medium',
+        'transition-all duration-default ease-default',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+        index === activeIndex
+          ? 'bg-primary text-primary-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+      ]}
+    >
+      {option}
+    </button>
+  ))}
+</div>

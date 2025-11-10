@@ -1,0 +1,600 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Color tokens - Light mode */
+  --background: oklch(0.9911 0 0);
+  --foreground: oklch(0.2046 0 0);
+  --surface: oklch(0.9911 0 0);
+  --surface-muted: oklch(0.9461 0 0);
+  --surface-elevated: oklch(0.9731 0 0);
+  --text-primary: oklch(0.2046 0 0);
+  --text-secondary: oklch(0.4386 0 0);
+  --text-muted: oklch(0.2435 0 0);
+
+  /* Legacy aliases for backward compatibility */
+  --card: oklch(0.9911 0 0);
+  --card-foreground: oklch(0.2046 0 0);
+  --popover: oklch(0.9911 0 0);
+  --popover-foreground: oklch(0.4386 0 0);
+
+  /* Primary colors - Mint accent */
+  --primary: oklch(0.4365 0.1044 156.7556);
+  --primary-foreground: oklch(0.9213 0.0135 167.1556);
+
+  /* Secondary colors */
+  --secondary: oklch(0.9940 0 0);
+  --secondary-foreground: oklch(0.2046 0 0);
+
+  /* Muted/Accent colors */
+  --muted: oklch(0.9461 0 0);
+  --muted-foreground: oklch(0.2435 0 0);
+  --accent: oklch(0.9461 0 0);
+  --accent-foreground: oklch(0.2435 0 0);
+
+  /* Destructive colors */
+  --destructive: oklch(0.5523 0.1927 32.7272);
+  --destructive-foreground: oklch(0.9934 0.0032 17.2118);
+
+  /* Border and input */
+  --border: oklch(0.9037 0 0);
+  --input: oklch(0.9731 0 0);
+  --ring: oklch(0.4365 0.1044 156.7556);
+
+  /* Chart palette */
+  --chart-1: oklch(0.4365 0.1044 156.7556);
+  --chart-2: oklch(0.6231 0.1880 259.8145);
+  --chart-3: oklch(0.6056 0.2189 292.7172);
+  --chart-4: oklch(0.7686 0.1647 70.0804);
+  --chart-5: oklch(0.6959 0.1491 162.4796);
+
+  /* Sidebar tokens */
+  --sidebar: oklch(0.9911 0 0);
+  --sidebar-foreground: oklch(0.5452 0 0);
+  --sidebar-primary: oklch(0.4365 0.1044 156.7556);
+  --sidebar-primary-foreground: oklch(0.9213 0.0135 167.1556);
+  --sidebar-accent: oklch(0.9461 0 0);
+  --sidebar-accent-foreground: oklch(0.2435 0 0);
+  --sidebar-border: oklch(0.9037 0 0);
+  --sidebar-ring: oklch(0.4365 0.1044 156.7556);
+
+  /* Typography */
+  --font-sans: Outfit, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: monospace;
+
+  /* Border radius - Design system spec */
+  --radius: 0.5rem;
+  --radius-sm: calc(0.5rem - 4px);
+  --radius-md: calc(0.5rem - 2px);
+  --radius-lg: 0.5rem;
+  --radius-xl: calc(0.5rem + 4px);
+
+  /* Shadows - Design system spec */
+  --shadow-ambient: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-raised: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow-card: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px hsl(0 0% 0% / 0.17);
+  --shadow-modal: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
+  --shadow-focus-ring: 0 0 0 2px color-mix(in srgb, var(--ring) 40%, transparent);
+
+  /* Legacy shadow aliases */
+  --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px hsl(0 0% 0% / 0.17);
+  --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px hsl(0 0% 0% / 0.17);
+  --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
+  --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
+  --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+
+  /* Spacing scale - Design system spec */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-section: 80px;
+
+  /* Motion - Design system spec */
+  --motion-duration: 180ms;
+  --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-duration-fast: 120ms;
+  --motion-duration-base: 180ms;
+  --motion-duration-slow: 260ms;
+  --motion-easing-standard: cubic-bezier(0.33, 0, 0.2, 1);
+  --motion-easing-emphasized: cubic-bezier(0.3, 0.7, 0.4, 1);
+
+  /* Typography tracking */
+  --tracking-normal: 0.025em;
+  --tracking-tight: 0em;
+  --tracking-wide: 0.1em;
+
+  /* Legacy spacing */
+  --spacing: 0.25rem;
+
+  /* Interactive Table Design Tokens */
+  --table-accent: oklch(0.5234 0.1147 168.9012); /* #0f8c6d */
+  --table-accent-subtle: oklch(0.5234 0.1147 168.9012 / 0.08);
+  --table-accent-hover: oklch(0.4523 0.1044 168.9012);
+  --table-divider: oklch(0.8234 0 0); /* #d8d8d8 */
+  --table-grid: oklch(0.8234 0 0);
+  --table-surface: var(--surface);
+  --table-surface-subtle: oklch(0.9811 0 0); /* #fafafa */
+  --table-heading: oklch(0.1822 0 0); /* #1c1c1c */
+  --table-body: oklch(0.2393 0 0); /* #2c2c2c */
+  --table-text-muted: oklch(0.4386 0 0); /* #5a5a5a */
+  --table-link: oklch(0.4823 0.1423 257.5432); /* #0a5cc3 */
+  --table-link-hover: oklch(0.3234 0.1123 257.5432); /* #053c84 */
+  --table-checkbox-border: oklch(0.4823 0 0); /* #6a6a6a */
+  --table-checkbox-fill: var(--primary);
+  --table-focus-ring: oklch(0.5234 0.1523 257.5432); /* #1a73e8 */
+  --table-cell-padding-y: 12px;
+  --table-cell-padding-x: 16px;
+  --table-checklist-gap: 10px;
+}
+
+.dark {
+  /* Color tokens - Dark mode */
+  --background: oklch(0.1822 0 0);
+  --foreground: oklch(0.9288 0.0126 255.5078);
+  --surface: oklch(0.2046 0 0);
+  --surface-muted: oklch(0.2393 0 0);
+  --surface-elevated: oklch(0.2603 0 0);
+  --text-primary: oklch(0.9288 0.0126 255.5078);
+  --text-secondary: oklch(0.7122 0 0);
+  --text-muted: oklch(0.6301 0 0);
+
+  /* Legacy aliases for backward compatibility */
+  --card: oklch(0.2046 0 0);
+  --card-foreground: oklch(0.9288 0.0126 255.5078);
+  --popover: oklch(0.2603 0 0);
+  --popover-foreground: oklch(0.7348 0 0);
+
+  /* Primary colors - Mint accent (dark) */
+  --primary: oklch(0.8348 0.1302 160.9080);
+  --primary-foreground: oklch(0.2626 0.0147 166.4589);
+
+  /* Secondary colors */
+  --secondary: oklch(0.2603 0 0);
+  --secondary-foreground: oklch(0.9851 0 0);
+
+  /* Muted/Accent colors */
+  --muted: oklch(0.2393 0 0);
+  --muted-foreground: oklch(0.7122 0 0);
+  --accent: oklch(0.3132 0 0);
+  --accent-foreground: oklch(0.9851 0 0);
+
+  /* Destructive colors */
+  --destructive: oklch(0.6500 0.1300 28.0000);
+  --destructive-foreground: oklch(0.9368 0.0045 34.3092);
+
+  /* Border and input */
+  --border: oklch(0.2809 0 0);
+  --input: oklch(0.2603 0 0);
+  --ring: oklch(0.8348 0.1302 160.9080);
+
+  /* Chart palette - Dark mode */
+  --chart-1: oklch(0.8348 0.1302 160.9080);
+  --chart-2: oklch(0.7137 0.1434 254.6240);
+  --chart-3: oklch(0.7090 0.1592 293.5412);
+  --chart-4: oklch(0.8369 0.1644 84.4286);
+  --chart-5: oklch(0.7845 0.1325 181.9120);
+
+  /* Sidebar tokens - 240px dark */
+  --sidebar: oklch(0.1822 0 0);
+  --sidebar-foreground: oklch(0.6301 0 0);
+  --sidebar-primary: oklch(0.8348 0.1302 160.9080);
+  --sidebar-primary-foreground: oklch(0.2626 0.0147 166.4589);
+  --sidebar-accent: oklch(0.3132 0 0);
+  --sidebar-accent-foreground: oklch(0.9851 0 0);
+  --sidebar-border: oklch(0.2809 0 0);
+  --sidebar-ring: oklch(0.8348 0.1302 160.9080);
+
+  /* Interactive Table Design Tokens - Dark mode */
+  --table-divider: oklch(0.2809 0 0);
+  --table-surface: var(--surface);
+  --table-surface-subtle: oklch(0.2603 0 0);
+  --table-heading: oklch(0.9288 0.0126 255.5078);
+  --table-body: oklch(0.7122 0 0);
+  --table-text-muted: oklch(0.6301 0 0);
+  --table-link: oklch(0.8003 0.1821 151.7110);
+  --table-link-hover: oklch(0.6500 0.1200 151.7110);
+  --table-checkbox-border: oklch(0.5452 0 0);
+  --table-checkbox-fill: var(--primary);
+  --table-accent-subtle: color-mix(in srgb, var(--primary) 18%, transparent);
+  --table-focus-ring: var(--ring);
+
+  /* Shadows remain same in dark mode */
+  --shadow-ambient: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-raised: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow-card: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px hsl(0 0% 0% / 0.17);
+  --shadow-modal: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
+  --shadow-focus-ring: 0 0 0 2px color-mix(in srgb, var(--ring) 40%, transparent);
+
+  /* Legacy shadow aliases */
+  --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px hsl(0 0% 0% / 0.17);
+  --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
+  --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
+  --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+}
+
+/* Tailwind v3 compatible CSS variables - maps to :root and .dark selectors above */
+:root,
+.dark {
+  /* Color tokens for Tailwind */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  /* Legacy color aliases */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* Primary colors */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  /* Secondary colors */
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  /* Muted/Accent */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* Destructive */
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Border and input */
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart palette */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+body {
+  letter-spacing: var(--tracking-normal);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Print styles */
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: letter;
+
+    /* Print header with page numbers */
+    @top-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 9pt;
+      color: #666;
+    }
+  }
+
+  /* Reset to print-friendly colors */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+    line-height: 1.2;
+  }
+
+  /* Hide interactive elements and navigation */
+  nav,
+  .no-print,
+  button,
+  .feedback-widget,
+  .status-banner {
+    display: none !important;
+  }
+
+  /* Page break utilities */
+  .print-break {
+    page-break-before: always;
+  }
+
+  /* Headings - keep with following content */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    color: black !important;
+  }
+
+  /* Major sections should start on new page */
+  h2 {
+    page-break-before: auto;
+    margin-top: 0.8em;
+    margin-bottom: 0.3em;
+  }
+
+  /* Article header */
+  article > header {
+    page-break-after: avoid;
+    margin-bottom: 0.5em;
+  }
+
+  /* Paragraphs and lists - widow/orphan control */
+  p, li {
+    orphans: 3;
+    widows: 3;
+    color: black !important;
+  }
+
+  /* Tables - prevent breaking */
+  .guide-table {
+    page-break-inside: avoid;
+    border: 1px solid #333;
+    width: 100%;
+    margin: 0.5em 0;
+  }
+
+  .guide-table th,
+  .guide-table td {
+    padding: 6px 10px;
+    border: 1px solid #666;
+    page-break-inside: avoid;
+  }
+
+  .guide-table th {
+    background-color: #f0f0f0 !important;
+    color: black !important;
+    font-weight: bold;
+    border-bottom: 2px solid #333;
+  }
+
+  .guide-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  /* Optimize table column widths for print */
+  .guide-table th[style*="width: 30%"],
+  .guide-table td:first-child {
+    width: 30%;
+  }
+
+  .guide-table th[style*="width: 70%"],
+  .guide-table td:last-child {
+    width: 70%;
+  }
+
+  /* Links - show URLs */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+    word-wrap: break-word;
+  }
+
+  /* Don't show URLs for internal navigation links */
+  a[href^="#"]:after,
+  a[href^="/"]:after {
+    content: "";
+  }
+
+  /* Badges and labels - convert to readable text */
+  .px-3.py-1.rounded-full,
+  .px-2.py-1.rounded {
+    border: 1px solid #333 !important;
+    background: white !important;
+    color: black !important;
+    padding: 2px 6px;
+    display: inline-block;
+  }
+
+  /* Prose content optimization */
+  .prose {
+    max-width: 100%;
+  }
+
+  .prose h1 {
+    font-size: 18pt;
+    margin-bottom: 0.3em;
+  }
+
+  .prose h2 {
+    font-size: 14pt;
+    margin-top: 0.8em;
+    margin-bottom: 0.3em;
+  }
+
+  .prose h3 {
+    font-size: 13pt;
+    margin-top: 0.5em;
+    margin-bottom: 0.2em;
+  }
+
+  .prose p {
+    margin-bottom: 0.4em;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin: 0.4em 0;
+  }
+
+  /* Code blocks */
+  .prose code {
+    background: #f5f5f5 !important;
+    color: black !important;
+    padding: 2px 4px;
+    border: 1px solid #ddd;
+  }
+
+  .prose pre {
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd;
+    padding: 0.5em;
+    overflow: visible;
+    white-space: pre-wrap;
+  }
+
+  /* Blockquotes */
+  .prose blockquote {
+    border-left: 3px solid #333;
+    padding-left: 1em;
+    font-style: italic;
+  }
+
+  /* Images - ensure they fit */
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  /* Container spacing */
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Todo items - handled in Todo component */
+  .guide-table__checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+/* Table styles for module content */
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-lg) 0;
+  background-color: var(--table-surface);
+  border: 1px solid var(--table-divider);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.guide-table th,
+.guide-table td {
+  padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+  text-align: left;
+  border-bottom: 1px solid var(--table-divider);
+  vertical-align: top;
+}
+
+.guide-table th {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  background-color: var(--table-surface-subtle);
+  color: var(--table-heading);
+  border-bottom: 2px solid var(--table-divider);
+}
+
+.guide-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.guide-table tbody tr:hover {
+  background-color: var(--table-surface-subtle);
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.guide-table__checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--table-checklist-gap);
+}
+
+.guide-table__checklist input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Responsive table - stack on small screens */
+@media (max-width: 768px) {
+  .guide-table {
+    border: none;
+  }
+
+  .guide-table thead {
+    display: none;
+  }
+
+  .guide-table,
+  .guide-table tbody,
+  .guide-table tr,
+  .guide-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .guide-table tr {
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--table-divider);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .guide-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--table-divider);
+  }
+
+  .guide-table td:last-child {
+    border-bottom: none;
+  }
+
+  .guide-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: var(--tracking-wide);
+    color: var(--table-text-muted);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+  }
+}
+
+/* Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

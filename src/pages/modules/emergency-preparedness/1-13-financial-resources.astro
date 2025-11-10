@@ -1,0 +1,22 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.13",
+  title: "Financial Resources",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.12", title: "Mutual Aid/Neighbor to Neighbor (N2N)", slug: "1-12-mutual-aid" },
+  nextSection: null
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <ul class="list-disc pl-6 space-y-3">
+        <li><a href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N">Create a directory</a> of people and organizations that can receive financial resources (particularly 501c3s to receive grants and donations). Look to Vermont Community Foundation's flood fund; Resource Generation; and local flood funds for support.</li>
+        <li>For short-term needs: create a local network of direct funders (N2N funds, individuals, local businesses) to make specific and sustaining asks of.</li>
+        <li>For long-term needs: Identify local organizations or people who have skills in making funding proposals to support the response and relief efforts. Consider creating a coalition of organizations active in response to coordinate funding requests.</li>
+        <li>Contact municipal government, Regional Planning Commissions, Long Term Recovery Groups, and State Representatives and Senators about funding for your community.</li>
+      </ul>
+</ModuleLayout>

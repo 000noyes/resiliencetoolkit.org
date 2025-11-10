@@ -1,0 +1,58 @@
+---
+/**
+ * EmptyState Component - Resilience Toolkit UI Design System
+ *
+ * Outlined icon in muted color, headline, supporting body, and CTA button.
+ * Subtle gradient or patterned surface using accent color at 6% opacity.
+ *
+ * Usage:
+ * <EmptyState
+ *   headline="No items found"
+ *   description="Get started by creating your first item"
+ * >
+ *   <svg slot="icon">...</svg>
+ *   <ActionButton slot="action">Create Item</ActionButton>
+ * </EmptyState>
+ */
+
+interface Props {
+  headline: string;
+  description?: string;
+  class?: string;
+}
+
+const { headline, description, class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'flex flex-col items-center justify-center',
+    'text-center',
+    'py-2xl px-lg',
+    'rounded-lg',
+    'bg-gradient-to-br from-accent/[0.06] to-transparent',
+    className
+  ]}
+>
+  {Astro.slots.has('icon') && (
+    <div class="mb-lg text-muted-foreground">
+      <slot name="icon" />
+    </div>
+  )}
+
+  <h3 class="text-title font-medium text-foreground mb-sm">
+    {headline}
+  </h3>
+
+  {description && (
+    <p class="text-body text-muted-foreground mb-lg max-w-md">
+      {description}
+    </p>
+  )}
+
+  {Astro.slots.has('action') && (
+    <div class="mt-md">
+      <slot name="action" />
+    </div>
+  )}
+</div>

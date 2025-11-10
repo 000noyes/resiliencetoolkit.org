@@ -1,0 +1,177 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "2.1",
+  title: "Basic Needs",
+  moduleTitle: "Baseline Resilience",
+  modulePath: "/modules/baseline-resilience",
+  prevSection: null,
+  nextSection: { number: "2.2", title: "Shared Tools", slug: "2-2-shared-tools" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <section>
+        <h2 class="text-title font-semibold mb-4">Community food production</h2>
+        <p class="mb-4">Growing food locally and in a decentralized way increases food security. Community and collective gardens, town orchards, and other shared food production can produce fresh abundant food for community meals and households.</p>
+
+        <div class="space-y-4">
+          <Todo id="community-garden-support" moduleKey="basic-needs" client:load>
+            Support your local community garden and look for ways to make it more accessible and successful.
+          </Todo>
+
+          <Todo id="start-community-garden" moduleKey="basic-needs" client:load>
+            If there isn't a community garden in your area, consider starting one!
+          </Todo>
+
+          <Todo id="integrate-garden-produce" moduleKey="basic-needs" client:load>
+            Integrate community garden produce into regular community meals, where you can discuss food justice and food access in disasters.
+          </Todo>
+
+          <Todo id="preserve-knowledge" moduleKey="basic-needs" client:load>
+            Identify people with knowledge to preserve growing season abundance for winter distribution and ways to share that knowledge.
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Directory of local farmers and producers</h2>
+        <p class="mb-4">Collaborate with farmers through on-going community food justice projects that help address food insecurity and compensate farmers fairly. Consider new farmers and those from disadvantaged identities who likely want to serve diverse populations.</p>
+
+        <div class="space-y-4">
+          <Todo id="producer-directory" moduleKey="basic-needs" client:load>
+            <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory</a> of <a href="https://www.vtfarmtoplate.com/food-system-map">local producers</a> who are interested in connecting with community groups to provide local food through free, low-cost or sliding scale programs.
+          </Todo>
+
+          <Todo id="gleaning-networks" moduleKey="basic-needs" client:load>
+            Identify <a href="https://www.vermontgleaningcollective.org/">gleaning networks</a> that have surplus to share for community meals, and could be mobilized to help farmers pre-flood, late or early frost, etc to protect or rapid harvest crops before they are lost.
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Community meals and food distribution</h2>
+
+        <div class="space-y-4">
+          <Todo id="meal-directory" moduleKey="basic-needs" client:load>
+            <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory</a> of free <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">community meals</a> in your town or nearby.
+          </Todo>
+
+          <Todo id="learn-meal-programs" moduleKey="basic-needs" client:load>
+            If your community doesn't already offer free meals, reach out to communities that do so to learn their tricks. Often these can be found at churches, senior centers, community centers, parks. The main components you need are: food, cooks, place to offer the meal, volunteers to distribute the food.
+          </Todo>
+
+          <Todo id="accessible-distribution" moduleKey="basic-needs" client:load>
+            Pick a place for food distribution that is convenient and accessible for most people.
+          </Todo>
+
+          <Todo id="consistent-schedule" moduleKey="basic-needs" client:load>
+            Offer meals on a consistent day/time.
+          </Todo>
+
+          <Todo id="food-donations" moduleKey="basic-needs" client:load>
+            Try to get food donated from local grocery stores or farmers.
+          </Todo>
+
+          <Todo id="home-delivery" moduleKey="basic-needs" client:load>
+            Consider ways to make meals available to people at home through delivery and distribution channels.
+          </Todo>
+
+          <Todo id="identify-delivery-needs" moduleKey="basic-needs" client:load>
+            Identify people who would benefit from food delivery.
+          </Todo>
+
+          <Todo id="recruit-delivery-volunteers" moduleKey="basic-needs" client:load>
+            Recruit volunteers via social media or community networks to drop food off
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Hygiene: Public Showers</h2>
+
+        <div class="space-y-4">
+          <Todo id="shower-directory" moduleKey="basic-needs" client:load>
+            <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory of public showers</a> for use for those who are unhoused or when running water is not available in people's homes. A few leads are - gyms with low-cost memberships, recreation centers, schools (for the children who attend), etc.
+          </Todo>
+
+          <Todo id="portable-shower-assessment" moduleKey="basic-needs" client:load>
+            Consider the needs of your community and if portable/solar trailers or shower stalls would help meet an ongoing need if no public or low-cost shower access is available.
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Ridesharing and carpooling</h2>
+        <p class="mb-4">Building and strengthening transportation systems enables people to meet their own needs and become more connected to community. During a crisis having relationships built between carpooling neighbors will create more opportunities for community members to check up on each other.</p>
+
+        <div class="space-y-4">
+          <Todo id="transportation-mechanisms" moduleKey="basic-needs" client:load>
+            Build, utilize, and strengthen existing mechanisms for low-cost shared transportation - Example: <a href="https://capstonevt.org/find-a-ride">https://capstonevt.org/find-a-ride</a>
+          </Todo>
+
+          <Todo id="carpooling-initiatives" moduleKey="basic-needs" client:load>
+            Create community-run and specific carpooling initiatives, like: - organizing community events / meals to advertise & create a carpooling framework - designating carpool areas - promoting at library, community stores, on Front Porch Forum, etc
+          </Todo>
+
+          <Todo id="transportation-maps" moduleKey="basic-needs" client:load>
+            Creating and disseminating maps (on and offline) of nearest transportation, trails, and routes - Example: Trails maintained by snowmobile clubs such as <a href="https://driftdusters.org/">Drift Dusters in Derby, VT</a>
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Network of mental health workers</h2>
+
+        <div class="space-y-4">
+          <Todo id="mental-health-directory" moduleKey="basic-needs" client:load>
+            <a href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory</a> of people in your community who are trauma-informed and have specific therapeutic skills to support mental health and nervous systems in disaster-related events. Caring for victims and responders is a part of recovery and can build capacity and resilience for future disaster.
+          </Todo>
+
+          <Todo id="affordable-sessions" moduleKey="basic-needs" client:load>
+            Can offer free, low-cost or sliding scale sessions as a part of their practice
+          </Todo>
+
+          <Todo id="group-sessions" moduleKey="basic-needs" client:load>
+            Offer group sessions
+          </Todo>
+
+          <Todo id="disaster-site-support" moduleKey="basic-needs" client:load>
+            Can show up near disaster sites to offer emotional support and counseling
+          </Todo>
+
+          <Todo id="mental-health-examples" moduleKey="basic-needs" client:load>
+            Examples: <a href="https://nekprosper.org/get-involved/flood-recovery-resources/">KURRVE mental health</a>, <a href="https://vermontcarepartners.org/">Vermont Care Partners</a>, <a href="https://mentalhealth.vermont.gov/sosvt">VTSOS - VT Starting over Strong</a>
+          </Todo>
+
+          <Todo id="community-clinic" moduleKey="basic-needs" client:load>
+            Consider setting up a recurring community health clinic day with local practitioners.
+          </Todo>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-4">Network of herbal support</h2>
+
+        <div class="space-y-4">
+          <Todo id="herbalist-directory" moduleKey="basic-needs" client:load>
+            <a href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory of local herbalists</a> who are available to offer herbal healthcare (physical, emotional) in emergencies as well as long term.
+          </Todo>
+
+          <Todo id="herbalist-integration" moduleKey="basic-needs" client:load>
+            Connect local herbalists/apothecaries with long term and emergency resilience planning efforts, and find ways to help them offer free, low-cost or sliding scale services for community members.
+          </Todo>
+
+          <Todo id="herbal-stock" moduleKey="basic-needs" client:load>
+            Work to develop a ready and rotating stock of herbal medicinals as part of the first aid supplies.
+          </Todo>
+
+          <Todo id="herbal-activities" moduleKey="basic-needs" client:load>
+            Offer regular community activities and services where herbal support is available. - Example: <a href="https://www.rosecorecollective.org/">Rose Core Collective</a>
+          </Todo>
+        </div>
+      </section>
+</ModuleLayout>

@@ -1,0 +1,115 @@
+---
+import '../styles/base.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StatusBanner from '../components/StatusBanner.astro';
+// Wrapper prevents Astro's renderer probe from triggering hook warnings.
+import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noPrint?: string[]; // Classes to hide when printing
+}
+
+const {
+  title = 'Resilience Hub Toolkit',
+  description = 'Local-first tools to organize people, places, and plans before, during, and after disasters.',
+  noPrint = [],
+} = Astro.props;
+
+// Preserve `noPrint` for upcoming print layout work.
+void noPrint;
+
+const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+const isPrintMode = Astro.url.searchParams.get('print') === '1';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+
+    <!-- Prevent FOUC (Flash of Unstyled Content) for dark mode -->
+    <script is:inline>
+      // This runs before page renders to prevent flash
+      const theme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#8fd8c3" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{title}</title>
+
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="0270ad49-8b3f-407f-9245-d666a62e5e8c"></script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {!isPrintMode && <StatusBanner />}
+    {!isPrintMode && <Header />}
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    {!isPrintMode && <Footer />}
+
+    <!-- Feedback widget -->
+    {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
+    {!isPrintMode && <FeedbackWidgetWrapper client:load />}
+
+    <script>
+      // Register service worker for offline functionality
+      // NOTE: Disabled in development to prevent caching issues
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if ('serviceWorker' in navigator && !isDevelopment) {
+        navigator.serviceWorker.register('/sw.js').catch((error) => {
+          console.log('Service Worker registration failed:', error);
+        });
+      } else if (isDevelopment && 'serviceWorker' in navigator) {
+        // Unregister service workers in development
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => registration.unregister());
+        });
+      }
+
+      // Network status detection
+      window.addEventListener('online', () => {
+        document.dispatchEvent(new CustomEvent('network-status-change', {
+          detail: { online: true }
+        }));
+      });
+
+      window.addEventListener('offline', () => {
+        document.dispatchEvent(new CustomEvent('network-status-change', {
+          detail: { online: false }
+        }));
+      });
+    </script>
+  </body>
+</html>

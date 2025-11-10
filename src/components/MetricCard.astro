@@ -1,0 +1,88 @@
+---
+/**
+ * MetricCard Component - Resilience Toolkit UI Design System
+ *
+ * Card variant with stat number (bold), trend indicator chip, and supporting copy.
+ * Optional sparkline anchored to bottom.
+ *
+ * Usage:
+ * <MetricCard
+ *   label="Total Users"
+ *   value="1,234"
+ *   trend="+12%"
+ *   trendDirection="up"
+ *   description="vs. last month"
+ * />
+ */
+
+import Badge from './Badge.astro';
+
+interface Props {
+  label: string;
+  value: string | number;
+  trend?: string;
+  trendDirection?: 'up' | 'down' | 'neutral';
+  description?: string;
+  class?: string;
+}
+
+const {
+  label,
+  value,
+  trend,
+  trendDirection = 'neutral',
+  description,
+  class: className = ''
+} = Astro.props;
+
+const trendVariant =
+  trendDirection === 'up' ? 'success' :
+  trendDirection === 'down' ? 'danger' :
+  'neutral';
+---
+
+<div
+  class:list={[
+    'bg-card',
+    'border border-border',
+    'rounded-lg',
+    'p-lg',
+    'shadow-card',
+    'transition-shadow duration-default ease-default',
+    'hover:shadow-raised',
+    className
+  ]}
+>
+  <!-- Label -->
+  <div class="text-body-small text-muted-foreground mb-sm">
+    {label}
+  </div>
+
+  <!-- Value and Trend -->
+  <div class="flex items-baseline gap-sm mb-xs">
+    <div class="text-hero font-bold text-foreground">
+      {value}
+    </div>
+    {trend && (
+      <Badge variant={trendVariant}>
+        {trendDirection === 'up' && '↑ '}
+        {trendDirection === 'down' && '↓ '}
+        {trend}
+      </Badge>
+    )}
+  </div>
+
+  <!-- Description -->
+  {description && (
+    <div class="text-body-small text-muted-foreground">
+      {description}
+    </div>
+  )}
+
+  <!-- Optional Sparkline Slot -->
+  {Astro.slots.has('sparkline') && (
+    <div class="mt-md pt-md border-t border-border">
+      <slot name="sparkline" />
+    </div>
+  )}
+</div>

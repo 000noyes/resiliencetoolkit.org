@@ -1,0 +1,75 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const moduleData = {
+  title: "Emergency Preparedness and Response",
+  order: 3,
+  summary: "Emergency systems often spring into existence when disaster strikes and not a moment sooner. Prepare your community by doing emergency planning work when the sun is shining. Equipping your neighborhood, town, and region to be ready in emergencies also builds baseline resilience.",
+  tags: ["emergency-preparedness", "emergency-response"]
+};
+
+const sections = [
+  { number: "1.1", title: "Emergency preparedness kits", slug: "1-1-kits" },
+  { number: "1.2", title: "Food and water", slug: "1-2-food-water" },
+  { number: "1.3", title: "First aid and medical", slug: "1-3-medical" },
+  { number: "1.4", title: "Power supply", slug: "1-4-power" },
+  { number: "1.5", title: "Warming/Cooling/Emergency Shelter", slug: "1-5-shelter" },
+  { number: "1.6", title: "Vehicles and Equipment", slug: "1-6-vehicles" },
+  { number: "1.7", title: "Sanitation and Hygiene", slug: "1-7-sanitation" },
+  { number: "1.8", title: "Populations with Specific Needs", slug: "1-8-special-populations" },
+  { number: "1.9", title: "Community Emergency Response Plans", slug: "1-9-response-plans" },
+  { number: "1.10", title: "Volunteer Management", slug: "1-10-volunteers" },
+  { number: "1.11", title: "Flood Recovery Supplies and Work", slug: "1-11-flood-recovery" },
+  { number: "1.12", title: "Mutual Aid/Neighbor to Neighbor (N2N)", slug: "1-12-mutual-aid" },
+  { number: "1.13", title: "Financial Resources", slug: "1-13-financial-resources" },
+];
+---
+
+<BaseLayout title={moduleData.title}>
+  <article class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Breadcrumb navigation -->
+    <nav class="mb-6 text-sm text-text-muted">
+      <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
+      <span class="mx-2">/</span>
+      <span class="text-text-primary">Emergency Preparedness</span>
+    </nav>
+
+    <!-- Module header -->
+    <header class="mb-8">
+      <h1 class="text-display font-semibold mb-4">{moduleData.title}</h1>
+      <p class="text-body-large text-text-secondary leading-relaxed">
+        {moduleData.summary}
+      </p>
+    </header>
+
+    <!-- Section navigation grid -->
+    <nav class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {sections.map((section) => (
+        <a
+          href={`/modules/emergency-preparedness/${section.slug}`}
+          class="group block p-6 bg-surface border border-border rounded-lg hover:border-table-accent hover:shadow-raised transition-all duration-base"
+        >
+          <span class="text-label text-table-accent font-semibold">
+            {section.number}
+          </span>
+          <h2 class="text-subtitle font-medium mt-2 group-hover:text-table-accent transition-colors">
+            {section.title}
+          </h2>
+        </a>
+      ))}
+    </nav>
+
+    <!-- Back link -->
+    <nav class="mt-12">
+      <a
+        href="/modules"
+        class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to All Modules
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

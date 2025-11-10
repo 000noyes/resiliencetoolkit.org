@@ -1,0 +1,73 @@
+---
+/**
+ * SearchField Component - Resilience Toolkit UI Design System
+ *
+ * Ghost surface with inset inner shadow, full-width capability.
+ * Includes magnifier icon prefix (16px).
+ *
+ * Usage:
+ * <SearchField
+ *   id="search"
+ *   placeholder="Search modules..."
+ * />
+ */
+
+interface Props {
+  id: string;
+  name?: string;
+  placeholder?: string;
+  value?: string;
+  class?: string;
+}
+
+const {
+  id,
+  name = id,
+  placeholder = 'Search...',
+  value = '',
+  class: className = ''
+} = Astro.props;
+---
+
+<div class:list={['relative', className]}>
+  <!-- Magnifier Icon (16px) -->
+  <div class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.35-4.35"></path>
+    </svg>
+  </div>
+
+  <!-- Input Field -->
+  <input
+    type="search"
+    id={id}
+    name={name}
+    placeholder={placeholder}
+    value={value}
+    class:list={[
+      'w-full',
+      'h-12',
+      'pl-12 pr-4',
+      'bg-muted/50',
+      'border border-transparent',
+      'rounded-lg',
+      'text-body text-foreground',
+      'placeholder:text-muted-foreground',
+      'shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]',
+      'transition-all duration-default ease-default',
+      'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent focus:bg-background',
+      'hover:bg-muted/70'
+    ]}
+  />
+</div>

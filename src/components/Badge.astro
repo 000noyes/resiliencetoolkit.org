@@ -1,0 +1,46 @@
+---
+/**
+ * Badge Component - Resilience Toolkit UI Design System
+ *
+ * Soft rounded pill with uppercase label text and small drop shadow.
+ * Supports multiple variants: primary, neutral, success, warning, info, danger.
+ *
+ * Usage:
+ * <Badge variant="primary">Active</Badge>
+ * <Badge variant="success">Complete</Badge>
+ * <Badge variant="neutral">Pending</Badge>
+ */
+
+interface Props {
+  variant?: 'primary' | 'neutral' | 'success' | 'warning' | 'info' | 'danger';
+  class?: string;
+}
+
+const { variant = 'neutral', class: className = '' } = Astro.props;
+
+const variantStyles = {
+  primary: 'bg-primary text-primary-foreground shadow-sm',
+  neutral: 'bg-muted text-muted-foreground border border-border shadow-ambient',
+  success: 'bg-primary/20 text-primary border border-primary/30 shadow-ambient',
+  warning: 'bg-amber-100 text-amber-900 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30 shadow-ambient',
+  info: 'bg-blue-100 text-blue-900 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-200 dark:border-blue-900/30 shadow-ambient',
+  danger: 'bg-destructive/20 text-destructive border border-destructive/30 shadow-ambient'
+};
+---
+
+<span
+  class:list={[
+    // Base styles - soft rounded pill
+    'inline-flex items-center justify-center',
+    'px-2.5 py-0.5',
+    'rounded-full',
+    'text-uppercase-accent uppercase',
+    'font-medium',
+    'whitespace-nowrap',
+    'transition-colors duration-default ease-default',
+    variantStyles[variant],
+    className
+  ]}
+>
+  <slot />
+</span>

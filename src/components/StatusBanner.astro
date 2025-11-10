@@ -1,0 +1,55 @@
+---
+// Status banner shows online/offline status and sync information
+---
+
+<div
+  id="status-banner"
+  class="bg-muted text-muted-foreground px-4 py-2 text-sm text-center transition-all duration-300 hidden no-print"
+  role="status"
+  aria-live="polite"
+>
+  <span id="status-text">No internet connection. Your information is still saved on this device.</span>
+</div>
+
+<script>
+  const banner = document.getElementById('status-banner');
+  const statusText = document.getElementById('status-text');
+
+  function updateStatus(online: boolean) {
+    if (!banner || !statusText) return;
+
+    if (online) {
+      banner.classList.remove('bg-muted');
+      banner.classList.add('bg-primary');
+      banner.classList.remove('text-muted-foreground');
+      banner.classList.add('text-primary-foreground');
+      statusText.textContent = 'Back online. Your information is saved on this device.';
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 3000);
+    } else {
+      banner.classList.remove('bg-primary');
+      banner.classList.add('bg-muted');
+      banner.classList.remove('text-primary-foreground');
+      banner.classList.add('text-muted-foreground');
+      statusText.textContent = 'No internet connection. Your information is still saved on this device.';
+      banner.classList.remove('hidden');
+    }
+  }
+
+  // Initialize status
+  if (!navigator.onLine) {
+    updateStatus(false);
+  }
+
+  // Listen for network status changes
+  document.addEventListener('network-status-change', ((event: CustomEvent) => {
+    updateStatus(event.detail.online);
+  }) as EventListener);
+
+  // Also listen to native events as backup
+  window.addEventListener('online', () => updateStatus(true));
+  window.addEventListener('offline', () => updateStatus(false));
+</script>

@@ -1,0 +1,90 @@
+---
+/**
+ * Sidebar Component - Resilience Toolkit UI Design System
+ *
+ * Persistent left sidebar with 256px width (light) / 240px width (dark).
+ * Features:
+ * - Active state with 12% opacity primary background
+ * - 4px rounded indicator bar on left
+ * - 16px line icons
+ * - User profile chip in footer
+ *
+ * Usage:
+ * <Sidebar>
+ *   <div slot="header">Logo</div>
+ *   <SidebarItem href="/" active>Home</SidebarItem>
+ *   <SidebarItem href="/toolkit">Toolkit</SidebarItem>
+ *   <div slot="footer">User Profile</div>
+ * </Sidebar>
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<aside
+  class:list={[
+    'flex flex-col',
+    'w-64', // 256px light mode
+    'dark:w-60', // 240px dark mode
+    'h-screen',
+    'bg-sidebar',
+    'border-r border-sidebar-border',
+    'transition-all duration-default ease-default',
+    className
+  ]}
+>
+  <!-- Header/Logo -->
+  {Astro.slots.has('header') && (
+    <div class="p-lg border-b border-sidebar-border">
+      <slot name="header" />
+    </div>
+  )}
+
+  <!-- Navigation Items -->
+  <nav class="flex-1 overflow-y-auto p-md">
+    <slot />
+  </nav>
+
+  <!-- Footer (User Profile) -->
+  {Astro.slots.has('footer') && (
+    <div class="p-lg border-t border-sidebar-border">
+      <slot name="footer" />
+    </div>
+  )}
+</aside>
+
+<!-- Sidebar Item Component -->
+<style>
+  /* Custom styles for sidebar items */
+  :global(.sidebar-item) {
+    @apply flex items-center gap-3;
+    @apply px-3 py-2.5;
+    @apply rounded-md;
+    @apply text-body text-sidebar-foreground;
+    @apply transition-all duration-default ease-default;
+    @apply relative;
+    @apply hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+  }
+
+  :global(.sidebar-item.active) {
+    @apply bg-sidebar-primary/[0.12];
+    @apply text-sidebar-primary;
+  }
+
+  :global(.sidebar-item.active::before) {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2;
+    @apply w-1 h-8;
+    @apply bg-sidebar-primary;
+    @apply rounded-r;
+  }
+
+  :global(.sidebar-item svg) {
+    @apply w-4 h-4;
+    @apply stroke-[1.5px];
+  }
+</style>

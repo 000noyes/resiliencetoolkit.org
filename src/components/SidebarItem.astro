@@ -1,0 +1,40 @@
+---
+/**
+ * SidebarItem Component - Resilience Toolkit UI Design System
+ *
+ * Individual navigation item for Sidebar component.
+ * Shows active state with mint indicator and background.
+ *
+ * Usage:
+ * <SidebarItem href="/" active>
+ *   <svg slot="icon">...</svg>
+ *   Home
+ * </SidebarItem>
+ */
+
+interface Props {
+  href: string;
+  active?: boolean;
+  class?: string;
+}
+
+const { href, active = false, class: className = '' } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[
+    'sidebar-item',
+    active && 'active',
+    className
+  ]}
+>
+  {Astro.slots.has('icon') && (
+    <span class="flex-shrink-0">
+      <slot name="icon" />
+    </span>
+  )}
+  <span class="flex-1">
+    <slot />
+  </span>
+</a>

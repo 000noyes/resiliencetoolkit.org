@@ -1,0 +1,149 @@
+---
+// Enable server-side rendering for auth checks
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BookOpen, Users, Siren, HeartPulse, Download } from 'lucide-react';
+
+// Auth protection is handled by middleware (src/middleware/index.ts)
+
+// Module configuration with Lucide icons
+const modules = [
+  {
+    slug: 'introduction',
+    url: '/introduction',
+    icon: BookOpen,
+    frontmatter: {
+      title: 'Introduction',
+      order: 1,
+      summary: 'Understanding what this toolkit is for, how to use it, and what resilience means for your community.',
+      tags: ['introduction', 'getting-started']
+    }
+  },
+  {
+    slug: 'knowing-your-community',
+    url: '/modules/knowing-your-community',
+    icon: Users,
+    frontmatter: {
+      title: 'Knowing Your Community',
+      order: 2,
+      phases: ['Before', 'After'],
+      summary: 'Map your community, identify resources, and build relationships.',
+      tags: ['community', 'assessment']
+    }
+  },
+  {
+    slug: 'emergency-preparedness',
+    url: '/modules/emergency-preparedness',
+    icon: Siren,
+    frontmatter: {
+      title: 'Emergency Preparedness and Response',
+      order: 3,
+      phases: ['Before', 'During', 'After'],
+      summary: 'Essential supplies, plans, and systems needed to prepare for and respond to disasters.',
+      tags: ['emergency', 'preparedness', 'response']
+    }
+  },
+  {
+    slug: 'baseline-resilience',
+    url: '/modules/baseline-resilience',
+    icon: HeartPulse,
+    frontmatter: {
+      title: 'Baseline Resilience',
+      order: 4,
+      phases: ['Before', 'After'],
+      summary: 'Build everyday resilience through shared resources, community building, and mutual aid.',
+      tags: ['baseline-resilience', 'community']
+    }
+  },
+  {
+    slug: 'downloads-and-templates',
+    url: '/downloads-and-templates',
+    icon: Download,
+    frontmatter: {
+      title: 'Downloads and Templates',
+      order: 5,
+      summary: 'Printable worksheets, checklists, and planning aids that support the guides.',
+      tags: ['downloads', 'templates', 'resources']
+    }
+  }
+];
+
+const sortedModules = modules;
+
+const phaseColors: Record<string, string> = {
+  Before: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  During: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  After: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+};
+---
+
+<BaseLayout title="Toolkit - Resilience Hub" description="Browse all resilience toolkit modules">
+  <div class="container mx-auto px-4 py-12">
+    <header class="mb-12 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-foreground mb-4">
+        Resilience Hub Toolkit
+      </h1>
+      <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+        Practical guides and resources to build community resilience before, during, and after disasters.
+      </p>
+    </header>
+
+    <!-- Modules Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {sortedModules.map((module) => (
+        <a
+          href={module.url}
+          class="group block p-6 rounded-lg border border-border bg-card hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+        >
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              {module.frontmatter.order && (
+                <span class="text-sm font-mono text-muted-foreground">
+                  {module.frontmatter.order.toString().padStart(2, '0')}
+                </span>
+              )}
+              {module.icon && (
+                <module.icon className="w-6 h-6 text-primary" strokeWidth={1.5} />
+              )}
+            </div>
+            {module.frontmatter.phases && module.frontmatter.phases.length > 0 && (
+              <div class="flex gap-1.5">
+                {module.frontmatter.phases.map((phase) => (
+                  <span class={`px-2 py-1 rounded-full text-xs font-medium ${phaseColors[phase]}`}>
+                    {phase}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <h2 class="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+            {module.frontmatter.title}
+          </h2>
+
+          {module.frontmatter.summary && (
+            <p class="text-sm text-muted-foreground mb-4 line-clamp-3">
+              {module.frontmatter.summary}
+            </p>
+          )}
+
+          {module.frontmatter.tags && module.frontmatter.tags.length > 0 && (
+            <div class="flex flex-wrap gap-1.5">
+              {module.frontmatter.tags.slice(0, 3).map((tag) => (
+                <span class="px-2 py-0.5 text-xs rounded bg-accent text-accent-foreground">
+                  #{tag}
+                </span>
+              ))}
+              {module.frontmatter.tags.length > 3 && (
+                <span class="px-2 py-0.5 text-xs rounded bg-accent text-accent-foreground">
+                  +{module.frontmatter.tags.length - 3}
+                </span>
+              )}
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,108 @@
+---
+/**
+ * Modal Component - Resilience Toolkit UI Design System
+ *
+ * Elevated card with shadow-xl, centered layout, maximum width 640px.
+ * Includes header with title, optional subtitle, close icon, and action buttons.
+ *
+ * Usage:
+ * <Modal id="example-modal" title="Modal Title">
+ *   <p>Modal content</p>
+ *   <div slot="actions">
+ *     <ActionButton>Confirm</ActionButton>
+ *     <ActionButton variant="secondary">Cancel</ActionButton>
+ *   </div>
+ * </Modal>
+ */
+
+interface Props {
+  id: string;
+  title: string;
+  subtitle?: string;
+  class?: string;
+}
+
+const { id, title, subtitle, class: className = '' } = Astro.props;
+---
+
+<dialog
+  id={id}
+  class:list={[
+    'backdrop:bg-black backdrop:opacity-50',
+    'p-0 border-0',
+    'max-w-[640px] w-full',
+    'rounded-lg',
+    'shadow-modal',
+    className
+  ]}
+>
+  <div class="bg-card border border-border rounded-lg overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-4 p-lg border-b border-border">
+      <div class="flex-1 min-w-0">
+        <h2 class="text-title font-medium text-foreground">
+          {title}
+        </h2>
+        {subtitle && (
+          <p class="text-body-small text-muted-foreground mt-1">
+            {subtitle}
+          </p>
+        )}
+      </div>
+      <button
+        type="button"
+        onclick={`document.getElementById('${id}').close()`}
+        class="text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Close"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-lg">
+      <slot />
+    </div>
+
+    <!-- Actions (right-aligned) -->
+    {Astro.slots.has('actions') && (
+      <div class="flex items-center justify-end gap-sm p-lg border-t border-border">
+        <slot name="actions" />
+      </div>
+    )}
+  </div>
+</dialog>
+
+<script>
+  // Add escape key handler and click outside to close
+  document.addEventListener('DOMContentLoaded', () => {
+    const dialogs = document.querySelectorAll('dialog');
+    dialogs.forEach((dialog) => {
+      dialog.addEventListener('click', (e) => {
+        const rect = dialog.getBoundingClientRect();
+        const isInDialog =
+          rect.top <= e.clientY &&
+          e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX &&
+          e.clientX <= rect.left + rect.width;
+
+        if (!isInDialog) {
+          dialog.close();
+        }
+      });
+    });
+  });
+</script>

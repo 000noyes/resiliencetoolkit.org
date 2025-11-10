@@ -1,0 +1,79 @@
+---
+// Enable server-side rendering for redirect validation
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthForm from '@/components/AuthForm';
+import { getSafeRedirect } from '@/lib/validateRedirect';
+
+// Get redirect URL from query params (if provided)
+const redirectTo = getSafeRedirect(Astro.url.searchParams, 'redirect', '/dashboard', Astro.url.origin);
+---
+
+<BaseLayout title="Sign In - Resilience Hub" description="Sign in to your Resilience Hub account">
+  <div class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[60vh]">
+    <div class="w-full max-w-md">
+      <div class="bg-card border border-border rounded-lg p-8">
+        <h1 class="text-3xl font-bold text-foreground mb-2">Sign In</h1>
+        <p class="text-muted-foreground mb-8">
+          Access your resilience hub and sync your data across devices
+        </p>
+
+        <AuthForm client:load mode="signin" />
+
+        <div class="mt-6 text-center text-sm text-muted-foreground">
+          Don't have an account?{' '}
+          <a href="/auth/signup" class="text-primary hover:underline">
+            Sign up
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 rounded-md bg-muted/50">
+        <p class="text-sm text-muted-foreground">
+          <strong>Secure Login:</strong> Your credentials are encrypted and never stored on our servers.
+          The toolkit uses industry-standard security practices to protect your data.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { onAuthStateChange } from '@/lib/supabase';
+  import { getOrCreatePersonalHub, setActiveHub } from '@/lib/createPersonalHub';
+
+  // Handle successful login
+  document.addEventListener('astro:page-load', () => {
+    // Listen for auth state changes
+    const { data: { subscription } } = onAuthStateChange(async (event, session) => {
+      // Only handle SIGNED_IN event
+      if (event === 'SIGNED_IN' && session) {
+        console.log('[Login] User signed in, loading hub...');
+
+        try {
+          // Get user's personal hub (should already exist from signup)
+          const hub = await getOrCreatePersonalHub();
+
+          // Set as active hub
+          setActiveHub(hub.id);
+
+          console.log('[Login] Hub loaded:', hub.id);
+
+          // Redirect to safe destination
+          const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
+          window.location.href = redirectTo;
+        } catch (error) {
+          console.error('[Login] Error loading hub:', error);
+          // Still redirect even if hub loading fails
+          window.location.href = '/dashboard';
+        }
+      }
+    });
+
+    // Cleanup subscription on page unload
+    window.addEventListener('beforeunload', () => {
+      subscription.unsubscribe();
+    });
+  });
+</script>

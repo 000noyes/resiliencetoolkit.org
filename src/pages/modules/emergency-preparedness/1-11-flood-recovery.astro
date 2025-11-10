@@ -1,0 +1,411 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.11",
+  title: "Flood Recovery Supplies and Work",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.10", title: "Volunteer Management", slug: "1-10-volunteers" },
+  nextSection: { number: "1.12", title: "Mutual Aid/Neighbor to Neighbor (N2N)", slug: "1-12-mutual-aid" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <p>This section is focused on flood recovery for homes and other buildings, but can be useful for other disasters. These instructions were compiled by NEK Organizing, which has mucked and gutted hundreds of homes in the Kingdom.</p>
+
+      <h3 class="text-title font-semibold">Managing flood site and survivor information</h3>
+      <ul class="list-disc pl-6 space-y-3">
+        <li>Vermont will tell people to call 211 to report flood damage. While this is helpful and important to have state data, relief organizations then have to comb through all 211 calls to find flood survivor data. This can be incredibly time consuming, and is a good place for volunteers that cannot do physical labor.</li>
+        <li>Create a <a href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=825618087#gid=825618087&range=A14:D14">flood survivor/site sheet or tracking system</a> that includes information about the site, the contact information for the survivors, and any other important information going forward into the recovery phase (damage to water, sewer, foundation, etc).</li>
+      </ul>
+
+      <h3 class="text-title font-semibold">Managing flood recovery supplies</h3>
+      <ul class="list-disc pl-6 space-y-3">
+        <li>Store supplies—for relief, response, recovery—in a place that is dry, flood safe, and accessible by many people. If possible, utilize a lock with a code if possible and have more than one location per town.</li>
+        <li>A cache of pumps, safety equipment, and demolition tools stocked and pre-packed so they're ready for the four types of work that immediately follow flooding: pumping, mucking, gutting, and mold remediation.</li>
+      </ul>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 30%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 70%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Pumping</strong>
+              <p>
+                <a href="#">Pumping</a> is the process of removing water from the home via sump, trash,
+                and transfer pumps.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>
+                If there is a sheen to the water, note that oil and/or petroleum may be present. Contact
+                your state's Department of Environmental Conservation before pumping to prevent further,
+                more costly damage to the home.
+              </p>
+              <p>
+                <strong>
+                  NOTE: Be aware that pumping a basement before water outside has receded may compromise
+                  the foundation due to pressure from outside.
+                </strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="water-testing-kits" moduleKey="flood-recovery" client:load>
+                  Order water testing kits from the Department of Health at <a href="https://www.healthvermont.gov/lab/forms" target="_blank" rel="noopener noreferrer">healthvermont.gov/lab/forms</a>
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <p>
+                <strong>Sump Pump Kit:</strong> Sump pumps are good for removing clean water and are often
+                the first tool to grab post-flood.
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="sump-pump" moduleKey="flood-recovery" client:load>
+                  Sump Pump
+                </Todo>
+                <Todo id="garden-hoses" moduleKey="flood-recovery" client:load>
+                  Garden Hose(s)
+                </Todo>
+                <Todo id="extension-cords-pump" moduleKey="flood-recovery" client:load>
+                  Extension cord(s)
+                </Todo>
+              </div>
+              <p>
+                <strong>Other helpful pumps to have on hand</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="trash-pump" moduleKey="flood-recovery" client:load>
+                  Trash Pump (with hose, filter, and extension) for water mixed with debris
+                </Todo>
+                <Todo id="transfer-pump" moduleKey="flood-recovery" client:load>
+                  Transfer Pump (with hoses and extension cords) for the last few inches of water on the
+                  floor
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Mucking</strong>
+              <p>
+                <a href="#">Mucking</a> is the process of shoveling, raking, squeegeeing, and hauling mud,
+                silt, and wet belongings out of the home.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>
+                <strong>Notes for team leaders</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="hazard-information" moduleKey="flood-recovery" client:load>
+                  Collect and share information on hazardous conditions - trash, sharps, gas leaks, sewage
+                  contamination, etc with volunteers
+                </Todo>
+                <Todo id="hazmat-location" moduleKey="flood-recovery" client:load>
+                  Establish location for hazardous materials to be gathered
+                </Todo>
+                <Todo id="handwashing-station" moduleKey="flood-recovery" client:load>
+                  Identify handwashing station
+                </Todo>
+                <Todo id="demonstrate-ppe" moduleKey="flood-recovery" client:load>
+                  Demonstrate using proper PPE. And, be prepared for a dynamic in which volunteers are
+                  using PPE and residents are not; volunteers get to leave and residents have to remain.
+                  It can be helpful to make volunteers aware of this dynamic before heading to the home
+                  you're mucking.
+                </Todo>
+                <Todo id="ergonomics-breaks" moduleKey="flood-recovery" client:load>
+                  Remind volunteers to use proper ergonomics and take breaks to rest and hydrate.
+                </Todo>
+                <Todo id="tetanus-shots" moduleKey="flood-recovery" client:load>
+                  If possible, have a nurse onsite or at your volunteer headquarters to offer tetanus
+                  shots!
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <p>
+                <strong>Work Tote:</strong> 20-gallon, heavy duty plastic tote filled with safety
+                equipment for 5 people mucking and/or gutting a home. Work totes go out on every job, with
+                every crew, no matter what.
+              </p>
+              <p>
+                <strong>Work Tote pack list</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="contractor-bags" moduleKey="flood-recovery" client:load>
+                  Contractor bags - 1-2 rolls
+                </Todo>
+                <Todo id="goggles" moduleKey="flood-recovery" client:load>
+                  Goggles - 5
+                </Todo>
+                <Todo id="tyvek-suits" moduleKey="flood-recovery" client:load>
+                  Tyvek suits - 5-10
+                </Todo>
+                <Todo id="p100-respirators" moduleKey="flood-recovery" client:load>
+                  P100 respirators (plastic w cartridges) - 5
+                </Todo>
+                <Todo id="n95-masks-recovery" moduleKey="flood-recovery" client:load>
+                  N95 masks - 10
+                </Todo>
+                <Todo id="nitrile-gloves" moduleKey="flood-recovery" client:load>
+                  Nitrile/hospital gloves - 1 box/bag of S, M + L
+                </Todo>
+                <Todo id="rubber-grip-gloves" moduleKey="flood-recovery" client:load>
+                  Rubber grip work gloves - 5-10
+                </Todo>
+                <Todo id="hand-sanitizer-recovery" moduleKey="flood-recovery" client:load>
+                  Hand sanitizer & Sani wipes- 1
+                </Todo>
+                <Todo id="paper-towels" moduleKey="flood-recovery" client:load>
+                  Paper towels - 1
+                </Todo>
+                <Todo id="first-aid-kit-recovery" moduleKey="flood-recovery" client:load>
+                  First Aid Kit - 1
+                </Todo>
+                <Todo id="sunscreen" moduleKey="flood-recovery" client:load>
+                  Sunscreen - 1
+                </Todo>
+                <Todo id="bug-spray" moduleKey="flood-recovery" client:load>
+                  Bug Spray - 1
+                </Todo>
+                <Todo id="narcan-recovery" moduleKey="flood-recovery" client:load>
+                  Narcan - 4+
+                </Todo>
+                <Todo id="earplugs" moduleKey="flood-recovery" client:load>
+                  Earplugs - 10+
+                </Todo>
+                <Todo id="duct-tape-recovery" moduleKey="flood-recovery" client:load>
+                  Duct tape - 1
+                </Todo>
+              </div>
+              <p>
+                <strong>Other Muck Tools (not stored in tote)</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="head-lamps" moduleKey="flood-recovery" client:load>
+                  Head Lamps
+                </Todo>
+                <Todo id="muck-boots" moduleKey="flood-recovery" client:load>
+                  Waterproof/Muck Boots
+                </Todo>
+                <Todo id="flathead-shovel" moduleKey="flood-recovery" client:load>
+                  Flathead Shovel
+                </Todo>
+                <Todo id="spade-shovel" moduleKey="flood-recovery" client:load>
+                  Spade Shovel
+                </Todo>
+                <Todo id="floor-squeegees" moduleKey="flood-recovery" client:load>
+                  Giant Floor Squeegees
+                </Todo>
+                <Todo id="garden-rakes" moduleKey="flood-recovery" client:load>
+                  Steel Garden Rakes
+                </Todo>
+                <Todo id="power-washer" moduleKey="flood-recovery" client:load>
+                  Power Washer
+                </Todo>
+                <Todo id="tarps" moduleKey="flood-recovery" client:load>
+                  Tarps (to slide debris around and also to protect the floor– especially if there isn't a
+                  bulkhead and muck and debris needs to come up the stairs inside the home)
+                </Todo>
+                <Todo id="jet-sled" moduleKey="flood-recovery" client:load>
+                  Jet Sled
+                </Todo>
+                <Todo id="garden-cart" moduleKey="flood-recovery" client:load>
+                  Garden Cart/Wheelbarrow
+                </Todo>
+                <Todo id="five-gallon-buckets-recovery" moduleKey="flood-recovery" client:load>
+                  5-gallon Buckets
+                </Todo>
+                <Todo id="generator-recovery" moduleKey="flood-recovery" client:load>
+                  Generator
+                </Todo>
+                <Todo id="extension-cords-recovery" moduleKey="flood-recovery" client:load>
+                  Extension Cords
+                </Todo>
+                <Todo id="work-lights" moduleKey="flood-recovery" client:load>
+                  Work Lights on Pedestals and/or Clips
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Gutting</strong>
+              <p>
+                <a href="#">House Gutting</a> is the process of removing sheetrock, insulation and
+                water-logged permeable materials in order to expose joists, studs, subfloor, etc. Gutting
+                allows a home to dry out.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>
+                <strong>YOU CANNOT DRY A HOME USING DEHUMIDIFIERS ALONE.</strong> Even though gutting is
+                another painful step amidst profound loss, it is absolutely necessary in order to prevent
+                mold.
+              </p>
+              <p>
+                <strong>Notes for team leaders</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="hazard-info-gutting" moduleKey="flood-recovery" client:load>
+                  Collect and share information on hazardous conditions - trash, sharps, gas leaks, sewage
+                  contamination, etc with volunteers
+                </Todo>
+                <Todo id="handwashing-gutting" moduleKey="flood-recovery" client:load>
+                  Identify handwashing station
+                </Todo>
+                <Todo id="ppe-gutting" moduleKey="flood-recovery" client:load>
+                  Demonstrate using proper PPE
+                </Todo>
+                <Todo id="ergonomics-gutting" moduleKey="flood-recovery" client:load>
+                  remind volunteers to use proper ergonomics and take breaks to rest and hydrate
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <p>
+                <strong>Gut Kit:</strong> 5-gallon bucket filled with demolition equipment for a 5-person
+                crew, useful when mucking is done and there is no longer water inundating the space.
+              </p>
+              <p>
+                <strong>Gut Kit pack list</strong> (for gutting flooded buildings in addition to the Work
+                Tote)
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="flat-crowbars" moduleKey="flood-recovery" client:load>
+                  Flat crowbars, roughly 15" - 5+ (flat prying tool with beveled ends for removing
+                  sheetrock, flooring, trim, and wall panels)
+                </Todo>
+                <Todo id="boxcutters" moduleKey="flood-recovery" client:load>
+                  Boxcutters/utility knives - 5+
+                </Todo>
+                <Todo id="extra-blades" moduleKey="flood-recovery" client:load>
+                  Extra blades - 5+
+                </Todo>
+                <Todo id="hammers" moduleKey="flood-recovery" client:load>
+                  Hammers - 5+
+                </Todo>
+                <Todo id="cats-paw" moduleKey="flood-recovery" client:load>
+                  Cat's paw - 1 (small prying tool used for pulling stubborn nails better than a hammer)
+                </Todo>
+                <Todo id="chalk-line" moduleKey="flood-recovery" client:load>
+                  Chalk Line - 1-2
+                </Todo>
+                <Todo id="bit-box" moduleKey="flood-recovery" client:load>
+                  Bit box - 1
+                </Todo>
+                <Todo id="screwdrivers" moduleKey="flood-recovery" client:load>
+                  Screwdrivers - 1-2
+                </Todo>
+                <Todo id="earplugs-gutting" moduleKey="flood-recovery" client:load>
+                  Earplugs - 10+
+                </Todo>
+                <Todo id="tape-measure" moduleKey="flood-recovery" client:load>
+                  Tape measure - 1+
+                </Todo>
+                <Todo id="sharpie" moduleKey="flood-recovery" client:load>
+                  Sharpie - 1+
+                </Todo>
+              </div>
+              <p>
+                <strong>Other Gut Tools (not stored in tote)</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="sawzall" moduleKey="flood-recovery" client:load>
+                  Sawzall/Reciprocating Saw
+                </Todo>
+                <Todo id="impact-driver" moduleKey="flood-recovery" client:load>
+                  Impact driver
+                </Todo>
+                <Todo id="head-lamp-gutting" moduleKey="flood-recovery" client:load>
+                  Head Lamp
+                </Todo>
+                <Todo id="dehumidifier" moduleKey="flood-recovery" client:load>
+                  Dehumidifier
+                </Todo>
+                <Todo id="fans" moduleKey="flood-recovery" client:load>
+                  Fans
+                </Todo>
+                <Todo id="extension-cords-gutting" moduleKey="flood-recovery" client:load>
+                  Extension Cords
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Mold remediation</strong>
+              <p>
+                <a href="#">Mold remediation</a> happens once wet debris, walls, flooring, and insulation
+                are removed.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="introduce-light-air" moduleKey="flood-recovery" client:load>
+                  Introduce light and air to the space via dehumidifiers, fans, and open doors and
+                  windows.
+                </Todo>
+                <Todo id="apply-fungicides" moduleKey="flood-recovery" client:load>
+                  Apply either a vinegar solution or mold-killing fungicides (not bleach) once moisture
+                  levels are below 17 percent in studs and joists. While some fungicides can be applied in
+                  wetter environments, it's best to apply chemicals to very dry surfaces for the best
+                  outcomes.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <p>
+                <strong>Mold Remediation Tools</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="moisture-reader" moduleKey="flood-recovery" client:load>
+                  Moisture reader
+                </Todo>
+                <Todo id="agriculture-sprayer" moduleKey="flood-recovery" client:load>
+                  Agriculture sprayer and/or industrial spray bottles
+                </Todo>
+                <Todo id="fungicide" moduleKey="flood-recovery" client:load>
+                  Shockwave, white vinegar, or EPA-certified fungicide (not bleach)
+                </Todo>
+                <Todo id="hepa-vacuum" moduleKey="flood-recovery" client:load>
+                  HEPA-filtered vacuum
+                </Todo>
+                <Todo id="wire-brushes" moduleKey="flood-recovery" client:load>
+                  Wire brushes
+                </Todo>
+                <Todo id="deck-brushes" moduleKey="flood-recovery" client:load>
+                  Deck brushes or other stiff brushes with long handles
+                </Todo>
+                <Todo id="full-ppe-mold" moduleKey="flood-recovery" client:load>
+                  Full PPE: P100 respirators, goggles, rubber gloves, tyvek suits
+                </Todo>
+                <Todo id="scrapers" moduleKey="flood-recovery" client:load>
+                  Scrapers, pallet knives, blades
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>

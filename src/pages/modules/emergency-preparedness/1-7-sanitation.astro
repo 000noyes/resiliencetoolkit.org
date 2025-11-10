@@ -1,0 +1,166 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.7",
+  title: "Sanitation and Hygiene",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.6", title: "Vehicles and Equipment", slug: "1-6-vehicles" },
+  nextSection: { number: "1.8", title: "Populations with Specific Needs", slug: "1-8-special-populations" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 50%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 50%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Handwashing, toilets, showers</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>Identify places for public access to safe sanitation and hygiene.</p>
+              <div class="guide-table__checklist">
+                <Todo id="public-bathrooms-directory" moduleKey="sanitation-hygiene" client:load>
+                  <a href="#">Create a directory</a> of local public buildings with bathrooms, sinks and/or showers
+                  that could be made available to disaster survivors and volunteers.
+                </Todo>
+                <Todo id="handwashing-plans" moduleKey="sanitation-hygiene" client:load>
+                  Include handwashing plans in all volunteer work. Provide soap!
+                </Todo>
+                <Todo id="bathroom-plans" moduleKey="sanitation-hygiene" client:load>
+                  Include a bathroom / sanitation plans in response efforts.
+                </Todo>
+                <Todo id="safe-sanitation-models" moduleKey="sanitation-hygiene" client:load>
+                  Share models for safe sanitation with impacted households, especially those that are
+                  more remote and can't travel to public restrooms.
+                </Todo>
+                <Todo id="handwashing-reminder" moduleKey="sanitation-hygiene" client:load>
+                  Remind everyone interacting with mucking and grey water to wash their hands BEFORE and
+                  AFTER going to the bathroom.
+                </Todo>
+              </div>
+              <p>
+                <strong>
+                  Safe sanitation when there is not running water or septic requires a plan to remove and
+                  treat waste
+                </strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="safe-dumping-area" moduleKey="sanitation-hygiene" client:load>
+                  Establish a safe dumping area at least 50 ft from any wells or waterways, ideally lined
+                  or contained to promote thermodynamic composting (heat) and reduce spreading.
+                </Todo>
+                <Todo id="emergency-toilet-area" moduleKey="sanitation-hygiene" client:load>
+                  Establish a designated area for emergency toilets with handwashing.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <p>
+                <strong>DIY handwashing station</strong>
+              </p>
+              <p>Use clean water (from a hose), but not potable water when possible</p>
+              <div class="guide-table__checklist">
+                <Todo id="diy-handwashing-bottle" moduleKey="sanitation-hygiene" client:load>
+                  Make small holes in the lid of a plastic drink bottle and squeeze the bottle to dispense
+                  water.
+                </Todo>
+                <Todo id="water-containers-spigot" moduleKey="sanitation-hygiene" client:load>
+                  Purchase water containers with a side spigot, or <a href="#">build them</a>.
+                </Todo>
+              </div>
+              <p>
+                <strong>DIY toilets</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="bucket-toilet" moduleKey="sanitation-hygiene" client:load>
+                  For short-term use, all you need is a bucket with a lid and dry material like sawdust,
+                  wood shavings or wood chips. Or, build a <a href="#">composting toilet box</a>.
+                </Todo>
+                <Todo id="toilet-supplies" moduleKey="sanitation-hygiene" client:load>
+                  Stock with period products and toilet paper
+                </Todo>
+              </div>
+              <p>
+                <strong>DIY showers</strong>
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="bucket-shower" moduleKey="sanitation-hygiene" client:load>
+                  Use a 5 gallon bucket and a scoop (smaller bucket or empty yogurt container) to pour
+                  water over your head in your current shower/tub. If indoor options are not available,
+                  designate a well-draining, firm surface for outdoor showering. Provide privacy using a
+                  tarp, sheet, etc.
+                </Todo>
+                <Todo id="outdoor-gear-shower" moduleKey="sanitation-hygiene" client:load>
+                  There are many outdoor gear/camp shower options for purchase
+                </Todo>
+                <Todo id="swimming-safety" moduleKey="sanitation-hygiene" client:load>
+                  After flooding, rivers and lakes may not be safe to swim in. When it is safe, use
+                  biodegradable soap if washing in freshwater.
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Laundry</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>Identify places for public, low-cost and preferably free access to do laundry</p>
+              <div class="guide-table__checklist">
+                <Todo id="laundry-directory" moduleKey="sanitation-hygiene" client:load>
+                  <a href="#">Create a directory</a> of households, businesses and public spaces with washers and
+                  dryers
+                </Todo>
+                <Todo id="free-laundry-services" moduleKey="sanitation-hygiene" client:load>
+                  Contact local churches and other orgs to set up free laundry services. <a href="#">Example
+                  here</a>.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="washers-dryers" moduleKey="sanitation-hygiene" client:load>
+                  Washers/dryers
+                </Todo>
+                <Todo id="manual-wash-systems" moduleKey="sanitation-hygiene" client:load>
+                  Manual wash systems - Wash tub
+                </Todo>
+                <Todo id="detergent" moduleKey="sanitation-hygiene" client:load>
+                  Detergent
+                </Todo>
+                <Todo id="clothesline" moduleKey="sanitation-hygiene" client:load>
+                  Clothesline and pins or dry rack
+                </Todo>
+                <Todo id="laundry-baskets" moduleKey="sanitation-hygiene" client:load>
+                  Laundry baskets/bags
+                </Todo>
+                <Todo id="portable-laundry-trailers" moduleKey="sanitation-hygiene" client:load>
+                  <a href="#">Portable laundry trailers</a>
+                </Todo>
+                <Todo id="off-grid-wash-systems" moduleKey="sanitation-hygiene" client:load>
+                  Off grid hand powered or low voltage (solar power) wash systems
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>

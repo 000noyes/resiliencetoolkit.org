@@ -1,0 +1,57 @@
+---
+/**
+ * AuthGuard Component
+ *
+ * This component protects routes by checking authentication status.
+ * It uses feature flags to determine if auth is required.
+ *
+ * Usage:
+ * ---
+ * import AuthGuard from '@/components/AuthGuard.astro';
+ * ---
+ * <AuthGuard>
+ *   <YourProtectedContent />
+ * </AuthGuard>
+ *
+ * Security:
+ * - Server-side session check (cannot be bypassed)
+ * - Feature flag check (server-side, trusted)
+ * - Redirects to login with return URL
+ */
+
+import { getSession } from '../lib/supabase';
+import { isAuthRequired } from '../lib/featureFlags';
+import { buildLoginUrl } from '../lib/validateRedirect';
+
+// Server-side checks (runs before rendering)
+const session = await getSession();
+const authRequired = await isAuthRequired();
+
+// If auth is required and user is not authenticated, redirect to login
+if (authRequired && !session) {
+  const currentPath = Astro.url.pathname;
+  const loginUrl = buildLoginUrl(currentPath);
+
+  console.log('[AuthGuard] Unauthorized access attempt:', {
+    path: currentPath,
+    authRequired,
+    authenticated: !!session,
+  });
+
+  return Astro.redirect(loginUrl);
+}
+
+// Pass auth context to children
+const authContext = {
+  user: session?.user || null,
+  session,
+  authRequired,
+  isAuthenticated: !!session,
+};
+---
+
+<!--
+  Render children with auth context available
+  The actual content is only rendered if auth check passes
+-->
+<slot {...authContext} />

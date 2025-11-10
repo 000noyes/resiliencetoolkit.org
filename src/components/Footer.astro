@@ -1,0 +1,47 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-card border-t border-border mt-auto no-print">
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- About -->
+      <div>
+        <h3 class="font-semibold text-foreground mb-3">Resilience Hub Toolkit</h3>
+        <p class="text-sm text-muted-foreground">
+          Local-first tools to organize people, places, and plans before, during, and after disasters.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="font-semibold text-foreground mb-3">Quick Links</h3>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/modules" class="text-muted-foreground hover:text-primary transition-colors">Toolkit</a></li>
+          <li><a href="/library" class="text-muted-foreground hover:text-primary transition-colors">Library</a></li>
+          <li><a href="/offline" class="text-muted-foreground hover:text-primary transition-colors">Download & Print</a></li>
+          <li><a href="/about" class="text-muted-foreground hover:text-primary transition-colors">About</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div>
+        <h3 class="font-semibold text-foreground mb-3">Support</h3>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/support" class="text-muted-foreground hover:text-primary transition-colors">Get Help</a></li>
+          <li><a href="https://github.com/yourusername/resilience-toolkit" class="text-muted-foreground hover:text-primary transition-colors">GitHub</a></li>
+          <li><a href="/support#contact" class="text-muted-foreground hover:text-primary transition-colors">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-8 pt-6 border-t border-border text-center text-sm text-muted-foreground">
+      <p>
+        © {currentYear} Resilience Hub Toolkit. Released under
+        <a href="/LICENSE" class="hover:text-primary transition-colors">MIT License</a>
+        and Creative Commons.
+      </p>
+    </div>
+  </div>
+</footer>

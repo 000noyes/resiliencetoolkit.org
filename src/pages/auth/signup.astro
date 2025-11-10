@@ -1,0 +1,96 @@
+---
+// Enable server-side rendering for redirect validation
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthForm from '@/components/AuthForm';
+import { getSafeRedirect } from '@/lib/validateRedirect';
+
+// Get redirect URL from query params (if provided)
+const redirectTo = getSafeRedirect(Astro.url.searchParams, 'redirect', '/dashboard', Astro.url.origin);
+---
+
+<BaseLayout title="Sign Up - Resilience Hub" description="Create your Resilience Hub account">
+  <div class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[60vh]">
+    <div class="w-full max-w-md">
+      <div class="bg-card border border-border rounded-lg p-8">
+        <h1 class="text-3xl font-bold text-foreground mb-2">Create Account</h1>
+        <p class="text-muted-foreground mb-8">
+          Get started with your own resilience hub
+        </p>
+
+        <AuthForm client:load mode="signup" />
+
+        <div class="mt-6 text-center text-sm text-muted-foreground">
+          Already have an account?{' '}
+          <a href="/auth/login" class="text-primary hover:underline">
+            Sign in
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 rounded-md bg-muted/50">
+        <p class="text-sm text-muted-foreground mb-2">
+          <strong>Why sign up?</strong>
+        </p>
+        <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+          <li>Access your information from multiple devices</li>
+          <li>Collaborate with your team on shared hubs</li>
+          <li>Automatic online backup of your work</li>
+          <li>Keep everything in sync automatically</li>
+        </ul>
+        <p class="text-xs text-muted-foreground mt-3">
+          You can use the toolkit without an account. Your information stays on your device and works without internet.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { getOrCreatePersonalHub, setActiveHub } from '@/lib/createPersonalHub';
+  import { onAuthStateChange } from '@/lib/supabase';
+  import { isAutoCreateHubEnabled } from '@/lib/featureFlags';
+
+  // Handle successful signup with hub creation
+  document.addEventListener('astro:page-load', () => {
+    // Listen for auth state changes
+    const { data: { subscription } } = onAuthStateChange(async (event, session) => {
+      // Only handle SIGNED_IN event for new signups
+      if (event === 'SIGNED_IN' && session) {
+        console.log('[Signup] User signed in, checking hub creation...');
+
+        try {
+          // Check if auto-create hub is enabled via feature flag
+          const autoCreate = await isAutoCreateHubEnabled();
+
+          if (autoCreate) {
+            console.log('[Signup] Auto-creating personal hub...');
+
+            // Create or get personal hub
+            const hub = await getOrCreatePersonalHub();
+
+            // Set as active hub
+            setActiveHub(hub.id);
+
+            console.log('[Signup] Hub created/retrieved:', hub.id);
+          }
+
+          // Redirect to dashboard
+          const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
+          window.location.href = redirectTo;
+        } catch (error) {
+          console.error('[Signup] Error creating hub:', error);
+          // Still redirect to dashboard even if hub creation fails
+          // User can create hub manually later
+          window.location.href = '/dashboard';
+        }
+      }
+    });
+
+    // Cleanup subscription on page unload
+    window.addEventListener('beforeunload', () => {
+      subscription.unsubscribe();
+    });
+  });
+</script>

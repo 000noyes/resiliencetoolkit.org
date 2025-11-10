@@ -1,0 +1,87 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.12",
+  title: "Mutual Aid/Neighbor to Neighbor (N2N)",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.11", title: "Flood Recovery Supplies and Work", slug: "1-11-flood-recovery" },
+  nextSection: { number: "1.13", title: "Financial Resources", slug: "1-13-financial-resources" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <p>Mutual Aid/N2N groups spring up after disasters like COVID lockdown and flooding to direct resources and help. These community efforts are informal (not housed inside of an organization or part of a State agency), which means they keep barriers to accessing help very low. Groups led by people in impacted communities are often the first to show up and help when disaster strikes, because they are showing up for their own community, and also often know where help is needed most. Identifying who you are already in relationship with and proximity to, and acknowledging that we all have something to offer and all have something we need, is crucial. Around the world, mutual aid groups have saved lives and improved material conditions for people when official systems of aid have moved too slowly or failed. Mutual aid and N2N work can happen in countless ways. The most important things are that these groups are formed by and for the community, that they promote solidarity not charity, practice cooperation not competition and recognize that our dignity and survival are bound up together.</p>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 30%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 70%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong>Mutual Aid Tenets</strong>
+              <div class="guide-table__checklist">
+                <Todo id="ma-solidarity" moduleKey="mutual-aid" client:load>
+                  Solidarity, not charity
+                </Todo>
+                <Todo id="ma-cooperation" moduleKey="mutual-aid" client:load>
+                  Cooperation, not competition
+                </Todo>
+                <Todo id="ma-urgency" moduleKey="mutual-aid" client:load>
+                  Urgency, not waiting for the state or other officials to save us
+                </Todo>
+                <Todo id="ma-direct-action" moduleKey="mutual-aid" client:load>
+                  Direct action and community self-determination, not passivity and paternalism
+                </Todo>
+                <Todo id="ma-voluntary" moduleKey="mutual-aid" client:load>
+                  Voluntary, mutual, and reciprocal
+                </Todo>
+                <Todo id="ma-tied-together" moduleKey="mutual-aid" client:load>
+                  Our liberation is tied together
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <strong>Mutual Aid Checklist</strong>
+              <div class="guide-table__checklist">
+                <Todo id="ma-identify-groups" moduleKey="mutual-aid" client:load>
+                  Identify existing mutual aid and N2N groups to connect with (ask around at a General Store, Town Hall, community centers, etc.)
+                </Todo>
+                <Todo id="ma-contact-info" moduleKey="mutual-aid" client:load>
+                  Create a contact list of names, phone numbers, and addresses of households in your community (physical or social)
+                </Todo>
+                <Todo id="ma-identify-needs" moduleKey="mutual-aid" client:load>
+                  Identify who in your network has specific needs or abilities to offer. Reach out and check in. Hold a gathering or forum to talk about this as a group.
+                </Todo>
+                <Todo id="ma-communication" moduleKey="mutual-aid" client:load>
+                  Choose a communications plan (e.g. FrontPorchForum, phone tree, text chain, paper fliers and mail) so that you can let your network know when something is happening
+                </Todo>
+                <Todo id="ma-practice" moduleKey="mutual-aid" client:load>
+                  Practice! Engage in low-stakes mutual aid activities during calm times (e.g. a meal share, a tool share, a community fridge)
+                </Todo>
+                <Todo id="ma-decide-roles" moduleKey="mutual-aid" client:load>
+                  Decide what kind of mutual aid or N2N work you want to do and what roles you want to fill. You might decide to collect donations, move donations, or track needs and resources. Check out the "Knowing Your Community" section to think about your interests and capacity.
+                </Todo>
+                <Todo id="ma-coordination" moduleKey="mutual-aid" client:load>
+                  Coordinate with existing Long-Term Recovery Groups and coalitions of organizations active in disaster (Vermont Community Foundation, GOCROS, etc.)
+                </Todo>
+                <Todo id="ma-resources" moduleKey="mutual-aid" client:load>
+                  Check out <a href="https://mutualaiddisasterrelief.org/collective-care/">Mutual Aid Disaster Relief's resources</a> and the <a href="https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit">Big Door Brigade Mutual Aid Toolkit</a>.
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>

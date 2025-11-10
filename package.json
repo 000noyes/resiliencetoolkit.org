@@ -1,0 +1,51 @@
+{
+  "name": "resilience-hub-toolkit",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "pnpm": {
+    "overrides": {
+      "@astrojs/react": "^4.4.1"
+    }
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.5",
+    "@astrojs/mdx": "^4.3.9",
+    "@astrojs/node": "^9.5.0",
+    "@astrojs/react": "^4.4.1",
+    "@astrojs/tailwind": "^6.0.2",
+    "@supabase/supabase-js": "^2.46.2",
+    "astro": "^5.15.3",
+    "flagsmith": "^9.3.2",
+    "flagsmith-nodejs": "^6.2.0",
+    "idb": "^8.0.0",
+    "lucide-react": "^0.552.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^4.1.2",
+    "@storybook/addon-a11y": "^10.0.3",
+    "@storybook/addon-docs": "^10.0.3",
+    "@storybook/addon-onboarding": "^10.0.3",
+    "@storybook/addon-vitest": "^10.0.3",
+    "@storybook/react-vite": "^10.0.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitest/browser-playwright": "^4.0.6",
+    "@vitest/coverage-v8": "^4.0.6",
+    "playwright": "^1.56.1",
+    "storybook": "^10.0.3",
+    "vitest": "^4.0.6"
+  }
+}

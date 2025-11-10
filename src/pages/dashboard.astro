@@ -1,0 +1,384 @@
+---
+/**
+ * Dashboard Page
+ *
+ * User's main landing page after authentication.
+ * Shows their hubs, recent activity, and quick access to toolkit modules.
+ *
+ * Security: Protected by middleware (src/middleware/index.ts)
+ * Additional page-level check for defense in depth and to access session data
+ */
+
+// Enable server-side rendering for auth checks
+export const prerender = false;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { createServerSupabaseClient } from '../lib/supabase-server';
+import { getActiveHubId } from '../lib/createPersonalHub';
+import { Home, HeartPulse, Users, Settings, BookOpen, ArrowRight, Siren, Wrench, HardDrive, Pencil, Trash2 } from 'lucide-react';
+import DeleteHubButton from '../components/DeleteHubButton';
+import EditHubButton from '../components/EditHubButton';
+
+// This page is always protected (even when guest mode is enabled)
+const session = await Astro.locals.session || await (async () => {
+  const { getSession } = await import('../lib/supabase');
+  return await getSession();
+})();
+
+if (!session) {
+  return Astro.redirect('/auth/login?redirect=/dashboard');
+}
+
+// Fetch user data using server-side Supabase client (reads from cookies)
+const supabaseServer = createServerSupabaseClient(Astro.cookies);
+
+// Hydrate the client with the user's session so RLS policies work
+await supabaseServer.auth.setSession({
+  access_token: session.access_token,
+  refresh_token: session.refresh_token,
+});
+
+const { data: profileData, error: profileError } = await supabaseServer
+  .from('profiles')
+  .select('*')
+  .eq('id', session.user.id)
+  .single();
+
+const profile = profileError ? null : profileData;
+
+const { data: hubMembershipData, error: hubMembershipError } = await supabaseServer
+  .from('hub_members')
+  .select(`
+    id,
+    role,
+    joined_at,
+    hubs:hub_id (
+      id,
+      name,
+      description,
+      location,
+      settings,
+      created_at
+    )
+  `)
+  .eq('user_id', session.user.id)
+  .order('joined_at', { ascending: false });
+
+if (hubMembershipError) {
+  console.error('[Dashboard] Error fetching hub memberships:', hubMembershipError);
+}
+
+const hubMemberships = hubMembershipError ? [] : hubMembershipData;
+
+// Get active hub from localStorage (will be null on server-side, handled client-side)
+// Priority: 1) profile.full_name, 2) user_metadata.full_name, 3) email prefix, 4) 'there'
+const userName = profile?.full_name ||
+  session.user.user_metadata?.full_name ||
+  session.user.email?.split('@')[0] ||
+  'there';
+const userEmail = session.user.email || '';
+
+// Extract hubs from memberships
+const hubs = hubMemberships?.map((membership: any) => ({
+  ...membership.hubs,
+  role: membership.role,
+  joined_at: membership.joined_at,
+})) || [];
+
+const hasHubs = hubs.length > 0;
+const primaryHub = hubs[0]; // Most recent hub
+
+// Featured modules for quick access
+const featuredModules = [
+  {
+    key: 'knowing-your-community',
+    title: 'Knowing Your Community',
+    description: 'Map local resources and connections',
+    href: '/modules/knowing-your-community',
+    icon: Users,
+  },
+  {
+    key: 'emergency-preparedness',
+    title: 'Emergency Preparedness',
+    description: 'Build your household emergency kit and plan',
+    href: '/modules/emergency-preparedness',
+    icon: Siren,
+  },
+  {
+    key: 'baseline-resilience',
+    title: 'Baseline Resilience',
+    description: 'Assess and improve your community readiness',
+    href: '/modules/baseline-resilience',
+    icon: HeartPulse,
+  },
+];
+---
+
+<BaseLayout title="Dashboard - Resilience Hub Toolkit">
+  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <!-- Hero Section -->
+      <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">
+                Welcome back, {userName}
+              </h1>
+              <p class="mt-1 text-gray-600 dark:text-gray-400">
+                {hasHubs ? 'Continue building resilience in your community' : 'Get started with your resilience journey'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Main Content -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Your Hubs Section -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Your Hubs
+                </h2>
+              </div>
+
+              {hasHubs ? (
+                <div class="space-y-3">
+                  {hubs.map((hub: any) => (
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-primary transition-colors">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2 mb-1">
+                            <h3 class="font-medium text-gray-900 dark:text-white">{hub.name}</h3>
+                            <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              hub.role === 'steward' ? 'bg-primary/10 text-primary' :
+                              hub.role === 'doer' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                              'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                            }`}>
+                              {hub.role}
+                            </span>
+                          </div>
+                          {hub.description && (
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{hub.description}</p>
+                          )}
+                          {hub.location && (
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                              {hub.location}
+                            </p>
+                          )}
+                        </div>
+                        {hub.role === 'steward' && (
+                          <div class="flex items-center gap-2 ml-4">
+                            <EditHubButton
+                              client:load
+                              hubId={hub.id}
+                              hubName={hub.name}
+                              hubDescription={hub.description}
+                              hubLocation={hub.location}
+                              hubTimezone={hub.timezone}
+                              onUpdated={() => window.location.reload()}
+                            />
+                            <DeleteHubButton
+                              client:load
+                              hubId={hub.id}
+                              hubName={hub.name}
+                              onDeleted={() => window.location.reload()}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div class="text-center py-6">
+                  <Home className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
+                  <p class="text-gray-600 dark:text-gray-400 mb-2">You're not part of any hubs yet</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">
+                    Create a personal hub to get started with the toolkit
+                  </p>
+                  <button
+                    id="create-hub-button"
+                    class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+                  >
+                    Create My Hub
+                  </button>
+                  <div id="hub-creation-message" class="mt-3 text-sm"></div>
+                </div>
+              )}
+            </section>
+
+            <!-- Quick Access to Modules -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Get Started
+                </h2>
+                <a
+                  href="/modules"
+                  class="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
+                >
+                  View all modules
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4">
+                {featuredModules.map((module) => {
+                  const Icon = module.icon;
+                  return (
+                    <a
+                      href={module.href}
+                      class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group"
+                    >
+                      <div class="flex items-start gap-3">
+                        <div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div class="flex-1">
+                          <h3 class="font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                            {module.title}
+                          </h3>
+                          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            {module.description}
+                          </p>
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <!-- Account Info -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account</h3>
+              <div class="space-y-3">
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-500">Email</p>
+                  <p class="text-gray-900 dark:text-white">{userEmail}</p>
+                </div>
+                {profile?.full_name && (
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-500">Name</p>
+                    <p class="text-gray-900 dark:text-white">{profile.full_name}</p>
+                  </div>
+                )}
+              </div>
+              <a
+                href="/settings"
+                class="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-primary transition-colors"
+              >
+                <Settings className="w-4 h-4" />
+                Account Settings
+              </a>
+            </section>
+
+            <!-- Quick Links -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
+              <nav class="space-y-2">
+                <a
+                  href="/library"
+                  class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Resource Library
+                </a>
+                <a
+                  href="/downloads-and-templates"
+                  class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+                >
+                  <Wrench className="w-4 h-4" />
+                  Downloads & Templates
+                </a>
+                <a
+                  href="/about"
+                  class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  About the Toolkit
+                </a>
+              </nav>
+            </section>
+
+            <!-- Sync Status (client-side component could be added here) -->
+            <section class="bg-primary/5 rounded-lg border border-primary/20 p-4">
+              <div class="flex items-start gap-3">
+                <div class="p-1.5 bg-primary/10 rounded-lg">
+                  <HardDrive className="w-4 h-4 text-primary" />
+                </div>
+                <div class="flex-1">
+                  <h4 class="text-sm font-medium text-gray-900 dark:text-white">
+                    Offline-First Design
+                  </h4>
+                  <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+                    Your data is stored locally and syncs when online. The toolkit works anywhere, anytime.
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client-side hub initialization -->
+    <script>
+      import { getActiveHubId, setActiveHub, createPersonalHub } from '../lib/createPersonalHub';
+
+      // On page load, check if we have an active hub set
+      // If not and we have hubs, set the first one as active
+      document.addEventListener('DOMContentLoaded', () => {
+        const activeHubId = getActiveHubId();
+
+        if (!activeHubId) {
+          // Get hubs from the page (we could pass this as data attribute)
+          // For now, we'll handle this in a future enhancement
+          console.log('[Dashboard] No active hub set');
+        } else {
+          console.log('[Dashboard] Active hub:', activeHubId);
+        }
+
+        // Handle manual hub creation
+        const createHubButton = document.getElementById('create-hub-button') as HTMLButtonElement | null;
+        const hubCreationMessage = document.getElementById('hub-creation-message') as HTMLDivElement | null;
+
+        createHubButton?.addEventListener('click', async () => {
+          if (!createHubButton || !hubCreationMessage) return;
+
+          createHubButton.disabled = true;
+          createHubButton.textContent = 'Creating...';
+
+          try {
+            const hub = await createPersonalHub();
+            setActiveHub(hub.id);
+
+            // Show success and reload
+            hubCreationMessage.className = 'mt-3 text-sm text-green-600 dark:text-green-400';
+            hubCreationMessage.textContent = 'Hub created successfully! Refreshing...';
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } catch (error) {
+            console.error('[Dashboard] Failed to create hub:', error);
+            hubCreationMessage.className = 'mt-3 text-sm text-red-600 dark:text-red-400';
+            hubCreationMessage.textContent = error instanceof Error ? error.message : 'Failed to create hub';
+
+            createHubButton.disabled = false;
+            createHubButton.textContent = 'Create My Hub';
+          }
+        });
+      });
+    </script>
+  </div>
+</BaseLayout>

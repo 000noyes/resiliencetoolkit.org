@@ -1,0 +1,357 @@
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.8",
+  title: "Populations with Specific Needs",
+  moduleTitle: "Emergency Preparedness and Response",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.7", title: "Sanitation and Hygiene", slug: "1-7-sanitation" },
+  nextSection: { number: "1.9", title: "Community Emergency Response Plans", slug: "1-9-response-plans" }
+};
+---
+
+<ModuleLayout sectionData={sectionData}>
+      <h3 class="text-title font-semibold">Children, childcare, and youth engagement with disaster</h3>
+      <p>
+        <em>
+          This section will be added soon - let us know if you want to help write it - <a href="mailto:info@gocros.org">info@gocros.org</a>
+        </em>
+      </p>
+
+      <h3 class="text-title font-semibold">Senior citizens and elders</h3>
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 30%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 70%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Communication and Coordination</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-directory" moduleKey="senior-citizens" client:load>
+                  Create a directory of seniors in your town, noting addresses, phone numbers, mobility or
+                  health needs, and emergency contacts.
+                </Todo>
+                <Todo id="senior-partners" moduleKey="senior-citizens" client:load>
+                  Partner with senior centers, councils on aging, and home health agencies.
+                </Todo>
+                <Todo id="senior-buddy" moduleKey="senior-citizens" client:load>
+                  Set up a "buddy system" or <a href="#">neighborhood pod</a> where each elder has a designated check-in partner.
+                </Todo>
+                <Todo id="senior-coordinate" moduleKey="senior-citizens" client:load>
+                  Coordinate with municipal emergency managers for welfare checks and transport plans.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-contact-sheets" moduleKey="senior-citizens" client:load>
+                  Printed contact sheets with emergency info
+                </Todo>
+                <Todo id="senior-large-print" moduleKey="senior-citizens" client:load>
+                  Large-print flyers and phone tree templates
+                </Todo>
+                <Todo id="senior-radios" moduleKey="senior-citizens" client:load>
+                  Radios, landlines, or simple communication devices that work without internet
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Preparedness and Supplies</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-kits" moduleKey="senior-citizens" client:load>
+                  Help elders assemble emergency kits with labeled containers and easy-open packaging.
+                </Todo>
+                <Todo id="senior-medication" moduleKey="senior-citizens" client:load>
+                  Identify medication refill and delivery systems (pharmacies, mutual aid networks)
+                </Todo>
+                <Todo id="senior-power" moduleKey="senior-citizens" client:load>
+                  Connect with local electricians or solar installers about powering medical devices
+                  (oxygen, CPAPs, mobility aids).
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <strong>Essential Items for Go Bags</strong>
+              <div class="guide-table__checklist">
+                <Todo id="senior-medications" moduleKey="senior-citizens" client:load>
+                  7-day supply of medications and a printed medication list.
+                </Todo>
+                <Todo id="senior-glasses" moduleKey="senior-citizens" client:load>
+                  Glasses, hearing aid batteries, mobility aids (cane, walker, etc.)
+                </Todo>
+                <Todo id="senior-chargers" moduleKey="senior-citizens" client:load>
+                  Spare phone chargers and battery bank.
+                </Todo>
+                <Todo id="senior-comfort" moduleKey="senior-citizens" client:load>
+                  Comfort items (blanket, family photos).
+                </Todo>
+                <Todo id="senior-id" moduleKey="senior-citizens" client:load>
+                  Emergency ID and medical info card.
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Shelter and Mobility Support</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-shelters" moduleKey="senior-citizens" client:load>
+                  Identify accessible warming/cooling shelters with ramps, restrooms, seating, and quiet
+                  spaces.
+                </Todo>
+                <Todo id="senior-transport" moduleKey="senior-citizens" client:load>
+                  Develop local transport plans with volunteers or community shuttles for evacuations or
+                  appointments.
+                </Todo>
+                <Todo id="senior-training" moduleKey="senior-citizens" client:load>
+                  Train volunteers in safe transfer assistance and trauma-informed communication
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-ramps" moduleKey="senior-citizens" client:load>
+                  Portable ramps or folding mobility aids.
+                </Todo>
+                <Todo id="senior-cots" moduleKey="senior-citizens" client:load>
+                  Cots with raised legs, pillows, and blankets.
+                </Todo>
+                <Todo id="senior-transport-aids" moduleKey="senior-citizens" client:load>
+                  Transport aids (wheelchairs, folding chairs, lifts).
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>Community Connection and Well-Being</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-involve" moduleKey="senior-citizens" client:load>
+                  Involve elders in resilience planning and intergenerational knowledge-sharing
+                </Todo>
+                <Todo id="senior-meals" moduleKey="senior-citizens" client:load>
+                  Host community meals, storytelling circles, or skill exchanges where seniors share local
+                  history and survival knowledge.
+                </Todo>
+                <Todo id="senior-support" moduleKey="senior-citizens" client:load>
+                  Provide emotional support after disasters – partner with counselors, churches, or peer
+                  networks.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="senior-directories" moduleKey="senior-citizens" client:load>
+                  Printed resources directories (Meals on Wheels, Council on Aging, libraries)
+                </Todo>
+                <Todo id="senior-grants" moduleKey="senior-citizens" client:load>
+                  Small grants or stipends for elder volunteers.
+                </Todo>
+                <Todo id="senior-bulletins" moduleKey="senior-citizens" client:load>
+                  Community bulletin boards and radio announcements for offline updates.
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="text-title font-semibold">People with mobility challenges and other disabilities</h3>
+      <p>
+        <em>
+          This section will be added soon - let us know if you want to help write it - <a href="mailto:info@gocros.org">info@gocros.org</a>
+        </em>
+      </p>
+
+      <h3 class="text-title font-semibold">Populations with language access needs</h3>
+      <p>
+        <em>
+          This section will be added soon - let us know if you want to help write it - <a href="mailto:info@gocros.org">info@gocros.org</a>
+        </em>
+      </p>
+
+      <h3 class="text-title font-semibold">Farm animals and livestock</h3>
+      <p><strong>Save the Whole Family</strong></p>
+      <p>This should go without saying, but animals under care deserve every consideration possible to be saved during the event of a disaster.</p>
+
+      <p><strong>Act before - not during!</strong></p>
+      <p>Livestock can be challenging to corral and move in the best of conditions, never mind during extremely stressful periods of imminent or occurring disaster. If severe weather is anticipated, it will never be the incorrect idea to move livestock preemptively. Whether they are moved to higher ground, indoors, or entirely off-site, do not wait until you & your animals are already under duress to get them moving.</p>
+
+      <p><strong>Leave no creature fenced</strong></p>
+      <p>Sometimes adequate removal of livestock and farm animals from the path of a climate disaster is just not possible, especially when human safety is at stake. When movement to safety is not a possibility, opening all gates and allowing your livestock freedom to roam can go a long way in ensuring their survival. There are many success stories of farmers opening up pastures before floods, and returning to find their livestock waiting for them! It is incumbent on you to give them every chance for survival, even if they do not make their way back to your pastures.</p>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 30%">
+              <strong>Systems</strong>
+            </th>
+            <th style="width: 70%">
+              <strong>Stuff</strong>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <strong>Before Disaster</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="farm-plan" moduleKey="farm-animals" client:load>
+                  <a href="#">Create a Plan</a> <a href="#">[Another Plan Template]</a> (With daily feed &
+                  water requirements for most livestock)
+                </Todo>
+                <Todo id="farm-safe-housing" moduleKey="farm-animals" client:load>
+                  Site Safe Housing for Livestock - Ideally high & dry!
+                </Todo>
+                <Todo id="farm-fsa-nrcs" moduleKey="farm-animals" client:load>
+                  Consider Connecting with your local <a href="#">FSA & NRCS Offices</a> - While not essential, your local FSA (Farm Service
+                  Agency) and NRCS (Natural Resource Conservation Services) agents are valuable resources
+                  in times of emergency. Whether applying for disaster insurance, relief programs, or
+                  conservation planning to promote on-farm resilience, these offices offer a variety of
+                  potential resources for your farm.
+                </Todo>
+                <Todo id="farm-gather-supplies" moduleKey="farm-animals" client:load>
+                  Gather Supplies
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <p>
+                Stockpiling a few days worth of the following supplies (in a dry & secure area) will aid
+                in buffering against the supply chain failures in times of disaster
+              </p>
+              <div class="guide-table__checklist">
+                <Todo id="farm-feed" moduleKey="farm-animals" client:load>
+                  <strong>Feed</strong> - Dry & non (or less) perishable ideal for storage - Hay, bags of
+                  grain, pellets, etc.
+                </Todo>
+                <Todo id="farm-medications" moduleKey="farm-animals" client:load>
+                  Medications
+                </Todo>
+                <Todo id="farm-bedding" moduleKey="farm-animals" client:load>
+                  Bedding
+                </Todo>
+                <Todo id="farm-minerals" moduleKey="farm-animals" client:load>
+                  Minerals
+                </Todo>
+                <Todo id="farm-water" moduleKey="farm-animals" client:load>
+                  Water
+                </Todo>
+                <Todo id="farm-fuel" moduleKey="farm-animals" client:load>
+                  Fuel
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>During Disaster</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="farm-act-early" moduleKey="farm-animals" client:load>
+                  Act Early & Conservatively
+                </Todo>
+                <Todo id="farm-prioritize-safety" moduleKey="farm-animals" client:load>
+                  Prioritize Safety - Checking on/moving/handling livestock during the height of disaster
+                  can be extremely dangerous. Take every precaution possible to limit human exposure to
+                  peak disaster conditions.
+                </Todo>
+                <Todo id="farm-turn-off-fence" moduleKey="farm-animals" client:load>
+                  Turn off any electric fence chargers
+                </Todo>
+                <Todo id="farm-leave-unfenced" moduleKey="farm-animals" client:load>
+                  Leave no animal fenced
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="farm-handling-equipment" moduleKey="farm-animals" client:load>
+                  <strong>Handling Equipment</strong> - Halters, leads, corrals, etc.
+                </Todo>
+                <Todo id="farm-temporary-shelter" moduleKey="farm-animals" client:load>
+                  <strong>Temporary Shelter</strong> - If permanent shelter is in path of disaster,
+                  establishing and preparing a temporary shelter (shed, copse of trees, retrofitting a
+                  basement/garage/greenhouse, etc.) may be necessary.
+                </Todo>
+                <Todo id="farm-trailer" moduleKey="farm-animals" client:load>
+                  <strong>Trailer</strong> - Livestock may need to be hauled off-site in the event of a
+                  disaster. While owning an adequate trailer (or vehicle) may not be
+                  accessible/reasonable for all folks, establishing relationships with neighbors who do can
+                  be a valuable resource!
+                </Todo>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <strong>After Disaster</strong>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="farm-assess-site" moduleKey="farm-animals" client:load>
+                  Assess & Clean the Site - Debris in pastures/yards can potentially cause harm to
+                  returning livestock. Be sure to closely inspect pastures for trash, scrap metal, etc.,
+                  before reintroducing your animals.
+                </Todo>
+                <Todo id="farm-fence-integrity" moduleKey="farm-animals" client:load>
+                  Ensure Fencing Integrity - Before reintroducing livestock walk all fencelines to catch
+                  potential sites of damage, sag, electricity grounding, etc.
+                </Todo>
+                <Todo id="farm-contact-agents" moduleKey="farm-animals" client:load>
+                  Contact your local FSA & NRCS agents - If applicable, local agents will come to your
+                  property to assist in planning for post-disaster recovery, IDing assistance programs,
+                  filing insurance claims, etc.
+                </Todo>
+              </div>
+            </td>
+            <td>
+              <div class="guide-table__checklist">
+                <Todo id="farm-debris-removal" moduleKey="farm-animals" client:load>
+                  <strong>Debris removal equipment</strong> - Chainsaws, work gloves, trash bags, eye
+                  protection,
+                </Todo>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</ModuleLayout>
