@@ -21,8 +21,8 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   // Auth check for protected routes
   const pathname = context.url.pathname;
 
-  // Routes that require auth check
-  const protectedPaths = ['/modules', '/dashboard', '/settings'];
+  // Routes that require auth check (modules are now public)
+  const protectedPaths = ['/dashboard', '/settings'];
   const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
 
   // Routes that need session but NOT early access check (like pending page)
@@ -46,11 +46,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     // Store session in context.locals for all session-aware pages
     context.locals.session = session;
 
-    // Early access check ONLY for protected routes (not pending page)
+    // Early access check for protected routes
     if (isProtectedRoute && session) {
       const earlyAccessRequired = await isEarlyAccessRequired();
       console.log(`[Middleware] Early access check for ${pathname}: earlyAccessRequired=${earlyAccessRequired}`);
 
+      // Global early access gate (applies to all protected routes)
       if (earlyAccessRequired) {
         const hasEarlyAccess = await checkEarlyAccess(session.user.email);
 
@@ -60,6 +61,16 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
         }
 
         console.log(`[Middleware] User ${session.user.email} granted early access`);
+      }
+
+      // Dashboard and settings require early access (beta features)
+      if (pathname.startsWith('/dashboard') || pathname.startsWith('/settings')) {
+        const hasEarlyAccess = await checkEarlyAccess(session.user.email);
+
+        if (!hasEarlyAccess) {
+          console.log(`[Middleware] User ${session.user.email} denied dashboard/settings access (beta only)`);
+          return context.redirect('/modules?message=beta-required');
+        }
       }
     }
   }

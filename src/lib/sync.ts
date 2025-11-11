@@ -104,6 +104,12 @@ export async function syncAll(): Promise<{
     return { todosSynced: 0, tablesSynced: 0, errors: [] };
   }
 
+  // Check for guest mode - guests don't sync (local-only)
+  if (typeof window !== 'undefined' && localStorage.getItem('guestId')) {
+    // Guest mode - no sync, no error
+    return { todosSynced: 0, tablesSynced: 0, errors: [] };
+  }
+
   if (!currentHubId) {
     return { todosSynced: 0, tablesSynced: 0, errors: [new Error('No hub selected')] };
   }

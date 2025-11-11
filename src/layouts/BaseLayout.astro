@@ -3,6 +3,7 @@ import '../styles/base.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
+import GuestModeBanner from '../components/GuestModeBanner.tsx';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
 
@@ -70,6 +71,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
   </head>
   <body class="min-h-screen flex flex-col">
     {!isPrintMode && <StatusBanner />}
+    {!isPrintMode && <GuestModeBanner client:load />}
     {!isPrintMode && <Header />}
 
     <main class="flex-1">
@@ -110,6 +112,33 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
           detail: { online: false }
         }));
       });
+    </script>
+
+    <script>
+      // Initialize guest mode for unauthenticated users
+      import { initializeStorage } from '@/lib/storage';
+      import { getSession } from '@/lib/supabase';
+
+      // Run immediately (IIFE - Immediately Invoked Function Expression)
+      (async () => {
+        try {
+          console.log('[BaseLayout] Checking authentication status...');
+
+          // Check if user is authenticated
+          const session = await getSession();
+
+          if (session) {
+            console.log('[BaseLayout] User is authenticated, skipping guest mode');
+          } else {
+            // If not authenticated, initialize guest mode
+            console.log('[BaseLayout] User is not authenticated, initializing guest mode...');
+            const { userId, isGuest } = await initializeStorage();
+            console.log('[BaseLayout] Initialized storage:', { userId, isGuest });
+          }
+        } catch (error) {
+          console.error('[BaseLayout] Failed to initialize storage:', error);
+        }
+      })();
     </script>
   </body>
 </html>

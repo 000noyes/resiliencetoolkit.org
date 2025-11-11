@@ -457,3 +457,141 @@ export async function clearCompletedItems(
 
   return completedItems.length;
 }
+
+/**
+ * Initialize storage with guest mode support
+ *
+ * Determines if the user is authenticated or a guest and returns appropriate ID.
+ * For guests, generates and persists a unique guest ID in localStorage.
+ *
+ * @returns {Promise<{userId: string, isGuest: boolean}>} User/guest ID and guest flag
+ */
+export async function initializeStorage(): Promise<{
+  userId: string;
+  isGuest: boolean;
+}> {
+  // Check if authenticated
+  if (typeof window !== 'undefined') {
+    try {
+      const { getSession } = await import('./supabase');
+      const session = await getSession();
+
+      if (session) {
+        return { userId: session.user.id, isGuest: false };
+      }
+
+      // Not authenticated - use guest mode
+      let guestId = localStorage.getItem('guestId');
+
+      if (!guestId) {
+        // Generate new guest ID
+        guestId = `guest-${crypto.randomUUID()}`;
+        localStorage.setItem('guestId', guestId);
+        console.log('[Storage] Generated new guest ID:', guestId);
+      }
+
+      return { userId: guestId, isGuest: true };
+    } catch (error) {
+      console.error('[Storage] Failed to check auth status:', error);
+      // Fallback to guest mode on error
+      let guestId = localStorage.getItem('guestId');
+      if (!guestId) {
+        guestId = `guest-${crypto.randomUUID()}`;
+        localStorage.setItem('guestId', guestId);
+      }
+      return { userId: guestId, isGuest: true };
+    }
+  }
+
+  throw new Error('Cannot initialize storage on server-side');
+}
+
+/**
+ * Migrate guest data to authenticated user on signup
+ *
+ * When a guest signs up, this function re-keys all their local data to use
+ * their new authenticated user ID, making it eligible for cloud sync.
+ *
+ * @param {string} newUserId - Authenticated user ID from Supabase
+ * @param {string} newHubId - Hub ID for the new user
+ * @returns {Promise<{todosMigrated: number, tablesMigrated: number}>} Migration counts
+ */
+export async function migrateGuestData(
+  newUserId: string,
+  newHubId: string
+): Promise<{ todosMigrated: number; tablesMigrated: number }> {
+  if (typeof window === 'undefined') {
+    throw new Error('Cannot migrate on server-side');
+  }
+
+  const guestId = localStorage.getItem('guestId');
+  if (!guestId) {
+    console.log('[Storage] No guest data to migrate');
+    return { todosMigrated: 0, tablesMigrated: 0 };
+  }
+
+  console.log('[Storage] Starting guest data migration:', { guestId, newUserId, newHubId });
+
+  const db = await getDB();
+  let todosMigrated = 0;
+  let tablesMigrated = 0;
+
+  try {
+    // Migrate todos
+    const todos = await db.getAll('todos');
+    const guestTodos = todos.filter(t => t.id.includes(guestId));
+
+    console.log('[Storage] Found guest todos:', guestTodos.length);
+
+    for (const todo of guestTodos) {
+      // Create new ID with user ID instead of guest ID
+      const newId = todo.id.replace(guestId, newUserId);
+
+      // Save with new ID and mark for sync
+      await db.put('todos', {
+        ...todo,
+        id: newId,
+        syncedAt: undefined, // Mark as needing sync
+      });
+
+      // Delete old guest version
+      await db.delete('todos', todo.id);
+      todosMigrated++;
+    }
+
+    // Migrate tables
+    const tables = await db.getAll('tables');
+    const guestTables = tables.filter(t => t.id.includes(guestId));
+
+    console.log('[Storage] Found guest tables:', guestTables.length);
+
+    for (const table of guestTables) {
+      const newId = table.id.replace(guestId, newUserId);
+
+      await db.put('tables', {
+        ...table,
+        id: newId,
+        syncedAt: undefined, // Mark as needing sync
+      });
+
+      await db.delete('tables', table.id);
+      tablesMigrated++;
+    }
+
+    // Store active hub ID in metadata
+    await db.put('metadata', {
+      key: 'activeHubId',
+      value: newHubId,
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Clear guest ID from localStorage
+    localStorage.removeItem('guestId');
+    console.log('[Storage] Guest data migration complete:', { todosMigrated, tablesMigrated });
+
+    return { todosMigrated, tablesMigrated };
+  } catch (error) {
+    console.error('[Storage] Failed to migrate guest data:', error);
+    throw error;
+  }
+}

@@ -51,8 +51,9 @@ const redirectTo = getSafeRedirect(Astro.url.searchParams, 'redirect', '/dashboa
   import { getOrCreatePersonalHub, setActiveHub } from '@/lib/createPersonalHub';
   import { onAuthStateChange } from '@/lib/supabase';
   import { isAutoCreateHubEnabled } from '@/lib/featureFlags.client';
+  import { migrateGuestData } from '@/lib/storage';
 
-  // Handle successful signup with hub creation
+  // Handle successful signup with hub creation and guest data migration
   document.addEventListener('astro:page-load', () => {
     // Listen for auth state changes
     const { data: { subscription } } = onAuthStateChange(async (event, session) => {
@@ -74,6 +75,24 @@ const redirectTo = getSafeRedirect(Astro.url.searchParams, 'redirect', '/dashboa
             setActiveHub(hub.id);
 
             console.log('[Signup] Hub created/retrieved:', hub.id);
+
+            // Migrate guest data if applicable
+            try {
+              const { todosMigrated, tablesMigrated } = await migrateGuestData(
+                session.user.id,
+                hub.id
+              );
+
+              if (todosMigrated > 0 || tablesMigrated > 0) {
+                console.log('[Signup] Migrated guest data:', {
+                  todos: todosMigrated,
+                  tables: tablesMigrated
+                });
+              }
+            } catch (error) {
+              console.error('[Signup] Failed to migrate guest data:', error);
+              // Continue anyway - user can recover data later
+            }
           }
 
           // Redirect to dashboard

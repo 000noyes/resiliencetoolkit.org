@@ -51,14 +51,14 @@ const featuredModules = [
       </p>
       <div class="flex flex-wrap gap-4 justify-center">
         <ActionButton href="/modules" variant="primary" size="lg">
-          Get Started
+          Browse Toolkit
         </ActionButton>
-        <ActionButton href="/offline" variant="outline" size="lg">
-          Save for Offline
+        <ActionButton href="/auth/signup" variant="outline" size="lg">
+          Create Account
         </ActionButton>
       </div>
       <p class="mt-4 text-sm text-muted-foreground">
-        Already have an account? <a href="/auth/login" class="text-primary hover:underline">Sign in</a>
+        No signup required to browse. <a href="/auth/login" class="text-primary hover:underline">Sign in</a> to sync across devices.
       </p>
     </div>
   </section>
@@ -204,9 +204,14 @@ const featuredModules = [
         Begin building resilience in your community. The toolkit is free, open source,
         and designed to work for communities of any size.
       </p>
-      <ActionButton href="/auth/signup" variant="primary" size="lg">
-        Get Started
-      </ActionButton>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <ActionButton href="/modules" variant="primary" size="lg">
+          Browse Toolkit
+        </ActionButton>
+        <ActionButton href="/auth/signup" variant="outline" size="lg">
+          Create Account
+        </ActionButton>
+      </div>
     </div>
   </section>
 </BaseLayout>
