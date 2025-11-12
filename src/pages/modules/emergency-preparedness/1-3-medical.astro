@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -35,8 +36,8 @@ const sectionData: SectionData = {
                   transport
                 </Todo>
                 <Todo id="emergency-response-list" moduleKey="first-aid-medical" client:load>
-                  <a href="https://drive.google.com/file/d/1xVIJEWpkQT6K5mp-9DUn-mR3T5GWQ2bt/view?usp=drive_link">Create (and circulate!) a
-                  list</a> of local emergency response numbers for acute crises and if 911 services are down -
+                  <ExternalLink href="https://drive.google.com/file/d/1xVIJEWpkQT6K5mp-9DUn-mR3T5GWQ2bt/view?usp=drive_link">Create (and circulate!) a
+                  list</ExternalLink> of local emergency response numbers for acute crises and if 911 services are down -
                   identify local paid and volunteer first responders/agencies.
                 </Todo>
               </div>
@@ -57,7 +58,7 @@ const sectionData: SectionData = {
               <div class="guide-table__checklist">
                 <Todo id="aed-inventory" moduleKey="first-aid-medical" client:load>
                   Create town-wide inventory of where AEDs are placed and who is trained in CPR. Grants
-                  available at <a href="https://www.aedgrant.com/">https://www.aedgrant.com/</a>.
+                  available at <ExternalLink href="https://www.aedgrant.com/">https://www.aedgrant.com/</ExternalLink>.
                 </Todo>
               </div>
             </td>

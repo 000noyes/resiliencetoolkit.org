@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -185,15 +186,15 @@ const sectionData: SectionData = {
                   meals in neighboring towns.
                 </Todo>
                 <Todo id="kitchen-directory" moduleKey="food-and-water" client:load>
-                  <a href="https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view?usp=drive_link">Create a
-                  directory</a> of, or <a href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">set up
-                  kitchens</a> in your community available for creating both community meals and possibly meal trains for
+                  <ExternalLink href="https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view?usp=drive_link">Create a
+                  directory</ExternalLink> of, or <ExternalLink href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">set up
+                  kitchens</ExternalLink> in your community available for creating both community meals and possibly meal trains for
                   individual household use. Local churches or restaurants might be able to offer access to
                   a commercial kitchen, reusable plates and silverware, etc.
                 </Todo>
                 <Todo id="cooks-directory" moduleKey="food-and-water" client:load>
-                  <a href="https://drive.google.com/file/d/1at2VF06qMMKi3olVD4uNecniZZFnjKz0/view?usp=drive_link">Create a directory of
-                  cooks</a> who are prepared to meal share (cook extra) for households who have lost access to
+                  <ExternalLink href="https://drive.google.com/file/d/1at2VF06qMMKi3olVD4uNecniZZFnjKz0/view?usp=drive_link">Create a directory of
+                  cooks</ExternalLink> who are prepared to meal share (cook extra) for households who have lost access to
                   kitchens, food, water, etc
                 </Todo>
                 <Todo id="food-distribution-system" moduleKey="food-and-water" client:load>
@@ -207,14 +208,14 @@ const sectionData: SectionData = {
                   Source food to fill in distribution dates and times
                 </Todo>
                 <Todo id="safe-food-handling" moduleKey="food-and-water" client:load>
-                  Ensure <a href="https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html">safe food
-                  handling</a> at distribution centers - refrigeration/coolers for things to stay cold vs. crock pots
+                  Ensure <ExternalLink href="https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html">safe food
+                  handling</ExternalLink> at distribution centers - refrigeration/coolers for things to stay cold vs. crock pots
                   and portable stoves to keep things warm.
                 </Todo>
                 <Todo id="food-access-directory" moduleKey="food-and-water" client:load>
-                  <a href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">Create a directory of food access
-                  points</a>, using a spreadsheet, <a href="http://tinyurl.com/freefoodbtv">google map</a>, or <a href="https://cdn.flowcode.com/prodassets/NEKCA_FoodAccess_Summer.24.2.pdf">other
-                  format</a>. Include resources like food shelves, free food distributions and meal sites, general and grocery
+                  <ExternalLink href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">Create a directory of food access
+                  points</ExternalLink>, using a spreadsheet, <ExternalLink href="http://tinyurl.com/freefoodbtv">google map</ExternalLink>, or <ExternalLink href="https://cdn.flowcode.com/prodassets/NEKCA_FoodAccess_Summer.24.2.pdf">other
+                  format</ExternalLink>. Include resources like food shelves, free food distributions and meal sites, general and grocery
                   stores, farmers' markets.
                 </Todo>
               </div>
@@ -222,7 +223,7 @@ const sectionData: SectionData = {
             <td>
               <strong>
                 Kitchen and meal distribution
-                <a href="https://www.albertahealthservices.ca/assets/info/nutrition/if-nfs-collective-kitchen-sample-kitchen-equipment-list.pdf">supplies</a>
+                <ExternalLink href="https://www.albertahealthservices.ca/assets/info/nutrition/if-nfs-collective-kitchen-sample-kitchen-equipment-list.pdf">supplies</ExternalLink>
               </strong>
               <div class="guide-table__checklist">
                 <Todo id="kitchen-walk-in-cooler" moduleKey="food-and-water" client:load>

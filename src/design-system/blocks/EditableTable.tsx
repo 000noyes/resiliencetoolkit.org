@@ -217,7 +217,7 @@ export default function EditableTable({
 
       <button
         onClick={handleAddRow}
-        className="mt-md px-lg py-sm text-body-small font-medium rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-raised transition-all duration-default ease-default active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="editable-table-primary-button mt-md px-lg py-sm text-body-small font-medium rounded-full bg-primary text-primary-foreground shadow-sm hover:shadow-raised transition-all duration-default ease-default active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         Add Row
       </button>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ActionButton from '@/components/ActionButton.astro';
+import FAQItem from '@/components/FAQItem.astro';
 ---
 
 <BaseLayout title="Support - Resilience Hub" description="Fiscal sponsorship, services, training, and contact">
@@ -54,11 +55,57 @@ import ActionButton from '@/components/ActionButton.astro';
             Need assistance? Have questions? We're here to help.
           </p>
           <ul class="list-disc list-inside space-y-2 text-sm text-muted-foreground mb-6">
-            <li>Check our documentation and FAQ</li>
-            <li>Join our community forum</li>
+            <li>Check our <a href="#faq" class="text-primary hover:underline">frequently asked questions</a> below</li>
+            <li>Join our community forum (coming soon)</li>
             <li>Report issues on GitHub</li>
-            <li>Contact us directly</li>
+            <li><a href="#contact" class="text-primary hover:underline">Contact Us</a> directly</li>
           </ul>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <h2 class="text-2xl font-semibold text-foreground mb-6">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <FAQItem
+            question="What is a Community Resilience Hub?"
+            answer="A Community Resilience Hub is a safe, accessible place where neighbors can gather during emergencies to share resources, get information, and support each other. This toolkit helps you plan, organize, and run a hub in your community."
+          />
+
+          <FAQItem
+            question="Who is this toolkit for?"
+            answer="This toolkit is for community organizers, neighborhood groups, mutual aid networks, faith-based organizations, and anyone working to strengthen community resilience. No special training or technical skills are required."
+          />
+
+          <FAQItem
+            question="Is this toolkit free to use?"
+            answer="Yes, this toolkit is completely free and open-source. You can use it, modify it, and share it with others. We believe everyone should have access to tools for building community resilience."
+          />
+
+          <FAQItem
+            question="Do I need internet to use this toolkit?"
+            answer="No. While the toolkit works online, you can also use it offline by saving pages as PDFs or printing them. Any data you enter in the web forms is saved automatically in your browser and works without internet. Learn more on the <a href='/offline' class='text-primary hover:underline'>Save for Offline Use</a> page."
+          />
+
+          <FAQItem
+            question="Is my information private and secure?"
+            answer="Yes. The toolkit offers two modes:<br><br><strong>Guest Mode (No Account):</strong> All information you enter stays on your device in your browser's local storage. Nothing is sent to servers or stored in the cloud. Your data is completely private and under your control.<br><br><strong>Account Mode (Optional):</strong> If you create an account, your data is synced to cloud storage (Supabase) so you can access it from any device. Your data is encrypted in transit, and the database enforces that only you and hub members you explicitly invite can view or edit your information. You can export your data anytime using the 'Export local data' button on module pages."
+          />
+
+          <FAQItem
+            question="Can I use this on my phone or tablet?"
+            answer="Yes. The toolkit is designed to work on any device - phones, tablets, and computers. All features, including filling out forms, printing, and exporting data, work on mobile devices."
+          />
+
+          <FAQItem
+            question="How do I save my work and transfer it to another device?"
+            answer="On any module page, click the 'Export local data' button to download your information as a file. You can then email it to yourself, save it to a USB drive, or store it in cloud storage to transfer to another device. On the new device, use the 'Import data' button to load your information (Coming Soon)."
+          />
+
+          <FAQItem
+            question="How can I report a problem or suggest an improvement?"
+            answer="We welcome feedback! You can report issues or suggest features on our <a href='https://github.com/yourusername/resiliencetoolkit' class='text-primary hover:underline' target='_blank' rel='noopener noreferrer'>GitHub repository</a> or <a href='#contact' class='text-primary hover:underline'>contact us directly</a> using the form below."
+          />
         </div>
       </section>
 

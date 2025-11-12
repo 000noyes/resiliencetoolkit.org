@@ -1,15 +1,172 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 ---
 
-<BaseLayout title="Library - Resilience Hub" description="Templates, checklists, zines, posters, and forms">
-  <div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold text-foreground mb-6">Resource Library</h1>
-    <p class="text-lg text-muted-foreground mb-8">
-      Templates, checklists, zines, posters, and forms for building community resilience.
-    </p>
-    <div class="bg-muted p-8 rounded-lg text-center">
-      <p class="text-muted-foreground">Library resources coming soon...</p>
+<BaseLayout title="Resource Library | Resilience Hub Toolkit" description="Templates, checklists, zines, posters, and forms for building community resilience.">
+  <article class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Page header -->
+    <header class="mb-8">
+      <h1 class="text-hero font-semibold mb-2">
+        Resource Library
+      </h1>
+      <p class="text-lg text-text-secondary">
+        Templates, checklists, zines, posters, and forms for building community resilience. Printable worksheets and planning aids that support the guides throughout this toolkit.
+      </p>
+    </header>
+
+    <!-- Content -->
+    <div class="space-y-8">
+      <section class="p-6 rounded-lg bg-surface-subtle border border-border">
+        <p class="text-body text-text-primary">
+          All of these resources and templates are also available at <ExternalLink href="https://tinyurl.com/RHTmaterials" className="text-accent hover:underline">tinyurl.com/RHTmaterials</ExternalLink>
+        </p>
+      </section>
+
+      <!-- Developer Note -->
+      <!-- TODO: Organize Google Drive folders to match these categories. Currently all links point to the same folder. -->
+      <!-- Each section should ideally link to its own specific folder or collection of files. -->
+
+      <!-- Knowing Your Community -->
+      <section>
+        <h2 class="text-title font-semibold mb-4">Knowing Your Community</h2>
+        <ul class="space-y-3">
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">0. Organizing your community</h3>
+              <p class="text-body-small text-text-secondary">Templates for mapping your community, identifying key people, and building organizational structures</p>
+            </ExternalLink>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Emergency Preparedness and Response -->
+      <section>
+        <h2 class="text-title font-semibold mb-4">Emergency Preparedness and Response</h2>
+        <ul class="space-y-3">
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.1 Emergency preparedness kits</h3>
+              <p class="text-body-small text-text-secondary">Checklists for household and individual emergency supplies</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.2 Food and water</h3>
+              <p class="text-body-small text-text-secondary">Templates for food storage, community meals, and water supply management</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.3 First aid and medical</h3>
+              <p class="text-body-small text-text-secondary">First aid supply lists and medical resource templates</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.4 Power supply</h3>
+              <p class="text-body-small text-text-secondary">Power supply inventory templates and backup power planning</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.5 Warming/cooling/emergency shelter</h3>
+              <p class="text-body-small text-text-secondary">Shelter planning templates and supply checklists</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.6 Vehicles and equipment</h3>
+              <p class="text-body-small text-text-secondary">Directories for shared vehicles and heavy equipment</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.7 Sanitation and hygiene</h3>
+              <p class="text-body-small text-text-secondary">DIY handwashing, toilet, shower, and laundry guides</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.8 Populations with specific needs</h3>
+              <p class="text-body-small text-text-secondary">Templates for supporting children, seniors, people with disabilities, LEP populations, and farm animals</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">Limited English Proficiency Documents</h3>
+              <p class="text-body-small text-text-secondary">Resources, translations, and procedural guides for serving LEP populations</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.9 Community emergency response plans</h3>
+              <p class="text-body-small text-text-secondary">Emergency planning templates and coordination guides</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.10 Volunteer management</h3>
+              <p class="text-body-small text-text-secondary">Volunteer recruitment, coordination, and management templates</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.11 Flood recovery supplies and work</h3>
+              <p class="text-body-small text-text-secondary">Work tote checklists, gut kit supplies, and flood site management templates</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.12 Mutual Aid</h3>
+              <p class="text-body-small text-text-secondary">Mutual aid organizing guides and neighbor-to-neighbor templates</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">1.13 Financial resources</h3>
+              <p class="text-body-small text-text-secondary">Directories of funding sources and financial planning templates</p>
+            </ExternalLink>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Baseline Community Resilience -->
+      <section>
+        <h2 class="text-title font-semibold mb-4">Baseline Community Resilience</h2>
+        <ul class="space-y-3">
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">2.1 Basic needs</h3>
+              <p class="text-body-small text-text-secondary">Food production, meal planning, health networks, and transportation templates</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">2.2 Shared tools</h3>
+              <p class="text-body-small text-text-secondary">Tool library, tech lending, and resource sharing templates</p>
+            </ExternalLink>
+          </li>
+          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
+            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" className="block">
+              <h3 class="font-semibold text-text-primary mb-1">2.3 Community building</h3>
+              <p class="text-body-small text-text-secondary">Directories, skill building workshops, event planning, and governance templates</p>
+            </ExternalLink>
+          </li>
+        </ul>
+      </section>
+
+      <nav class="mt-8">
+        <a
+          href="/modules"
+          class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Back to Modules</span>
+        </a>
+      </nav>
     </div>
-  </div>
+  </article>
 </BaseLayout>

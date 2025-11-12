@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -19,7 +20,7 @@ const sectionData: SectionData = {
       <h3 class="text-title font-semibold">Managing flood site and survivor information</h3>
       <ul class="list-disc pl-6 space-y-3">
         <li>Vermont will tell people to call 211 to report flood damage. While this is helpful and important to have state data, relief organizations then have to comb through all 211 calls to find flood survivor data. This can be incredibly time consuming, and is a good place for volunteers that cannot do physical labor.</li>
-        <li>Create a <a href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=825618087#gid=825618087&range=A14:D14">flood survivor/site sheet or tracking system</a> that includes information about the site, the contact information for the survivors, and any other important information going forward into the recovery phase (damage to water, sewer, foundation, etc).</li>
+        <li>Create a <ExternalLink href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=825618087#gid=825618087&range=A14:D14">flood survivor/site sheet or tracking system</ExternalLink> that includes information about the site, the contact information for the survivors, and any other important information going forward into the recovery phase (damage to water, sewer, foundation, etc).</li>
       </ul>
 
       <h3 class="text-title font-semibold">Managing flood recovery supplies</h3>
@@ -64,7 +65,7 @@ const sectionData: SectionData = {
               </p>
               <div class="guide-table__checklist">
                 <Todo id="water-testing-kits" moduleKey="flood-recovery" client:load>
-                  Order water testing kits from the Department of Health at <a href="https://www.healthvermont.gov/lab/forms" target="_blank" rel="noopener noreferrer">healthvermont.gov/lab/forms</a>
+                  Order water testing kits from the Department of Health at <ExternalLink href="https://www.healthvermont.gov/lab/forms">healthvermont.gov/lab/forms</ExternalLink>
                 </Todo>
               </div>
             </td>

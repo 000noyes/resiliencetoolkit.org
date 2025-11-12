@@ -1,5 +1,6 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -26,14 +27,14 @@ const sectionData: SectionData = {
             <li>American Legion</li>
             <li>Elks Club</li>
             <li>Rotary Club</li>
-            <li><a href="https://www.healthvermont.gov/about-us/contact-us">AHS / VDH regional field Directors can be a conduit to local organizations</a></li>
+            <li><ExternalLink href="https://www.healthvermont.gov/about-us/contact-us">AHS / VDH regional field Directors can be a conduit to local organizations</ExternalLink></li>
           </ul>
         </li>
       </ul>
 
       <h3 class="text-title font-semibold">Setting up volunteer shifts</h3>
       <ul class="list-disc pl-6 space-y-3">
-        <li><a href="https://www.signupgenius.com/nonprofit-volunteer-management">SignUp Genius</a> is free and helpful for creating volunteer shifts. The paid version allows multiple volunteer coordinators to log in; you can cancel payment as soon as you're done using it. Download your data regularly to maintain a contact list. You can also use a <a href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9">shareable spreadsheet</a> on Google or Cryptpad.</li>
+        <li><ExternalLink href="https://www.signupgenius.com/nonprofit-volunteer-management">SignUp Genius</ExternalLink> is free and helpful for creating volunteer shifts. The paid version allows multiple volunteer coordinators to log in; you can cancel payment as soon as you're done using it. Download your data regularly to maintain a contact list. You can also use a <ExternalLink href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9">shareable spreadsheet</ExternalLink> on Google or Cryptpad.</li>
         <li>Create specific time slots and tasks for people to help with.</li>
         <li>Be clear on what physical abilities people need to be safe and also helpful.</li>
         <li>Have a diversity of tasks to make space for everyone to engage.
@@ -61,10 +62,10 @@ const sectionData: SectionData = {
       <h3 class="text-title font-semibold">Managing volunteers</h3>
       <ul class="list-disc pl-6 space-y-3">
         <li>People will want to bring children to the sites to help volunteer. Handle this on a case by case basis and do not send children to locations where there is a concern for bodily safety, such as mold.</li>
-        <li>Know what work needs to get done. Use <a href="http://crisiscleanup.org">Crisis Cleanup</a> and track projects in a spreadsheet.</li>
+        <li>Know what work needs to get done. Use <ExternalLink href="http://crisiscleanup.org">Crisis Cleanup</ExternalLink> and track projects in a spreadsheet.</li>
         <li>Conduct interviews with homeowners to determine scope of work (this can be a volunteer task that precedes other volunteer tasks). Questions for these interviews are pre-loaded in Crisis Cleanup.</li>
         <li>Create a work sheet for volunteers with info about where they're going, who they're meeting, and what they're doing. This helps coordinate multiple teams at once.</li>
-        <li>For legal/insurance reasons, have flood volunteers <a href="https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true">sign a waiver</a> regardless of the scope of their work. Link to your agreement wherever volunteers are signing up for shifts and have people sign agreements before starting work.</li>
+        <li>For legal/insurance reasons, have flood volunteers <ExternalLink href="https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true">sign a waiver</ExternalLink> regardless of the scope of their work. Link to your agreement wherever volunteers are signing up for shifts and have people sign agreements before starting work.</li>
         <li>Tell volunteers what to bring to do the work (sunscreen, water, snacks, durable footwear, etc.)</li>
         <li>Train volunteers in the tasks assigned each shift and include the importance of taking breaks and hydrating.</li>
         <li>Organize volunteers into work crews of 3-6 people, ideally large enough so people can take breaks and not work for more than 5 hours. Coordinating work is challenging and situations shift but the more organized you can be, the more likely you'll be to retain volunteers.</li>

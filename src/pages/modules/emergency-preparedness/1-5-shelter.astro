@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -37,7 +38,7 @@ const sectionData: SectionData = {
                   Identify shelters or other accessible places for people to sleep overnight
                 </Todo>
                 <Todo id="identify-meal-sources" moduleKey="warming-cooling-shelter" client:load>
-                  <a href="https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.kr2z9mn98cbm">Identify</a> local restaurants or people to bring meals to the shelter
+                  <ExternalLink href="https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.kr2z9mn98cbm">Identify</ExternalLink> local restaurants or people to bring meals to the shelter
                 </Todo>
               </div>
               <p>
@@ -48,12 +49,12 @@ const sectionData: SectionData = {
               </p>
               <div class="guide-table__checklist">
                 <Todo id="directory-shelters" moduleKey="warming-cooling-shelter" client:load>
-                  <a href="https://drive.google.com/file/d/1S7LKMy_vRhA5tM5gHWOFE1qtN9iYKi3p/view?usp=drive_link">Create a
-                  directory</a> of day use, overnight, and other shelters.
+                  <ExternalLink href="https://drive.google.com/file/d/1S7LKMy_vRhA5tM5gHWOFE1qtN9iYKi3p/view?usp=drive_link">Create a
+                  directory</ExternalLink> of day use, overnight, and other shelters.
                 </Todo>
                 <Todo id="volunteer-system" moduleKey="warming-cooling-shelter" client:load>
-                  <a href="https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF">Create a
-                  system</a> for volunteer staffing, delivering supplies, and shuttling people to shelters
+                  <ExternalLink href="https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF">Create a
+                  system</ExternalLink> for volunteer staffing, delivering supplies, and shuttling people to shelters
                 </Todo>
               </div>
             </td>

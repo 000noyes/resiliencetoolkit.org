@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -30,7 +31,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="regional-planning-commissions" moduleKey="community-building" client:load>
-            Regional and county resources, like <a href="https://www.vapda.org/">Regional Planning Commissions</a>, community development agencies, and <a href="https://www.vacd.org/conservation-districts/">natural resource conservation districts</a>
+            Regional and county resources, like <ExternalLink href="https://www.vapda.org/">Regional Planning Commissions</ExternalLink>, community development agencies, and <ExternalLink href="https://www.vacd.org/conservation-districts/">natural resource conservation districts</ExternalLink>
           </Todo>
 
           <Todo id="mutual-aid-groups" moduleKey="community-building" client:load>
@@ -73,7 +74,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="contact-directory" moduleKey="community-building" client:load>
-            <a href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory</a> of these contacts
+            <ExternalLink href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory</ExternalLink> of these contacts
           </Todo>
         </div>
       </section>
@@ -83,7 +84,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="business-directory" moduleKey="community-building" client:load>
-            Connect with local businesses to learn about what services they offer, and how they can help people in your community. <a href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory of this information.</a>
+            Connect with local businesses to learn about what services they offer, and how they can help people in your community. <ExternalLink href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory of this information.</ExternalLink>
           </Todo>
 
           <Todo id="business-opportunities" moduleKey="community-building" client:load>
@@ -116,11 +117,11 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="community-spokespeople" moduleKey="community-building" client:load>
-            <a href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory</a> of local people trained and willing to speak about their experience with disaster or otherwise with media, elected officials, funders, etc. Representing community needs accurately has real, positive impacts on material conditions.
+            <ExternalLink href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory</ExternalLink> of local people trained and willing to speak about their experience with disaster or otherwise with media, elected officials, funders, etc. Representing community needs accurately has real, positive impacts on material conditions.
           </Todo>
 
           <Todo id="community-media-list" moduleKey="community-building" client:load>
-            <a href="https://drive.google.com/file/d/1a8iZejQbOW4QDwxzgJtWeyEqztupJgkY/view?usp=drive_link">Develop a media list</a> of local reporters and outlets, and keep it updated. Reach out to reporters to build relationships and establish local spokespeople as trusted sources.
+            <ExternalLink href="https://drive.google.com/file/d/1a8iZejQbOW4QDwxzgJtWeyEqztupJgkY/view?usp=drive_link">Develop a media list</ExternalLink> of local reporters and outlets, and keep it updated. Reach out to reporters to build relationships and establish local spokespeople as trusted sources.
           </Todo>
 
           <Todo id="community-story-practice" moduleKey="community-building" client:load>
@@ -128,7 +129,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="community-testimony-resources" moduleKey="community-building" client:load>
-            Resources for giving effective testimony: <a href="https://www.ruralvermont.org/activist-toolkit-1">Rural VT Activist Toolkit</a> and <a href="https://www.vlct.org/resource/effective-testimony-guide-municipal-officials">Vermont League of Cities and Towns</a>
+            Resources for giving effective testimony: <ExternalLink href="https://www.ruralvermont.org/activist-toolkit-1">Rural VT Activist Toolkit</ExternalLink> and <ExternalLink href="https://www.vlct.org/resource/effective-testimony-guide-municipal-officials">Vermont League of Cities and Towns</ExternalLink>
           </Todo>
         </div>
       </section>
@@ -139,7 +140,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="de-escalation-training" moduleKey="community-building" client:load>
-            Hold skills training to teach people broadly <a href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">how to intervene in escalating situations.</a>
+            Hold skills training to teach people broadly <ExternalLink href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">how to intervene in escalating situations.</ExternalLink>
           </Todo>
 
           <Todo id="conflict-workshops" moduleKey="community-building" client:load>
@@ -151,7 +152,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="conflict-gatherings" moduleKey="community-building" client:load>
-            Hold recurring gatherings for people to come discuss ongoing conflict, support each other, and <a href="https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link">practice conflict management and transformation.</a>
+            Hold recurring gatherings for people to come discuss ongoing conflict, support each other, and <ExternalLink href="https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link">practice conflict management and transformation.</ExternalLink>
           </Todo>
 
           <Todo id="mediation-team" moduleKey="community-building" client:load>
@@ -165,7 +166,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="third-spaces-directory" moduleKey="community-building" client:load>
-            Create a directory of businesses, <a href="https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf">libraries</a>, community centers, public commons, health clinics, <a href="http://www.vtstategrange.org/vermont-granges.html">grange halls</a> that can host community events, meetings and gatherings. These third spaces can help hold on-going efforts to build resilience and be prepared to offer space for supplies or disaster response coordination.
+            Create a directory of businesses, <ExternalLink href="https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf">libraries</ExternalLink>, community centers, public commons, health clinics, <ExternalLink href="http://www.vtstategrange.org/vermont-granges.html">grange halls</ExternalLink> that can host community events, meetings and gatherings. These third spaces can help hold on-going efforts to build resilience and be prepared to offer space for supplies or disaster response coordination.
           </Todo>
 
           <Todo id="create-third-space" moduleKey="community-building" client:load>
@@ -210,25 +211,25 @@ const sectionData: SectionData = {
               <td>
                 <div class="guide-table__checklist">
                   <Todo id="skill-flood-prep" moduleKey="community-building" client:load>
-                    <a href="https://www.floodsmart.gov/prepare/minimize-damage">Flood Preparation</a>
+                    <ExternalLink href="https://www.floodsmart.gov/prepare/minimize-damage">Flood Preparation</ExternalLink>
                   </Todo>
                   <Todo id="skill-first-aid" moduleKey="community-building" client:load>
-                    <a href="https://www.redcross.org/take-a-class/train-my-employees">General First Aid and Basic Life Support</a>
+                    <ExternalLink href="https://www.redcross.org/take-a-class/train-my-employees">General First Aid and Basic Life Support</ExternalLink>
                   </Todo>
                   <Todo id="skill-basic-rescue" moduleKey="community-building" client:load>
-                    <a href="https://mutualaiddisasterreliefsite.wordpress.com/wp-content/uploads/2017/04/basic_rescue_skills_2003.pdf">Basic Rescue</a>
+                    <ExternalLink href="https://mutualaiddisasterreliefsite.wordpress.com/wp-content/uploads/2017/04/basic_rescue_skills_2003.pdf">Basic Rescue</ExternalLink>
                   </Todo>
                   <Todo id="skill-wilderness-first-aid" moduleKey="community-building" client:load>
-                    Wilderness First Aid and Wilderness First Responder (<a href="https://trainnek.com/about-us/">Train NEK</a>, <a href="https://www.nols.edu/en/courses/">NOLS courses</a>)
+                    Wilderness First Aid and Wilderness First Responder (<ExternalLink href="https://trainnek.com/about-us/">Train NEK</ExternalLink>, <ExternalLink href="https://www.nols.edu/en/courses/">NOLS courses</ExternalLink>)
                   </Todo>
                   <Todo id="skill-stop-bleed" moduleKey="community-building" client:load>
-                    <a href="https://cms.bleedingcontrol.org/Class/Search">Stop the bleed</a>
+                    <ExternalLink href="https://cms.bleedingcontrol.org/Class/Search">Stop the bleed</ExternalLink>
                   </Todo>
                   <Todo id="skill-narcan" moduleKey="community-building" client:load>
-                    <a href="https://vtcares.org/how-to-use-narcan/">Narcan</a>
+                    <ExternalLink href="https://vtcares.org/how-to-use-narcan/">Narcan</ExternalLink>
                   </Todo>
                   <Todo id="skill-mental-health-first-aid" moduleKey="community-building" client:load>
-                    <a href="https://www.are.na/local-directory/radical-mental-health-first-aid">Mental health first aid</a> - <a href="https://attachments.are.na/27186484/03bcff689a69c106cd91a68bebc381df.pdf?1711408036">Radical Mental Health First Aide (RMHFA) Action Plan</a>: "A non-linear, intuitive step-by-step action plan to use when providing support in mental health crisis situations."
+                    <ExternalLink href="https://www.are.na/local-directory/radical-mental-health-first-aid">Mental health first aid</ExternalLink> - <ExternalLink href="https://attachments.are.na/27186484/03bcff689a69c106cd91a68bebc381df.pdf?1711408036">Radical Mental Health First Aide (RMHFA) Action Plan</ExternalLink>: "A non-linear, intuitive step-by-step action plan to use when providing support in mental health crisis situations."
                   </Todo>
                   <Todo id="skill-herbal-first-aid" moduleKey="community-building" client:load>
                     Herbal First Aid training
@@ -238,13 +239,13 @@ const sectionData: SectionData = {
               <td>
                 <div class="guide-table__checklist">
                   <Todo id="skill-gut-mucking" moduleKey="community-building" client:load>
-                    Safe Gut & Mucking - cleaning out households. <a href="https://mutualaiddisasterrelief.org/safety-diy-cleanup/">Examples from Mutual Aid Disaster Relief</a>
+                    Safe Gut & Mucking - cleaning out households. <ExternalLink href="https://mutualaiddisasterrelief.org/safety-diy-cleanup/">Examples from Mutual Aid Disaster Relief</ExternalLink>
                   </Todo>
                   <Todo id="skill-safe-food-prep" moduleKey="community-building" client:load>
-                    <a href="https://www.vtchamber.com/servsafe/">Safe Food Prep</a>
+                    <ExternalLink href="https://www.vtchamber.com/servsafe/">Safe Food Prep</ExternalLink>
                   </Todo>
                   <Todo id="skill-mapping" moduleKey="community-building" client:load>
-                    Mapping - local resources and updating road hazards (using tools like <a href="https://openstreetmap.us/get-involved/start-mapping/">Open Street Maps</a>)
+                    Mapping - local resources and updating road hazards (using tools like <ExternalLink href="https://openstreetmap.us/get-involved/start-mapping/">Open Street Maps</ExternalLink>)
                   </Todo>
                   <Todo id="skill-fema-forms" moduleKey="community-building" client:load>
                     FEMA, state and insurance form completion - a Long-term Recovery Group in your area might be able to provide this
@@ -284,10 +285,10 @@ const sectionData: SectionData = {
                     Media relations
                   </Todo>
                   <Todo id="skill-conflict-deescalation" moduleKey="community-building" client:load>
-                    <a href="https://drive.google.com/file/d/1jvwkbqaxuct6_xQxSgT1p-WfNcod2d5I/view?usp=drive_link">Conflict de-escalation</a>
+                    <ExternalLink href="https://drive.google.com/file/d/1jvwkbqaxuct6_xQxSgT1p-WfNcod2d5I/view?usp=drive_link">Conflict de-escalation</ExternalLink>
                   </Todo>
                   <Todo id="skill-conflict-management" moduleKey="community-building" client:load>
-                    <a href="https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link">Conflict management</a>
+                    <ExternalLink href="https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link">Conflict management</ExternalLink>
                   </Todo>
                   <Todo id="skill-grief-circles" moduleKey="community-building" client:load>
                     Grief circles
@@ -303,7 +304,7 @@ const sectionData: SectionData = {
         <h2 class="text-title font-semibold mb-4">Fun activities that build community</h2>
         <p class="mb-4">Gather regularly to be joyful and have fun with your community. This is how we build the relationships that are the foundation for communication, mutual aid and rapid response in times of crisis. Many local institutions like schools, libraries and business may already be primed to host these events, but usually they need people to make it happen.</p>
 
-        <p class="mb-4">As a practice of baseline resilience, host regular community meetings on a recurring day of the month (e.g. third Thursdays) in a consistent location. Provide food if you are able, or make it a potluck. If you are hosting a public assembly in which decisions are getting made about local governance, check out <a href="https://drive.google.com/file/d/1nUkRdNmMf4eisAdmVFbGJKiCiEiea6Cv/view">how to host a public assembly</a>, pages 11, 18-25. Ideas for fun community building activities:</p>
+        <p class="mb-4">As a practice of baseline resilience, host regular community meetings on a recurring day of the month (e.g. third Thursdays) in a consistent location. Provide food if you are able, or make it a potluck. If you are hosting a public assembly in which decisions are getting made about local governance, check out <ExternalLink href="https://drive.google.com/file/d/1nUkRdNmMf4eisAdmVFbGJKiCiEiea6Cv/view">how to host a public assembly</ExternalLink>, pages 11, 18-25. Ideas for fun community building activities:</p>
 
         <div class="space-y-4 mb-6">
           <Todo id="activity-town-dances" moduleKey="community-building" client:load>
@@ -339,6 +340,6 @@ const sectionData: SectionData = {
           </Todo>
         </div>
 
-        <p>Look to local organizations like the <a href="https://www.thecivicstandard.org/">Civic Standard</a>, <a href="https://nekorganizing.org/">NEK Organizing</a>, and <a href="https://hartland.govoffice.com/index.asp?SEC=F4B6B828-2DC9-4153-9BAF-212AAF3965D5&DE=E3079F17-2186-4D40-A9F5-82F8DE844030">Hartland Community Breakfasts</a> for more inspiration.</p>
+        <p>Look to local organizations like the <ExternalLink href="https://www.thecivicstandard.org/">Civic Standard</ExternalLink>, <ExternalLink href="https://nekorganizing.org/">NEK Organizing</ExternalLink>, and <ExternalLink href="https://hartland.govoffice.com/index.asp?SEC=F4B6B828-2DC9-4153-9BAF-212AAF3965D5&DE=E3079F17-2186-4D40-A9F5-82F8DE844030">Hartland Community Breakfasts</ExternalLink> for more inspiration.</p>
       </section>
 </ModuleLayout>

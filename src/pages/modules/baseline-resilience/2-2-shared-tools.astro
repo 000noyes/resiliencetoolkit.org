@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -27,7 +28,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="tool-library-research" moduleKey="shared-tools" client:load>
-            Read up on best practices and existing ways of doing this. New Suns Community Center (Thetford) and Cooperation Vermont (Marshfield) have tool libraries. See also: <a href="https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes">Library of Things toolkit from Shareable</a>, <a href="https://myturn.com/">myTurn</a> (online tool for managing tool sharing), and <a href="https://www.toollibraryalliance.org/">Tool Library Alliance</a> for lots of resources.
+            Read up on best practices and existing ways of doing this. New Suns Community Center (Thetford) and Cooperation Vermont (Marshfield) have tool libraries. See also: <ExternalLink href="https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes">Library of Things toolkit from Shareable</ExternalLink>, <ExternalLink href="https://myturn.com/">myTurn</ExternalLink> (online tool for managing tool sharing), and <ExternalLink href="https://www.toollibraryalliance.org/">Tool Library Alliance</ExternalLink> for lots of resources.
           </Todo>
         </div>
       </section>
@@ -58,7 +59,7 @@ const sectionData: SectionData = {
                     Consider making more items available for longer-term use or facilitating direct trades/lends between community members with an extra laptop and someone who lost theirs in a house fire.
                   </Todo>
                   <Todo id="tech-directory" moduleKey="shared-tools" client:load>
-                    <a href="https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C">Create a directory of available items.</a>
+                    <ExternalLink href="https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C">Create a directory of available items.</ExternalLink>
                   </Todo>
                 </div>
               </td>
@@ -107,7 +108,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="internet-access" moduleKey="shared-tools" client:load>
-            Identify areas for public or low-cost internet access when home systems are down. This is commonly <a href="https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf">libraries</a>, town offices and schools.
+            Identify areas for public or low-cost internet access when home systems are down. This is commonly <ExternalLink href="https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf">libraries</ExternalLink>, town offices and schools.
           </Todo>
 
           <Todo id="internet-local-businesses" moduleKey="shared-tools" client:load>
@@ -119,7 +120,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="internet-mesh-networks" moduleKey="shared-tools" client:load>
-            <a href="https://docs.engnroom.org/digital-resilience-hub/meaningful-connectivity/alternative-tech-tools-for-knowledge-sharing/mesh-and-community-networks">Mesh Networks</a> can be established with limited required infrastructure and offer localized peer to peer secure communication and data sharing. Some examples: <a href="https://fognet.me/">Fognet</a> network, <a href="https://meshtastic.org/docs/introduction/">Meshtastic</a> - Low-power data sharing & communications network, <a href="https://www.youtube.com/watch?v=BpSkjRKGxyc">DIY Cellular Signal Booster</a> - No Electricity Required. <a href="https://docs.engnroom.org/digital-resilience-hub">More Information on digital resilience here.</a>
+            <ExternalLink href="https://docs.engnroom.org/digital-resilience-hub/meaningful-connectivity/alternative-tech-tools-for-knowledge-sharing/mesh-and-community-networks">Mesh Networks</ExternalLink> can be established with limited required infrastructure and offer localized peer to peer secure communication and data sharing. Some examples: <ExternalLink href="https://fognet.me/">Fognet</ExternalLink> network, <ExternalLink href="https://meshtastic.org/docs/introduction/">Meshtastic</ExternalLink> - Low-power data sharing & communications network, <ExternalLink href="https://www.youtube.com/watch?v=BpSkjRKGxyc">DIY Cellular Signal Booster</ExternalLink> - No Electricity Required. <ExternalLink href="https://docs.engnroom.org/digital-resilience-hub">More Information on digital resilience here.</ExternalLink>
           </Todo>
         </div>
       </section>

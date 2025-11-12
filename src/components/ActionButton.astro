@@ -30,7 +30,7 @@ const {
 
 // Design system variant styles with shadow and hover states
 const variantClasses = {
-  primary: 'bg-primary text-primary-foreground shadow-sm hover:shadow-raised hover:bg-primary/90',
+  primary: 'action-button-primary bg-primary text-primary-foreground shadow-sm hover:shadow-raised',
   secondary: 'bg-transparent border border-border text-foreground hover:bg-muted',
   outline: 'bg-transparent border border-primary text-primary hover:bg-primary/10',
 };
@@ -48,6 +48,9 @@ const Element = href ? 'a' : 'button';
   href={href}
   type={!href ? type : undefined}
   class:list={[
+    // Exclude from global link styles (for button-styled links)
+    href ? 'button-link' : '',
+
     // Base classes
     'inline-flex items-center justify-center',
     'font-medium',
@@ -72,3 +75,9 @@ const Element = href ? 'a' : 'button';
 >
   <slot />
 </Element>
+
+<style>
+  .action-button-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+</style>

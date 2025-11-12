@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -43,11 +44,11 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="producer-directory" moduleKey="basic-needs" client:load>
-            <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory</a> of <a href="https://www.vtfarmtoplate.com/food-system-map">local producers</a> who are interested in connecting with community groups to provide local food through free, low-cost or sliding scale programs.
+            <ExternalLink href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory</ExternalLink> of <ExternalLink href="https://www.vtfarmtoplate.com/food-system-map">local producers</ExternalLink> who are interested in connecting with community groups to provide local food through free, low-cost or sliding scale programs.
           </Todo>
 
           <Todo id="gleaning-networks" moduleKey="basic-needs" client:load>
-            Identify <a href="https://www.vermontgleaningcollective.org/">gleaning networks</a> that have surplus to share for community meals, and could be mobilized to help farmers pre-flood, late or early frost, etc to protect or rapid harvest crops before they are lost.
+            Identify <ExternalLink href="https://www.vermontgleaningcollective.org/">gleaning networks</ExternalLink> that have surplus to share for community meals, and could be mobilized to help farmers pre-flood, late or early frost, etc to protect or rapid harvest crops before they are lost.
           </Todo>
         </div>
       </section>
@@ -57,7 +58,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="meal-directory" moduleKey="basic-needs" client:load>
-            <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory</a> of free <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">community meals</a> in your town or nearby.
+            <ExternalLink href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory</ExternalLink> of free <ExternalLink href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">community meals</ExternalLink> in your town or nearby.
           </Todo>
 
           <Todo id="learn-meal-programs" moduleKey="basic-needs" client:load>
@@ -95,7 +96,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="shower-directory" moduleKey="basic-needs" client:load>
-            <a href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory of public showers</a> for use for those who are unhoused or when running water is not available in people's homes. A few leads are - gyms with low-cost memberships, recreation centers, schools (for the children who attend), etc.
+            <ExternalLink href="https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I">Create a directory of public showers</ExternalLink> for use for those who are unhoused or when running water is not available in people's homes. A few leads are - gyms with low-cost memberships, recreation centers, schools (for the children who attend), etc.
           </Todo>
 
           <Todo id="portable-shower-assessment" moduleKey="basic-needs" client:load>
@@ -110,7 +111,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="transportation-mechanisms" moduleKey="basic-needs" client:load>
-            Build, utilize, and strengthen existing mechanisms for low-cost shared transportation - Example: <a href="https://capstonevt.org/find-a-ride">https://capstonevt.org/find-a-ride</a>
+            Build, utilize, and strengthen existing mechanisms for low-cost shared transportation - Example: <ExternalLink href="https://capstonevt.org/find-a-ride">https://capstonevt.org/find-a-ride</ExternalLink>
           </Todo>
 
           <Todo id="carpooling-initiatives" moduleKey="basic-needs" client:load>
@@ -118,7 +119,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="transportation-maps" moduleKey="basic-needs" client:load>
-            Creating and disseminating maps (on and offline) of nearest transportation, trails, and routes - Example: Trails maintained by snowmobile clubs such as <a href="https://driftdusters.org/">Drift Dusters in Derby, VT</a>
+            Creating and disseminating maps (on and offline) of nearest transportation, trails, and routes - Example: Trails maintained by snowmobile clubs such as <ExternalLink href="https://driftdusters.org/">Drift Dusters in Derby, VT</ExternalLink>
           </Todo>
         </div>
       </section>
@@ -128,7 +129,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="mental-health-directory" moduleKey="basic-needs" client:load>
-            <a href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory</a> of people in your community who are trauma-informed and have specific therapeutic skills to support mental health and nervous systems in disaster-related events. Caring for victims and responders is a part of recovery and can build capacity and resilience for future disaster.
+            <ExternalLink href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory</ExternalLink> of people in your community who are trauma-informed and have specific therapeutic skills to support mental health and nervous systems in disaster-related events. Caring for victims and responders is a part of recovery and can build capacity and resilience for future disaster.
           </Todo>
 
           <Todo id="affordable-sessions" moduleKey="basic-needs" client:load>
@@ -144,7 +145,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="mental-health-examples" moduleKey="basic-needs" client:load>
-            Examples: <a href="https://nekprosper.org/get-involved/flood-recovery-resources/">KURRVE mental health</a>, <a href="https://vermontcarepartners.org/">Vermont Care Partners</a>, <a href="https://mentalhealth.vermont.gov/sosvt">VTSOS - VT Starting over Strong</a>
+            Examples: <ExternalLink href="https://nekprosper.org/get-involved/flood-recovery-resources/">KURRVE mental health</ExternalLink>, <ExternalLink href="https://vermontcarepartners.org/">Vermont Care Partners</ExternalLink>, <ExternalLink href="https://mentalhealth.vermont.gov/sosvt">VTSOS - VT Starting over Strong</ExternalLink>
           </Todo>
 
           <Todo id="community-clinic" moduleKey="basic-needs" client:load>
@@ -158,7 +159,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="herbalist-directory" moduleKey="basic-needs" client:load>
-            <a href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory of local herbalists</a> who are available to offer herbal healthcare (physical, emotional) in emergencies as well as long term.
+            <ExternalLink href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory of local herbalists</ExternalLink> who are available to offer herbal healthcare (physical, emotional) in emergencies as well as long term.
           </Todo>
 
           <Todo id="herbalist-integration" moduleKey="basic-needs" client:load>
@@ -170,7 +171,7 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="herbal-activities" moduleKey="basic-needs" client:load>
-            Offer regular community activities and services where herbal support is available. - Example: <a href="https://www.rosecorecollective.org/">Rose Core Collective</a>
+            Offer regular community activities and services where herbal support is available. - Example: <ExternalLink href="https://www.rosecorecollective.org/">Rose Core Collective</ExternalLink>
           </Todo>
         </div>
       </section>

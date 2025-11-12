@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 ---
 
 <BaseLayout title="Introduction | Resilience Hub Toolkit" description="Understanding what this toolkit is for, how to use it, and what resilience means for your community.">
@@ -15,7 +16,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     <div class="space-y-8">
       <section>
         <h2 class="text-title font-semibold mb-4">Who and what is this toolkit for?</h2>
-        <p>This toolkit was compiled by frontline, grassroots flood responders in Vermont for communities, mutual aid groups, local organizations, and municipalities to use in assessing and building resilience to disaster and disruption. We hope you choose to use this toolkit as a starting place to develop a Resilience Hub that supports your community in the day-to-day and when acute disaster strikes. You may also find this toolkit useful if you're located somewhere else with a lot of rain, mountains, and people living in floodplains.</p>
+        <!-- <p>This toolkit was compiled by frontline, grassroots flood responders in Vermont for communities, mutual aid groups, local organizations, and municipalities to use in assessing and building resilience to disaster and disruption. We hope you choose to use this toolkit as a starting place to develop a Resilience Hub that supports your community in the day-to-day and when acute disaster strikes. You may also find this toolkit useful if you're located somewhere else with a lot of rain, mountains, and people living in floodplains.</p> -->
+        <p>This toolkit was compiled in the aftermath of flooding in 2023 and 2024 for communities, mutual aid groups, local organizations, and municipalities to use in assessing and building resilience to disaster and disruption. We are community members, organizers, and caretakers. We made this toolkit because we needed it when the waters rose. We hope you choose to use this toolkit as a starting place to develop a Resilience Hub that supports your community in the day-to-day and when acute disaster strikes. You may also find this toolkit useful if you’re located somewhere else with a lot of rain, mountains, and people living in floodplains. </p>
       </section>
 
       <section>
@@ -41,14 +43,18 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         </ul>
       </section>
 
+      <!-- Todo: add links to relevant modules -->
       <section>
         <h2 class="text-title font-semibold mb-4">How do I use this toolkit?</h2>
         <p class="mb-4">There are three sections in the toolkit. <strong>Knowing your community</strong> is about getting ready to use the toolkit with people in the place where you live. <strong>Emergency Preparedness and Response</strong> is about the stuff and systems that are essential for acute disaster response. The <strong>Baseline Resilience</strong> section is about the stuff and systems we need to create safer, thriving conditions for all people outside of and before acute disaster.</p>
+
+        <!-- Todo: add callout "The printed toolkit includes basic information; many sections have templates or additional resources you can download. All of this information lives at tinyurl.com/RHTmaterials." -->
 
         <p class="mb-4">Instead of serving as a prescriptive list of ways to build resilience, think of this toolkit as a set of prompts, or a work plan, for strengthening community-based resilience. In order to work on the projects laid out in this toolkit, you will need a group of people who are excited to work together and solve problems. That group can include people who are already solving problems and planning for disasters, people who are new to your town, and anyone in between.</p>
 
         <p class="mb-4">You should use this toolkit in any way that is useful to you. If your community is already doing resilience work, pull out sections that are relevant, and ignore ones that are not. If your community is getting started on resilience work, use the checklist in this toolkit and hold a gathering to assess vulnerabilities and assets, then identify where you want to start working to increase community resilience. This process will help clarify what form you want your resilience hub to take.</p>
 
+        <!-- Todo: convert to callout -->
         <p><strong>If you want a thought partner or to hire a consultant to support your community in this process, contact Community Resilience Organizations (CROs) - <a href="mailto:info@gocros.org">info@gocros.org</a>.</strong></p>
       </section>
 
@@ -68,7 +74,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
       <section>
         <h2 class="text-title font-semibold mb-4">What's beyond resilience?</h2>
-        <p>Our hope as grassroots organizers and community leaders is that you will use this toolkit to build resilience, and then keep going. We believe that climate disruption, while devastating and dangerous, is also an opportunity to create new ways of being together and getting our needs met so that we don't just survive, but thrive. We hope that communities can become <a href="https://commonslibrary.org/permanently-organized-communities/">permanently organized</a> - meaning we are set up to look out for each other all the time, using systems we made to keep us safe.</p>
+        <p>Our hope as grassroots organizers and community leaders is that you will use this toolkit to build resilience, and then keep going. We believe that climate disruption, while devastating and dangerous, is also an opportunity to create new ways of being together and getting our needs met so that we don't just survive, but thrive. We hope that communities can become <ExternalLink href="https://commonslibrary.org/permanently-organized-communities/">permanently organized</ExternalLink> - meaning we are set up to look out for each other all the time, using systems we made to keep us safe.</p>
       </section>
     </div>
 

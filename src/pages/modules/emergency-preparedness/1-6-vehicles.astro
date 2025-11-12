@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -49,7 +50,7 @@ const sectionData: SectionData = {
               <div class="guide-table__checklist">
                 <Todo id="kayaks-life-vests" moduleKey="vehicles-equipment" client:load>
                   Consider purchasing kayaks and life vests and storing on high ground for use during
-                  flooding (<a href="https://foldupkayaks.com/">https://foldupkayaks.com/</a>).
+                  flooding (<ExternalLink href="https://foldupkayaks.com/">https://foldupkayaks.com/</ExternalLink>).
                 </Todo>
               </div>
             </td>
@@ -63,8 +64,8 @@ const sectionData: SectionData = {
             <td>
               <div class="guide-table__checklist">
                 <Todo id="shared-vehicle-directory" moduleKey="vehicles-equipment" client:load>
-                  <a href="https://drive.google.com/file/d/1WGTfHGl9tRgEqzmeueS-8hHPSDqcx1Rs/view?usp=drive_link">Create a
-                  directory</a> of shared use vehicles, including who owns and insures vehicles.
+                  <ExternalLink href="https://drive.google.com/file/d/1WGTfHGl9tRgEqzmeueS-8hHPSDqcx1Rs/view?usp=drive_link">Create a
+                  directory</ExternalLink> of shared use vehicles, including who owns and insures vehicles.
                 </Todo>
                 <Todo id="access-system" moduleKey="vehicles-equipment" client:load>
                   Create a system for access and use. Ideally, vehicles are owned by a community entity
@@ -97,8 +98,8 @@ const sectionData: SectionData = {
             <td>
               <div class="guide-table__checklist">
                 <Todo id="heavy-equipment-directory" moduleKey="vehicles-equipment" client:load>
-                  Create a <a href="https://drive.google.com/file/d/1lIdpnkjjrCrk4e1OMb1hsHeX3u4Xs49D/view?usp=drive_link">directory of heavy
-                  equipment</a> that can be mobilized for emergency use.
+                  Create a <ExternalLink href="https://drive.google.com/file/d/1lIdpnkjjrCrk4e1OMb1hsHeX3u4Xs49D/view?usp=drive_link">directory of heavy
+                  equipment</ExternalLink> that can be mobilized for emergency use.
                 </Todo>
                 <Todo id="municipal-equipment" moduleKey="vehicles-equipment" client:load>
                   Connect with municipality to understand what kind of heavy equipment they have, and what

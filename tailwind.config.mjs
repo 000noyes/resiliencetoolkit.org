@@ -71,6 +71,7 @@ export default {
         primary: {
           DEFAULT: 'var(--color-primary)',
           foreground: 'var(--color-primary-foreground)',
+          hover: 'var(--color-primary-hover)',
         },
         secondary: {
           DEFAULT: 'var(--color-secondary)',

@@ -1,0 +1,14 @@
+---
+import ExternalLinkComponent from './ExternalLink.tsx';
+
+interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+---
+
+<ExternalLinkComponent href={href} className={className} client:load>
+  <slot />
+</ExternalLinkComponent>

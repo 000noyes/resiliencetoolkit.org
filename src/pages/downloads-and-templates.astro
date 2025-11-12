@@ -1,41 +1,7 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
+// Redirect to the unified Resource Library
+// This page has been merged with /library for better user experience
 ---
-
-<BaseLayout title="Downloads and Templates | Resilience Hub Toolkit" description="Grab printable worksheets, checklists, and planning aids that support the guides throughout this toolkit.">
-  <article class="container mx-auto px-4 py-8 max-w-4xl">
-    <!-- Page header -->
-    <header class="mb-8">
-      <h1 class="text-hero font-semibold mb-2">
-        Downloads and Templates
-      </h1>
-      <p class="text-lg text-text-secondary">
-        Printable worksheets, checklists, and planning aids that support the guides throughout this toolkit.
-      </p>
-    </header>
-
-    <!-- Content -->
-    <div class="space-y-8">
-      <section class="p-6 rounded-lg bg-surface-subtle border border-border">
-        <p class="text-body text-text-primary">
-          This section is currently being developed. Downloadable templates and resources will be added soon to support the toolkit modules.
-        </p>
-        <p class="mt-4 text-body-small text-text-muted">
-          In the meantime, you can explore the toolkit modules for inline resources and links to external templates.
-        </p>
-      </section>
-
-      <nav class="mt-8">
-        <a
-          href="/modules"
-          class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span>Back to Modules</span>
-        </a>
-      </nav>
-    </div>
-  </article>
-</BaseLayout>
+<script>
+  window.location.replace('/library');
+</script>

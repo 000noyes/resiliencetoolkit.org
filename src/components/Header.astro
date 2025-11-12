@@ -102,8 +102,20 @@ const navItems = [
         ))}
       </div>
 
-      <!-- Mobile User Menu -->
+      <!-- Mobile Utilities -->
       <div class="mt-md pt-md border-t border-border">
+        <div class="flex items-center gap-sm mb-sm">
+          <!-- Theme Toggle (Icon Button) -->
+          <button
+            id="mobile-theme-toggle"
+            type="button"
+            aria-label="Toggle theme"
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-muted hover:text-foreground transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Sun id="mobile-theme-toggle-sun-icon" className="hidden w-5 h-5" strokeWidth={1.5} />
+            <Moon id="mobile-theme-toggle-moon-icon" className="w-5 h-5" strokeWidth={1.5} />
+          </button>
+        </div>
         <UserMenuWrapper client:load />
       </div>
     </nav>
@@ -123,6 +135,9 @@ const navItems = [
   const themeToggle = document.getElementById('theme-toggle');
   const sunIcon = document.getElementById('theme-toggle-sun-icon');
   const moonIcon = document.getElementById('theme-toggle-moon-icon');
+  const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+  const mobileSunIcon = document.getElementById('mobile-theme-toggle-sun-icon');
+  const mobileMoonIcon = document.getElementById('mobile-theme-toggle-moon-icon');
   const html = document.documentElement;
 
   // Check for saved theme preference or default to system preference
@@ -138,12 +153,20 @@ const navItems = [
   function updateTheme(theme: string) {
     if (theme === 'dark') {
       html.classList.add('dark');
+      // Update desktop icons
       sunIcon?.classList.remove('hidden');
       moonIcon?.classList.add('hidden');
+      // Update mobile icons
+      mobileSunIcon?.classList.remove('hidden');
+      mobileMoonIcon?.classList.add('hidden');
     } else {
       html.classList.remove('dark');
+      // Update desktop icons
       sunIcon?.classList.add('hidden');
       moonIcon?.classList.remove('hidden');
+      // Update mobile icons
+      mobileSunIcon?.classList.add('hidden');
+      mobileMoonIcon?.classList.remove('hidden');
     }
   }
 
@@ -151,8 +174,17 @@ const navItems = [
   const currentTheme = getThemePreference();
   updateTheme(currentTheme);
 
-  // Toggle theme
+  // Toggle theme - Desktop
   themeToggle?.addEventListener('click', () => {
+    const isDark = html.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+
+    localStorage.setItem('theme', newTheme);
+    updateTheme(newTheme);
+  });
+
+  // Toggle theme - Mobile
+  mobileThemeToggle?.addEventListener('click', () => {
     const isDark = html.classList.contains('dark');
     const newTheme = isDark ? 'light' : 'dark';
 

@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -77,7 +78,7 @@ const sectionData: SectionData = {
                   Coordinate with existing Long-Term Recovery Groups and coalitions of organizations active in disaster (Vermont Community Foundation, GOCROS, etc.)
                 </Todo>
                 <Todo id="ma-resources" moduleKey="mutual-aid" client:load>
-                  Check out <a href="https://mutualaiddisasterrelief.org/collective-care/">Mutual Aid Disaster Relief's resources</a> and the <a href="https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit">Big Door Brigade Mutual Aid Toolkit</a>.
+                  Check out <ExternalLink href="https://mutualaiddisasterrelief.org/collective-care/">Mutual Aid Disaster Relief's resources</ExternalLink> and the <ExternalLink href="https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit">Big Door Brigade Mutual Aid Toolkit</ExternalLink>.
                 </Todo>
               </div>
             </td>
