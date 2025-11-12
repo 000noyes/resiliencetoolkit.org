@@ -1,4 +1,6 @@
 ---
+import ExternalLink from './ExternalLink.astro';
+
 const currentYear = new Date().getFullYear();
 ---
 
@@ -38,9 +40,10 @@ const currentYear = new Date().getFullYear();
     <!-- Copyright -->
     <div class="mt-8 pt-6 border-t border-border text-center text-sm text-muted-foreground">
       <p>
-        © {currentYear} Resilience Hub Toolkit. Released under
-        <a href="/LICENSE" class="hover:text-primary transition-colors">MIT License</a>
-        and Creative Commons.
+        Resilience Hub Toolkit materials © {currentYear} CROs and contributors, licensed <ExternalLink href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" class="hover:text-primary transition-colors">CC BY-NC-SA 4.0</ExternalLink>.
+      </p>
+      <p>
+        Website © {currentYear} Access Ecologies, licensed <a href="/LICENSE" class="hover:text-primary transition-colors">MIT License</a>.
       </p>
     </div>
   </div>
