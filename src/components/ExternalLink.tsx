@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from 'react';
-import ExternalLinkIcon from 'lucide-react/dist/esm/icons/external-link';
+import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import ExternalLinkModal from './ExternalLinkModal';
 import { isDomainTrusted, addTrustedDomain } from '../lib/externalLinkPreferences';
 

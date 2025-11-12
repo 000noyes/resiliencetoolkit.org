@@ -168,7 +168,7 @@ export default function UserMenu() {
       </a>
       <a
         href="/auth/signup"
-        className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors text-sm font-medium"
+        className="button-link inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg transition-all duration-default ease-default shadow-sm hover:shadow-raised active:translate-y-px text-sm font-medium action-button-primary"
       >
         <User className="w-4 h-4" />
         Get Started

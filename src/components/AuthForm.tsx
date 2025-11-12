@@ -206,7 +206,7 @@ export default function AuthForm({ mode, onSuccess, onError }: AuthFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="auth-form-primary-button w-full h-12 px-lg bg-primary text-primary-foreground rounded-full font-medium shadow-sm hover:shadow-raised disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none transition-all duration-default ease-default active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="w-full h-12 px-lg bg-primary text-primary-foreground rounded-full font-medium shadow-sm hover:shadow-raised hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none transition-all duration-default ease-default active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         {loading ? 'Processing...' : isSignUp ? 'Sign Up' : 'Sign In'}
       </button>

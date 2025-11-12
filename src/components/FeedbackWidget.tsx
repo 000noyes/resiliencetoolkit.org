@@ -59,7 +59,7 @@ export default function FeedbackWidget() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-lg right-lg md:bottom-lg md:right-lg bottom-md right-md z-40 h-12 md:h-12 h-10 px-lg md:px-lg px-md rounded-full bg-primary text-primary-foreground shadow-raised hover:shadow-modal transition-all duration-default ease-default active:translate-y-px flex items-center gap-xs text-body font-medium hover:-translate-y-0.5"
+        className="feedback-widget-button fixed bottom-lg right-lg md:bottom-lg md:right-lg bottom-md right-md z-40 h-12 md:h-12 h-10 px-lg md:px-lg px-md rounded-full bg-primary text-primary-foreground shadow-raised hover:shadow-modal transition-all duration-default ease-default active:translate-y-px flex items-center gap-xs text-body font-medium hover:-translate-y-0.5"
         aria-label="Open feedback form"
       >
         {/* Question mark icon */}
@@ -180,7 +180,7 @@ export default function FeedbackWidget() {
                       Opening your email client...
                     </p>
                     <p className="text-body-small text-muted-foreground mt-xs">
-                      I'll read this myself. It goes to a real inbox. ⚘ rhizome
+                      This goes to a real inbox.
                     </p>
                   </div>
                 ) : (

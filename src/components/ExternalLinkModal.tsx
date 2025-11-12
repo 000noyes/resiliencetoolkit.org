@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import Shield from 'lucide-react/dist/esm/icons/shield';
-import Lock from 'lucide-react/dist/esm/icons/lock';
-import X from 'lucide-react/dist/esm/icons/x';
+import { Shield, Lock, X } from 'lucide-react';
 
 interface ExternalLinkModalProps {
   isOpen: boolean;

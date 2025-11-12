@@ -22,7 +22,7 @@
   /* Primary colors - Mint accent */
   --primary: oklch(0.4365 0.1044 156.7556);
   --primary-foreground: oklch(0.9940 0.0135 167.1556);
-  --primary-hover: oklch(0.3865 0.1044 156.7556);
+  --primary-hover: oklch(0.3654 0.1044 156.7556);
 
   /* Secondary colors */
   --secondary: oklch(0.9940 0 0);
@@ -157,7 +157,7 @@
   /* Primary colors - Mint accent (dark) */
   --primary: oklch(0.8348 0.1302 160.9080);
   --primary-foreground: oklch(0.2626 0.0147 166.4589);
-  --primary-hover: oklch(0.7548 0.1302 160.9080);
+  --primary-hover: oklch(0.7637 0.1302 160.9080);
 
   /* Secondary colors */
   --secondary: oklch(0.2603 0 0);
@@ -334,7 +334,7 @@ a.group:focus-visible {
   outline: none;
 }
 
-/* Exclude button-styled links from global link underlines only */
+/* Exclude button-styled links from global link styles */
 a.button-link {
   text-decoration: none;
   transition: none;
@@ -342,6 +342,18 @@ a.button-link {
 
 a.button-link:focus-visible {
   outline: none;
+}
+
+/* Primary button styles - text color and hover background */
+.action-button-primary,
+.feedback-widget-button {
+  color: var(--color-primary-foreground) !important;
+}
+
+.action-button-primary:hover,
+.feedback-widget-button:hover {
+  color: var(--color-primary-foreground) !important;
+  background-color: var(--color-primary-hover);
 }
 
 /* Print styles */
@@ -943,13 +955,6 @@ a.button-link:focus-visible {
   .external-link__tooltip {
     display: none !important;
   }
-}
-
-/* Primary button hover state - applies to all primary CTAs */
-.auth-form-primary-button:hover:not(:disabled),
-.editable-table-primary-button:hover,
-.settings-primary-button:hover:not(:disabled) {
-  background-color: var(--color-primary-hover) !important;
 }
 
 /* Accessibility */
