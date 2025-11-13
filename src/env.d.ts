@@ -2,6 +2,7 @@
 
 declare namespace App {
   interface Locals {
-    session: import('@supabase/supabase-js').Session | null;
+    // DISABLED - Supabase authentication removed
+    // session: import('@supabase/supabase-js').Session | null;
   }
 }

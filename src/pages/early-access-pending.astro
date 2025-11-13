@@ -9,9 +9,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Clock, Mail, Home } from 'lucide-react';
 
-// Get session to show user email
-const session = Astro.locals.session;
-const userEmail = session?.user?.email || 'your email';
+// DISABLED - Auth removed, using fallback
+const userEmail = 'your email';
 ---
 
 <BaseLayout

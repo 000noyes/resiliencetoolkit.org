@@ -2,23 +2,30 @@
 /**
  * AuthGuard Component
  *
- * This component protects routes by checking authentication status.
- * It uses feature flags to determine if auth is required.
+ * DISABLED - Authentication removed, fully local app
+ * This component now simply renders children without any auth checks
  *
- * Usage:
- * ---
- * import AuthGuard from '@/components/AuthGuard.astro';
- * ---
- * <AuthGuard>
- *   <YourProtectedContent />
- * </AuthGuard>
- *
- * Security:
- * - Server-side session check (cannot be bypassed)
- * - Feature flag check (server-side, trusted)
- * - Redirects to login with return URL
+ * Previously protected routes by checking authentication status.
  */
 
+// No auth checks - fully local app
+const authContext = {
+  user: null,
+  session: null,
+  authRequired: false,
+  isAuthenticated: false,
+};
+---
+
+<!--
+  DISABLED - No auth protection
+  Render children without authentication checks
+-->
+<slot {...authContext} />
+
+<!-- COMMENTED OUT - Supabase authentication removed
+
+---
 import { getSession } from '../lib/supabase';
 import { isAuthRequired } from '../lib/featureFlags.server';
 import { buildLoginUrl } from '../lib/validateRedirect';
@@ -50,8 +57,4 @@ const authContext = {
 };
 ---
 
-<!--
-  Render children with auth context available
-  The actual content is only rendered if auth check passes
 -->
-<slot {...authContext} />

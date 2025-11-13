@@ -115,11 +115,25 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     </script>
 
     <script>
-      // Initialize guest mode for unauthenticated users
+      // Initialize local storage (no auth checks - app is fully local)
       import { initializeStorage } from '@/lib/storage';
-      import { getSession } from '@/lib/supabase';
 
       // Run immediately (IIFE - Immediately Invoked Function Expression)
+      (async () => {
+        try {
+          console.log('[BaseLayout] Initializing local storage (no auth)...');
+
+          // Always initialize in guest/local mode
+          const { userId, isGuest } = await initializeStorage();
+          console.log('[BaseLayout] Initialized storage:', { userId, isGuest });
+        } catch (error) {
+          console.error('[BaseLayout] Failed to initialize storage:', error);
+        }
+      })();
+
+      /* COMMENTED OUT - Supabase auth check removed
+      import { getSession } from '@/lib/supabase';
+
       (async () => {
         try {
           console.log('[BaseLayout] Checking authentication status...');
@@ -139,6 +153,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
           console.error('[BaseLayout] Failed to initialize storage:', error);
         }
       })();
+      */
     </script>
   </body>
 </html>

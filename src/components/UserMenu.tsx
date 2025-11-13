@@ -1,20 +1,25 @@
 /**
  * UserMenu Component
  *
- * Displays user authentication state in the header:
+ * DISABLED - Authentication removed, fully local app
+ *
+ * Previously displayed user authentication state in the header:
  * - Sign In button when logged out
  * - User avatar/menu when logged in
- *
- * This is a client-side React component with Flagsmith integration
- * for UI features (not security decisions).
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { User, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
-import { getSession, signOut, onAuthStateChange } from '../lib/supabase';
-import { initClientFlags, isAuthRequiredClient } from '../lib/featureFlags.client';
-import type { Session } from '@supabase/supabase-js';
+// import { useState, useEffect, useRef } from 'react';
+// import { User, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
+// import { getSession, signOut, onAuthStateChange } from '../lib/supabase';
+// import { initClientFlags, isAuthRequiredClient } from '../lib/featureFlags.client';
+// import type { Session } from '@supabase/supabase-js';
 
+export default function UserMenu() {
+  // No authentication UI - fully local app
+  return null;
+}
+
+/* COMMENTED OUT - Supabase authentication removed
 export default function UserMenu() {
   const [session, setSession] = useState<Session | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,17 +109,17 @@ export default function UserMenu() {
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
-          {/* Avatar */}
+          {/* Avatar *\/}
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
             {initials}
           </div>
 
-          {/* Name (hidden on mobile) */}
+          {/* Name (hidden on mobile) *\/}
           <span className="hidden md:inline text-sm font-medium text-gray-900 dark:text-white">
             {fullName}
           </span>
 
-          {/* Chevron */}
+          {/* Chevron *\/}
           <ChevronDown
             className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
               isOpen ? 'rotate-180' : ''
@@ -122,10 +127,10 @@ export default function UserMenu() {
           />
         </button>
 
-        {/* Dropdown Menu */}
+        {/* Dropdown Menu *\/}
         {isOpen && (
           <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 py-1 z-50">
-            {/* User Info */}
+            {/* User Info *\/}
             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {fullName}
@@ -135,7 +140,7 @@ export default function UserMenu() {
               </p>
             </div>
 
-            {/* Menu Items */}
+            {/* Menu Items *\/}
             <a
               href="/dashboard"
               className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -176,3 +181,4 @@ export default function UserMenu() {
     </div>
   );
 }
+*/

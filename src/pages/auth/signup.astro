@@ -1,4 +1,12 @@
 ---
+// DISABLED - Authentication removed, fully local app
+// Redirect to home page
+return Astro.redirect('/');
+---
+
+<!-- COMMENTED OUT - Signup page disabled
+
+---
 // Enable server-side rendering for redirect validation
 export const prerender = false;
 
@@ -113,3 +121,5 @@ const redirectTo = getSafeRedirect(Astro.url.searchParams, 'redirect', '/dashboa
     });
   });
 </script>
+
+-->

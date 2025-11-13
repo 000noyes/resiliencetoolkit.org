@@ -1,11 +1,11 @@
 /**
- * Security Middleware
+ * Security Middleware - UPDATED
  *
- * 1. Auth protection for protected routes
- * 2. Adds security headers to all responses to protect against common attacks.
+ * Auth protection DISABLED - app is fully local
+ * Only adds security headers now (no authentication checks)
  *
  * Headers added:
- * - Content-Security-Policy: Prevents XSS attacks
+ * - Content-Security-Policy: Prevents XSS attacks (Supabase domains removed)
  * - X-Frame-Options: Prevents clickjacking
  * - X-Content-Type-Options: Prevents MIME sniffing
  * - Referrer-Policy: Controls referrer information
@@ -13,11 +13,17 @@
  */
 
 import type { MiddlewareHandler } from 'astro';
-import { getServerSession } from '../lib/supabase-server';
-import { isAuthRequired, isEarlyAccessRequired, checkEarlyAccess } from '../lib/featureFlags.server';
-import { buildLoginUrl } from '../lib/validateRedirect';
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
+  // NO AUTH CHECKS - app is fully local
+  // All routes are now accessible without authentication
+
+  /* COMMENTED OUT - Supabase authentication removed
+
+  import { getServerSession } from '../lib/supabase-server';
+  import { isAuthRequired, isEarlyAccessRequired, checkEarlyAccess } from '../lib/featureFlags.server';
+  import { buildLoginUrl } from '../lib/validateRedirect';
+
   // Auth check for protected routes
   const pathname = context.url.pathname;
 
@@ -75,21 +81,23 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     }
   }
 
+  */
+
   // Process the request
   const response = await next();
 
   // Add security headers
   const headers = response.headers;
 
-  // Content Security Policy
-  // Allow resources from self, Supabase, Flagsmith, and Umami
+  // Content Security Policy - UPDATED (Supabase domains removed)
+  // Allow resources from self, Flagsmith, and Umami
   const cspDirectives = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.flagsmith.com https://cloud.umami.is", // unsafe-inline/eval needed for Astro hydration
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://api.flagsmith.com https://edge.api.flagsmith.com https://*.supabase.co wss://*.supabase.co https://api-gateway.umami.dev",
+    "connect-src 'self' https://api.flagsmith.com https://edge.api.flagsmith.com https://api-gateway.umami.dev",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",

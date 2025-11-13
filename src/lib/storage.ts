@@ -470,16 +470,9 @@ export async function initializeStorage(): Promise<{
   userId: string;
   isGuest: boolean;
 }> {
-  // Check if authenticated
+  // Auth disabled - always use guest mode
   if (typeof window !== 'undefined') {
     try {
-      const { getSession } = await import('./supabase');
-      const session = await getSession();
-
-      if (session) {
-        return { userId: session.user.id, isGuest: false };
-      }
-
       // Not authenticated - use guest mode
       let guestId = localStorage.getItem('guestId');
 
@@ -516,6 +509,20 @@ export async function initializeStorage(): Promise<{
  * @param {string} newHubId - Hub ID for the new user
  * @returns {Promise<{todosMigrated: number, tablesMigrated: number}>} Migration counts
  */
+/**
+ * DISABLED - Guest data migration removed (auth disabled)
+ * @deprecated No longer needed - app is fully local only
+ */
+export async function migrateGuestData(
+  newUserId: string,
+  newHubId: string
+): Promise<{ todosMigrated: number; tablesMigrated: number }> {
+  console.log('[Storage] migrateGuestData() called but migration is disabled - no user accounts');
+  return { todosMigrated: 0, tablesMigrated: 0 };
+}
+
+/* COMMENTED OUT - Original migration function (Supabase auth removed)
+
 export async function migrateGuestData(
   newUserId: string,
   newHubId: string
@@ -595,3 +602,5 @@ export async function migrateGuestData(
     throw error;
   }
 }
+
+*/

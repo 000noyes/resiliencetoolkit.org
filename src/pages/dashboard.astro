@@ -2,20 +2,24 @@
 /**
  * Dashboard Page
  *
- * User's main landing page after authentication.
- * Shows their hubs, recent activity, and quick access to toolkit modules.
- *
- * Security: Protected by middleware (src/middleware/index.ts)
- * Additional page-level check for defense in depth and to access session data
+ * UPDATED - No authentication required, fully local app
+ * Shows quick access to toolkit modules.
  */
 
-// Enable server-side rendering for auth checks
+// Enable server-side rendering
 export const prerender = false;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Home, HeartPulse, Users, Settings, BookOpen, ArrowRight, Siren, Wrench, HardDrive, Pencil, Trash2 } from 'lucide-react';
+
+// No authentication - fully local app
+const userName = 'there';
+const hasHubs = false;
+const hubs = [];
+
+/* COMMENTED OUT - Supabase authentication removed
 import { createServerSupabaseClient } from '../lib/supabase-server';
 import { getActiveHubId } from '../lib/createPersonalHub';
-import { Home, HeartPulse, Users, Settings, BookOpen, ArrowRight, Siren, Wrench, HardDrive, Pencil, Trash2 } from 'lucide-react';
 import DeleteHubButton from '../components/DeleteHubButton';
 import EditHubButton from '../components/EditHubButton';
 
@@ -87,6 +91,7 @@ const hubs = hubMemberships?.map((membership: any) => ({
 
 const hasHubs = hubs.length > 0;
 const primaryHub = hubs[0]; // Most recent hub
+*/
 
 // Featured modules for quick access
 const featuredModules = [
@@ -136,80 +141,7 @@ const featuredModules = [
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Main Content -->
           <div class="lg:col-span-2 space-y-6">
-            <!-- Your Hubs Section -->
-            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Your Hubs
-                </h2>
-              </div>
-
-              {hasHubs ? (
-                <div class="space-y-3">
-                  {hubs.map((hub: any) => (
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-primary transition-colors">
-                      <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                          <div class="flex items-center gap-2 mb-1">
-                            <h3 class="font-medium text-gray-900 dark:text-white">{hub.name}</h3>
-                            <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              hub.role === 'steward' ? 'bg-primary/10 text-primary' :
-                              hub.role === 'doer' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                              'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                            }`}>
-                              {hub.role}
-                            </span>
-                          </div>
-                          {hub.description && (
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{hub.description}</p>
-                          )}
-                          {hub.location && (
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
-                              {hub.location}
-                            </p>
-                          )}
-                        </div>
-                        {hub.role === 'steward' && (
-                          <div class="flex items-center gap-2 ml-4">
-                            <EditHubButton
-                              client:load
-                              hubId={hub.id}
-                              hubName={hub.name}
-                              hubDescription={hub.description}
-                              hubLocation={hub.location}
-                              hubTimezone={hub.timezone}
-                              onUpdated={() => window.location.reload()}
-                            />
-                            <DeleteHubButton
-                              client:load
-                              hubId={hub.id}
-                              hubName={hub.name}
-                              onDeleted={() => window.location.reload()}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div class="text-center py-6">
-                  <Home className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
-                  <p class="text-gray-600 dark:text-gray-400 mb-2">You're not part of any hubs yet</p>
-                  <p class="text-sm text-gray-500 dark:text-gray-500 mb-4">
-                    Create a personal hub to get started with the toolkit
-                  </p>
-                  <button
-                    id="create-hub-button"
-                    class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
-                  >
-                    Create My Hub
-                  </button>
-                  <div id="hub-creation-message" class="mt-3 text-sm"></div>
-                </div>
-              )}
-            </section>
+            <!-- REMOVED: Your Hubs Section (auth disabled) -->
 
             <!-- Quick Access to Modules -->
             <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -258,29 +190,7 @@ const featuredModules = [
 
           <!-- Sidebar -->
           <div class="space-y-6">
-            <!-- Account Info -->
-            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account</h3>
-              <div class="space-y-3">
-                <div>
-                  <p class="text-sm text-gray-500 dark:text-gray-500">Email</p>
-                  <p class="text-gray-900 dark:text-white">{userEmail}</p>
-                </div>
-                {profile?.full_name && (
-                  <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-500">Name</p>
-                    <p class="text-gray-900 dark:text-white">{profile.full_name}</p>
-                  </div>
-                )}
-              </div>
-              <a
-                href="/settings"
-                class="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-primary transition-colors"
-              >
-                <Settings className="w-4 h-4" />
-                Account Settings
-              </a>
-            </section>
+            <!-- REMOVED: Account Info (auth disabled) -->
 
             <!-- Quick Links -->
             <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -324,7 +234,9 @@ const featuredModules = [
       </div>
     </div>
 
-    <!-- Client-side hub initialization -->
+    <!-- REMOVED: Client-side hub initialization (auth disabled) -->
+
+    <!-- COMMENTED OUT - Supabase hub management removed
     <script>
       import { getActiveHubId, setActiveHub, createPersonalHub } from '../lib/createPersonalHub';
 
@@ -373,5 +285,6 @@ const featuredModules = [
         });
       });
     </script>
+    -->
   </div>
 </BaseLayout>
