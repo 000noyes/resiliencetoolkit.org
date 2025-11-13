@@ -2,27 +2,21 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 /**
- * Guest Mode Banner Component
+ * Work in Progress Banner Component
  *
- * Displays a dismissible banner at the top of the page when a user is browsing
- * in guest mode (unauthenticated). Encourages signup for sync and collaboration features.
+ * Displays a dismissible banner at the top of the page to inform users
+ * that the toolkit is under active development.
  *
  * Features:
- * - Auto-detects guest mode via localStorage 'guestId'
+ * - Visible to all users
  * - Dismissible (stores preference in localStorage)
- * - Links to signup page
- * - Shows benefits of creating an account
+ * - Uses amber color scheme for visibility
  */
 function GuestModeBannerInner() {
-  const [isGuest, setIsGuest] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Check if user is in guest mode
-    const guestId = localStorage.getItem('guestId');
     const bannerDismissed = localStorage.getItem('guestBannerDismissed');
-
-    setIsGuest(!!guestId);
     setDismissed(!!bannerDismissed);
   }, []);
 
@@ -31,8 +25,8 @@ function GuestModeBannerInner() {
     setDismissed(true);
   };
 
-  // Don't show banner if not a guest or if dismissed
-  if (!isGuest || dismissed) {
+  // Don't show banner if dismissed
+  if (dismissed) {
     return null;
   }
 
@@ -42,14 +36,14 @@ function GuestModeBannerInner() {
         <div className="relative flex items-center justify-center">
           <div className="text-center pr-8">
             <p className="text-sm text-amber-900 dark:text-amber-200">
-              <strong>Guest Mode:</strong> Your data is stored locally on this device.{' '}
+              This toolkit is a work in progress, expect changes.{' '}
               <a
-                href="/auth/signup"
+                href="/support#contact"
                 className="underline font-medium hover:text-amber-700 dark:hover:text-amber-100 transition-colors"
               >
-                Create an account
+                Contact us
               </a>
-              {' '}to sync across devices.
+              {' '}to get involved.
             </p>
           </div>
           <button
