@@ -216,8 +216,7 @@ Copy `.env.example` to `.env.local` and configure the following:
 
 ## Technology Stack
 
-- **Framework**: [Astro](https://astro.build/) v5 - Server-side rendering (SSR) enabled
-- **Adapter**: [@astrojs/node](https://docs.astro.build/en/guides/integrations-guide/node/) - Node.js standalone mode
+- **Framework**: [Astro](https://astro.build/) v5 - Static site generation
 - **UI Library**: [React](https://react.dev/) v18 - For interactive components only
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) v3 - Utility-first CSS
 - **Content**: [MDX](https://mdxjs.com/) - Markdown with React components
@@ -376,52 +375,53 @@ Design tokens are defined in `src/styles/base.css`. Modify CSS variables to cust
 
 ## Deployment
 
-### Node.js Hosting (Required)
+### Static Site Hosting
 
-This application uses **server-side rendering (SSR)** and requires a Node.js environment. Static hosting is **not supported**.
+This application is a **static site** built with Astro. All logic runs client-side in the browser with offline-first local storage.
 
 #### Recommended Hosting Platforms
 
-- **[Render](https://render.com/)** - Easy Node.js deployment with free tier
-- **[Railway](https://railway.app/)** - Git-based deployment with generous free tier
-- **[Fly.io](https://fly.io/)** - Global edge deployment
-- **[Heroku](https://heroku.com/)** - Classic PaaS
+- **[Render](https://render.com/)** - Free static site hosting with CDN (recommended)
+- **[Netlify](https://netlify.com/)** - Git-based deployment with generous free tier
+- **[Vercel](https://vercel.com/)** - Zero-config deployment
+- **[Cloudflare Pages](https://pages.cloudflare.com/)** - Global edge network
 
 #### Build Configuration
 
-- **Build Command**: `pnpm install && pnpm build`
-- **Start Command**: `node ./dist/server/entry.mjs`
-- **Node Version**: 18 or higher
-- **Output Directory**: `dist/`
+- **Build Command**: `npm install -g pnpm && pnpm install && pnpm build`
+- **Publish Directory**: `dist`
+- **Node Version**: 18 or higher (build-time only)
 
-#### Environment Variables
+#### Environment Variables (Build-Time)
 
-Configure all required environment variables in your hosting platform's dashboard:
+Configure these environment variables in your hosting platform's dashboard. They are embedded into the static files during build:
 - `PUBLIC_SUPABASE_URL`
 - `PUBLIC_SUPABASE_ANON_KEY`
 - `PUBLIC_FLAGSMITH_ENVIRONMENT_KEY`
-- `FLAGSMITH_SERVER_KEY`
+
+**Note:** All variables must start with `PUBLIC_` to be accessible in the browser.
 
 #### Deployment Steps (Render Example)
 
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed Render deployment guide.
+
+**Quick steps:**
 1. Push your code to GitHub
-2. Create a new Web Service on Render
+2. Create a new **Static Site** on Render (not Web Service)
 3. Connect your GitHub repository
-4. Configure build and start commands (above)
+4. Configure build command and publish directory (above)
 5. Add environment variables
 6. Deploy!
 
 Your app will be live at `https://your-app-name.onrender.com`
 
-#### Why Not Static Hosting?
+#### Static Site Benefits
 
-This app cannot be deployed to static hosts (Netlify, Vercel static, Cloudflare Pages static) because it uses:
-- Server-side authentication middleware
-- Server-side feature flag evaluation (Flagsmith Node SDK)
-- Server-side session validation
-- Protected routes requiring SSR
-
-**Future**: A static/edge-compatible version using Cloudflare Workers may be considered as a Phase 2 optimization once the product is stable.
+- **Free hosting** - Most platforms offer generous free tiers for static sites
+- **Global CDN** - Fast loading worldwide
+- **No cold starts** - Always available instantly
+- **Offline-first** - Works completely offline with service worker caching
+- **Client-side auth** - Supabase handles authentication in the browser
 
 ### Progressive Web App
 

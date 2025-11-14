@@ -14,13 +14,10 @@ services:
     # Health check endpoint (optional - uncomment if you add /health route)
     # healthCheckPath: /health
 
-    # Environment variables
+    # Environment variables (embedded at build time)
     # IMPORTANT: Set actual values in Render dashboard, NOT here
     # These are placeholders for documentation only
     envVars:
-      - key: NODE_ENV
-        value: production
-
       - key: PUBLIC_SUPABASE_URL
         sync: false # Set manually in dashboard
 
@@ -28,9 +25,6 @@ services:
         sync: false # Set manually in dashboard
 
       - key: PUBLIC_FLAGSMITH_ENVIRONMENT_KEY
-        sync: false # Set manually in dashboard
-
-      - key: FLAGSMITH_SERVER_KEY
         sync: false # Set manually in dashboard
 
     # Auto-deploy configuration
