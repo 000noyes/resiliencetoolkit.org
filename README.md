@@ -6,28 +6,22 @@ An offline-capable resilience dashboard and workspace for towns and grassroots g
 
 ## Features
 
-- **Offline-First**: Works completely offline with local data storage and cloud sync
+- **100% Local & Offline**: Works completely offline with all data stored on your device
+- **No Account Required**: No signup, no login, no cloud services needed
 - **Progressive Web App**: Install on any device - phones, tablets, computers
 - **Interactive Modules**: Checklists, editable tables, and progress tracking
-- **Role-Based Access**: Three role types with clear permissions (via Supabase)
-  - **Stewards**: Hub administrators (manage settings, members, governance)
-  - **Doers**: Active contributors (create/edit content, participate in activities)
-  - **Viewers**: Read-only observers (view shared content only)
-  - See [docs/role-permissions.md](docs/role-permissions.md) for detailed permission matrix
-  - See [docs/roles-expansion-roadmap.md](docs/roles-expansion-roadmap.md) for planned enhancements
+- **Persistent Storage**: All your data stays in your browser's IndexedDB
 - **Print-Friendly**: Export and print modules for offline distribution
 - **Modular Design**: Use only the modules your community needs
+- **Privacy-First**: Your data never leaves your device
 - **Open Source**: MIT License + Creative Commons content
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) v18 or higher
+- [Node.js](https://nodejs.org/) v18 or higher (for development only)
 - [pnpm](https://pnpm.io/) v8 or higher
-- **Supabase account** (required for authentication) - [supabase.com](https://supabase.com)
-- **Flagsmith account** (required for feature flags) - [flagsmith.com](https://flagsmith.com)
-- **Optional**: Umami account for analytics (already configured)
 
 ### Installation
 
@@ -42,19 +36,14 @@ cd resilience-toolkit/resiliencetoolkit.org
 pnpm install
 ```
 
-3. Copy the environment file and configure required variables:
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` with your API keys (see Environment Variables section below)
-
-4. Start the development server:
+3. Start the development server:
 ```bash
 pnpm dev
 ```
 
-5. Open [http://localhost:4321](http://localhost:4321) in your browser
+4. Open [http://localhost:4321](http://localhost:4321) in your browser
+
+**That's it!** No configuration needed - the app works completely offline.
 
 ## Project Structure
 
@@ -186,31 +175,9 @@ resiliencetoolkit.org/
 - `pnpm storybook` - Start Storybook for component development
 - `pnpm build-storybook` - Build Storybook for deployment
 
-## Environment Variables
+## Documentation
 
-Copy `.env.example` to `.env.local` and configure the following:
-
-### Required Variables
-
-- `PUBLIC_SUPABASE_URL` - Your Supabase project URL
-- `PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous/public key (safe for client)
-- `PUBLIC_FLAGSMITH_ENVIRONMENT_KEY` - Flagsmith client environment key (safe for client)
-- `FLAGSMITH_SERVER_KEY` - Flagsmith server-side key ⚠️ **Keep secret! Server-only**
-
-### Optional Variables
-
-- `DEBUG` - Enable debug logging (development only)
-
-### Setup Documentation
-
-- **Supabase**: See [docs/supabase_setup.md](docs/supabase_setup.md) for database schema and configuration
-- **Flagsmith**: See [docs/flagsmith-early-access-setup.md](docs/flagsmith-early-access-setup.md) for early access configuration
-- **Role Permissions**: See [docs/role-permissions.md](docs/role-permissions.md) for current permission model
-- **Roles Roadmap**: See [docs/roles-expansion-roadmap.md](docs/roles-expansion-roadmap.md) for planned enhancements
-- **Environment Security**: Never commit `.env.local` to version control
-
-### Development Documentation
-
+- **Deployment**: See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for deploying to Render or other static hosts
 - **Pre-commit Testing**: See [docs/pre-commit-testing.md](docs/pre-commit-testing.md) for testing workflow
 - **Interactive Checklist Schema**: See [docs/interactive-checklist-schema.md](docs/interactive-checklist-schema.md) for checklist data structure
 
@@ -220,22 +187,19 @@ Copy `.env.example` to `.env.local` and configure the following:
 - **UI Library**: [React](https://react.dev/) v18 - For interactive components only
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) v3 - Utility-first CSS
 - **Content**: [MDX](https://mdxjs.com/) - Markdown with React components
-- **Local Storage**: [idb](https://github.com/jakearchibald/idb) - IndexedDB wrapper for offline-first
-- **Authentication**: [Supabase](https://supabase.com/) - User auth and database
-- **Feature Flags**: [Flagsmith](https://flagsmith.com/) - Early access control and feature management
-- **Analytics**: [Umami](https://umami.is/) - Privacy-focused, GDPR-compliant analytics
+- **Local Storage**: [idb](https://github.com/jakearchibald/idb) - IndexedDB wrapper for persistent local data
 - **TypeScript**: Strict type checking enabled
 
 ## Architecture
 
-### Offline-First Design
+### Local-Only Design
 
-The toolkit uses a **local-first architecture**:
+The toolkit uses a **100% local architecture** with no external dependencies:
 
 1. **IndexedDB** stores all user data locally (todos, table edits, progress)
-2. **Service Worker** caches pages and assets for offline access (enabled in production)
-3. **Supabase** syncs data to the cloud when online for authenticated users
-4. **Conflict resolution** ensures data consistency across devices
+2. **Service Worker** caches pages and assets for offline access
+3. **No cloud services** - all data stays on your device
+4. **Privacy-first** - no tracking, no data collection
 
 ### Data Flow
 
@@ -244,11 +208,9 @@ User Interaction
     ↓
 React Component (Todo, EditableTable)
     ↓
-IndexedDB (local storage)
+IndexedDB (persistent local storage)
     ↓
-Sync Queue (when online)
-    ↓
-Supabase (cloud storage)
+Data stays on device forever
 ```
 
 ## Module Content
@@ -277,82 +239,33 @@ summary: "Essential supplies for disaster preparedness"
 />
 ```
 
-## Early Access (Phase 1)
+## Using the Toolkit
 
-This toolkit is currently in **Phase 1 Early Access** (5-10 users).
+1. **Install as PWA**: Click install when prompted to add the toolkit to your device
+2. **Explore Modules**: Browse emergency preparedness, baseline resilience, and community modules
+3. **Track Progress**: Check items off as you complete them - automatically saved
+4. **Work Offline**: Everything works without internet - data is stored locally
+5. **Print Resources**: Use browser print to create offline reference materials
+6. **Export Data**: Access your data anytime via browser DevTools → Application → IndexedDB
 
-### Current Access Model
+## Security & Privacy
 
-Users must:
-1. **Create an account** via Supabase authentication (`/auth/signup`)
-2. **Be granted early access** via Flagsmith feature flags
+### Your Data Stays Private
 
-Without early access approval, users are redirected to `/early-access-pending`.
-
-### Granting Early Access
-
-Admins can grant access via the Flagsmith dashboard:
-
-1. Log in to [Flagsmith](https://flagsmith.com)
-2. Navigate to your project
-3. Go to **Identities**
-4. Add user email as identity
-5. Enable the `early-access-enabled` flag for that identity
-
-See [docs/flagsmith-early-access-setup.md](docs/flagsmith-early-access-setup.md) for detailed instructions.
-
-### Future: Phase 2 (Optional Auth)
-
-In **4-6 weeks** after launch, authentication will become optional. Users will be able to:
-- Use the toolkit without an account (local-only mode)
-- Optionally sign in for cloud sync and cross-device access
-
-See [docs/migration-to-optional-auth.md](docs/migration-to-optional-auth.md) for the migration roadmap.
-
-## Security
-
-The application includes comprehensive security measures:
-
-### Authentication Middleware
-
-- Server-side session validation on every request
-- Protected routes: `/modules/*`, `/dashboard`, `/library`, `/map`
-- Automatic redirect to `/auth/login` for unauthenticated users
-- Early access check via Flagsmith for approved users only
+- **100% Local**: All data stored in your browser's IndexedDB
+- **No Accounts**: No signup, no login, no user tracking
+- **No Cloud Sync**: Data never leaves your device
+- **No Analytics Tracking**: Optional anonymous page views only (Umami)
+- **Open Source**: Audit the code yourself
 
 ### Security Headers
 
-Automatically added to all responses:
-- **Content-Security-Policy** - Prevents XSS and injection attacks
+Automatically added to all responses for protection:
+- **Content-Security-Policy** - Prevents XSS attacks
 - **X-Frame-Options: DENY** - Prevents clickjacking
 - **X-Content-Type-Options: nosniff** - Prevents MIME sniffing
-- **Referrer-Policy: strict-origin-when-cross-origin** - Controls referrer information
-- **Permissions-Policy** - Restricts browser features
+- **Referrer-Policy** - Controls referrer information
 - **Strict-Transport-Security** - HTTPS enforcement (production only)
-
-### Data Protection
-
-**Application Security:**
-- Environment variables for sensitive keys (never committed to version control)
-- Server-side feature flag validation (cannot be bypassed client-side)
-- Cookie-based session management with SameSite protection
-- All sensitive operations validated server-side (defense-in-depth)
-
-**User Data Protection:**
-- **Local-first storage**: All user data stored in IndexedDB on device by default
-- **No tracking**: Zero tracking cookies, no user behavior surveillance
-- **Privacy-focused analytics**: Umami collects only anonymous pageviews (no personal data)
-- **Row Level Security (RLS)**: Supabase database policies ensure users can only access their own data
-- **Hub isolation**: Data is scoped to hubs, users can only see data for hubs they belong to
-- **Optional cloud sync**: Users control if/when data is synced to Supabase
-- **Data ownership**: Users can export their data, delete their account
-- **No data selling**: User data is never sold or shared with third parties
-- **GDPR compliant**: Right to access, right to deletion, data portability
-
-**Offline Operation:**
-- App works fully offline without sending any data
-- User can choose to remain local-only (Phase 2 feature)
-- Network status displayed to user (transparent about connectivity)
 
 ## Customization
 
@@ -391,15 +304,7 @@ This application is a **static site** built with Astro. All logic runs client-si
 - **Build Command**: `npm install -g pnpm && pnpm install && pnpm build`
 - **Publish Directory**: `dist`
 - **Node Version**: 18 or higher (build-time only)
-
-#### Environment Variables (Build-Time)
-
-Configure these environment variables in your hosting platform's dashboard. They are embedded into the static files during build:
-- `PUBLIC_SUPABASE_URL`
-- `PUBLIC_SUPABASE_ANON_KEY`
-- `PUBLIC_FLAGSMITH_ENVIRONMENT_KEY`
-
-**Note:** All variables must start with `PUBLIC_` to be accessible in the browser.
+- **Environment Variables**: None required!
 
 #### Deployment Steps (Render Example)
 
@@ -409,8 +314,8 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed Render deployment guid
 1. Push your code to GitHub
 2. Create a new **Static Site** on Render (not Web Service)
 3. Connect your GitHub repository
-4. Configure build command and publish directory (above)
-5. Add environment variables
+4. Set build command: `npm install -g pnpm && pnpm install && pnpm build`
+5. Set publish directory: `dist`
 6. Deploy!
 
 Your app will be live at `https://your-app-name.onrender.com`
@@ -420,8 +325,8 @@ Your app will be live at `https://your-app-name.onrender.com`
 - **Free hosting** - Most platforms offer generous free tiers for static sites
 - **Global CDN** - Fast loading worldwide
 - **No cold starts** - Always available instantly
-- **Offline-first** - Works completely offline with service worker caching
-- **Client-side auth** - Supabase handles authentication in the browser
+- **No configuration** - No environment variables or secrets needed
+- **Complete offline** - Works 100% offline with service worker caching
 
 ### Progressive Web App
 

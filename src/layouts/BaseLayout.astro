@@ -130,9 +130,9 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
         try {
           console.log('[BaseLayout] Initializing local storage (no auth)...');
 
-          // Always initialize in guest/local mode
-          const { userId, isGuest } = await initializeStorage();
-          console.log('[BaseLayout] Initialized storage:', { userId, isGuest });
+          // Always initialize in local-only mode
+          const { userId } = await initializeStorage();
+          console.log('[BaseLayout] Initialized storage:', { userId });
         } catch (error) {
           console.error('[BaseLayout] Failed to initialize storage:', error);
         }

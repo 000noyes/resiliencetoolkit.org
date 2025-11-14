@@ -11,24 +11,10 @@ services:
     buildCommand: npm install -g pnpm && pnpm install && pnpm build
     staticPublishPath: ./dist
 
-    # Health check endpoint (optional - uncomment if you add /health route)
-    # healthCheckPath: /health
-
-    # Environment variables (embedded at build time)
-    # IMPORTANT: Set actual values in Render dashboard, NOT here
-    # These are placeholders for documentation only
-    envVars:
-      - key: PUBLIC_SUPABASE_URL
-        sync: false # Set manually in dashboard
-
-      - key: PUBLIC_SUPABASE_ANON_KEY
-        sync: false # Set manually in dashboard
-
-      - key: PUBLIC_FLAGSMITH_ENVIRONMENT_KEY
-        sync: false # Set manually in dashboard
-
     # Auto-deploy configuration
     autoDeploy: true # Automatically deploy on git push
+
+    # No environment variables needed - app is fully local!
 
     # Disk storage (optional - for persistent file storage)
     # disk:

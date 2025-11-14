@@ -1,8 +1,8 @@
 /**
- * IndexedDB Storage - Offline-First Local Data Persistence
+ * IndexedDB Storage - Local-Only Data Persistence
  *
- * This module implements the offline-first storage layer using IndexedDB.
- * All user data is stored locally first, then optionally synced to Supabase when online.
+ * This module implements the local storage layer using IndexedDB.
+ * All user data is stored locally on the device.
  *
  * ## Why IndexedDB vs localStorage?
  * - localStorage has 5-10MB limit, IndexedDB has no practical limit
@@ -13,22 +13,13 @@
  * ## Data Model:
  * - **todos**: Checkbox completion state and notes (keyed by `moduleKey-todoId`)
  * - **tables**: Editable table rows with custom data (keyed by `moduleKey-tableId-rowId`)
- * - **metadata**: App settings like active hub, last sync time, etc.
- *
- * ## Sync Strategy:
- * - Write-through: All writes go to IndexedDB immediately
- * - Background sync: Sync service periodically pushes to Supabase
- * - Conflict resolution: Last-write-wins (server authoritative)
- * - Sync status: `syncedAt` timestamp tracks what's been uploaded
+ * - **metadata**: App settings and preferences
  *
  * ## Key Design Decisions:
  * - Composite keys (e.g., `${moduleKey}-${todoId}`) allow per-module queries
  * - Indexes enable efficient lookups (by-module, by-table)
  * - Schema version 1 (will increment for migrations)
- * - Hub context is NOT stored (retrieved from server/Flagsmith)
- *
- * @see src/lib/sync.ts for background synchronization
- * @see src/lib/supabase.ts for cloud sync functions
+ * - All data stays local - no cloud sync
  */
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 
@@ -48,7 +39,6 @@ interface ResilienceDB extends DBSchema {
       completed: boolean; // Completion state
       completedAt?: string; // ISO timestamp when completed
       notes?: string; // Optional user notes
-      syncedAt?: string; // ISO timestamp of last Supabase sync
     };
     indexes: { 'by-module': string }; // Index for querying all todos in a module
   };
@@ -62,7 +52,6 @@ interface ResilienceDB extends DBSchema {
       rowId: string; // Row identifier (generated)
       data: Record<string, any>; // Column data as key-value pairs
       updatedAt: string; // ISO timestamp of last local update
-      syncedAt?: string; // ISO timestamp of last Supabase sync
     };
     indexes: { 'by-table': [string, string] }; // Compound index: [moduleKey, tableId]
   };
@@ -129,7 +118,6 @@ export interface Todo {
   completed: boolean;
   completedAt?: string;
   notes?: string;
-  syncedAt?: string;
 }
 
 /**
@@ -196,7 +184,6 @@ export interface TableRow {
   rowId: string;
   data: Record<string, any>;
   updatedAt: string;
-  syncedAt?: string;
 }
 
 /**
@@ -271,57 +258,6 @@ export async function setMetadata(key: string, value: any): Promise<void> {
   });
 }
 
-// ============================================================================
-// SYNC OPERATIONS
-// ============================================================================
-
-/**
- * Get all unsynced todos
- */
-export async function getUnsyncedTodos(): Promise<Todo[]> {
-  const db = await getDB();
-  const allTodos = await db.getAll('todos');
-  return allTodos.filter((todo) => !todo.syncedAt);
-}
-
-/**
- * Get all unsynced table rows
- */
-export async function getUnsyncedTableRows(): Promise<TableRow[]> {
-  const db = await getDB();
-  const allRows = await db.getAll('tables');
-  return allRows.filter((row) => !row.syncedAt);
-}
-
-/**
- * Mark todo as synced
- */
-export async function markTodoSynced(moduleKey: string, todoId: string): Promise<void> {
-  const todo = await getTodo(moduleKey, todoId);
-  if (todo) {
-    await saveTodo({
-      ...todo,
-      syncedAt: new Date().toISOString(),
-    });
-  }
-}
-
-/**
- * Mark table row as synced
- */
-export async function markTableRowSynced(
-  moduleKey: string,
-  tableId: string,
-  rowId: string
-): Promise<void> {
-  const row = await getTableRow(moduleKey, tableId, rowId);
-  if (row) {
-    await saveTableRow({
-      ...row,
-      syncedAt: new Date().toISOString(),
-    });
-  }
-}
 
 // ============================================================================
 // EXPORT OPERATIONS
@@ -459,148 +395,28 @@ export async function clearCompletedItems(
 }
 
 /**
- * Initialize storage with guest mode support
+ * Initialize storage for local-only mode
  *
- * Determines if the user is authenticated or a guest and returns appropriate ID.
- * For guests, generates and persists a unique guest ID in localStorage.
+ * Generates and persists a unique device ID in localStorage for tracking purposes.
  *
- * @returns {Promise<{userId: string, isGuest: boolean}>} User/guest ID and guest flag
+ * @returns {Promise<{userId: string}>} Device ID
  */
 export async function initializeStorage(): Promise<{
   userId: string;
-  isGuest: boolean;
 }> {
-  // Auth disabled - always use guest mode
   if (typeof window !== 'undefined') {
-    try {
-      // Not authenticated - use guest mode
-      let guestId = localStorage.getItem('guestId');
+    let deviceId = localStorage.getItem('deviceId');
 
-      if (!guestId) {
-        // Generate new guest ID
-        guestId = `guest-${crypto.randomUUID()}`;
-        localStorage.setItem('guestId', guestId);
-        console.log('[Storage] Generated new guest ID:', guestId);
-      }
-
-      return { userId: guestId, isGuest: true };
-    } catch (error) {
-      console.error('[Storage] Failed to check auth status:', error);
-      // Fallback to guest mode on error
-      let guestId = localStorage.getItem('guestId');
-      if (!guestId) {
-        guestId = `guest-${crypto.randomUUID()}`;
-        localStorage.setItem('guestId', guestId);
-      }
-      return { userId: guestId, isGuest: true };
+    if (!deviceId) {
+      // Generate new device ID
+      deviceId = `device-${crypto.randomUUID()}`;
+      localStorage.setItem('deviceId', deviceId);
+      console.log('[Storage] Generated new device ID:', deviceId);
     }
+
+    return { userId: deviceId };
   }
 
   throw new Error('Cannot initialize storage on server-side');
 }
 
-/**
- * Migrate guest data to authenticated user on signup
- *
- * When a guest signs up, this function re-keys all their local data to use
- * their new authenticated user ID, making it eligible for cloud sync.
- *
- * @param {string} newUserId - Authenticated user ID from Supabase
- * @param {string} newHubId - Hub ID for the new user
- * @returns {Promise<{todosMigrated: number, tablesMigrated: number}>} Migration counts
- */
-/**
- * DISABLED - Guest data migration removed (auth disabled)
- * @deprecated No longer needed - app is fully local only
- */
-export async function migrateGuestData(
-  newUserId: string,
-  newHubId: string
-): Promise<{ todosMigrated: number; tablesMigrated: number }> {
-  console.log('[Storage] migrateGuestData() called but migration is disabled - no user accounts');
-  return { todosMigrated: 0, tablesMigrated: 0 };
-}
-
-/* COMMENTED OUT - Original migration function (Supabase auth removed)
-
-export async function migrateGuestData(
-  newUserId: string,
-  newHubId: string
-): Promise<{ todosMigrated: number; tablesMigrated: number }> {
-  if (typeof window === 'undefined') {
-    throw new Error('Cannot migrate on server-side');
-  }
-
-  const guestId = localStorage.getItem('guestId');
-  if (!guestId) {
-    console.log('[Storage] No guest data to migrate');
-    return { todosMigrated: 0, tablesMigrated: 0 };
-  }
-
-  console.log('[Storage] Starting guest data migration:', { guestId, newUserId, newHubId });
-
-  const db = await getDB();
-  let todosMigrated = 0;
-  let tablesMigrated = 0;
-
-  try {
-    // Migrate todos
-    const todos = await db.getAll('todos');
-    const guestTodos = todos.filter(t => t.id.includes(guestId));
-
-    console.log('[Storage] Found guest todos:', guestTodos.length);
-
-    for (const todo of guestTodos) {
-      // Create new ID with user ID instead of guest ID
-      const newId = todo.id.replace(guestId, newUserId);
-
-      // Save with new ID and mark for sync
-      await db.put('todos', {
-        ...todo,
-        id: newId,
-        syncedAt: undefined, // Mark as needing sync
-      });
-
-      // Delete old guest version
-      await db.delete('todos', todo.id);
-      todosMigrated++;
-    }
-
-    // Migrate tables
-    const tables = await db.getAll('tables');
-    const guestTables = tables.filter(t => t.id.includes(guestId));
-
-    console.log('[Storage] Found guest tables:', guestTables.length);
-
-    for (const table of guestTables) {
-      const newId = table.id.replace(guestId, newUserId);
-
-      await db.put('tables', {
-        ...table,
-        id: newId,
-        syncedAt: undefined, // Mark as needing sync
-      });
-
-      await db.delete('tables', table.id);
-      tablesMigrated++;
-    }
-
-    // Store active hub ID in metadata
-    await db.put('metadata', {
-      key: 'activeHubId',
-      value: newHubId,
-      updatedAt: new Date().toISOString(),
-    });
-
-    // Clear guest ID from localStorage
-    localStorage.removeItem('guestId');
-    console.log('[Storage] Guest data migration complete:', { todosMigrated, tablesMigrated });
-
-    return { todosMigrated, tablesMigrated };
-  } catch (error) {
-    console.error('[Storage] Failed to migrate guest data:', error);
-    throw error;
-  }
-}
-
-*/

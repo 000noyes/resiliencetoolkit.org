@@ -1,94 +1,12 @@
 ---
 /**
- * Dashboard Page
+ * Dashboard Page - Local-Only App
  *
- * UPDATED - No authentication required, fully local app
  * Shows quick access to toolkit modules.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { Home, HeartPulse, Users, Settings, BookOpen, ArrowRight, Siren, Wrench, HardDrive, Pencil, Trash2 } from 'lucide-react';
-
-// No authentication - fully local app
-const userName = 'there';
-const hasHubs = false;
-const hubs = [];
-
-/* COMMENTED OUT - Supabase authentication removed
-import { createServerSupabaseClient } from '../lib/supabase-server';
-import { getActiveHubId } from '../lib/createPersonalHub';
-import DeleteHubButton from '../components/DeleteHubButton';
-import EditHubButton from '../components/EditHubButton';
-
-// This page is always protected (even when guest mode is enabled)
-const session = await Astro.locals.session || await (async () => {
-  const { getSession } = await import('../lib/supabase');
-  return await getSession();
-})();
-
-if (!session) {
-  return Astro.redirect('/auth/login?redirect=/dashboard');
-}
-
-// Fetch user data using server-side Supabase client (reads from cookies)
-const supabaseServer = createServerSupabaseClient(Astro.cookies);
-
-// Hydrate the client with the user's session so RLS policies work
-await supabaseServer.auth.setSession({
-  access_token: session.access_token,
-  refresh_token: session.refresh_token,
-});
-
-const { data: profileData, error: profileError } = await supabaseServer
-  .from('profiles')
-  .select('*')
-  .eq('id', session.user.id)
-  .single();
-
-const profile = profileError ? null : profileData;
-
-const { data: hubMembershipData, error: hubMembershipError } = await supabaseServer
-  .from('hub_members')
-  .select(`
-    id,
-    role,
-    joined_at,
-    hubs:hub_id (
-      id,
-      name,
-      description,
-      location,
-      settings,
-      created_at
-    )
-  `)
-  .eq('user_id', session.user.id)
-  .order('joined_at', { ascending: false });
-
-if (hubMembershipError) {
-  console.error('[Dashboard] Error fetching hub memberships:', hubMembershipError);
-}
-
-const hubMemberships = hubMembershipError ? [] : hubMembershipData;
-
-// Get active hub from localStorage (will be null on server-side, handled client-side)
-// Priority: 1) profile.full_name, 2) user_metadata.full_name, 3) email prefix, 4) 'there'
-const userName = profile?.full_name ||
-  session.user.user_metadata?.full_name ||
-  session.user.email?.split('@')[0] ||
-  'there';
-const userEmail = session.user.email || '';
-
-// Extract hubs from memberships
-const hubs = hubMemberships?.map((membership: any) => ({
-  ...membership.hubs,
-  role: membership.role,
-  joined_at: membership.joined_at,
-})) || [];
-
-const hasHubs = hubs.length > 0;
-const primaryHub = hubs[0]; // Most recent hub
-*/
+import { HeartPulse, Users, BookOpen, ArrowRight, Siren, HardDrive } from 'lucide-react';
 
 // Featured modules for quick access
 const featuredModules = [
@@ -124,10 +42,10 @@ const featuredModules = [
           <div class="flex items-center justify-between">
             <div>
               <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">
-                Welcome back, {userName}
+                Dashboard
               </h1>
               <p class="mt-1 text-gray-600 dark:text-gray-400">
-                {hasHubs ? 'Continue building resilience in your community' : 'Get started with your resilience journey'}
+                Get started with your resilience journey
               </p>
             </div>
           </div>
@@ -210,7 +128,7 @@ const featuredModules = [
               </nav>
             </section>
 
-            <!-- Sync Status (client-side component could be added here) -->
+            <!-- Storage Info -->
             <section class="bg-primary/5 rounded-lg border border-primary/20 p-4">
               <div class="flex items-start gap-3">
                 <div class="p-1.5 bg-primary/10 rounded-lg">
@@ -218,10 +136,10 @@ const featuredModules = [
                 </div>
                 <div class="flex-1">
                   <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                    Offline-First Design
+                    Local Storage
                   </h4>
                   <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">
-                    Your data is stored locally and syncs when online. The toolkit works anywhere, anytime.
+                    All your data is stored locally on your device. The toolkit works completely offline.
                   </p>
                 </div>
               </div>
@@ -230,58 +148,5 @@ const featuredModules = [
         </div>
       </div>
     </div>
-
-    <!-- REMOVED: Client-side hub initialization (auth disabled) -->
-
-    <!-- COMMENTED OUT - Supabase hub management removed
-    <script>
-      import { getActiveHubId, setActiveHub, createPersonalHub } from '../lib/createPersonalHub';
-
-      // On page load, check if we have an active hub set
-      // If not and we have hubs, set the first one as active
-      document.addEventListener('DOMContentLoaded', () => {
-        const activeHubId = getActiveHubId();
-
-        if (!activeHubId) {
-          // Get hubs from the page (we could pass this as data attribute)
-          // For now, we'll handle this in a future enhancement
-          console.log('[Dashboard] No active hub set');
-        } else {
-          console.log('[Dashboard] Active hub:', activeHubId);
-        }
-
-        // Handle manual hub creation
-        const createHubButton = document.getElementById('create-hub-button') as HTMLButtonElement | null;
-        const hubCreationMessage = document.getElementById('hub-creation-message') as HTMLDivElement | null;
-
-        createHubButton?.addEventListener('click', async () => {
-          if (!createHubButton || !hubCreationMessage) return;
-
-          createHubButton.disabled = true;
-          createHubButton.textContent = 'Creating...';
-
-          try {
-            const hub = await createPersonalHub();
-            setActiveHub(hub.id);
-
-            // Show success and reload
-            hubCreationMessage.className = 'mt-3 text-sm text-green-600 dark:text-green-400';
-            hubCreationMessage.textContent = 'Hub created successfully! Refreshing...';
-
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          } catch (error) {
-            console.error('[Dashboard] Failed to create hub:', error);
-            hubCreationMessage.className = 'mt-3 text-sm text-red-600 dark:text-red-400';
-            hubCreationMessage.textContent = error instanceof Error ? error.message : 'Failed to create hub';
-
-            createHubButton.disabled = false;
-            createHubButton.textContent = 'Create My Hub';
-          }
-        });
-      });
-    </script>
-    -->
   </div>
 </BaseLayout>

@@ -1,11 +1,11 @@
 /**
- * Security Middleware - UPDATED
+ * Security Middleware - Local-Only App
  *
- * Auth protection DISABLED - app is fully local
- * Only adds security headers now (no authentication checks)
+ * Adds security headers to all responses.
+ * No authentication or authorization checks (app is fully local).
  *
  * Headers added:
- * - Content-Security-Policy: Prevents XSS attacks (Supabase domains removed)
+ * - Content-Security-Policy: Prevents XSS attacks
  * - X-Frame-Options: Prevents clickjacking
  * - X-Content-Type-Options: Prevents MIME sniffing
  * - Referrer-Policy: Controls referrer information
@@ -14,74 +14,7 @@
 
 import type { MiddlewareHandler } from 'astro';
 
-export const onRequest: MiddlewareHandler = async (context, next) => {
-  // NO AUTH CHECKS - app is fully local
-  // All routes are now accessible without authentication
-
-  /* COMMENTED OUT - Supabase authentication removed
-
-  import { getServerSession } from '../lib/supabase-server';
-  import { isAuthRequired, isEarlyAccessRequired, checkEarlyAccess } from '../lib/featureFlags.server';
-  import { buildLoginUrl } from '../lib/validateRedirect';
-
-  // Auth check for protected routes
-  const pathname = context.url.pathname;
-
-  // Routes that require auth check (modules are now public)
-  const protectedPaths = ['/dashboard', '/settings'];
-  const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
-
-  // Routes that need session but NOT early access check (like pending page)
-  const sessionOnlyPaths = ['/early-access-pending'];
-  const needsSession = isProtectedRoute || sessionOnlyPaths.some(path => pathname.startsWith(path));
-
-  if (needsSession) {
-    const session = await getServerSession(context.cookies);
-
-    // Only require auth for protected paths (not pending page)
-    if (isProtectedRoute) {
-      const authRequired = await isAuthRequired();
-      console.log(`[Middleware] Auth check for ${pathname}: authRequired=${authRequired}, hasSession=${!!session}`);
-
-      if (authRequired && !session) {
-        const loginUrl = buildLoginUrl(pathname);
-        return context.redirect(loginUrl);
-      }
-    }
-
-    // Store session in context.locals for all session-aware pages
-    context.locals.session = session;
-
-    // Early access check for protected routes
-    if (isProtectedRoute && session) {
-      const earlyAccessRequired = await isEarlyAccessRequired();
-      console.log(`[Middleware] Early access check for ${pathname}: earlyAccessRequired=${earlyAccessRequired}`);
-
-      // Global early access gate (applies to all protected routes)
-      if (earlyAccessRequired) {
-        const hasEarlyAccess = await checkEarlyAccess(session.user.email);
-
-        if (!hasEarlyAccess) {
-          console.log(`[Middleware] User ${session.user.email} denied early access`);
-          return context.redirect('/early-access-pending');
-        }
-
-        console.log(`[Middleware] User ${session.user.email} granted early access`);
-      }
-
-      // Dashboard and settings require early access (beta features)
-      if (pathname.startsWith('/dashboard') || pathname.startsWith('/settings')) {
-        const hasEarlyAccess = await checkEarlyAccess(session.user.email);
-
-        if (!hasEarlyAccess) {
-          console.log(`[Middleware] User ${session.user.email} denied dashboard/settings access (beta only)`);
-          return context.redirect('/modules?message=beta-required');
-        }
-      }
-    }
-  }
-
-  */
+export const onRequest: MiddlewareHandler = async (_context, next) => {
 
   // Process the request
   const response = await next();
@@ -89,15 +22,15 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   // Add security headers
   const headers = response.headers;
 
-  // Content Security Policy - UPDATED (Supabase domains removed)
-  // Allow resources from self, Flagsmith, and Umami
+  // Content Security Policy - Local-only app
+  // Allow resources from self and Umami analytics
   const cspDirectives = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.flagsmith.com https://cloud.umami.is", // unsafe-inline/eval needed for Astro hydration
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cloud.umami.is", // unsafe-inline/eval needed for Astro hydration
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://api.flagsmith.com https://edge.api.flagsmith.com https://api-gateway.umami.dev",
+    "connect-src 'self' https://api-gateway.umami.dev",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
