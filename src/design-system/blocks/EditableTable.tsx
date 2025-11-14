@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTableRows, saveTableRow, deleteTableRow, type TableRow } from '@/lib/storage';
+import { getTableRows, saveTableRow, type TableRow } from '@/lib/storage';
 
 interface EditableTableProps {
   moduleKey: string;
@@ -18,6 +18,8 @@ export default function EditableTable({
   const [rows, setRows] = useState<TableRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingCell, setEditingCell] = useState<{ rowId: string; column: string } | null>(null);
+  const [note, setNote] = useState('');
+  const [isNoteExpanded, setIsNoteExpanded] = useState(false);
 
   // Helper function to check if a row is from initial data
   const isInitialRow = (rowId: string): boolean => {
@@ -30,6 +32,24 @@ export default function EditableTable({
     // Timestamps are 13 digits (much larger)
     return num < 1000; // Safe threshold to distinguish
   };
+
+  // Load note from localStorage
+  useEffect(() => {
+    const noteKey = `table-note-${moduleKey}-${tableId}`;
+    const savedNote = localStorage.getItem(noteKey);
+    if (savedNote) {
+      setNote(savedNote);
+      setIsNoteExpanded(true); // Auto-expand if there's a saved note
+    }
+  }, [moduleKey, tableId]);
+
+  // Save note to localStorage
+  useEffect(() => {
+    const noteKey = `table-note-${moduleKey}-${tableId}`;
+    if (note) {
+      localStorage.setItem(noteKey, note);
+    }
+  }, [note, moduleKey, tableId]);
 
   useEffect(() => {
     async function loadData() {
@@ -100,44 +120,6 @@ export default function EditableTable({
     }
   }
 
-  async function handleAddRow() {
-    const newRowId = `row-${Date.now()}`;
-    const newData: Record<string, any> = {};
-    columns.forEach((col) => {
-      newData[col] = '';
-    });
-
-    const newRow: TableRow = {
-      id: `${moduleKey}-${tableId}-${newRowId}`,
-      moduleKey,
-      tableId,
-      rowId: newRowId,
-      data: newData,
-      updatedAt: new Date().toISOString(),
-    };
-
-    try {
-      await saveTableRow(newRow);
-      setRows((prev) => [...prev, newRow]);
-    } catch (error) {
-      console.error('Failed to add row:', error);
-    }
-  }
-
-  async function handleDeleteRow(rowId: string) {
-    // Prevent deleting initial rows
-    if (isInitialRow(rowId)) {
-      console.warn('Cannot delete pre-populated rows');
-      return;
-    }
-
-    try {
-      await deleteTableRow(moduleKey, tableId, rowId);
-      setRows((prev) => prev.filter((r) => r.rowId !== rowId));
-    } catch (error) {
-      console.error('Failed to delete row:', error);
-    }
-  }
 
   if (loading) {
     return (
@@ -165,9 +147,6 @@ export default function EditableTable({
                   {column}
                 </th>
               ))}
-              <th className="px-md py-md text-right text-uppercase-accent uppercase font-semibold text-text-secondary tracking-wide">
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody className="bg-card divide-y divide-border">
@@ -199,28 +178,40 @@ export default function EditableTable({
                     )}
                   </td>
                 ))}
-                <td className="px-md py-md text-right">
-                  {!isInitialRow(row.rowId) && (
-                    <button
-                      onClick={() => handleDeleteRow(row.rowId)}
-                      className="text-body-small text-destructive hover:text-destructive/80 font-medium transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md px-2 py-1"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <button
-        onClick={handleAddRow}
-        className="mt-md px-lg py-sm text-body-small font-medium rounded-full bg-primary text-primary-foreground shadow-sm hover:shadow-raised hover:bg-primary/90 transition-all duration-default ease-default active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
-        Add Row
-      </button>
+      {/* Add Note Section */}
+      <div className="mt-md">
+        <button
+          onClick={() => setIsNoteExpanded(!isNoteExpanded)}
+          className="px-lg py-sm text-body-small font-medium rounded-full bg-secondary text-secondary-foreground shadow-sm hover:shadow-raised hover:bg-secondary/90 transition-all duration-default ease-default active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          {isNoteExpanded ? 'Hide Note' : 'Add Note'}
+        </button>
+
+        {isNoteExpanded && (
+          <div className="mt-md border border-border rounded-lg shadow-card bg-card p-md">
+            <label htmlFor={`note-${moduleKey}-${tableId}`} className="block text-body-small font-medium text-text-secondary mb-xs">
+              Notes for this table:
+            </label>
+            <textarea
+              id={`note-${moduleKey}-${tableId}`}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Add your notes here..."
+              rows={4}
+              className="w-full px-sm py-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring bg-input text-body text-foreground transition-all duration-default ease-default shadow-ambient resize-vertical"
+            />
+            <p className="mt-xs text-body-small text-text-muted">
+              Notes are saved automatically to your browser
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

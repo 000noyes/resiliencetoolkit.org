@@ -9,6 +9,6 @@ interface Props {
 const { href, class: className } = Astro.props;
 ---
 
-<ExternalLinkComponent href={href} className={className} client:load>
+<ExternalLinkComponent href={href} className={className} client:only="react">
   <slot />
 </ExternalLinkComponent>

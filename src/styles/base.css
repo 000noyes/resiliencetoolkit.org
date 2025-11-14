@@ -19,10 +19,10 @@
   --popover: oklch(0.9911 0 0);
   --popover-foreground: oklch(0.4386 0 0);
 
-  /* Primary colors - Mint accent */
-  --primary: oklch(0.4365 0.1044 156.7556);
-  --primary-foreground: oklch(0.9940 0.0135 167.1556);
-  --primary-hover: oklch(0.3654 0.1044 156.7556);
+  /* Primary colors - Orange accent */
+  --primary: oklch(0.5756 0.1368 42.8);
+  --primary-foreground: oklch(0.9940 0.0135 42.8);
+  --primary-hover: oklch(0.4756 0.1368 42.8);
 
   /* Secondary colors */
   --secondary: oklch(0.9940 0 0);
@@ -154,10 +154,10 @@
   --popover: oklch(0.2603 0 0);
   --popover-foreground: oklch(0.7348 0 0);
 
-  /* Primary colors - Mint accent (dark) */
-  --primary: oklch(0.8348 0.1302 160.9080);
-  --primary-foreground: oklch(0.2626 0.0147 166.4589);
-  --primary-hover: oklch(0.7637 0.1302 160.9080);
+  /* Primary colors - Orange accent (dark) */
+  --primary: oklch(0.75 0.15 42.8);
+  --primary-foreground: oklch(0.2626 0.0147 42.8);
+  --primary-hover: oklch(0.68 0.15 42.8);
 
   /* Secondary colors */
   --secondary: oklch(0.2603 0 0);
@@ -662,6 +662,11 @@ a.button-link:focus-visible {
   color: var(--text-muted);
   opacity: 0.6;
   transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+/* Hide icon for internal links to prevent visual flash during hydration */
+.external-link.is-internal .external-link__icon {
+  display: none;
 }
 
 .external-link:hover .external-link__icon {

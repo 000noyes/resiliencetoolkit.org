@@ -2,16 +2,14 @@
 # https://render.com/docs/blueprint-spec
 
 services:
-  - type: web
+  - type: static
     name: resilience-hub-toolkit
-    runtime: node
     region: oregon # Change to region closest to your users
-    plan: starter # Options: free, starter, standard, pro
     branch: main # Git branch to deploy
 
     # Build configuration
     buildCommand: npm install -g pnpm && pnpm install && pnpm build
-    startCommand: HOST=0.0.0.0 node ./dist/server/entry.mjs
+    staticPublishPath: ./dist
 
     # Health check endpoint (optional - uncomment if you add /health route)
     # healthCheckPath: /health

@@ -42,7 +42,7 @@ export default function ExternalLink({ href, children, className = '' }: Externa
 
   const domain = getDomain(href);
 
-  // Check if link is external
+  // Check if link is external (safe to use window since this is client:only)
   const isExternal = (() => {
     try {
       const url = new URL(href, window.location.origin);
@@ -51,15 +51,6 @@ export default function ExternalLink({ href, children, className = '' }: Externa
       return false;
     }
   })();
-
-  // If not external, render as regular link
-  if (!isExternal) {
-    return (
-      <a href={href} className={className}>
-        {children}
-      </a>
-    );
-  }
 
   // Handle click - check preferences before opening modal
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -134,6 +125,15 @@ export default function ExternalLink({ href, children, className = '' }: Externa
       }
     };
   }, []);
+
+  // If not external, render as regular link
+  if (!isExternal) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
 
   return (
     <>
