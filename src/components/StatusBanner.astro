@@ -8,7 +8,7 @@
   role="status"
   aria-live="polite"
 >
-  <span id="status-text">No internet connection. Your information is still saved on this device.</span>
+  <span id="status-text">You're working offline.</span>
 </div>
 
 <script>
@@ -23,7 +23,7 @@
       banner.classList.add('bg-primary');
       banner.classList.remove('text-muted-foreground');
       banner.classList.add('text-primary-foreground');
-      statusText.textContent = 'Back online. Your information is saved on this device.';
+      statusText.textContent = 'You\'re back online.';
 
       // Hide after 3 seconds
       setTimeout(() => {
@@ -34,7 +34,7 @@
       banner.classList.add('bg-muted');
       banner.classList.remove('text-primary-foreground');
       banner.classList.add('text-muted-foreground');
-      statusText.textContent = 'No internet connection. Your information is still saved on this device.';
+      statusText.textContent = 'You\'re working offline.';
       banner.classList.remove('hidden');
     }
   }

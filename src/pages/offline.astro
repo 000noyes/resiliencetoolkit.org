@@ -6,9 +6,46 @@ import { Printer, Download } from 'lucide-react';
 
 <BaseLayout title="Save for Offline Use - Resilience Hub" description="Download or print toolkit modules to use without internet">
   <div class="container mx-auto px-4 py-12 max-w-4xl">
-    <h1 class="text-4xl font-bold text-foreground mb-6">Save for Offline Use</h1>
+    <h1 class="text-4xl font-bold text-foreground mb-6">Offline Access</h1>
     <p class="text-lg text-muted-foreground mb-8">
-      You don't need internet to use this toolkit. Choose the option that works best for you:
+      This toolkit works completely offline. Everything is automatically saved to your device on your first visit. No setup required.
+    </p>
+
+    <!-- How Automatic Offline Works -->
+    <section class="mb-12">
+      <div class="bg-primary/5 border border-primary/20 rounded-lg p-6">
+        <h2 class="text-2xl font-semibold text-foreground mb-4">How Offline Access Works (Automatic)</h2>
+        <p class="text-muted-foreground mb-4">
+          When you visit this toolkit for the first time, your browser automatically downloads and saves all pages. This happens in the background (you don't need to do anything).
+        </p>
+        <ul class="space-y-3 text-muted-foreground">
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">All 28+ pages cached automatically</strong> on your first visit</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">Works completely offline</strong> after the first visit—no need to visit each page</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">Your data stays private</strong> on your device—never sent to servers</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">Automatic background sync</strong> when you reconnect to the internet</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">No action needed from you</strong>—full offline access is automatic</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <h2 class="text-2xl font-semibold text-foreground mb-4">Additional Options</h2>
+    <p class="text-muted-foreground mb-6">
+      You already have full offline access. These options are for creating paper copies or PDF backups:
     </p>
 
     <div class="grid md:grid-cols-2 gap-6 mb-12">
@@ -21,7 +58,7 @@ import { Printer, Download } from 'lucide-react';
           <h2 class="text-2xl font-semibold text-foreground">Print Individual Pages</h2>
         </div>
         <p class="text-muted-foreground mb-4">
-          Print any module page to fill out by hand or save as a PDF on your computer.
+          Want a paper copy? Print any module page to fill out by hand or save as a PDF. This is optional—your digital copy is always available offline.
         </p>
         <ul class="space-y-2 text-sm text-muted-foreground mb-6">
           <li class="flex items-start gap-2">
@@ -53,10 +90,10 @@ import { Printer, Download } from 'lucide-react';
           <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
             <Download className="w-6 h-6 text-primary" />
           </div>
-          <h2 class="text-2xl font-semibold text-foreground">Download Complete Toolkit</h2>
+          <h2 class="text-2xl font-semibold text-foreground">Download as PDF Workbook</h2>
         </div>
         <p class="text-muted-foreground mb-4">
-          Get the entire toolkit as one PDF file to save on your device or print all at once.
+          Want everything in one file? Download the complete toolkit as a PDF workbook for reference or printing. (Note: You already have full offline access automatically)
         </p>
         <ul class="space-y-2 text-sm text-muted-foreground mb-6">
           <li class="flex items-start gap-2">
@@ -149,7 +186,7 @@ import { Printer, Download } from 'lucide-react';
             Will my information be saved if I fill out forms on this website?
           </summary>
           <p class="text-sm text-muted-foreground mt-3">
-            Yes. Your information is saved on your device automatically (in your web browser's storage). It stays private and works even without internet. If you want to keep a backup, use the "Export local data" button on any module page to download your information.
+            Yes. All pages and your information are saved on your device automatically (in your web browser's storage). It stays private, never leaves your device, and works completely offline. If you want to keep a backup or transfer to another device, use the "Export local data" button on any module page.
           </p>
         </details>
 

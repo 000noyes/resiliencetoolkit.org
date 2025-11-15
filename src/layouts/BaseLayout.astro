@@ -112,6 +112,13 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
         document.dispatchEvent(new CustomEvent('network-status-change', {
           detail: { online: true }
         }));
+
+        // Trigger background sync when coming back online
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'REGISTER_SYNC'
+          });
+        }
       });
 
       window.addEventListener('offline', () => {
@@ -119,6 +126,19 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
           detail: { online: false }
         }));
       });
+
+      // Listen for sync messages from service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'SYNC_DATA') {
+            console.log('Sync triggered from service worker at:', event.data.timestamp);
+            // Dispatch custom event that components can listen to
+            document.dispatchEvent(new CustomEvent('background-sync', {
+              detail: { timestamp: event.data.timestamp }
+            }));
+          }
+        });
+      }
     </script>
 
     <script>

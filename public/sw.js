@@ -2,21 +2,56 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v3-dark-mode-fix';
+const CACHE_VERSION = 'v4-full-precache';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
+  // Core pages
   '/',
   '/modules',
   '/offline',
   '/about',
+  '/dashboard',
+  '/introduction',
+  '/library',
+  '/map',
+  '/downloads-and-templates',
+  '/support',
+  '/LICENSE',
+
+  // Module hub pages
+  '/modules/emergency-preparedness/',
+  '/modules/baseline-resilience/',
+  '/modules/knowing-your-community',
+
+  // Emergency Preparedness sub-modules (1-1 through 1-13)
+  '/modules/emergency-preparedness/1-1-kits',
+  '/modules/emergency-preparedness/1-2-food-water',
+  '/modules/emergency-preparedness/1-3-medical',
+  '/modules/emergency-preparedness/1-4-power',
+  '/modules/emergency-preparedness/1-5-shelter',
+  '/modules/emergency-preparedness/1-6-vehicles',
+  '/modules/emergency-preparedness/1-7-sanitation',
+  '/modules/emergency-preparedness/1-8-special-populations',
+  '/modules/emergency-preparedness/1-9-response-plans',
+  '/modules/emergency-preparedness/1-10-volunteers',
+  '/modules/emergency-preparedness/1-11-flood-recovery',
+  '/modules/emergency-preparedness/1-12-mutual-aid',
+  '/modules/emergency-preparedness/1-13-financial-resources',
+
+  // Baseline Resilience sub-modules (2-1 through 2-3)
+  '/modules/baseline-resilience/2-1-basic-needs',
+  '/modules/baseline-resilience/2-2-shared-tools',
+  '/modules/baseline-resilience/2-3-community-building',
 ];
 
 // Cache strategies
 const CACHE_FIRST_PATTERNS = [
   /\.(css|js|woff|woff2|ttf|eot)$/,
+  /\.(png|jpg|jpeg|svg|gif|webp|ico)$/,
   /\/fonts\//,
+  /\/icons\//,
 ];
 
 const NETWORK_FIRST_PATTERNS = [
@@ -152,6 +187,29 @@ async function syncData() {
   clients.forEach((client) => {
     client.postMessage({
       type: 'SYNC_DATA',
+      timestamp: new Date().toISOString(),
     });
   });
 }
+
+/**
+ * Listen for messages from the main app
+ */
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+
+  if (event.data && event.data.type === 'CLAIM_CLIENTS') {
+    self.clients.claim();
+  }
+
+  if (event.data && event.data.type === 'REGISTER_SYNC') {
+    // Register a background sync when the app goes offline
+    if ('sync' in self.registration) {
+      self.registration.sync.register('sync-data').catch((error) => {
+        console.error('Background sync registration failed:', error);
+      });
+    }
+  }
+});
