@@ -9,46 +9,89 @@
 import ActionButton from './ActionButton.astro';
 // Wrapper keeps Astro's React renderer from invoking hook logic during detection.
 import UserMenuWrapper from './UserMenuWrapper.tsx';
-import { Sun, Moon, Menu } from 'lucide-react';
+import LogoHoverCard from './LogoHoverCard.tsx';
+import { Sun, Moon, Menu, Home, Package, Download, MapPin, Info } from 'lucide-react';
 
 const currentPath = Astro.url.pathname;
 
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/modules', label: 'Toolkit' },
-  { href: '/library', label: 'Library' },
-  { href: '/map', label: 'Map' },
-  { href: '/about', label: 'About' },
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/modules', label: 'Toolkit', icon: Package },
+  { href: '/downloads', label: 'Downloads', icon: Download },
+  { href: '/map', label: 'Map', icon: MapPin },
+  { href: '/about', label: 'About', icon: Info },
 ];
 ---
 
+<style>
+  .nav-item-tilt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    /* transform: rotate(-30deg); */
+    font-size: 1em;
+  }
+
+  .nav-item-icon {
+    width: 1em;
+    height: 1em;
+  }
+
+  @keyframes logo-card-fade-in {
+    from {
+      opacity: 0;
+      transform: translate(-8px, -8px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+</style>
+
 <header class="bg-card border-b border-border sticky top-0 z-50 no-print shadow-ambient">
-  <div class="container mx-auto px-lg py-md">
-    <div class="flex items-center justify-between gap-8">
+  <div class="container mx-auto px-lg max-w-[1600px]" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+    <div class="flex items-center justify-between gap-3">
       <!-- Logo (Left) -->
-      <a href="/" class="flex items-center gap-sm text-title font-medium text-foreground hover:text-primary transition-colors duration-default ease-default">
-        <img src="/RHT_orange.svg" alt="Resilience Hub" class="w-14 h-14" />
+      <a
+        href="/"
+        id="header-logo"
+        class="flex items-center gap-sm text-title font-medium text-foreground hover:text-primary transition-colors duration-default ease-default shrink-0"
+      >
+        <img src="/RHT_orange.svg" alt="Resilience Hub" class="w-10 h-10" />
         <span class="hidden sm:inline">Resilience Hub</span>
       </a>
 
+      <!-- Logo Hover Card -->
+      <!-- <LogoHoverCard
+        client:load
+        logoSrc="/RHT_orange.svg"
+        description="An open-source guide designed to help communities build resilience through practical tools, resources, and collaborative frameworks for disaster preparedness and recovery."
+      /> -->
+
       <!-- Desktop Navigation (Centered) -->
-      <nav class="hidden md:flex items-center gap-lg flex-1 justify-center">
-        {navItems.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'text-body font-medium',
-              'transition-colors duration-default ease-default',
-              'hover:text-primary',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md px-2 py-1',
-              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                ? 'text-primary'
-                : 'text-muted-foreground'
-            ]}
-          >
-            {item.label}
-          </a>
-        ))}
+      <nav class="hidden md:flex items-center gap-lg lg:gap-xl flex-1 justify-center">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                'nav-item-tilt',
+                'text-body font-medium',
+                'transition-colors duration-default ease-default',
+                'hover:text-primary',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md px-2 py-1',
+                currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                  ? 'text-primary'
+                  : 'text-muted-foreground'
+              ]}
+            >
+              <Icon className="nav-item-icon" strokeWidth={1.5} />
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
 
       <!-- Utilities (Right) -->
@@ -84,22 +127,27 @@ const navItems = [
       class="hidden md:hidden mt-md pt-md border-t border-border"
     >
       <div class="flex flex-col gap-xs">
-        {navItems.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'block py-sm px-md rounded-lg',
-              'text-body font-medium',
-              'transition-colors duration-default ease-default',
-              'hover:bg-muted',
-              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                ? 'text-primary bg-primary/10'
-                : 'text-muted-foreground'
-            ]}
-          >
-            {item.label}
-          </a>
-        ))}
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                'nav-item-tilt',
+                'py-sm px-md rounded-lg',
+                'text-body font-medium',
+                'transition-colors duration-default ease-default',
+                'hover:bg-muted',
+                currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                  ? 'text-primary bg-primary/10'
+                  : 'text-muted-foreground'
+              ]}
+            >
+              <Icon className="nav-item-icon" strokeWidth={1.5} />
+              {item.label}
+            </a>
+          );
+        })}
       </div>
 
       <!-- Mobile Utilities -->

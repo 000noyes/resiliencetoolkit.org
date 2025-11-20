@@ -31,15 +31,15 @@ function GuestModeBannerInner() {
   }
 
   return (
-    <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
+    <div className="bg-secondary text-secondary-foreground border-b border-border">
       <div className="container mx-auto px-4 py-3">
         <div className="relative flex items-center justify-center">
           <div className="text-center pr-8">
-            <p className="text-sm text-amber-900 dark:text-amber-200">
+            <p className="text-sm">
               This toolkit is a work in progress, expect changes.{' '}
               <a
                 href="/support#contact"
-                className="underline font-medium hover:text-amber-700 dark:hover:text-amber-100 transition-colors"
+                className="font-medium hover:opacity-80 transition-opacity"
               >
                 Contact us
               </a>
@@ -48,7 +48,7 @@ function GuestModeBannerInner() {
           </div>
           <button
             onClick={handleDismiss}
-            className="absolute right-0 text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 transition-colors"
+            className="absolute right-0 hover:opacity-80 transition-opacity"
             aria-label="Dismiss banner"
             title="Dismiss this message"
           >

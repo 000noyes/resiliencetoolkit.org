@@ -25,8 +25,8 @@
   --primary-hover: oklch(0.4756 0.1368 42.8);
 
   /* Secondary colors */
-  --secondary: oklch(0.9940 0 0);
-  --secondary-foreground: oklch(0.2046 0 0);
+  --secondary: oklch(0.91 0.04 220);
+  --secondary-foreground: oklch(0.25 0.02 220);
 
   /* Muted/Accent colors */
   --muted: oklch(0.9461 0 0);
@@ -160,8 +160,8 @@
   --primary-hover: oklch(0.68 0.15 42.8);
 
   /* Secondary colors */
-  --secondary: oklch(0.2603 0 0);
-  --secondary-foreground: oklch(0.9851 0 0);
+  --secondary: oklch(0.35 0.06 220);
+  --secondary-foreground: oklch(0.95 0.01 220);
 
   /* Muted/Accent colors */
   --muted: oklch(0.2393 0 0);
@@ -202,8 +202,8 @@
   --table-heading: oklch(0.9288 0.0126 255.5078);
   --table-body: oklch(0.7122 0 0);
   --table-text-muted: oklch(0.6301 0 0);
-  --table-link: oklch(0.8003 0.1821 151.7110);
-  --table-link-hover: oklch(0.6500 0.1200 151.7110);
+  --table-link: oklch(0.75 0.08 220);
+  --table-link-hover: oklch(0.85 0.08 220);
   --table-checkbox-border: oklch(0.5452 0 0);
   --table-checkbox-fill: var(--primary);
   --table-accent-subtle: color-mix(in srgb, var(--primary) 18%, transparent);
