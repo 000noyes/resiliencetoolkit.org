@@ -10,13 +10,13 @@ import ActionButton from './ActionButton.astro';
 // Wrapper keeps Astro's React renderer from invoking hook logic during detection.
 import UserMenuWrapper from './UserMenuWrapper.tsx';
 import LogoHoverCard from './LogoHoverCard.tsx';
-import { Sun, Moon, Menu, Home, Package, Download, MapPin, Info } from 'lucide-react';
+import { Sun, Moon, Menu, Home, NotepadText, Download, MapPin, Info } from 'lucide-react';
 
 const currentPath = Astro.url.pathname;
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/modules', label: 'Toolkit', icon: Package },
+  { href: '/modules', label: 'Toolkit', icon: NotepadText },
   { href: '/downloads', label: 'Downloads', icon: Download },
   { href: '/map', label: 'Map', icon: MapPin },
   { href: '/about', label: 'About', icon: Info },
