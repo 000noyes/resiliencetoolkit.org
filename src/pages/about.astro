@@ -34,7 +34,7 @@ import FAQItem from '@/components/FAQItem.astro';
         </p> -->
           
         <p class="text-muted-foreground mb-4">
-          The people who crafted this tool are community members, organizers, and careworkers; specialists and generalists; writers and builders. So many people and organizations who participated in and supported the making of this work, this collection of expertise and vision. Here are some, but not all, of them:
+          The people who crafted this tool are community members, organizers, and careworkers; specialists and generalists; writers and builders. So many people and organizations participated in and supported the making of this work, this collection of expertise and vision. Here are some, but not all, of them:
         </p>
         <div class="bg-muted p-6 rounded-lg">
           <ul class="list-disc list-inside space-y-2 text-muted-foreground">
@@ -151,17 +151,17 @@ import FAQItem from '@/components/FAQItem.astro';
 
           <FAQItem
             question="Is this toolkit free to use?"
-            answer="Yes, this toolkit is completely free and open-source. You can use it, modify it, and share it with others. We believe everyone should have access to tools for building community resilience."
+            answer="Yes, this toolkit is completely free and open-source. You can use it, modify it, and share it with others."
           />
 
           <FAQItem
             question="Do I need internet to use this toolkit?"
-            answer="No. This toolkit automatically downloads all pages to your device on first visit, so it works completely offline after that. Your data is saved automatically and syncs in the background when you're back online. You can also download PDFs or print pages if you prefer paper copies. Learn more on the <a href='/offline' class='text-primary hover:underline'>Offline Access</a> page."
+            answer="Not after today, as long as you don't clear your browser history for this site. This toolkit automatically downloads all pages to your device on first visit, so it works completely offline after that. Your form entries and checkmarks are saved automatically and syncs in the background when you're back online. You can also download PDFs or print pages if you prefer paper copies. Learn more on the <a href='/offline' class='text-primary hover:underline'>Offline Access</a> page."
           />
 
           <FAQItem
             question="Is my information private and secure?"
-            answer="Yes. The toolkit offers two modes:<br><br><strong>Guest Mode (No Account):</strong> All information you enter stays on your device in your browser's local storage. Nothing is sent to servers or stored in the cloud. Your data is completely private and under your control.<br><br><strong>Account Mode (Optional):</strong> If you create an account, your data is synced to cloud storage (Supabase) so you can access it from any device. Your data is encrypted in transit, and the database enforces that only you and hub members you explicitly invite can view or edit your information. You can export your data anytime using the 'Export local data' button on module pages."
+            answer="Yes. All information you enter stays on your device in your browser's local storage (IndexedDB). Nothing is sent to servers or stored in the cloud. The toolkit works fully offline once loaded."
           />
 
           <FAQItem
@@ -176,7 +176,7 @@ import FAQItem from '@/components/FAQItem.astro';
 
           <FAQItem
             question="How can I report a problem or suggest an improvement?"
-            answer="We welcome feedback! You can report issues or suggest features on our <a href='https://github.com/yourusername/resiliencetoolkit' class='text-primary hover:underline' target='_blank' rel='noopener noreferrer'>GitHub repository</a> or <a href='#contact' class='text-primary hover:underline'>contact us directly</a> using the form below."
+            answer="You can report issues or suggest features on our <a href='https://github.com/yourusername/resiliencetoolkit' class='text-primary hover:underline' target='_blank' rel='noopener noreferrer'>GitHub repository</a> or <a href='#contact' class='text-primary hover:underline'>contact us directly</a> using the form below."
           />
         </div>
       </section>
@@ -186,12 +186,12 @@ import FAQItem from '@/components/FAQItem.astro';
         <h3 class="text-2xl font-semibold text-foreground mb-6">Contact</h3>
         <div class="bg-card border border-border rounded-lg p-8">
           <p class="text-muted-foreground mb-6">
-            Interested in our services or have questions about the toolkit?
-            Reach out to discuss how we can support your community.
+            Interested in collaborating or have questions about the toolkit?
+            Reach out to discuss how we can support each other.
           </p>
           <form id="contact-form" class="space-y-4">
             <div id="form-fields">
-              <!-- <div class="mb-4">
+              <div class="mb-4">
                 <label for="contact-email" class="block text-sm font-medium text-foreground mb-2">Email</label>
                 <input
                   type="email"
@@ -201,7 +201,7 @@ import FAQItem from '@/components/FAQItem.astro';
                   class="w-full px-4 py-2 border border-border rounded-md bg-background text-foreground"
                   required
                 />
-              </div> -->
+              </div>
               <div class="mb-4">
                 <label for="contact-message" class="block text-sm font-medium text-foreground mb-2">Message</label>
                 <textarea
@@ -256,7 +256,7 @@ import FAQItem from '@/components/FAQItem.astro';
                 Opening your email client...
               </p>
               <p class="text-sm text-muted-foreground mt-2">
-                I'll read this myself. It goes to a real inbox. ⚘ rhizome
+                or email us directly at <a href="mailto:info@gocros.com">info@gocros.com</a>.
               </p>
             </div>
           </form>
@@ -309,7 +309,7 @@ import FAQItem from '@/components/FAQItem.astro';
         // Create mailto link with subject and body
         const subject = encodeURIComponent('Resilience Toolkit Contact');
         const body = encodeURIComponent(`Message: ${message}\n\nFrom: ${userEmail}`);
-        const mailtoLink = `mailto:rhizome@cafeaccess.com?subject=${subject}&body=${body}`;
+        const mailtoLink = `mailto:info@gocros.com?subject=${subject}&body=${body}`;
 
         // Show success message and hide form fields
         if (formFields && successMessage && progressRing) {

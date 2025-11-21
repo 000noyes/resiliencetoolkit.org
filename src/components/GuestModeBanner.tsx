@@ -38,7 +38,7 @@ function GuestModeBannerInner() {
             <p className="text-sm">
               This toolkit is a work in progress, expect changes.{' '}
               <a
-                href="/support#contact"
+                href="/about#contact"
                 className="font-medium hover:opacity-80 transition-opacity"
               >
                 Contact us

@@ -12,7 +12,7 @@ const modules = [
     icon: BookOpen,
     frontmatter: {
       title: 'Introduction',
-      order: 1,
+      order: 0,
       summary: 'Understanding what this toolkit is for, how to use it, and what resilience means for your community.',
       tags: ['introduction', 'getting-started']
     }
@@ -23,7 +23,7 @@ const modules = [
     icon: Users,
     frontmatter: {
       title: 'Knowing Your Community',
-      order: 2,
+      order: 0.1,
       phases: ['Before', 'After'],
       summary: 'Map your community, identify resources, and build relationships.',
       tags: ['community', 'assessment']
@@ -35,7 +35,7 @@ const modules = [
     icon: Siren,
     frontmatter: {
       title: 'Emergency Preparedness and Response',
-      order: 3,
+      order: 1,
       phases: ['Before', 'During', 'After'],
       summary: 'Essential supplies, plans, and systems needed to prepare for and respond to disasters.',
       tags: ['emergency', 'preparedness', 'response']
@@ -47,7 +47,7 @@ const modules = [
     icon: HeartPulse,
     frontmatter: {
       title: 'Baseline Resilience',
-      order: 4,
+      order: 2,
       phases: ['Before', 'After'],
       summary: 'Build everyday resilience through shared resources, community building, and mutual aid.',
       tags: ['baseline-resilience', 'community']
@@ -95,11 +95,12 @@ const phaseColors: Record<string, string> = {
         >
           <div class="flex items-start justify-between mb-3">
             <div class="flex items-center gap-3">
-              {module.frontmatter.order && (
+              {/* numbers before icons */}
+              {/* {module.frontmatter.order && (
                 <span class="text-sm font-mono text-muted-foreground">
                   {module.frontmatter.order.toString().padStart(2, '0')}
                 </span>
-              )}
+              )} */}
               {module.icon && (
                 <module.icon className="w-6 h-6 text-primary" strokeWidth={1.5} />
               )}

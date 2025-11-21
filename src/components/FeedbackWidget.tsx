@@ -16,7 +16,7 @@ export default function FeedbackWidget() {
     // Create mailto link with subject and body
     const subject = encodeURIComponent('Resilience Toolkit Feedback');
     const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:rhizome@cafeaccess.com?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:info@gocros.com?subject=${subject}&body=${body}`;
 
     // Show success message and start loading animation
     setIsSubmitted(true);
