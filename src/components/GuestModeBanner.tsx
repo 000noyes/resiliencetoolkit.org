@@ -36,7 +36,7 @@ function GuestModeBannerInner() {
         <div className="relative flex items-center justify-center">
           <div className="text-center pr-8">
             <p className="text-sm">
-              This toolkit is a work in progress, expect changes.{' '}
+              This website is a work in progress, expect changes.{' '}
               <a
                 href="/about#contact"
                 className="font-medium hover:opacity-80 transition-opacity"
