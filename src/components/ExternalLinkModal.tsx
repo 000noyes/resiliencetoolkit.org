@@ -161,7 +161,7 @@ export default function ExternalLinkModal({
 
         {/* Description */}
         <p id="modal-description" className="external-link-modal__description">
-          This link will open in a new tab. Make sure you trust the destination before continuing.
+          You are about to open an external link to {domain}. Click "Open Link" to continue or "Cancel" to stay here.
         </p>
 
         {/* Remember Domain Checkbox */}

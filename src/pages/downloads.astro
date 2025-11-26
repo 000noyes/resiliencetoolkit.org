@@ -1,171 +1,350 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Card from '@/components/Card.astro';
+import ActionButton from '@/components/ActionButton.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
+import { Download, FileText, FolderOpen, FileSpreadsheet } from 'lucide-react';
+import { featuredDownloads, getModulesBySection } from '@/data/downloads';
+
+const modulesBySection = getModulesBySection();
+const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
 ---
 
-<BaseLayout title="Resource Downloads | Resilience Hub Toolkit" description="Templates, checklists, zines, posters, and forms for building community resilience.">
-  <article class="container mx-auto px-4 py-8 max-w-4xl">
-    <!-- Page header -->
-    <header class="mb-8">
-      <h1 class="text-hero font-semibold mb-2">
+<BaseLayout title="Resource Downloads | Resilience Hub Toolkit" description="Download PDFs, templates, and resources for building community resilience.">
+  <article class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Page Header -->
+    <header class="mb-12">
+      <h1 class="text-hero font-semibold mb-4">
         Resource Downloads
       </h1>
       <p class="text-lg text-text-secondary">
-        Templates, checklists, zines, posters, and forms for building community resilience. Printable worksheets and planning aids that support the guides throughout this toolkit.
+        Download individual module PDFs, access the complete toolkit, and find templates and resources for building community resilience.
       </p>
     </header>
 
-    <!-- Content -->
-    <div class="space-y-8">
-      <section class="p-6 rounded-lg bg-surface-subtle border border-border">
-        <p class="text-body text-text-primary">
-          All resources and templates are available at <ExternalLink href="https://tinyurl.com/RHTmaterials" class="text-table-link hover:underline">tinyurl.com/RHTmaterials</ExternalLink>
-        </p>
-      </section>
+    <!-- Featured Downloads Section -->
+    <section class="mb-16">
+      <h2 class="text-title font-semibold mb-6">Featured Downloads</h2>
 
-      <!-- TODO: Organize Google Drive folders to match these categories. Currently all links point to the same folder. -->
-      <!-- Each section should ideally link to its own specific folder or collection of files. -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {featuredDownloads.map((download) => (
+          <Card class="flex flex-col h-full">
+            <div class="flex-1">
+              <!-- Icon -->
+              <div class="mb-4 text-primary">
+                {download.icon === 'pdf' ? (
+                  <FileText size={32} />
+                ) : (
+                  <FileSpreadsheet size={32} />
+                )}
+              </div>
 
-      <!-- Knowing Your Community -->
-      <!-- <section>
-        <h2 class="text-title font-semibold mb-4">Knowing Your Community</h2>
-        <ul class="space-y-3">
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">0. Organizing your community</h3>
-              <p class="text-body-small text-text-secondary">Templates for mapping your community, identifying key people, and building organizational structures</p>
-            </ExternalLink>
-          </li>
-        </ul>
-      </section> -->
+              <!-- Title -->
+              <h3 class="text-subtitle font-semibold mb-2 text-text-primary">
+                {download.title}
+              </h3>
 
-      <!-- Emergency Preparedness and Response -->
-      <!-- <section>
-        <h2 class="text-title font-semibold mb-4">Emergency Preparedness and Response</h2>
-        <ul class="space-y-3">
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.1 Emergency preparedness kits</h3>
-              <p class="text-body-small text-text-secondary">Checklists for household and individual emergency supplies</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.2 Food and water</h3>
-              <p class="text-body-small text-text-secondary">Templates for food storage, community meals, and water supply management</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.3 First aid and medical</h3>
-              <p class="text-body-small text-text-secondary">First aid supply lists and medical resource templates</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.4 Power supply</h3>
-              <p class="text-body-small text-text-secondary">Power supply inventory templates and backup power planning</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.5 Warming/cooling/emergency shelter</h3>
-              <p class="text-body-small text-text-secondary">Shelter planning templates and supply checklists</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.6 Vehicles and equipment</h3>
-              <p class="text-body-small text-text-secondary">Directories for shared vehicles and heavy equipment</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.7 Sanitation and hygiene</h3>
-              <p class="text-body-small text-text-secondary">DIY handwashing, toilet, shower, and laundry guides</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.8 Populations with specific needs</h3>
-              <p class="text-body-small text-text-secondary">Templates for supporting children, seniors, people with disabilities, LEP populations, and farm animals</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">Limited English Proficiency Documents</h3>
-              <p class="text-body-small text-text-secondary">Resources, translations, and procedural guides for serving LEP populations</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.9 Community emergency response plans</h3>
-              <p class="text-body-small text-text-secondary">Emergency planning templates and coordination guides</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.10 Volunteer management</h3>
-              <p class="text-body-small text-text-secondary">Volunteer recruitment, coordination, and management templates</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.11 Flood recovery supplies and work</h3>
-              <p class="text-body-small text-text-secondary">Work tote checklists, gut kit supplies, and flood site management templates</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.12 Mutual Aid</h3>
-              <p class="text-body-small text-text-secondary">Mutual aid organizing guides and neighbor-to-neighbor templates</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">1.13 Financial resources</h3>
-              <p class="text-body-small text-text-secondary">Directories of funding sources and financial planning templates</p>
-            </ExternalLink>
-          </li>
-        </ul>
-      </section> -->
+              <!-- Description -->
+              <p class="text-body text-text-secondary mb-4">
+                {download.description}
+              </p>
 
-      <!-- Baseline Community Resilience -->
-      <!-- <section>
-        <h2 class="text-title font-semibold mb-4">Baseline Community Resilience</h2>
-        <ul class="space-y-3">
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">2.1 Basic needs</h3>
-              <p class="text-body-small text-text-secondary">Food production, meal planning, health networks, and transportation templates</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">2.2 Shared tools</h3>
-              <p class="text-body-small text-text-secondary">Tool library, tech lending, and resource sharing templates</p>
-            </ExternalLink>
-          </li>
-          <li class="p-4 rounded-lg border border-border hover:bg-surface-subtle transition-colors">
-            <ExternalLink href="https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N" class="block">
-              <h3 class="font-semibold text-text-primary mb-1">2.3 Community building</h3>
-              <p class="text-body-small text-text-secondary">Directories, skill building workshops, event planning, and governance templates</p>
-            </ExternalLink>
-          </li>
-        </ul>
-      </section> -->
+              {download.fileSize && (
+                <p class="text-body-small text-text-muted mb-4">
+                  {download.fileSize}
+                </p>
+              )}
+            </div>
 
-      <nav class="mt-8">
-        <a
-          href="/modules"
-          class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
-        >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span>Back to Modules</span>
-        </a>
-      </nav>
-    </div>
+            <!-- Download Button -->
+            <div class="mt-auto">
+              <ActionButton
+                href={download.downloadUrl}
+                variant="primary"
+                class="w-full flex items-center justify-center gap-2"
+              >
+                <Download size={18} />
+                <span>Download</span>
+              </ActionButton>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
+
+    <!-- Module Downloads Table -->
+    <section>
+      <h2 class="text-title font-semibold mb-6">Module Downloads</h2>
+
+      <div class="rounded-lg border border-border overflow-hidden">
+        <table class="downloads-table">
+          <caption class="sr-only">
+            Downloadable modules organized by section with links to view online, download PDFs, and access additional resources
+          </caption>
+
+          <thead>
+            <tr>
+              <th scope="col">Module #</th>
+              <th scope="col">Module Name</th>
+              <th scope="col" class="text-center">View Online</th>
+              <th scope="col" class="text-center">Download PDF</th>
+              <th scope="col" class="text-center">Resources</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {sectionOrder.map((sectionName) => {
+              const modules = modulesBySection.get(sectionName) || [];
+              return (
+                <>
+                  {/* Section Header */}
+                  <tr class="section-header">
+                    <td colspan="5">
+                      <strong>{sectionName}</strong>
+                    </td>
+                  </tr>
+
+                  {/* Module Rows */}
+                  {modules.map((module) => (
+                    <tr>
+                      <td data-label="Module #" class="module-number">
+                        {module.number}
+                      </td>
+                      <td data-label="Module Name" class="module-name">
+                        {module.name}
+                      </td>
+                      <td data-label="View Online" class="text-center action-cell">
+                        <a
+                          href={module.onlineUrl}
+                          class="inline-flex items-center gap-2 text-table-link hover:text-table-link-hover transition-colors"
+                          aria-label={`View ${module.name} online`}
+                        >
+                          <FileText size={18} />
+                          <span>View</span>
+                        </a>
+                      </td>
+                      <td data-label="Download PDF" class="text-center action-cell">
+                        <a
+                          href={`/toolkit/sections/${module.pdfFilename}`}
+                          download
+                          class="inline-flex items-center gap-2 text-table-link hover:text-table-link-hover transition-colors"
+                          aria-label={`Download ${module.name} PDF`}
+                        >
+                          <Download size={18} />
+                          <span>PDF</span>
+                        </a>
+                      </td>
+                      <td data-label="Resources" class="text-center action-cell">
+                        {module.resourcesUrl ? (
+                          <ExternalLink
+                            href={module.resourcesUrl}
+                            class="inline-flex items-center gap-2"
+                          >
+                            <FolderOpen size={18} />
+                            <span>Folder</span>
+                          </ExternalLink>
+                        ) : (
+                          <span class="text-text-muted" aria-label="No additional resources available">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Back Navigation -->
+    <nav class="mt-12">
+      <a
+        href="/modules"
+        class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Back to Modules</span>
+      </a>
+    </nav>
   </article>
 </BaseLayout>
+
+<style>
+  /* ========================================
+     Downloads Table Styles
+     ======================================== */
+
+  .downloads-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--table-surface);
+  }
+
+  /* Table Header */
+  .downloads-table th {
+    padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+    background-color: var(--table-surface-subtle);
+    color: var(--table-heading);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--table-divider);
+    text-align: left;
+  }
+
+  .downloads-table th.text-center {
+    text-align: center;
+  }
+
+  /* Table Cells */
+  .downloads-table td {
+    padding: var(--table-cell-padding-y) var(--table-cell-padding-x);
+    color: var(--table-body);
+    border-bottom: 1px solid var(--table-divider);
+    vertical-align: middle;
+  }
+
+  /* Module Number Column */
+  .downloads-table .module-number {
+    font-weight: 600;
+    color: var(--table-heading);
+    width: 100px;
+    white-space: nowrap;
+  }
+
+  /* Module Name Column */
+  .downloads-table .module-name {
+    font-weight: 500;
+  }
+
+  /* Action Cells */
+  .downloads-table .action-cell {
+    width: 120px;
+  }
+
+  /* Row Hover Effect */
+  .downloads-table tbody tr:not(.section-header):hover {
+    background-color: var(--table-surface-subtle);
+    transition: background-color var(--motion-duration-fast) var(--motion-easing);
+  }
+
+  /* Section Header Rows */
+  .downloads-table .section-header td {
+    background-color: var(--table-accent-subtle);
+    color: var(--table-heading);
+    font-weight: 600;
+    font-size: 15px;
+    padding: var(--spacing-sm) var(--table-cell-padding-x);
+    border-bottom: 2px solid var(--table-divider);
+  }
+
+  /* Links in Table */
+  .downloads-table a {
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .downloads-table a:hover {
+    text-decoration: underline;
+  }
+
+  /* Focus States */
+  .downloads-table a:focus {
+    outline: 2px solid var(--table-focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ========================================
+     Responsive Design - Mobile
+     ======================================== */
+
+  @media (max-width: 768px) {
+    /* Hide table header on mobile */
+    .downloads-table thead {
+      display: none;
+    }
+
+    /* Transform table structure to blocks */
+    .downloads-table,
+    .downloads-table tbody,
+    .downloads-table tr {
+      display: block;
+      width: 100%;
+    }
+
+    /* Style rows as cards */
+    .downloads-table tbody tr:not(.section-header) {
+      margin-bottom: var(--spacing-md);
+      border: 1px solid var(--table-divider);
+      border-radius: var(--radius-lg);
+      background-color: var(--table-surface);
+    }
+
+    /* Section headers remain full width */
+    .downloads-table .section-header {
+      margin-bottom: var(--spacing-sm);
+      border-radius: var(--radius-md);
+    }
+
+    /* Style cells as stacked content */
+    .downloads-table td {
+      display: block;
+      text-align: left !important;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: none;
+      width: 100%;
+    }
+
+    /* Add labels before content on mobile */
+    .downloads-table td:before {
+      content: attr(data-label);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--table-text-muted);
+      letter-spacing: var(--tracking-wide);
+      display: block;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    /* Don't show label for section headers */
+    .downloads-table .section-header td:before {
+      display: none;
+    }
+
+    /* Add spacing between fields */
+    .downloads-table td:not(:last-child) {
+      border-bottom: 1px solid var(--table-divider);
+    }
+
+    /* Action cells on mobile */
+    .downloads-table .action-cell {
+      width: 100%;
+    }
+
+    .downloads-table .action-cell a {
+      display: inline-flex;
+    }
+  }
+
+  /* ========================================
+     Tablet Adjustments
+     ======================================== */
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .downloads-table th,
+    .downloads-table td {
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .downloads-table .action-cell {
+      width: 100px;
+    }
+  }
+</style>
