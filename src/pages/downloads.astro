@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Card from '@/components/Card.astro';
 import ActionButton from '@/components/ActionButton.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
-import { Download, FileText, FolderOpen, FileSpreadsheet } from 'lucide-react';
+import { Download, FileText, FolderOpen, FileSpreadsheet, Printer } from 'lucide-react';
 import { featuredDownloads, getModulesBySection } from '@/data/downloads';
 
 const modulesBySection = getModulesBySection();
@@ -22,11 +22,43 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
       </p>
     </header>
 
+    <!-- How Automatic Offline Works -->
+    <!-- <section class="mb-12">
+      <div class="bg-primary/5 border border-primary/20 rounded-lg p-6">
+        <h2 class="text-2xl font-semibold text-foreground mb-4">How Offline Access Works (Automatic)</h2>
+        <p class="text-muted-foreground mb-4">
+          When you visit this toolkit for the first time, your browser automatically downloads and saves all pages. This happens in the background (you don't need to do anything).
+        </p>
+        <ul class="space-y-3 text-muted-foreground">
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">All 28+ pages cached automatically</strong> on your first visit</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">Works completely offline</strong> after the first visit—no need to visit each page</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">Your data stays private</strong> on your device—never sent to servers</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">Automatic background sync</strong> when you reconnect to the internet</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-primary mt-1 text-xl">✓</span>
+            <span><strong class="text-foreground">No action needed from you</strong>—full offline access is automatic</span>
+          </li>
+        </ul>
+      </div>
+    </section> -->
+
     <!-- Featured Downloads Section -->
     <section class="mb-16">
       <h2 class="text-title font-semibold mb-6">Featured Downloads</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {featuredDownloads.map((download) => (
           <Card class="flex flex-col h-full">
             <div class="flex-1">
@@ -34,8 +66,10 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
               <div class="mb-4 text-primary">
                 {download.icon === 'pdf' ? (
                   <FileText size={32} />
-                ) : (
+                ) : download.icon === 'spreadsheet' ? (
                   <FileSpreadsheet size={32} />
+                ) : (
+                  <FileText size={32} />
                 )}
               </div>
 
@@ -56,16 +90,31 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
               )}
             </div>
 
-            <!-- Download Button -->
+            <!-- Action Button -->
             <div class="mt-auto">
-              <ActionButton
-                href={download.downloadUrl}
-                variant="primary"
-                class="w-full flex items-center justify-center gap-2"
-              >
-                <Download size={18} />
-                <span>Download</span>
-              </ActionButton>
+              {download.isExternal ? (
+                <ExternalLink
+                  href={download.downloadUrl}
+                  class="inline-block w-full"
+                >
+                  <ActionButton
+                    variant="primary"
+                    class="w-full flex items-center justify-center gap-2 pointer-events-none"
+                  >
+                    <FileText size={18} />
+                    <span>View Online</span>
+                  </ActionButton>
+                </ExternalLink>
+              ) : (
+                <ActionButton
+                  href={download.downloadUrl}
+                  variant="primary"
+                  class="w-full flex items-center justify-center gap-2"
+                >
+                  <Download size={18} />
+                  <span>Download</span>
+                </ActionButton>
+              )}
             </div>
           </Card>
         ))}
@@ -154,6 +203,96 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
             })}
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- How to Print Instructions -->
+    <section class="mb-12 mt-16">
+      <h2 class="text-2xl font-semibold text-foreground mb-4">How to Print a Page</h2>
+      <div class="bg-card border border-border rounded-lg p-6">
+        <ol class="space-y-4">
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">1</span>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">Go to any module page</h3>
+              <p class="text-sm text-muted-foreground">Browse the <a href="/modules" class="text-primary hover:underline">toolkit modules</a> and open the page you want to save.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">2</span>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">Click "Print this module"</h3>
+              <p class="text-sm text-muted-foreground">Look for the button near the top of the page. This opens a printer-friendly version.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-semibold">3</span>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">Print or save as PDF</h3>
+              <p class="text-sm text-muted-foreground">Choose your printer, or select "Save as PDF" to keep a digital copy on your device.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold text-foreground mb-6">Common Questions</h2>
+      <div class="space-y-4">
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Do I need internet to use the printed pages?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            No. Once you've printed a page or saved it as a PDF on your device, you can use it anytime without internet.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Can I fill out the PDF on my computer or phone?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Yes. After saving as PDF, you can open it with most PDF readers (like Adobe Reader, Preview on Mac, or Chrome) and type directly into it. You can also print it and fill out by hand.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            What's the difference between printing one page vs. downloading the whole toolkit?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Printing individual pages is great if you only need specific sections. Downloading the complete PDF gives you everything in one file, which is handy for sharing with your team or keeping a backup.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Will my information be saved if I fill out forms on this website?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Yes. All pages and your information are saved on your device automatically (in your web browser's storage). It stays private, never leaves your device, and works completely offline. If you want to keep a backup or transfer to another device, use the "Export local data" button on any module page.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            How do I save my work and use it on a different device?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            On any module page, click "Export local data" to download your information. You can then email it to yourself or save it to a USB drive to transfer to another device.
+          </p>
+        </details>
+
+        <details class="bg-card border border-border rounded-lg p-5">
+          <summary class="font-semibold text-foreground cursor-pointer">
+            Does this work on my phone?
+          </summary>
+          <p class="text-sm text-muted-foreground mt-3">
+            Yes. You can use this toolkit on any phone, tablet, or computer. The print and save features work on all devices.
+          </p>
+        </details>
       </div>
     </section>
 

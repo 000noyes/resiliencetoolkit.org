@@ -6,7 +6,7 @@
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { HeartPulse, Users, BookOpen, ArrowRight, Siren, HardDrive } from 'lucide-react';
+import { HeartPulse, Users, BookOpen, ArrowRight, Siren, HardDrive, Download } from 'lucide-react';
 
 // Featured modules for quick access
 const featuredModules = [
@@ -112,11 +112,11 @@ const featuredModules = [
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
               <nav class="space-y-2">
                 <a
-                  href="/library"
+                  href="/downloads"
                   class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
                 >
-                  <BookOpen className="w-4 h-4" />
-                  Resource Library
+                  <Download className="w-4 h-4" />
+                  Downloads
                 </a>
                 <a
                   href="/about"

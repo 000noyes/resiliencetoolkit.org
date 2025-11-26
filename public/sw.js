@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v4-full-precache';
+const CACHE_VERSION = 'v5-full-precache';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -10,7 +10,7 @@ const PRECACHE_ASSETS = [
   // Core pages
   '/',
   '/modules',
-  '/offline',
+  '/downloads',
   '/about',
   '/dashboard',
   '/introduction',

@@ -5,12 +5,15 @@
  * featured downloads and module-specific PDFs and resources.
  */
 
+import { getFormattedFileSize } from '@/lib/fileSize';
+
 export interface FeaturedDownload {
   title: string;
   description: string;
   downloadUrl: string;
   fileSize?: string;
-  icon: 'pdf' | 'spreadsheet';
+  icon: 'pdf' | 'spreadsheet' | 'document';
+  isExternal?: boolean;  // If true, opens as external link instead of download
 }
 
 export interface ModuleDownload {
@@ -24,26 +27,41 @@ export interface ModuleDownload {
 
 /**
  * Featured Downloads - Prominent toolkit downloads
+ * File sizes are read dynamically at build time
  */
+
+// Read file sizes at build time using top-level await
+const toolkit1Size = await getFormattedFileSize('public/toolkit/2025 Resilience Hub Toolkit_V1 final.pdf');
+const toolkit2Size = await getFormattedFileSize('public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf');
+
 export const featuredDownloads: FeaturedDownload[] = [
+  {
+    title: 'View Toolkit in Document Format',
+    description: 'Browse the complete toolkit online in Google Docs',
+    downloadUrl: 'https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.hlgifqj3ns1e',
+    icon: 'document',
+    isExternal: true
+  },
   {
     title: '2025 Resilience Hub Toolkit',
     description: 'Complete resilience hub toolkit without templates',
     downloadUrl: '/toolkit/2025 Resilience Hub Toolkit_V1 final.pdf',
-    fileSize: '2.4 MB',
+    fileSize: toolkit1Size,
     icon: 'pdf'
   },
   {
     title: '2025 Resilience Hub Toolkit with Templates',
     description: 'Complete toolkit including all templates and worksheets',
     downloadUrl: '/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf',
+    fileSize: toolkit2Size,
     icon: 'pdf'
   },
   {
-    title: 'Templates for Resilience Hub Toolkit',
+    title: 'Templates Directory',
     description: 'Spreadsheet directory of all templates and resources',
-    downloadUrl: '/toolkit/TEMPLATES for Resilience Hub Toolkit.xlsx',
-    icon: 'spreadsheet'
+    downloadUrl: 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=458153177#gid=458153177',
+    icon: 'spreadsheet',
+    isExternal: true
   }
 ];
 

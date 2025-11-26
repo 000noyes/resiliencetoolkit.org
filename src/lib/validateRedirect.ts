@@ -28,7 +28,7 @@ const ALLOWED_PATHS = [
   '/introduction',
   '/map',
   '/downloads-and-templates',
-  '/offline',
+  '/downloads',
   '/auth/login',
   '/auth/signup',
 ];
