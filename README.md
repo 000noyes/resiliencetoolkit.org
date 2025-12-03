@@ -27,8 +27,8 @@ An offline-capable resilience dashboard and workspace for towns and grassroots g
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/resilience-toolkit.git
-cd resilience-toolkit/resiliencetoolkit.org
+git clone https://github.com/000noyes/resiliencetoolkit.org.git
+cd resiliencetoolkit.org/resiliencetoolkit.org
 ```
 
 2. Install dependencies:
@@ -53,12 +53,10 @@ resiliencetoolkit.org/
 │   ├── main.ts
 │   ├── preview.ts
 │   └── vitest.setup.ts
-├── docs/                      # Setup and implementation documentation
-│   ├── SUPABASE_SETUP.md
-│   ├── feature-flags.md
-│   ├── flagsmith-early-access-setup.md
-│   ├── migration-to-optional-auth.md
-│   └── supabase-schema.sql
+├── docs/                      # Design and development documentation
+│   ├── 2025-11-3_initial-commit.md    # Project specification and design system
+│   ├── git-guide.md                   # Git workflow best practices
+│   └── 2025 Resilience Hub Toolkit (2).pdf  # Design materials
 ├── public/                    # Static assets
 │   ├── favicon.svg
 │   ├── manifest.json          # PWA manifest
@@ -66,12 +64,10 @@ resiliencetoolkit.org/
 ├── src/
 │   ├── components/            # Astro and React UI components
 │   │   ├── ActionButton.astro
-│   │   ├── AuthForm.tsx       # Login/signup form
-│   │   ├── AuthGuard.astro    # Protected route wrapper
 │   │   ├── Badge.astro
 │   │   ├── Card.astro
 │   │   ├── EmptyState.astro
-│   │   ├── FeedbackWidget.tsx # User feedback component
+│   │   ├── FeedbackWidget.tsx      # User feedback component
 │   │   ├── Footer.astro
 │   │   ├── Header.astro
 │   │   ├── IconButton.astro
@@ -82,7 +78,7 @@ resiliencetoolkit.org/
 │   │   ├── Sidebar.astro
 │   │   ├── SidebarItem.astro
 │   │   ├── StatusBanner.astro
-│   │   └── UserMenu.tsx       # User account menu
+│   │   └── UserMenuWrapper.tsx     # User menu component wrapper
 │   ├── design-system/         # Interactive React components with persistence
 │   │   └── blocks/
 │   │       ├── ChecklistRow.tsx
@@ -95,21 +91,17 @@ resiliencetoolkit.org/
 │   │   ├── BaseLayout.astro   # Base HTML structure with head, analytics
 │   │   └── ModuleLayout.astro # Module-specific layout with navigation
 │   ├── lib/                   # Core utilities and services
-│   │   ├── createPersonalHub.ts    # User onboarding and hub creation
-│   │   ├── featureFlags.ts         # Flagsmith feature flag client
-│   │   ├── icons.ts                # Lucide icon utilities
-│   │   ├── mdx-components.tsx      # MDX component mappings
-│   │   ├── storage.ts              # IndexedDB wrapper for offline-first
-│   │   ├── supabase-server.ts      # Server-side Supabase client (SSR)
-│   │   ├── supabase.ts             # Client-side Supabase client
-│   │   ├── sync.ts                 # Background sync service
-│   │   └── validateRedirect.ts     # Security: safe redirect validation
-│   ├── middleware/            # Auth and security middleware
-│   │   └── index.ts           # Session validation, early access, headers
+│   │   ├── externalLinkPreferences.ts  # External link handling preferences
+│   │   ├── fileSize.ts                 # File size utilities
+│   │   ├── icons.ts                    # Lucide icon utilities
+│   │   ├── mdx-components.tsx          # MDX component mappings
+│   │   ├── pdfLookup.ts                # PDF resource lookup utilities
+│   │   ├── resourcesLookup.ts          # Resource directory utilities
+│   │   ├── storage.ts                  # IndexedDB wrapper for offline-first
+│   │   └── validateRedirect.ts         # Security: safe redirect validation
+│   ├── middleware/            # Security middleware
+│   │   └── index.ts           # Security headers and request handling
 │   ├── pages/                 # Routes (file-based routing)
-│   │   ├── auth/
-│   │   │   ├── login.astro
-│   │   │   └── signup.astro
 │   │   ├── modules/           # Module content pages
 │   │   │   ├── baseline-resilience/
 │   │   │   │   ├── index.astro
@@ -133,16 +125,13 @@ resiliencetoolkit.org/
 │   │   │   │   └── 1-13-financial-resources.astro
 │   │   │   ├── index.astro
 │   │   │   └── knowing-your-community.astro
+│   │   ├── about.astro                 # About page
 │   │   ├── dashboard.astro             # User dashboard
-│   │   ├── downloads-and-templates.astro
-│   │   ├── early-access-pending.astro  # Early access waiting page
+│   │   ├── downloads.astro             # Downloads and templates
 │   │   ├── index.astro                 # Home page
-│   │   ├── introduction.astro
-│   │   ├── library.astro
-│   │   ├── map.astro
-│   │   ├── about.astro
-│   │   ├── offline.astro               # Offline status page
-│   │   └── support.astro
+│   │   ├── introduction.astro          # Introduction page
+│   │   ├── LICENSE.astro               # License page
+│   │   └── map.astro                   # Community mapping page
 │   ├── stories/               # Storybook component stories
 │   │   ├── InteractiveChecklist.stories.tsx
 │   │   └── ...
@@ -177,9 +166,8 @@ resiliencetoolkit.org/
 
 ## Documentation
 
-- **Deployment**: See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for deploying to Render or other static hosts
-- **Pre-commit Testing**: See [docs/pre-commit-testing.md](docs/pre-commit-testing.md) for testing workflow
-- **Interactive Checklist Schema**: See [docs/interactive-checklist-schema.md](docs/interactive-checklist-schema.md) for checklist data structure
+- **Design Specification**: See [docs/2025-11-3_initial-commit.md](../docs/2025-11-3_initial-commit.md) for the original project specification and design system
+- **Git Workflow**: See [docs/git-guide.md](../docs/git-guide.md) for development workflow and Git best practices
 
 ## Technology Stack
 
@@ -188,7 +176,7 @@ resiliencetoolkit.org/
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) v3 - Utility-first CSS
 - **Content**: [MDX](https://mdxjs.com/) - Markdown with React components
 - **Local Storage**: [idb](https://github.com/jakearchibald/idb) - IndexedDB wrapper for persistent local data
-- **TypeScript**: Strict type checking enabled
+- **TypeScript**: v5.7.2 - Strict type checking enabled
 
 ## Architecture
 
@@ -378,4 +366,4 @@ Built with frontline organizers in Vermont and beyond. This toolkit emerged from
 
 ---
 
-**Need help?** Visit `/support` or open an issue on GitHub.
+**Need help?** Open an issue on GitHub at [github.com/000noyes/resiliencetoolkit.org](https://github.com/000noyes/resiliencetoolkit.org/issues).
