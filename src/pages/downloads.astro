@@ -61,8 +61,61 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
     <section class="mb-16">
       <h2 class="text-title font-semibold mb-6">Featured Downloads</h2>
 
+      <!-- Download PDF Group -->
+      <section aria-labelledby="download-pdf-heading">
+        <h3 id="download-pdf-heading" class="text-body-small font-semibold text-text-muted uppercase tracking-wide mb-4">
+          Download PDF
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {featuredDownloads.filter(d => !d.isExternal).map((download) => (
+            <Card class="flex flex-col h-full">
+              <div class="flex-1">
+                <!-- Icon -->
+                <div class="mb-4 text-primary">
+                  {download.icon === 'pdf' ? (
+                    <FileText size={32} />
+                  ) : download.icon === 'spreadsheet' ? (
+                    <FileSpreadsheet size={32} />
+                  ) : (
+                    <FileText size={32} />
+                  )}
+                </div>
+
+                <!-- Title -->
+                <h4 class="text-subtitle font-semibold mb-2 text-text-primary">
+                  {download.title}
+                </h4>
+
+                <!-- Description -->
+                <p class="text-body text-text-secondary mb-4">
+                  {download.description}
+                </p>
+
+                {download.fileSize && (
+                  <p class="text-body-small text-text-muted mb-4">
+                    {download.fileSize}
+                  </p>
+                )}
+              </div>
+
+              <!-- Action Button -->
+              <div class="mt-auto">
+                <ActionButton
+                  href={download.downloadUrl}
+                  variant="primary"
+                  class="w-full flex items-center justify-center gap-2"
+                >
+                  <Download size={18} />
+                  <span>Download PDF</span>
+                </ActionButton>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
       <!-- View Online Group -->
-      <section class="mb-8" aria-labelledby="view-online-heading">
+      <section class="mb-8 mt-12" aria-labelledby="view-online-heading">
         <h3 id="view-online-heading" class="text-body-small font-semibold text-text-muted uppercase tracking-wide mb-4">
           View Online
         </h3>
@@ -112,59 +165,6 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
                     <span>View Online</span>
                   </ActionButton>
                 </ExternalLink>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <!-- Download PDF Group -->
-      <section aria-labelledby="download-pdf-heading">
-        <h3 id="download-pdf-heading" class="text-body-small font-semibold text-text-muted uppercase tracking-wide mb-4">
-          Download PDF
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {featuredDownloads.filter(d => !d.isExternal).map((download) => (
-            <Card class="flex flex-col h-full">
-              <div class="flex-1">
-                <!-- Icon -->
-                <div class="mb-4 text-primary">
-                  {download.icon === 'pdf' ? (
-                    <FileText size={32} />
-                  ) : download.icon === 'spreadsheet' ? (
-                    <FileSpreadsheet size={32} />
-                  ) : (
-                    <FileText size={32} />
-                  )}
-                </div>
-
-                <!-- Title -->
-                <h4 class="text-subtitle font-semibold mb-2 text-text-primary">
-                  {download.title}
-                </h4>
-
-                <!-- Description -->
-                <p class="text-body text-text-secondary mb-4">
-                  {download.description}
-                </p>
-
-                {download.fileSize && (
-                  <p class="text-body-small text-text-muted mb-4">
-                    {download.fileSize}
-                  </p>
-                )}
-              </div>
-
-              <!-- Action Button -->
-              <div class="mt-auto">
-                <ActionButton
-                  href={download.downloadUrl}
-                  variant="primary"
-                  class="w-full flex items-center justify-center gap-2"
-                >
-                  <Download size={18} />
-                  <span>Download PDF</span>
-                </ActionButton>
               </div>
             </Card>
           ))}
