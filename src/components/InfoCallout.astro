@@ -1,0 +1,60 @@
+---
+/**
+ * InfoCallout Component - Resilience Toolkit
+ *
+ * A compact, prominent callout box for displaying important information to users.
+ * Used to explain how forms work, privacy details, and other contextual guidance.
+ *
+ * Usage:
+ * <InfoCallout icon="lock" variant="info">
+ *   <p>Your explanatory text here</p>
+ * </InfoCallout>
+ */
+
+interface Props {
+  class?: string;
+  icon?: 'lock' | 'info' | 'check';
+  variant?: 'info' | 'privacy' | 'success';
+}
+
+const {
+  class: className = '',
+  icon = 'info',
+  variant = 'info'
+} = Astro.props;
+
+const variantStyles = {
+  info: 'bg-primary/5 border-primary/20',
+  privacy: 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800',
+  success: 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800'
+};
+---
+
+<div
+  class:list={[
+    'border rounded-lg p-6 my-6',
+    variantStyles[variant],
+    className
+  ]}
+>
+  <div class="flex items-start gap-3">
+    {icon === 'lock' && (
+      <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+    )}
+    {icon === 'info' && (
+      <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    )}
+    {icon === 'check' && (
+      <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    )}
+    <div class="flex-1">
+      <slot />
+    </div>
+  </div>
+</div>

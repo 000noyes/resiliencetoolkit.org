@@ -2,6 +2,7 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
+import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,6 +16,10 @@ const sectionData: SectionData = {
 ---
 
 <ModuleLayout sectionData={sectionData}>
+      <InfoCallout icon="lock" variant="info">
+        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
+      </InfoCallout>
+
       <p>This section is focused on flood recovery for homes and other buildings, but can be useful for other disasters. These instructions were compiled by NEK Organizing, which has mucked and gutted hundreds of homes in the Kingdom.</p>
 
       <h3 class="text-title font-semibold">Managing flood site and survivor information</h3>

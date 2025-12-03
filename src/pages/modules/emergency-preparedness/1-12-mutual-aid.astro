@@ -2,6 +2,7 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
+import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,6 +16,10 @@ const sectionData: SectionData = {
 ---
 
 <ModuleLayout sectionData={sectionData}>
+      <InfoCallout icon="lock" variant="info">
+        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
+      </InfoCallout>
+
       <p>Mutual Aid/N2N groups spring up after disasters like COVID lockdown and flooding to direct resources and help. These community efforts are informal (not housed inside of an organization or part of a State agency), which means they keep barriers to accessing help very low. Groups led by people in impacted communities are often the first to show up and help when disaster strikes, because they are showing up for their own community, and also often know where help is needed most. Identifying who you are already in relationship with and proximity to, and acknowledging that we all have something to offer and all have something we need, is crucial. Around the world, mutual aid groups have saved lives and improved material conditions for people when official systems of aid have moved too slowly or failed. Mutual aid and N2N work can happen in countless ways. The most important things are that these groups are formed by and for the community, that they promote solidarity not charity, practice cooperation not competition and recognize that our dignity and survival are bound up together.</p>
 
       <table class="guide-table">

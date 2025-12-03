@@ -4,6 +4,7 @@ import EditableTable from '@/design-system/blocks/EditableTable';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
 import ActionButton from '@/components/ActionButton.astro';
+import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -65,6 +66,10 @@ const sectionData: SectionData = {
         <h2 class="text-title font-semibold mb-4">Organizing your community: who is here and what are they doing?</h2>
 
         <p class="mb-6">The first step of organizing your community is thinking about who is in your community and the place where you live. You can do this activity alone, but it's best to do it with a few other people. They could be your friends, colleagues, neighbors, or someone else you just met who's excited about organizing your community to be more resilient.</p>
+
+        <InfoCallout icon="lock" variant="info">
+          <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
+        </InfoCallout>
 
         <EditableTable
           moduleKey="knowing-community"

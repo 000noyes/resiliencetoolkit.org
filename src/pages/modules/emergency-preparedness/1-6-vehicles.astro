@@ -2,6 +2,7 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
+import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,6 +16,10 @@ const sectionData: SectionData = {
 ---
 
 <ModuleLayout sectionData={sectionData}>
+      <InfoCallout icon="lock" variant="info">
+        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
+      </InfoCallout>
+
       <table class="guide-table">
         <thead>
           <tr>
