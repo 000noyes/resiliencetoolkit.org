@@ -181,13 +181,44 @@ const featuredModules = [
     <div class="container mx-auto px-4 text-center">
       <div class="max-w-2xl mx-auto">
         <h2 class="text-3xl font-bold text-foreground mb-4">
-          Works Completely Offline
+          Works Without Internet (After First Visit)
         </h2>
-        <p class="text-lg text-muted-foreground mb-6">
-          All 28+ pages are automatically cached to your device on your first visit—no action needed.
-          Once loaded, the entire site works offline without any downloads. Your data stays private
-          on your device and works anytime, anywhere. If you prefer, you can also download PDF
-          versions of individual modules.
+        <p class="text-lg text-muted-foreground mb-4">
+          When you visit this toolkit for the first time with internet, your browser automatically
+          saves all 28+ pages. After that, you can turn off your WiFi
+          or go somewhere without cell service, and everything still works.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto mb-8">
+          <!-- Step 1 -->
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-300">1</span>
+            </div>
+            <h3 class="text-xl font-semibold text-foreground mb-3">Visit With Internet</h3>
+            <p class="text-muted-foreground">Load this site once with internet connected to cache all pages</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+              <span class="text-2xl font-bold text-orange-600 dark:text-orange-300">2</span>
+            </div>
+            <h3 class="text-xl font-semibold text-foreground mb-3">Turn Off WiFi</h3>
+            <p class="text-muted-foreground">Disconnect from internet or enable airplane mode</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+              <span class="text-2xl font-bold text-green-600 dark:text-green-300">3</span>
+            </div>
+            <h3 class="text-xl font-semibold text-foreground mb-3">Still Works</h3>
+            <p class="text-muted-foreground">The toolkit loads and functions normally offline</p>
+          </div>
+        </div>
+        <p class="text-sm text-muted-foreground mb-6">
+          Any information you type on this site stays private on your device and never gets sent anywhere. You can also
+          download PDF versions if you prefer paper copies.
         </p>
         <ActionButton href="/downloads" variant="primary" size="lg">
           View Downloads & Offline Info

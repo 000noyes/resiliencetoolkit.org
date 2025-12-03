@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
 import GuestModeBanner from '../components/GuestModeBanner.tsx';
+// import OfflineReadyBanner from '../components/OfflineReadyBanner.astro';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
 
@@ -90,6 +91,9 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     <!-- Feedback widget -->
     {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
     {!isPrintMode && <FeedbackWidgetWrapper client:load />}
+
+    <!-- Offline ready notification (disabled for now) -->
+    {/* !isPrintMode && <OfflineReadyBanner /> */}
 
     <script>
       // Register service worker for offline functionality

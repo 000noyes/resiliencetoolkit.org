@@ -165,6 +165,25 @@ export async function toggleTodo(moduleKey: string, todoId: string): Promise<boo
 }
 
 /**
+ * Update todo note
+ */
+export async function updateTodoNote(
+  moduleKey: string,
+  todoId: string,
+  note: string
+): Promise<void> {
+  const todo = await getTodo(moduleKey, todoId);
+
+  await saveTodo({
+    moduleKey,
+    todoId,
+    completed: todo?.completed ?? false,
+    completedAt: todo?.completedAt,
+    notes: note || undefined, // Don't save empty strings
+  });
+}
+
+/**
  * Delete a todo
  */
 export async function deleteTodo(moduleKey: string, todoId: string): Promise<void> {

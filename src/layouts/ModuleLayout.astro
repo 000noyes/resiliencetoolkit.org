@@ -23,6 +23,10 @@
  * @see src/types/section-navigation.ts for SectionData type definition
  */
 import BaseLayout from './BaseLayout.astro';
+import { getPdfUrlForSection } from '@/lib/pdfLookup';
+import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
+import ExternalLink from '@/components/ExternalLink.astro';
+import { FolderOpen } from 'lucide-react';
 
 interface SectionData {
   number: string;
@@ -49,6 +53,10 @@ interface Props {
 }
 
 const { frontmatter, sectionData, title } = Astro.props;
+
+// Look up PDF URL if we have section data
+const pdfUrl = sectionData ? getPdfUrlForSection(sectionData.number) : null;
+const resourcesUrl = sectionData ? getResourcesUrlForSection(sectionData.number) : null;
 
 // Determine page title
 const pageTitle = sectionData
@@ -128,19 +136,47 @@ const phaseColors = {
       )}
     </header>
 
-    <!-- Action Bar with Print Button -->
+    <!-- Action Bar with View PDF and Export Buttons -->
     <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print">
+      {pdfUrl ? (
+        <a
+          href={pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          View PDF
+        </a>
+      ) : (
+        <button
+          disabled
+          class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
+          title="PDF not available for this section"
+        >
+          View PDF (Not Available)
+        </button>
+      )}
+
+      {resourcesUrl ? (
+        <ExternalLink href={resourcesUrl} class="inline-block">
+          <button
+            class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+          >
+            <FolderOpen size={18} />
+            <span>See Additional Resources</span>
+          </button>
+        </ExternalLink>
+      ) : null}
+
       <button
-        id="print-button"
-        class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors text-sm font-medium"
+        disabled
+        class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
+        title="Export functionality coming soon"
       >
-        Print this module
-      </button>
-      <button
-        id="export-button"
-        class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors text-sm font-medium"
-      >
-        Export local data
+        Export local data (Coming soon)
       </button>
     </div>
 
@@ -190,35 +226,7 @@ const phaseColors = {
   </article>
 
   <script>
-    // Print functionality
-    const printButton = document.getElementById('print-button');
-    printButton?.addEventListener('click', () => {
-      // Trigger native browser print dialog
-      window.print();
-    });
-
-    // Export functionality
-    const exportButton = document.getElementById('export-button');
-    exportButton?.addEventListener('click', async () => {
-      try {
-        // Get local data from IndexedDB
-        const { getModuleData } = await import('@/lib/storage');
-        const data = await getModuleData(window.location.pathname);
-
-        // Create and download JSON file
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `module-data-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error('Export failed:', error);
-        alert('Failed to export data. Please try again.');
-      }
-    });
+    // Print functionality removed - replaced with direct PDF links
+    // Export functionality disabled - coming soon
   </script>
 </BaseLayout>

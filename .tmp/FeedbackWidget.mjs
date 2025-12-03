@@ -12,7 +12,7 @@ function FeedbackWidget() {
     }
     const subject = encodeURIComponent("Resilience Toolkit Feedback");
     const body = encodeURIComponent(feedback);
-    const mailtoLink = `mailto:rhizome@cafeaccess.com?subject=${subject}&body=${body}`;
+    const mailtoLink = `mailto:resiliencetoolkit@gocros.org?subject=${subject}&body=${body}`;
     setIsSubmitted(true);
     setIsLoading(true);
     setTimeout(() => {

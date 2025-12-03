@@ -1,0 +1,79 @@
+---
+// Shows once after the service worker successfully installs and caches all pages
+---
+
+<div id="offline-ready-banner" class="hidden fixed bottom-4 right-4 max-w-sm bg-primary text-primary-foreground rounded-lg shadow-lg p-4 z-50 animate-slide-up">
+  <div class="flex items-start gap-3">
+    <span class="text-2xl">✓</span>
+    <div class="flex-1">
+      <h3 class="font-semibold mb-1">Ready for Offline Use</h3>
+      <p class="text-sm opacity-90">
+        This toolkit is now saved to your device. You can use it anytime, even without internet.
+      </p>
+    </div>
+    <button
+      id="dismiss-offline-banner"
+      class="text-primary-foreground hover:opacity-80 transition-opacity"
+      aria-label="Dismiss notification"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  // Show banner when service worker finishes caching all pages
+  if ('serviceWorker' in navigator) {
+    // Check if we've already shown this banner
+    const hasSeenBanner = localStorage.getItem('offline-ready-banner-seen');
+
+    if (!hasSeenBanner) {
+      // Listen for CACHE_COMPLETE message from service worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'CACHE_COMPLETE') {
+          const banner = document.getElementById('offline-ready-banner');
+          if (banner) {
+            console.log(`[OfflineBanner] Cache complete: ${event.data.cachedCount} pages cached`);
+
+            // Show banner after a short delay
+            setTimeout(() => {
+              banner.classList.remove('hidden');
+
+              // Auto-hide after 8 seconds
+              setTimeout(() => {
+                banner.classList.add('hidden');
+              }, 8000);
+            }, 1000);
+
+            // Mark as seen
+            localStorage.setItem('offline-ready-banner-seen', 'true');
+          }
+        }
+      });
+    }
+
+    // Dismiss button
+    document.getElementById('dismiss-offline-banner')?.addEventListener('click', () => {
+      document.getElementById('offline-ready-banner')?.classList.add('hidden');
+    });
+  }
+</script>
+
+<style>
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+</style>

@@ -3,6 +3,7 @@ import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import EditableTable from '@/design-system/blocks/EditableTable';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
+import ActionButton from '@/components/ActionButton.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -17,10 +18,10 @@ const sectionData: SectionData = {
 
 <ModuleLayout sectionData={sectionData}>
       <section>
-        <h2 class="text-title font-semibold mb-4">Find your regional partners</h2>
-        <p>Locate your Regional Planning Commission (RPC), Long Term Recovery Group (LTRG), and local supply hubs across Vermont.</p>
+        <!-- <h2 class="text-title font-semibold mb-4">Find your regional partners</h2>
+        <p>Locate your Regional Planning Commission (RPC), Long Term Recovery Group (LTRG), and local supply hubs across Vermont.</p> -->
 
-        ArcGIS Map
+        <!-- ArcGIS Map
         <iframe
           width="700"
           height="600"
@@ -29,11 +30,11 @@ const sectionData: SectionData = {
           src="https://www.arcgis.com/apps/mapviewer/index.html?configurableview=true&webmap=f8de0ef4a49d4000b57e07f891a944b5&theme=light&legend=true&share=true&scroll=false&center=-72.879998,43.727942&scale=4622324.434309"
           class="w-full rounded-lg border border-border"
           loading="lazy"
-        ></iframe>
+        ></iframe> -->
 
-        <div class="bg-muted p-8 rounded-lg text-center">
+        <!-- <div class="bg-muted p-8 rounded-lg text-center">
           <p class="text-muted-foreground">Interactive asset map coming soon...</p>
-        </div>
+        </div> -->
 
         <!-- Map Details  -->
         <!-- <details class="mt-4 p-4 rounded-lg bg-surface-subtle border border-border">
@@ -42,6 +43,22 @@ const sectionData: SectionData = {
             This map shows Vermont counties, Regional Planning Commissions (RPCs), Long Term Recovery Groups (LTRGs), and local supply hubs—key partners in building community resilience.
           </p>
         </details> -->
+
+        <!-- Vermont Town Directory Callout -->
+        <div class="bg-primary/5 border border-primary/20 rounded-lg p-6 my-8">
+          <h3 class="text-lg font-semibold mb-2">Vermont Town Directory</h3>
+          <p class="text-muted-foreground mb-4">
+            Looking for specific town contacts and resources? Learn about jurisdictions and service areas for your town - what county you're in, which Regional Planning Commission (RPC) to ask for technical assistance, and which Long Term Recovery Group (LTRG) can help you if individuals are impacted by flooding.				
+          </p>
+          <ExternalLink
+            href="https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0"
+            class="inline-block"
+          >
+            <ActionButton variant="outline" class="pointer-events-none">
+              View Town Directory
+            </ActionButton>
+          </ExternalLink>
+        </div>
       </section>
 
       <section>

@@ -35,6 +35,7 @@ const toolkit1Size = await getFormattedFileSize('public/toolkit/2025 Resilience 
 const toolkit2Size = await getFormattedFileSize('public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf');
 
 export const featuredDownloads: FeaturedDownload[] = [
+  // View Online Group
   {
     title: 'View Toolkit in Document Format',
     description: 'Browse the complete toolkit online in Google Docs',
@@ -42,6 +43,22 @@ export const featuredDownloads: FeaturedDownload[] = [
     icon: 'document',
     isExternal: true
   },
+  {
+    title: 'Vermont Town Directory',
+    description: 'Directory of Vermont towns with jurisdictions, RPCs, LTRGs, and resilience hub contacts',
+    downloadUrl: 'https://docs.google.com/spreadsheets/d/1_s3vjiE-GYXAz9CMtDdodjmShBY1vMI0mDeSjxhjWPc/edit?gid=921360703#gid=921360703',
+    icon: 'spreadsheet',
+    isExternal: true
+  },
+  {
+    title: 'Templates Directory',
+    description: 'Spreadsheet directory of all templates and resources',
+    downloadUrl: 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=458153177#gid=458153177',
+    icon: 'spreadsheet',
+    isExternal: true
+  },
+
+  // Download Group
   {
     title: '2025 Resilience Hub Toolkit',
     description: 'Complete resilience hub toolkit without templates',
@@ -55,13 +72,6 @@ export const featuredDownloads: FeaturedDownload[] = [
     downloadUrl: '/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf',
     fileSize: toolkit2Size,
     icon: 'pdf'
-  },
-  {
-    title: 'Templates Directory',
-    description: 'Spreadsheet directory of all templates and resources',
-    downloadUrl: 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=458153177#gid=458153177',
-    icon: 'spreadsheet',
-    isExternal: true
   }
 ];
 

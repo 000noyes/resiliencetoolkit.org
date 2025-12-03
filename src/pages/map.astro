@@ -1,15 +1,69 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ActionButton from '@/components/ActionButton.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
+import { MapPin } from 'lucide-react';
 ---
 
-<BaseLayout title="Map - Resilience Hub" description="Local assets directory - people, places, and things">
-  <div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold text-foreground mb-6">Asset Map</h1>
-    <p class="text-lg text-muted-foreground mb-8">
-      Local assets directory for people, places, and things. Filters, printable views, and more.
-    </p>
-    <div class="bg-muted p-8 rounded-lg text-center">
-      <p class="text-muted-foreground">Interactive asset map coming soon...</p>
-    </div>
+<BaseLayout title="Community Assets & Resources - Resilience Hub" description="Access the Vermont Town Directory and local assets directory for people, places, and resources">
+  <div class="container mx-auto px-4 py-12 max-w-6xl">
+    <!-- Page Header -->
+    <header class="mb-12">
+      <h1 class="text-hero font-semibold mb-4">
+        Community Assets & Resources
+      </h1>
+      <p class="text-lg text-text-secondary">
+        Access the Vermont Town Directory and local asset mapping tools to connect with your community's resources and networks.
+      </p>
+    </header>
+
+    <!-- Featured: Vermont Town Directory - Hero Banner -->
+    <section class="mb-16">
+      <div class="bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 rounded-lg p-8 md:p-12">
+        <div class="flex flex-col items-center text-center max-w-3xl mx-auto">
+          <!-- Icon -->
+          <div class="mb-6 text-primary">
+            <MapPin size={48} strokeWidth={1.5} />
+          </div>
+
+          <!-- Title -->
+          <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Vermont Town Directory
+          </h2>
+
+          <!-- Description -->
+          <p class="text-lg text-muted-foreground mb-6">
+            Learn about jurisdictions and service areas for your town—what county you're in, which Regional Planning Commission (RPC) to ask for technical assistance, and which Long Term Recovery Group (LTRG) can help you if individuals are impacted by flooding.
+          </p>
+
+          <!-- CTA Button -->
+          <ExternalLink
+            href="https://docs.google.com/spreadsheets/d/1_s3vjiE-GYXAz9CMtDdodjmShBY1vMI0mDeSjxhjWPc/edit?gid=921360703#gid=921360703"
+            class="inline-block"
+          >
+            <ActionButton
+              variant="primary"
+              size="lg"
+              class="pointer-events-none"
+            >
+              View Town Directory
+            </ActionButton>
+          </ExternalLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Asset Map Section -->
+    <section>
+      <h2 class="text-2xl font-semibold text-foreground mb-4">
+        Interactive Asset Map
+      </h2>
+      <p class="text-muted-foreground mb-6">
+        Local assets directory for people, places, and things. Filters, printable views, and more.
+      </p>
+      <div class="bg-muted p-8 rounded-lg text-center border border-border">
+        <p class="text-muted-foreground">Interactive asset map coming soon...</p>
+      </div>
+    </section>
   </div>
 </BaseLayout>

@@ -67,6 +67,17 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS);
     }).then(() => {
+      // Notify all clients that caching is complete
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'CACHE_COMPLETE',
+            timestamp: new Date().toISOString(),
+            cachedCount: PRECACHE_ASSETS.length
+          });
+        });
+      });
+    }).then(() => {
       return self.skipWaiting();
     })
   );
