@@ -35,6 +35,22 @@ const toolkit1Size = await getFormattedFileSize('public/toolkit/2025 Resilience 
 const toolkit2Size = await getFormattedFileSize('public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf');
 
 export const featuredDownloads: FeaturedDownload[] = [
+  // Download Group
+  {
+    title: '2025 Resilience Hub Toolkit',
+    description: 'Complete resilience hub toolkit without templates',
+    downloadUrl: '/toolkit/2025 Resilience Hub Toolkit_V1 final.pdf',
+    fileSize: toolkit1Size,
+    icon: 'pdf'
+  },
+  {
+    title: '2025 Resilience Hub Toolkit with Templates',
+    description: 'Complete toolkit including all templates and worksheets',
+    downloadUrl: '/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf',
+    fileSize: toolkit2Size,
+    icon: 'pdf'
+  },
+
   // View Online Group
   {
     title: 'View Toolkit in Document Format',
@@ -57,21 +73,19 @@ export const featuredDownloads: FeaturedDownload[] = [
     icon: 'spreadsheet',
     isExternal: true
   },
-
-  // Download Group
   {
-    title: '2025 Resilience Hub Toolkit',
-    description: 'Complete resilience hub toolkit without templates',
-    downloadUrl: '/toolkit/2025 Resilience Hub Toolkit_V1 final.pdf',
-    fileSize: toolkit1Size,
-    icon: 'pdf'
+    title: 'Community Needs Assessment',
+    description: 'Interactive community needs assessment tool',
+    downloadUrl: 'https://drive.google.com/file/d/18Agz8LA23sPxxqChrdKujppBaqLgwk69/view',
+    icon: 'document',
+    isExternal: true
   },
   {
-    title: '2025 Resilience Hub Toolkit with Templates',
-    description: 'Complete toolkit including all templates and worksheets',
-    downloadUrl: '/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf',
-    fileSize: toolkit2Size,
-    icon: 'pdf'
+    title: 'Interactive Toolkit Activity',
+    description: 'Interactive toolkit activity guide',
+    downloadUrl: 'https://drive.google.com/file/d/10PfAqefQWzjC_BwJvK1PySATl3W4t843/view',
+    icon: 'document',
+    isExternal: true
   }
 ];
 

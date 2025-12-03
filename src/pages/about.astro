@@ -4,6 +4,8 @@ import ActionButton from '@/components/ActionButton.astro';
 import FAQItem from '@/components/FAQItem.astro';
 import Badge from '@/components/Badge.astro';
 import Card from '@/components/Card.astro';
+import { Image } from 'astro:assets';
+import logoImage from '@/assets/images/RHT_text.png';
 ---
 
 <BaseLayout
@@ -14,7 +16,19 @@ import Card from '@/components/Card.astro';
   <section class="bg-gradient-to-b from-primary/10 to-background py-20">
     <div class="container mx-auto px-4 text-center max-w-4xl">
       <div class="flex justify-center mb-6">
-        <img src="/RHT_text.png" alt="Resilience Hub Toolkit logo" class="w-65 h-65" />
+        <div class="w-65 h-65 relative">
+          <Image
+            src={logoImage}
+            alt="Resilience Hub Toolkit logo"
+            width={260}
+            height={260}
+            quality={85}
+            format="webp"
+            loading="eager"
+            decoding="sync"
+            class="w-full h-full object-contain"
+          />
+        </div>
       </div>
       <h1 class="text-hero font-semibold mb-6 text-foreground">
         Community Resilience Hub Toolkit

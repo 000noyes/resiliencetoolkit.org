@@ -11,6 +11,13 @@ export default defineConfig({
   // Static site generation for fully local app
   output: 'static',
 
+  // Image optimization with Sharp
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp'
+    }
+  },
+
   integrations: [
     react(),
     mdx(),
