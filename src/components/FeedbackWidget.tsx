@@ -179,9 +179,9 @@ export default function FeedbackWidget() {
                     <p className="text-body font-medium text-foreground">
                       Opening your email client...
                     </p>
-                    <p className="text-body-small text-muted-foreground mt-xs">
+                    {/* <p className="text-body-small text-muted-foreground mt-xs">
                       This goes to a real inbox.
-                    </p>
+                    </p> */}
                   </div>
                 ) : (
                   <div>

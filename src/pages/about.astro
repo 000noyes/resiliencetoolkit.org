@@ -273,15 +273,15 @@ import Card from '@/components/Card.astro';
         <h2 class="text-headline font-semibold mb-4 text-foreground">
           Start a Conversation
         </h2>
-        <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
+        <!-- <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
           Whether you’re looking to compare notes, ask questions, or explore next steps for your community, we’re here to figure it out together.
-        </p>
+        </p> -->
       </div>
 
       <div class="bg-card border border-border rounded-lg p-8 shadow-card">
         <form id="contact-form" class="space-y-6">
           <div id="form-fields">
-            <div class="mb-4">
+            <!-- <div class="mb-4">
               <label for="contact-email" class="block text-body font-medium text-foreground mb-2">
                 Email Address
               </label>
@@ -294,7 +294,7 @@ import Card from '@/components/Card.astro';
                 required
                 aria-required="true"
               />
-            </div>
+            </div> -->
             <div class="mb-4">
               <label for="contact-message" class="block text-body font-medium text-foreground mb-2">
                 How Can We Help?
@@ -401,19 +401,17 @@ import Card from '@/components/Card.astro';
       form.addEventListener('submit', (e: Event) => {
         e.preventDefault();
 
-        const emailInput = document.getElementById('contact-email') as HTMLInputElement;
         const messageInput = document.getElementById('contact-message') as HTMLTextAreaElement;
 
-        const userEmail = emailInput?.value.trim();
         const message = messageInput?.value.trim();
 
-        if (!userEmail || !message) {
+        if (!message) {
           return;
         }
 
         // Create mailto link with subject and body
         const subject = encodeURIComponent('Resilience Toolkit Contact');
-        const body = encodeURIComponent(`Message: ${message}\n\nFrom: ${userEmail}`);
+        const body = encodeURIComponent(`Message: ${message}`);
         const mailtoLink = `mailto:resiliencetoolkit@gocros.org?subject=${subject}&body=${body}`;
 
         // Show success message and hide form fields
