@@ -65,15 +65,15 @@ const featuredModules = [
 
       <div class="flex flex-wrap gap-4 justify-center">
         <ActionButton href="/introduction" variant="primary" size="lg">
-          Use the Toolkit
+          Open the Toolkit
         </ActionButton>
-        <ActionButton href="/about#contact" variant="outline" size="lg">
-          Get Technical Help
+        <ActionButton href="/downloads" variant="outline" size="lg">
+          Download PDF
         </ActionButton>
       </div>
 
       <p class="mt-5 text-body text-muted-foreground font-medium">
-        Works even when the internet doesn't.
+        Works even when the internet doesn't.<a href="#offline" class="text-primary no-underline hover:underline">*</a>
       </p>
     </div>
   </section>
@@ -237,7 +237,7 @@ const featuredModules = [
   </section>
 
   <!-- Offline Feature -->
-  <section class="py-12 bg-card">
+  <section id="offline" class="py-12 bg-card">
     <div class="container mx-auto px-4 max-w-4xl">
       <div class="text-center mb-10">
         <Badge variant="primary" class="mb-4">Works Offline</Badge>
