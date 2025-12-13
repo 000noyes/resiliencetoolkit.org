@@ -3,11 +3,16 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Card from '@/components/Card.astro';
 import ActionButton from '@/components/ActionButton.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
-import { Download, FileText, FolderOpen, FileSpreadsheet, ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import { Download, FileText, FolderOpen, FileSpreadsheet, ExternalLink as ExternalLinkIcon, ChevronDown } from 'lucide-react';
 import { featuredDownloads, getModulesBySection } from '@/data/downloads';
 
 const modulesBySection = getModulesBySection();
 const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
+const sectionNames: Record<string, string> = {
+  'Section 0': 'Section 0: Knowing Your Community',
+  'Section 1': 'Section 1: Emergency Preparedness and Response',
+  'Section 2': 'Section 2: Baseline Community Resilience'
+};
 ---
 
 <BaseLayout title="Resource Downloads | Resilience Hub Toolkit" description="Download PDFs, templates, and resources for building community resilience.">
@@ -176,8 +181,10 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
     <section>
       <h2 class="text-title font-semibold mb-6">Module Downloads</h2>
 
-      <div class="rounded-lg border border-border overflow-hidden">
-        <table class="downloads-table">
+      <!-- Desktop Table View -->
+      <div class="downloads-table-desktop">
+        <div class="rounded-lg border border-border overflow-hidden">
+          <table class="downloads-table">
           <caption class="sr-only">
             Downloadable modules organized by section with links to view online, download PDFs, and access additional resources
           </caption>
@@ -255,7 +262,74 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
+
+    <!-- Mobile Collapsible View -->
+    <div class="downloads-table-mobile">
+      {sectionOrder.map((sectionName) => {
+        const modules = modulesBySection.get(sectionName) || [];
+        const fullSectionName = sectionNames[sectionName];
+
+        return (
+          <details class="section-details" data-section={sectionName}>
+            <summary class="section-summary">
+              <span class="section-name">{fullSectionName}</span>
+              <ChevronDown size={20} className="section-chevron" aria-hidden="true" />
+            </summary>
+
+            <div class="section-modules">
+              {modules.map((module) => (
+                <details class="module-details">
+                  <summary class="module-summary">
+                    <div class="module-header-info">
+                      <span class="module-number">{module.number}</span>
+                      <span class="module-name">{module.name}</span>
+                    </div>
+                    <ChevronDown size={16} className="module-chevron" aria-hidden="true" />
+                  </summary>
+
+                  <div class="module-content">
+                    <div class="module-actions">
+                      <a
+                        href={module.onlineUrl}
+                        class="module-action-link"
+                        aria-label={`View ${module.name} online`}
+                      >
+                        <FileText size={18} />
+                        <span>View</span>
+                      </a>
+
+                      <a
+                        href={`/toolkit/sections/${module.pdfFilename}`}
+                        download
+                        class="module-action-link"
+                        aria-label={`Download ${module.name} PDF`}
+                      >
+                        <Download size={18} />
+                        <span>PDF</span>
+                      </a>
+
+                      {module.resourcesUrl ? (
+                        <ExternalLink
+                          href={module.resourcesUrl}
+                          class="module-action-link-wrapper"
+                        >
+                          <FolderOpen size={18} />
+                          <span>Folder</span>
+                        </ExternalLink>
+                      ) : (
+                        <span class="text-text-muted" aria-label="No additional resources available">—</span>
+                      )}
+                    </div>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </details>
+        );
+      })}
+    </div>
+  </section>
 
     <!-- How to Print Instructions -->
     <section class="mb-12 mt-16">
@@ -519,6 +593,188 @@ const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
 
     .downloads-table .action-cell a {
       display: inline-flex;
+    }
+  }
+
+  /* ========================================
+     Mobile Collapsible Sections
+     ======================================== */
+
+  /* Desktop: Show table, hide mobile view */
+  @media (min-width: 768px) {
+    .downloads-table-desktop {
+      display: block;
+    }
+
+    .downloads-table-mobile {
+      display: none;
+    }
+  }
+
+  /* Mobile: Hide table, show collapsible view */
+  @media (max-width: 767px) {
+    .downloads-table-desktop {
+      display: none;
+    }
+
+    .downloads-table-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    /* ===== SECTION LEVEL (Outer) ===== */
+    .section-details {
+      border: 1px solid var(--table-divider);
+      border-radius: var(--radius-lg);
+      background-color: var(--table-surface);
+      overflow: hidden;
+    }
+
+    .section-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-md) var(--spacing-md);
+      background-color: var(--table-accent-subtle);
+      color: var(--table-heading);
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+    }
+
+    .section-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .section-name {
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .section-chevron {
+      flex-shrink: 0;
+      color: var(--table-heading);
+      transition: transform var(--motion-duration-fast) var(--motion-easing-standard);
+    }
+
+    .section-details[open] .section-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Container for modules within section */
+    .section-modules {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm);
+    }
+
+    /* ===== MODULE LEVEL (Inner/Nested) ===== */
+    .module-details {
+      border: 1px solid var(--table-divider);
+      border-radius: var(--radius-md);
+      background-color: var(--table-surface);
+      overflow: hidden;
+    }
+
+    .module-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background-color: var(--table-surface-subtle);
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      gap: var(--spacing-sm);
+    }
+
+    .module-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .module-header-info {
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      gap: var(--spacing-sm);
+    }
+
+    .module-number {
+      font-weight: 600;
+      color: var(--table-heading);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .module-name {
+      font-weight: 500;
+      color: var(--table-body);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .module-chevron {
+      flex-shrink: 0;
+      color: var(--table-text-muted);
+      transition: transform var(--motion-duration-fast) var(--motion-easing-standard);
+    }
+
+    .module-details[open] .module-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Module content (action links) */
+    .module-content {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-top: 1px solid var(--table-divider);
+    }
+
+    /* Module actions container */
+    .module-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+
+    /* Action links */
+    .module-action-link,
+    .module-action-link-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: 1px solid var(--table-divider);
+      border-radius: var(--radius-sm);
+      background-color: var(--table-surface-subtle);
+      color: var(--table-link);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all var(--motion-duration-fast) var(--motion-easing-standard);
+    }
+
+    .module-action-link:hover,
+    .module-action-link-wrapper:hover {
+      background-color: var(--table-accent-subtle);
+      border-color: var(--table-accent);
+      color: var(--table-link-hover);
+    }
+
+    /* Focus states */
+    .section-summary:focus-visible,
+    .module-summary:focus-visible {
+      outline: 2px solid var(--table-focus-ring);
+      outline-offset: -2px;
+    }
+
+    .module-action-link:focus-visible,
+    .module-action-link-wrapper:focus-visible {
+      outline: 2px solid var(--table-focus-ring);
+      outline-offset: 2px;
     }
   }
 

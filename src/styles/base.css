@@ -397,6 +397,15 @@ a.button-link:focus-visible {
     display: none !important;
   }
 
+  /* Downloads page: show desktop table in print */
+  .downloads-table-mobile {
+    display: none !important;
+  }
+
+  .downloads-table-desktop {
+    display: block !important;
+  }
+
   /* Page break utilities */
   .print-break {
     page-break-before: always;

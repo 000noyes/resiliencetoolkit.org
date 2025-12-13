@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v5-full-precache';
+const CACHE_VERSION = 'v7-comprehensive-offline';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -14,10 +14,8 @@ const PRECACHE_ASSETS = [
   '/about',
   '/dashboard',
   '/introduction',
-  '/library',
   '/map',
   '/downloads-and-templates',
-  '/support',
   '/LICENSE',
 
   // Module hub pages
@@ -44,6 +42,46 @@ const PRECACHE_ASSETS = [
   '/modules/baseline-resilience/2-1-basic-needs',
   '/modules/baseline-resilience/2-2-shared-tools',
   '/modules/baseline-resilience/2-3-community-building',
+
+  // PWA Icons (all sizes for proper installation)
+  '/icons/icon-16x16.png',
+  '/icons/icon-32x32.png',
+  '/icons/icon-72x72.png',
+  '/icons/icon-96x96.png',
+  '/icons/icon-128x128.png',
+  '/icons/icon-144x144.png',
+  '/icons/icon-152x152.png',
+  '/icons/icon-180x180.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-384x384.png',
+  '/icons/icon-512x512.png',
+
+  // Branding assets
+  '/RHT_orange.svg',
+  '/RHT_text.png',
+
+  // PWA Configuration
+  '/manifest.json',
+
+    // ASSETS_START - Auto-generated section - do not manually edit
+  // Critical JavaScript bundles (Astro-generated)
+  '/_astro/client.nc8uITnr.js',
+  '/_astro/index.DK-fsZOb.js',
+  '/_astro/storage.DeAjlaOw.js',
+  '/_astro/EditableTable.C-ThxXmm.js',
+  '/_astro/ExternalLink.Bl_E_QGY.js',
+  '/_astro/FeedbackWidgetWrapper.By8Wbg0d.js',
+  '/_astro/Todo.ArIkhOvT.js',
+  '/_astro/createLucideIcon.Wb5B6754.js',
+  '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.C3Uh6Oq5.js',
+  '/_astro/GuestModeBanner.BosJr2tb.js',
+  '/_astro/jsx-runtime.ClP7wGfN.js',
+  '/_astro/UserMenuWrapper.ChG-6rmU.js',
+  '/_astro/x.BqmJGQCg.js',
+
+  // Critical CSS
+  '/_astro/2-1-basic-needs.CSLjKN1L.css',
+  // ASSETS_END - Auto-generated section - do not manually edit
 ];
 
 // Cache strategies
@@ -66,6 +104,21 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(PRECACHE_ASSETS);
+    }).catch((error) => {
+      // Log which asset(s) failed to cache
+      console.error('[SW] Precache failed:', error);
+
+      // Attempt to cache individual assets to identify the problem
+      return caches.open(CACHE_NAME).then((cache) => {
+        return Promise.allSettled(
+          PRECACHE_ASSETS.map(url =>
+            cache.add(url).catch(err => {
+              console.error(`[SW] Failed to cache: ${url}`, err);
+              return null;
+            })
+          )
+        );
+      });
     }).then(() => {
       // Notify all clients that caching is complete
       return self.clients.matchAll().then((clients) => {
