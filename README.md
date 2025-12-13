@@ -1,6 +1,6 @@
 # Resilience Hub Toolkit
 
-**Local-first tools to organize people, places, and plans before, during, and after disasters.**
+**Local-first tools to organize systems, stuff, and people before, during, and after disasters.**
 
 An offline-capable resilience dashboard and workspace for towns and grassroots groups to map assets, coordinate response, and track recovery.
 
@@ -43,66 +43,71 @@ pnpm dev
 
 4. Open [http://localhost:4321](http://localhost:4321) in your browser
 
-**That's it!** No configuration needed - the app works completely offline.
-
 ## Project Structure
 
 ```
 resiliencetoolkit.org/
-├── .storybook/                # Storybook configuration
-│   ├── main.ts
-│   ├── preview.ts
-│   └── vitest.setup.ts
-├── docs/                      # Design and development documentation
-│   ├── 2025-11-3_initial-commit.md    # Project specification and design system
-│   ├── git-guide.md                   # Git workflow best practices
-│   └── 2025 Resilience Hub Toolkit (2).pdf  # Design materials
-├── public/                    # Static assets
+├── dist/                          # Production build output
+├── docs/                          # Documentation files
+├── node_modules/                  # Dependencies (pnpm)
+├── public/                        # Static assets
 │   ├── favicon.svg
-│   ├── manifest.json          # PWA manifest
-│   └── sw.js                  # Service worker for offline support
+│   ├── manifest.json             # PWA manifest
+│   ├── sw.js                     # Service worker
+│   ├── RHT_orange.svg            # Logo assets
+│   ├── RHT_text.png
+│   ├── icons/                    # PWA icons (16x16 to 512x512)
+│   └── toolkit/                  # Toolkit resources
+├── scripts/                       # Build and utility scripts
 ├── src/
-│   ├── components/            # Astro and React UI components
+│   ├── assets/                   # Images and media
+│   ├── components/               # Astro and React UI components
 │   │   ├── ActionButton.astro
 │   │   ├── Badge.astro
 │   │   ├── Card.astro
 │   │   ├── EmptyState.astro
-│   │   ├── FeedbackWidget.tsx      # User feedback component
+│   │   ├── ExternalLink.astro
+│   │   ├── ExternalLink.tsx
+│   │   ├── ExternalLinkModal.tsx
+│   │   ├── FeedbackWidget.tsx
+│   │   ├── FeedbackWidgetWrapper.tsx
 │   │   ├── Footer.astro
 │   │   ├── Header.astro
 │   │   ├── IconButton.astro
+│   │   ├── InfoCallout.astro
+│   │   ├── LogoHoverCard.tsx
 │   │   ├── MetricCard.astro
 │   │   ├── Modal.astro
+│   │   ├── OfflineReadyBanner.astro
 │   │   ├── SearchField.astro
 │   │   ├── SegmentedControl.astro
 │   │   ├── Sidebar.astro
 │   │   ├── SidebarItem.astro
 │   │   ├── StatusBanner.astro
-│   │   └── UserMenuWrapper.tsx     # User menu component wrapper
-│   ├── design-system/         # Interactive React components with persistence
+│   │   └── UserMenuWrapper.tsx
+│   ├── data/                     # Data files and configuration
+│   ├── design-system/            # Interactive React components
 │   │   └── blocks/
 │   │       ├── ChecklistRow.tsx
 │   │       ├── ChecklistSection.tsx
-│   │       ├── EditableTable.tsx       # Editable table with local storage
+│   │       ├── EditableTable.tsx
 │   │       ├── InteractiveChecklist.tsx
-│   │       ├── Todo.tsx                # Checkbox with persistence
+│   │       ├── Todo.tsx
 │   │       └── index.ts
-│   ├── layouts/               # Page layouts
-│   │   ├── BaseLayout.astro   # Base HTML structure with head, analytics
-│   │   └── ModuleLayout.astro # Module-specific layout with navigation
-│   ├── lib/                   # Core utilities and services
-│   │   ├── externalLinkPreferences.ts  # External link handling preferences
-│   │   ├── fileSize.ts                 # File size utilities
-│   │   ├── icons.ts                    # Lucide icon utilities
-│   │   ├── mdx-components.tsx          # MDX component mappings
-│   │   ├── pdfLookup.ts                # PDF resource lookup utilities
-│   │   ├── resourcesLookup.ts          # Resource directory utilities
-│   │   ├── storage.ts                  # IndexedDB wrapper for offline-first
-│   │   └── validateRedirect.ts         # Security: safe redirect validation
-│   ├── middleware/            # Security middleware
-│   │   └── index.ts           # Security headers and request handling
-│   ├── pages/                 # Routes (file-based routing)
-│   │   ├── modules/           # Module content pages
+│   ├── layouts/                  # Page layouts
+│   │   ├── BaseLayout.astro      # Base HTML with head, analytics
+│   │   └── ModuleLayout.astro    # Module layout with navigation
+│   ├── lib/                      # Core utilities and services
+│   │   ├── externalLinkPreferences.ts
+│   │   ├── fileSize.ts
+│   │   ├── icons.ts
+│   │   ├── mdx-components.tsx
+│   │   ├── pdfLookup.ts
+│   │   ├── resourcesLookup.ts
+│   │   ├── storage.ts            # IndexedDB wrapper
+│   │   └── validateRedirect.ts
+│   ├── pages/                    # Routes (file-based routing)
+│   │   ├── modules/
 │   │   │   ├── baseline-resilience/
 │   │   │   │   ├── index.astro
 │   │   │   │   ├── 2-1-basic-needs.astro
@@ -125,33 +130,30 @@ resiliencetoolkit.org/
 │   │   │   │   └── 1-13-financial-resources.astro
 │   │   │   ├── index.astro
 │   │   │   └── knowing-your-community.astro
-│   │   ├── about.astro                 # About page
-│   │   ├── dashboard.astro             # User dashboard
-│   │   ├── downloads.astro             # Downloads and templates
-│   │   ├── index.astro                 # Home page
-│   │   ├── introduction.astro          # Introduction page
-│   │   ├── LICENSE.astro               # License page
-│   │   └── map.astro                   # Community mapping page
-│   ├── stories/               # Storybook component stories
-│   │   ├── InteractiveChecklist.stories.tsx
-│   │   └── ...
+│   │   ├── about.astro
+│   │   ├── dashboard.astro
+│   │   ├── downloads.astro
+│   │   ├── downloads-and-templates.astro
+│   │   ├── index.astro
+│   │   ├── introduction.astro
+│   │   ├── LICENSE.astro
+│   │   └── map.astro
 │   ├── styles/
-│   │   └── base.css           # Global styles and design tokens
-│   ├── types/                 # TypeScript type definitions
+│   │   └── base.css              # Global styles and design tokens
+│   ├── types/                    # TypeScript type definitions
 │   │   ├── section-navigation.ts
 │   │   └── storybook.d.ts
-│   └── env.d.ts               # Astro type definitions
-├── .env.example               # Environment variables template
-├── .gitignore                 # Git ignore rules
-├── astro.config.mjs           # Astro configuration (SSR, adapters)
-├── package.json               # Dependencies and scripts
-├── pnpm-lock.yaml            # Lockfile
-├── tailwind.config.mjs        # Tailwind CSS configuration
-├── tsconfig.json              # TypeScript configuration
-├── vitest.config.ts           # Vitest test configuration
-├── vitest.shims.d.ts          # Vitest type shims
-├── LICENSE                    # MIT License
-└── README.md                  # This file
+│   └── env.d.ts
+├── astro.config.mjs              # Astro configuration
+├── LICENSE_MIT                   # MIT License
+├── package.json                  # Dependencies and scripts
+├── pnpm-lock.yaml               # Lockfile
+├── README.md                     # This file
+├── render.yaml                   # Render deployment config
+├── tailwind.config.mjs           # Tailwind CSS configuration
+├── tsconfig.json                 # TypeScript configuration
+├── vitest.config.ts              # Vitest test configuration
+└── vitest.shims.d.ts            # Vitest type shims
 ```
 
 ## Available Scripts
@@ -161,22 +163,21 @@ resiliencetoolkit.org/
 - `pnpm preview` - Preview production build locally
 - `pnpm astro` - Run Astro CLI commands
 - `pnpm astro check` - Run TypeScript type checking
-- `pnpm storybook` - Start Storybook for component development
-- `pnpm build-storybook` - Build Storybook for deployment
 
 ## Documentation
 
-- **Design Specification**: See [docs/2025-11-3_initial-commit.md](../docs/2025-11-3_initial-commit.md) for the original project specification and design system
-- **Git Workflow**: See [docs/git-guide.md](../docs/git-guide.md) for development workflow and Git best practices
+- **Design Specification**: Coming soon
+- **Git Workflow**: Coming soon
+- **Deployment Guide**: See deployment section below
 
 ## Technology Stack
 
-- **Framework**: [Astro](https://astro.build/) v5 - Static site generation
-- **UI Library**: [React](https://react.dev/) v18 - For interactive components only
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) v3 - Utility-first CSS
-- **Content**: [MDX](https://mdxjs.com/) - Markdown with React components
-- **Local Storage**: [idb](https://github.com/jakearchibald/idb) - IndexedDB wrapper for persistent local data
-- **TypeScript**: v5.7.2 - Strict type checking enabled
+- **Framework**: [Astro](https://astro.build/) v5.16.4 - Static site generation
+- **UI Library**: [React](https://react.dev/) v18.3.1 - For interactive components only
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) v3.4.18 - Utility-first CSS
+- **Content**: Astro pages (.astro files) - Component-based content with frontmatter
+- **Local Storage**: [idb](https://github.com/jakearchibald/idb) v8.0.3 - IndexedDB wrapper for persistent local data
+- **TypeScript**: v5.9.3 - Strict type checking enabled
 
 ## Architecture
 
@@ -203,28 +204,31 @@ Data stays on device forever
 
 ## Module Content
 
-Modules are written in **MDX** (Markdown + JSX) with frontmatter metadata:
+Modules are written as **Astro pages** (.astro files) with TypeScript frontmatter and component imports:
 
-```mdx
+```astro
 ---
-title: "Emergency Preparedness Kits"
-order: 3
-phase: "Before"
-tags: ["supplies", "household", "checklist"]
-summary: "Essential supplies for disaster preparedness"
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import Todo from '@/design-system/blocks/Todo';
+import type { SectionData } from '@/types/section-navigation';
+
+const sectionData: SectionData = {
+  number: "1.1",
+  title: "Emergency Preparedness Kits",
+  moduleTitle: "Emergency Preparedness",
+  modulePath: "/modules/emergency-preparedness",
+  prevSection: { number: "1.0", title: "Overview", slug: "index" },
+  nextSection: { number: "1.2", title: "Food and Water", slug: "1-2-food-water" }
+};
 ---
 
-# Emergency Preparedness Kits
+<ModuleLayout sectionData={sectionData}>
+  <h3>Essential Supplies</h3>
 
-<Todo id="household-kit" moduleKey="emergency-preparedness">
-  Assemble a 72-hour emergency kit for your household
-</Todo>
-
-<EditableTable
-  moduleKey="emergency-preparedness"
-  tableId="supply-inventory"
-  columns={["Item", "Quantity", "Location", "Status"]}
-/>
+  <Todo id="household-kit" moduleKey="emergency-preparedness" client:load>
+    Assemble a 72-hour emergency kit for your household
+  </Todo>
+</ModuleLayout>
 ```
 
 ## Using the Toolkit
@@ -248,7 +252,7 @@ summary: "Essential supplies for disaster preparedness"
 
 ### Security Headers
 
-Automatically added to all responses for protection:
+Security headers are configured at the hosting platform level for protection:
 - **Content-Security-Policy** - Prevents XSS attacks
 - **X-Frame-Options: DENY** - Prevents clickjacking
 - **X-Content-Type-Options: nosniff** - Prevents MIME sniffing
@@ -260,15 +264,13 @@ Automatically added to all responses for protection:
 ### Adding New Modules
 
 1. Create a new `.astro` file in `src/pages/modules/` (or a subdirectory like `emergency-preparedness/`)
-2. Use `ModuleLayout` with either:
-   - **Frontmatter mode**: Add frontmatter with metadata (title, order, phase, tags)
-   - **SectionData mode**: Pass section navigation data programmatically
-3. Use interactive components like `<Todo>` and `<EditableTable>` in the content
+2. Import `ModuleLayout` and pass `sectionData` with navigation information
+3. Import interactive components like `<Todo>` and `<EditableTable>` from `@/design-system/blocks/`
 4. The module will automatically appear in file-based routing
 
 ### Custom Components
 
-Add new interactive components in `src/design-system/blocks/` and register them in `src/lib/mdx-components.tsx`.
+Add new interactive components in `src/design-system/blocks/` and import them directly in your Astro pages.
 
 ### Styling
 
@@ -295,8 +297,6 @@ This application is a **static site** built with Astro. All logic runs client-si
 - **Environment Variables**: None required!
 
 #### Deployment Steps (Render Example)
-
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed Render deployment guide.
 
 **Quick steps:**
 1. Push your code to GitHub

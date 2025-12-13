@@ -316,6 +316,7 @@ a:focus-visible {
 /* Exclude navigation links from global link styles */
 header a,
 nav a,
+footer a,
 a.group {
   color: inherit;
   text-decoration: none;
@@ -324,14 +325,23 @@ a.group {
 
 header a:hover,
 nav a:hover,
+footer a:hover,
 a.group:hover {
   color: inherit;
 }
 
 header a:focus-visible,
 nav a:focus-visible,
+footer a:focus-visible,
 a.group:focus-visible {
   outline: none;
+}
+
+/* External links wrapping buttons should not have underlines */
+.external-link.inline-block,
+.external-link.block {
+  text-decoration: none;
+  color: inherit;
 }
 
 /* Exclude button-styled links from global link styles */
