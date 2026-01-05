@@ -62,7 +62,7 @@ export const featuredDownloads: FeaturedDownload[] = [
   {
     title: 'Vermont Town Directory',
     description: 'Directory of Vermont towns with jurisdictions, RPCs, LTRGs, and resilience hub contacts',
-    downloadUrl: 'https://docs.google.com/spreadsheets/d/1_s3vjiE-GYXAz9CMtDdodjmShBY1vMI0mDeSjxhjWPc/edit?gid=921360703#gid=921360703',
+    downloadUrl: 'https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0',
     icon: 'spreadsheet',
     isExternal: true
   },
