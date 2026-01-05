@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v7-comprehensive-offline';
+const CACHE_VERSION = 'v8-comprehensive-offline';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -63,17 +63,17 @@ const PRECACHE_ASSETS = [
   // PWA Configuration
   '/manifest.json',
 
-    // ASSETS_START - Auto-generated section - do not manually edit
+      // ASSETS_START - Auto-generated section - do not manually edit
   // Critical JavaScript bundles (Astro-generated)
   '/_astro/client.nc8uITnr.js',
   '/_astro/index.DK-fsZOb.js',
-  '/_astro/storage.DeAjlaOw.js',
-  '/_astro/EditableTable.C-ThxXmm.js',
+  '/_astro/storage.rw74DVyn.js',
+  '/_astro/EditableTable.qNEHp88P.js',
   '/_astro/ExternalLink.Bl_E_QGY.js',
   '/_astro/FeedbackWidgetWrapper.By8Wbg0d.js',
-  '/_astro/Todo.ArIkhOvT.js',
+  '/_astro/Todo.C286_C55.js',
   '/_astro/createLucideIcon.Wb5B6754.js',
-  '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.C3Uh6Oq5.js',
+  '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.Dpl62xmH.js',
   '/_astro/GuestModeBanner.BosJr2tb.js',
   '/_astro/jsx-runtime.ClP7wGfN.js',
   '/_astro/UserMenuWrapper.ChG-6rmU.js',

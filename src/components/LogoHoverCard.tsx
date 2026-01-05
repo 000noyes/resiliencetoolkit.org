@@ -18,7 +18,6 @@ export default function LogoHoverCard({
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [hasPosition, setHasPosition] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLAnchorElement>(null);
   const hoverTimeoutRef = useRef<number | null>(null);
 
   const calculatePosition = () => {
