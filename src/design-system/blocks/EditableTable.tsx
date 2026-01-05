@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getTableRows, saveTableRow, type TableRow } from '@/lib/storage';
+import { useAutoResizeTextarea } from '@/lib/useAutoResizeTextarea';
 
 interface EditableTableProps {
   moduleKey: string;
@@ -20,6 +21,12 @@ export default function EditableTable({
   const [editingCell, setEditingCell] = useState<{ rowId: string; column: string } | null>(null);
   const [note, setNote] = useState('');
   const [isNoteExpanded, setIsNoteExpanded] = useState(false);
+
+  // Extract current editing cell value for auto-resize hook
+  const editingCellValue = editingCell
+    ? rows.find((r) => r.rowId === editingCell.rowId)?.data[editingCell.column] || ''
+    : '';
+  const textareaRef = useAutoResizeTextarea(editingCellValue, 3);
 
   // Helper function to check if a row is from initial data
   const isInitialRow = (rowId: string): boolean => {
@@ -151,7 +158,7 @@ export default function EditableTable({
           </thead>
           <tbody className="bg-card divide-y divide-border">
             {rows.map((row /* , index */) => (
-              <tr key={row.rowId} className="hover:bg-surface-muted/30 transition-colors duration-default ease-default" style={{ minHeight: '72px' }}>
+              <tr key={row.rowId} className="hover:bg-surface-muted/30 transition-colors duration-default ease-default" style={{ minHeight: '96px' }}>
                 {columns.map((column) => (
                   <td
                     key={`${row.rowId}-${column}`}
@@ -163,13 +170,15 @@ export default function EditableTable({
                     }}
                   >
                     {editingCell?.rowId === row.rowId && editingCell?.column === column ? (
-                      <input
-                        type="text"
+                      <textarea
+                        ref={textareaRef}
                         value={row.data[column] || ''}
                         onChange={(e) => handleCellChange(row.rowId, column, e.target.value)}
                         onBlur={() => setEditingCell(null)}
                         autoFocus
-                        className="w-full h-10 px-sm py-xs border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring bg-input text-body text-foreground transition-all duration-default ease-default shadow-ambient"
+                        rows={3}
+                        placeholder="Enter text here..."
+                        className="w-full px-sm py-xs border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring bg-input text-body text-foreground transition-all duration-default ease-default shadow-ambient resize-none overflow-hidden"
                       />
                     ) : (
                       <span className={`text-body text-text-primary ${isInitialRow(row.rowId) && column === columns[0] ? 'cursor-default' : 'cursor-text'}`}>
