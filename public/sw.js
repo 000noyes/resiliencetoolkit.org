@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v8-comprehensive-offline';
+const CACHE_VERSION = 'v9-comprehensive-offline';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -63,7 +63,7 @@ const PRECACHE_ASSETS = [
   // PWA Configuration
   '/manifest.json',
 
-      // ASSETS_START - Auto-generated section - do not manually edit
+        // ASSETS_START - Auto-generated section - do not manually edit
   // Critical JavaScript bundles (Astro-generated)
   '/_astro/client.nc8uITnr.js',
   '/_astro/index.DK-fsZOb.js',
