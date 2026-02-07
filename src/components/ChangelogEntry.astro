@@ -1,0 +1,170 @@
+---
+/**
+ * ChangelogEntry Component
+ *
+ * Renders a single changelog entry with the Eden-style format:
+ * - Entry ID and date header
+ * - Main title/headline
+ * - Summary bullet list
+ * - Detailed prose sections with optional images
+ */
+
+import Badge from './Badge.astro';
+
+interface ChangelogSection {
+  heading?: string;
+  content: string;
+  image?: {
+    src: string;
+    alt: string;
+    caption?: string;
+  };
+}
+
+interface Props {
+  id: string;
+  date: string;
+  title: string;
+  summary: string[];
+  sections: ChangelogSection[];
+  tags?: string[];
+}
+
+const { id, date, title, summary, sections, tags } = Astro.props;
+
+const tagVariant = (tag: string) => {
+  switch (tag) {
+    case 'feature':
+      return 'success';
+    case 'fix':
+      return 'info';
+    case 'improvement':
+      return 'warning';
+    case 'design':
+      return 'primary';
+    case 'performance':
+      return 'info';
+    default:
+      return 'neutral';
+  }
+};
+---
+
+<article class="changelog-entry py-12 border-b border-border last:border-b-0">
+  <!-- Entry Header -->
+  <header class="mb-6">
+    <div class="flex flex-wrap items-center gap-3 mb-3">
+      <span class="font-mono text-sm text-muted-foreground"># {id}</span>
+      <time class="text-sm text-muted-foreground">{date}</time>
+      {tags && tags.length > 0 && (
+        <div class="flex gap-2">
+          {tags.map(tag => (
+            <Badge variant={tagVariant(tag)}>
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+    <h2 class="text-2xl md:text-3xl font-semibold text-foreground">
+      {title}
+    </h2>
+  </header>
+
+  <!-- Summary Bullets -->
+  <div class="mb-8">
+    <ul class="space-y-2">
+      {summary.map(item => (
+        <li class="flex items-start gap-3 text-muted-foreground">
+          <span class="text-primary mt-1 flex-shrink-0">•</span>
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Detailed Sections -->
+  <div class="space-y-8">
+    {sections.map(section => (
+      <section class="changelog-section">
+        {section.heading && (
+          <h3 class="text-xl font-semibold text-foreground mb-4">
+            {section.heading}
+          </h3>
+        )}
+
+        <div
+          class="prose-content text-muted-foreground space-y-4"
+          set:html={section.content}
+        />
+
+        {section.image && (
+          <figure class="mt-6">
+            <img
+              src={section.image.src}
+              alt={section.image.alt}
+              class="w-full rounded-lg border border-border shadow-sm"
+              loading="lazy"
+            />
+            {section.image.caption && (
+              <figcaption class="mt-2 text-sm text-muted-foreground text-center">
+                {section.image.caption}
+              </figcaption>
+            )}
+          </figure>
+        )}
+      </section>
+    ))}
+  </div>
+</article>
+
+<style>
+  .prose-content :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .prose-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .prose-content :global(ul),
+  .prose-content :global(ol) {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .prose-content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose-content :global(ul) {
+    list-style-type: disc;
+  }
+
+  .prose-content :global(ol) {
+    list-style-type: decimal;
+  }
+
+  .prose-content :global(strong) {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .prose-content :global(a) {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .prose-content :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  .prose-content :global(code) {
+    font-family: ui-monospace, monospace;
+    font-size: 0.9em;
+    background-color: var(--muted);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+</style>

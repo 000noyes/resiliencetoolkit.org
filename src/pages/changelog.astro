@@ -1,0 +1,68 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ChangelogEntry from '@/components/ChangelogEntry.astro';
+import NewsletterSubscribe from '@/components/NewsletterSubscribe.astro';
+import { getSortedEntries } from '@/data/changelog';
+
+const entries = getSortedEntries();
+---
+
+<BaseLayout
+  title="Changelog | Resilience Hub Toolkit"
+  description="Stay up to date with the latest updates, improvements, and new features in the Resilience Hub Toolkit."
+>
+  <article class="container mx-auto px-4 py-8 max-w-3xl">
+    <!-- Page Header -->
+    <header class="mb-8">
+      <h1 class="text-hero font-semibold mb-4 text-foreground">Changelog</h1>
+      <p class="text-body-large text-muted-foreground">
+        Stay up to date with the latest updates, improvements, and new features.
+      </p>
+    </header>
+
+    <!-- Newsletter Subscription -->
+    <div class="mb-12">
+      <NewsletterSubscribe
+        buttondownUsername="rhizome"
+        title="Get updates in your inbox"
+        description="Subscribe to be notified when we release new features and improvements."
+      />
+    </div>
+
+    <!-- Changelog Entries -->
+    <div class="changelog-entries">
+      {entries.map(entry => (
+        <ChangelogEntry
+          id={entry.id}
+          date={entry.date}
+          title={entry.title}
+          summary={entry.summary}
+          sections={entry.sections}
+          tags={entry.tags}
+        />
+      ))}
+    </div>
+
+    <!-- Empty State -->
+    {entries.length === 0 && (
+      <div class="text-center py-16">
+        <p class="text-body-large text-muted-foreground">
+          No changelog entries yet. Check back soon!
+        </p>
+      </div>
+    )}
+
+    <!-- Back Navigation -->
+    <nav class="mt-12 pt-8 border-t border-border">
+      <a
+        href="/"
+        class="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Back to Home</span>
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

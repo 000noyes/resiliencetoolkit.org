@@ -1,78 +1,10 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { BookOpen, Users, Siren, HeartPulse, Download } from 'lucide-react';
+import { phaseColors, getSortedModules } from '@/data/modules';
 
 // Auth protection is handled by middleware (src/middleware/index.ts)
 
-// Module configuration with Lucide icons
-const modules = [
-  {
-    slug: 'introduction',
-    url: '/introduction',
-    icon: BookOpen,
-    frontmatter: {
-      title: 'Introduction',
-      order: 0,
-      summary: 'Understanding what this toolkit is for, how to use it, and what resilience means for your community.',
-      tags: ['introduction', 'getting-started']
-    }
-  },
-  {
-    slug: 'knowing-your-community',
-    url: '/modules/knowing-your-community',
-    icon: Users,
-    frontmatter: {
-      title: 'Knowing Your Community',
-      order: 0.1,
-      phases: ['Before', 'After'],
-      summary: 'Map your community, identify resources, and build relationships.',
-      tags: ['community', 'assessment']
-    }
-  },
-  {
-    slug: 'emergency-preparedness',
-    url: '/modules/emergency-preparedness',
-    icon: Siren,
-    frontmatter: {
-      title: 'Emergency Preparedness and Response',
-      order: 1,
-      phases: ['Before', 'During', 'After'],
-      summary: 'Essential supplies, plans, and systems needed to prepare for and respond to disasters.',
-      tags: ['emergency', 'preparedness', 'response']
-    }
-  },
-  {
-    slug: 'baseline-resilience',
-    url: '/modules/baseline-resilience',
-    icon: HeartPulse,
-    frontmatter: {
-      title: 'Baseline Resilience',
-      order: 2,
-      phases: ['Before', 'After'],
-      summary: 'Build everyday resilience through shared resources, community building, and mutual aid.',
-      tags: ['baseline-resilience', 'community']
-    }
-  },
-  {
-    slug: 'downloads',
-    url: '/downloads',
-    icon: Download,
-    frontmatter: {
-      title: 'Resource Library',
-      order: 5,
-      summary: 'Printable worksheets, checklists, and planning aids that support the guides.',
-      tags: ['library', 'downloads', 'templates', 'resources']
-    }
-  }
-];
-
-const sortedModules = modules;
-
-const phaseColors: Record<string, string> = {
-  Before: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  During: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  After: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-};
+const sortedModules = getSortedModules();
 ---
 
 <BaseLayout title="Toolkit - Resilience Hub" description="Browse all resilience toolkit modules">

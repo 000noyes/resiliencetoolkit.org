@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 
 const DIST_DIR = 'dist/_astro';
+const PAGEFIND_DIR = 'dist/pagefind';
 const SW_PATH = 'public/sw.js';
 
 // Critical assets to track (base names without hashes)
@@ -50,6 +52,35 @@ async function main() {
       console.warn('⚠️  Missing assets:', missing.join(', '));
     }
 
+    // 2b. Add Pagefind assets for offline search
+    const pagefindPaths = [];
+    if (existsSync(PAGEFIND_DIR)) {
+      const pfFiles = await readdir(PAGEFIND_DIR);
+      // Core files needed for search to work offline
+      for (const file of pfFiles) {
+        if (
+          file === 'pagefind.js' ||
+          file === 'pagefind-entry.json' ||
+          file.endsWith('.wasm')
+        ) {
+          pagefindPaths.push(`  '/pagefind/${file}',`);
+        }
+      }
+      // Also include fragment and index chunks (small for ~28 pages)
+      for (const subdir of ['fragment', 'index']) {
+        const subdirPath = `${PAGEFIND_DIR}/${subdir}`;
+        if (existsSync(subdirPath)) {
+          const subFiles = await readdir(subdirPath);
+          for (const file of subFiles) {
+            pagefindPaths.push(`  '/pagefind/${subdir}/${file}',`);
+          }
+        }
+      }
+      console.log(`  🔍 Found ${pagefindPaths.length} Pagefind assets`);
+    } else {
+      console.warn('⚠️  Pagefind directory not found - search will not work offline');
+    }
+
     // 3. Read service worker
     let swContent = await readFile(SW_PATH, 'utf8');
 
@@ -64,6 +95,9 @@ async function main() {
       '',
       '  // Critical CSS',
       ...cssAssets,
+      '',
+      '  // Pagefind search assets (offline search)',
+      ...pagefindPaths,
       '  // ASSETS_END - Auto-generated section - do not manually edit',
     ].join('\n');
 

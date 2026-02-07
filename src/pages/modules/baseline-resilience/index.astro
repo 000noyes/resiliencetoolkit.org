@@ -1,65 +1,65 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
+const moduleData = {
+  title: "Baseline Resilience",
+  summary:
+    "Build everyday resilience through shared resources, community care, and organizing practices that keep people safe before disaster strikes.",
+  tags: ["baseline-resilience", "community"]
+};
+
 const sections = [
-  { number: "2.1", title: "Basic Needs", slug: "2-1-basic-needs", description: "Community food production, mental health networks, transportation, and essential hygiene resources." },
-  { number: "2.2", title: "Shared Tools", slug: "2-2-shared-tools", description: "Tool and tech lending libraries, internet access, and mesh networks for community resilience." },
-  { number: "2.3", title: "Community Building", slug: "2-3-community-building", description: "Governance coordination, skill-building workshops, third spaces, and fun activities that strengthen community bonds." }
+  { number: "2.1", title: "Basic Needs", slug: "2-1" },
+  { number: "2.2", title: "Shared Tools", slug: "2-2" },
+  { number: "2.3", title: "Community Building", slug: "2-3" }
 ];
 ---
 
-<BaseLayout title="Baseline Resilience | Resilience Hub Toolkit" description="The material in this section builds on systems and stuff outlined in the Emergency Preparedness and Response section to deepen resilience in the day-to-day.">
+<BaseLayout title={moduleData.title} description={moduleData.summary}>
   <article class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Breadcrumb navigation -->
     <nav class="mb-6 text-sm text-text-muted">
       <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
       <span class="mx-2">/</span>
-      <span class="text-text-primary">Baseline Resilience</span>
+      <span class="text-text-primary">{moduleData.title}</span>
     </nav>
 
     <!-- Module header -->
-    <header class="mb-12">
-      <h1 class="text-hero font-semibold mb-4">
-        Baseline Resilience
-      </h1>
-      <p class="text-lg text-text-secondary leading-relaxed">
-        The material in this section builds on systems and stuff outlined in the Emergency Preparedness and Response section to deepen resilience in the day-to-day. Many people in our communities are in crisis all the time, and working towards a reality in which everyone is safe and has their needs met as a baseline means we can all be more resilient when acute disaster strikes.
+    <header class="mb-8">
+      <h1 class="text-display font-semibold mb-4">{moduleData.title}</h1>
+      <p class="text-body-large text-text-secondary leading-relaxed">
+        {moduleData.summary}
       </p>
+      {moduleData.tags && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          {moduleData.tags.map((tag) => (
+            <span class="px-2 py-1 text-xs rounded bg-accent text-accent-foreground">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
     </header>
 
-    <!-- Sections list -->
-    <div class="space-y-6">
-      <h2 class="text-title font-semibold mb-6">Sections</h2>
+    <!-- Section navigation grid -->
+    <nav class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {sections.map((section) => (
+        <a
+          href={`/modules/baseline-resilience/${section.slug}`}
+          class="group block p-6 bg-surface border border-border rounded-lg hover:border-table-accent hover:shadow-raised transition-all duration-base"
+        >
+          <span class="text-label text-table-accent font-semibold">
+            {section.number}
+          </span>
+          <h2 class="text-subtitle font-medium mt-2 group-hover:text-table-accent transition-colors">
+            {section.title}
+          </h2>
+        </a>
+      ))}
+    </nav>
 
-      <div class="grid gap-6">
-        {sections.map((section) => (
-          <a
-            href={`/modules/baseline-resilience/${section.slug}`}
-            class="block p-6 rounded-lg border border-border bg-card hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-          >
-            <div class="flex items-start gap-4">
-              <span class="text-2xl font-mono font-semibold text-primary">
-                {section.number}
-              </span>
-              <div class="flex-1">
-                <h3 class="text-heading font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {section.title}
-                </h3>
-                <p class="text-body text-text-secondary">
-                  {section.description}
-                </p>
-              </div>
-              <svg class="w-5 h-5 text-text-muted flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-
-    <!-- Navigation back to modules -->
-    <nav class="mt-12 pt-8 border-t border-border">
+    <!-- Back link -->
+    <nav class="mt-12">
       <a
         href="/modules"
         class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
@@ -67,7 +67,7 @@ const sections = [
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        <span>Back to All Modules</span>
+        Back to All Modules
       </a>
     </nav>
   </article>

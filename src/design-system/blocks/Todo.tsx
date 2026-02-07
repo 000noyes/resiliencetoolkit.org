@@ -65,7 +65,7 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
       setCompleted(newCompleted);
 
       // Dispatch event for potential sync
-      window.dispatchEvent(
+      document.dispatchEvent(
         new CustomEvent('todo-changed', {
           detail: { moduleKey, id, completed: newCompleted },
         })
@@ -81,7 +81,7 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
       await updateTodoNote(moduleKey, id, newNote);
 
       // Dispatch event for potential sync
-      window.dispatchEvent(
+      document.dispatchEvent(
         new CustomEvent('todo-note-changed', {
           detail: { moduleKey, id, note: newNote },
         })
@@ -195,6 +195,8 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
               ? 'bg-[var(--table-accent-subtle)] border-[var(--table-checkbox-fill)]'
               : 'bg-transparent border-transparent hover:bg-[var(--table-surface-subtle)] hover:border-[var(--table-checkbox-border)]'
           }`}
+          data-module-key={moduleKey}
+          data-todo-id={id}
         >
           <div
             className="todo-checkbox-container relative flex items-center justify-center mt-0.5 flex-shrink-0"

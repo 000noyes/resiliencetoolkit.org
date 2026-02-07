@@ -413,6 +413,403 @@ export async function clearCompletedItems(
   return completedItems.length;
 }
 
+// ============================================================================
+// DASHBOARD AGGREGATION OPERATIONS
+// ============================================================================
+
+/**
+ * Get all todos across all modules
+ * Used for dashboard aggregation
+ */
+export async function getAllTodos(): Promise<Todo[]> {
+  const db = await getDB();
+  return await db.getAll('todos');
+}
+
+/**
+ * Get all table rows across all modules
+ * Used for dashboard aggregation
+ */
+export async function getAllTableRows(): Promise<TableRow[]> {
+  const db = await getDB();
+  return await db.getAll('tables');
+}
+
+/**
+ * Activity item representing a user action
+ */
+export interface ActivityItem {
+  type: 'todo_completed' | 'table_edited';
+  moduleKey: string;
+  itemId: string;
+  timestamp: string;
+}
+
+/**
+ * Get recent activity items sorted by timestamp
+ * Combines completed todos and edited tables
+ *
+ * @param limit Maximum number of items to return (default 10)
+ */
+export async function getRecentActivity(limit: number = 10): Promise<ActivityItem[]> {
+  const [todos, tables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+
+  const activities: ActivityItem[] = [];
+
+  // Add completed todos with timestamps
+  todos
+    .filter((todo) => todo.completed && todo.completedAt)
+    .forEach((todo) => {
+      activities.push({
+        type: 'todo_completed',
+        moduleKey: todo.moduleKey,
+        itemId: todo.todoId,
+        timestamp: todo.completedAt!,
+      });
+    });
+
+  // Add recently edited table rows
+  tables.forEach((row) => {
+    activities.push({
+      type: 'table_edited',
+      moduleKey: row.moduleKey,
+      itemId: `${row.tableId}-${row.rowId}`,
+      timestamp: row.updatedAt,
+    });
+  });
+
+  // Sort by timestamp descending and limit
+  return activities
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, limit);
+}
+
+/**
+ * Overall statistics across all modules
+ */
+export interface OverallStats {
+  totalTodos: number;
+  completedTodos: number;
+  completionPercentage: number;
+  totalTableRows: number;
+  modulesStarted: number;
+  lastActivityDate: string | null;
+}
+
+/**
+ * Get aggregated statistics across all modules
+ */
+export async function getOverallStats(): Promise<OverallStats> {
+  const [todos, tables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+
+  const completedTodos = todos.filter((t) => t.completed).length;
+  const uniqueModules = new Set([
+    ...todos.map((t) => t.moduleKey),
+    ...tables.map((t) => t.moduleKey),
+  ]);
+
+  // Find most recent activity
+  const allDates = [
+    ...todos.filter((t) => t.completedAt).map((t) => t.completedAt!),
+    ...tables.map((t) => t.updatedAt),
+  ];
+  const lastActivityDate =
+    allDates.length > 0
+      ? allDates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+      : null;
+
+  return {
+    totalTodos: todos.length,
+    completedTodos,
+    completionPercentage:
+      todos.length > 0 ? Math.round((completedTodos / todos.length) * 100) : 0,
+    totalTableRows: tables.length,
+    modulesStarted: uniqueModules.size,
+    lastActivityDate,
+  };
+}
+
+/**
+ * Progress data for a single module
+ */
+export interface ModuleProgress {
+  moduleKey: string;
+  displayName: string;
+  totalTodos: number;
+  completedTodos: number;
+  percentage: number;
+  tableRowCount: number;
+  lastActivity: string | null;
+}
+
+/**
+ * Module display names mapping
+ * Maps moduleKey to human-readable names
+ */
+const MODULE_DISPLAY_NAMES: Record<string, string> = {
+  'emergency-preparedness': 'Emergency Preparedness',
+  'emergency-preparedness-kits': 'Emergency Kits',
+  'food-and-water': 'Food & Water',
+  'first-aid-medical': 'Medical Supplies',
+  'power-supply': 'Power & Energy',
+  'warming-cooling-shelter': 'Shelter',
+  'vehicles-equipment': 'Vehicles',
+  'sanitation-hygiene': 'Sanitation',
+  'children-disaster': 'Special Populations',
+  'senior-citizens': 'Special Populations',
+  'people-with-disabilities': 'Special Populations',
+  'lep-populations': 'Special Populations',
+  'farm-animals': 'Special Populations',
+  'flood-recovery': 'Flood Recovery',
+  'mutual-aid': 'Mutual Aid',
+  'knowing-your-community': 'Knowing Your Community',
+  'knowing-community': 'Knowing Your Community',
+  'bringing-people-together': 'Knowing Your Community',
+  'baseline-resilience': 'Baseline Resilience',
+  'basic-needs': 'Basic Needs',
+  'shared-tools': 'Shared Tools',
+  'community-building': 'Community Building',
+};
+
+/**
+ * Format module key to display name
+ */
+function formatModuleKey(key: string): string {
+  return key
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+/**
+ * Get progress breakdown by module
+ * Returns array sorted by completion percentage (descending)
+ */
+export async function getModuleProgress(): Promise<ModuleProgress[]> {
+  const [todos, tables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+
+  // Group by moduleKey
+  const moduleMap = new Map<
+    string,
+    {
+      todos: Todo[];
+      tables: TableRow[];
+    }
+  >();
+
+  todos.forEach((todo) => {
+    if (!moduleMap.has(todo.moduleKey)) {
+      moduleMap.set(todo.moduleKey, { todos: [], tables: [] });
+    }
+    moduleMap.get(todo.moduleKey)!.todos.push(todo);
+  });
+
+  tables.forEach((table) => {
+    if (!moduleMap.has(table.moduleKey)) {
+      moduleMap.set(table.moduleKey, { todos: [], tables: [] });
+    }
+    moduleMap.get(table.moduleKey)!.tables.push(table);
+  });
+
+  // Convert to array of ModuleProgress
+  const progress: ModuleProgress[] = [];
+
+  moduleMap.forEach((data, moduleKey) => {
+    const completed = data.todos.filter((t) => t.completed).length;
+    const total = data.todos.length;
+
+    // Find last activity for this module
+    const moduleDates = [
+      ...data.todos.filter((t) => t.completedAt).map((t) => t.completedAt!),
+      ...data.tables.map((t) => t.updatedAt),
+    ];
+    const lastActivity =
+      moduleDates.length > 0
+        ? moduleDates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0]
+        : null;
+
+    progress.push({
+      moduleKey,
+      displayName: MODULE_DISPLAY_NAMES[moduleKey] || formatModuleKey(moduleKey),
+      totalTodos: total,
+      completedTodos: completed,
+      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+      tableRowCount: data.tables.length,
+      lastActivity,
+    });
+  });
+
+  // Sort by percentage descending, then by name
+  return progress.sort((a, b) => {
+    if (b.percentage !== a.percentage) return b.percentage - a.percentage;
+    return a.displayName.localeCompare(b.displayName);
+  });
+}
+
+// ============================================================================
+// STREAK & GOAL TRACKING
+// ============================================================================
+
+/**
+ * Streak data for tracking consecutive days of activity
+ */
+export interface StreakData {
+  currentStreak: number;
+  lastActivityDate: string | null;
+}
+
+/**
+ * Get current streak data
+ */
+export async function getStreakData(): Promise<StreakData> {
+  const currentStreak = (await getMetadata('currentStreak')) ?? 0;
+  const lastActivityDate = (await getMetadata('streakLastActivityDate')) ?? null;
+  return { currentStreak, lastActivityDate };
+}
+
+/**
+ * Update streak when user completes an activity
+ * Call this when a todo is completed
+ */
+export async function updateStreak(): Promise<StreakData> {
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const { currentStreak, lastActivityDate } = await getStreakData();
+
+  if (lastActivityDate === today) {
+    // Already counted today
+    return { currentStreak, lastActivityDate };
+  }
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  let newStreak: number;
+  if (lastActivityDate === yesterdayStr) {
+    // Consecutive day - increment streak
+    newStreak = currentStreak + 1;
+  } else {
+    // Streak broken or first activity - start at 1
+    newStreak = 1;
+  }
+
+  await setMetadata('currentStreak', newStreak);
+  await setMetadata('streakLastActivityDate', today);
+
+  return { currentStreak: newStreak, lastActivityDate: today };
+}
+
+/**
+ * Weekly progress data
+ */
+export interface WeeklyProgress {
+  completed: number;
+  goal: number;
+  weekStartDate: string;
+}
+
+/**
+ * Get the Monday of the current week
+ */
+function getCurrentWeekStart(): string {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+  const monday = new Date(now.setDate(diff));
+  return monday.toISOString().split('T')[0];
+}
+
+/**
+ * Get weekly progress data
+ */
+export async function getWeeklyProgress(): Promise<WeeklyProgress> {
+  const currentWeekStart = getCurrentWeekStart();
+  const storedWeekStart = (await getMetadata('weekStartDate')) ?? null;
+  const goal = (await getMetadata('weeklyGoal')) ?? 5; // Default goal: 5 items
+
+  // Reset if we're in a new week
+  if (storedWeekStart !== currentWeekStart) {
+    await setMetadata('weekStartDate', currentWeekStart);
+    await setMetadata('weeklyCompleted', 0);
+    return { completed: 0, goal, weekStartDate: currentWeekStart };
+  }
+
+  const completed = (await getMetadata('weeklyCompleted')) ?? 0;
+  return { completed, goal, weekStartDate: currentWeekStart };
+}
+
+/**
+ * Increment weekly completed count
+ * Call this when a todo is completed
+ */
+export async function incrementWeeklyProgress(): Promise<WeeklyProgress> {
+  const progress = await getWeeklyProgress();
+  const newCompleted = progress.completed + 1;
+  await setMetadata('weeklyCompleted', newCompleted);
+  return { ...progress, completed: newCompleted };
+}
+
+/**
+ * Set weekly goal
+ */
+export async function setWeeklyGoal(goal: number): Promise<void> {
+  await setMetadata('weeklyGoal', Math.max(1, goal)); // Minimum goal of 1
+}
+
+// ============================================================================
+// BOOKMARKED MODULES
+// ============================================================================
+
+/**
+ * Get list of bookmarked module keys
+ */
+export async function getBookmarkedModules(): Promise<string[]> {
+  return (await getMetadata('bookmarkedModules')) ?? [];
+}
+
+/**
+ * Toggle bookmark for a module
+ * @returns true if now bookmarked, false if unbookmarked
+ */
+export async function toggleBookmark(moduleKey: string): Promise<boolean> {
+  const bookmarks = await getBookmarkedModules();
+  const index = bookmarks.indexOf(moduleKey);
+
+  if (index === -1) {
+    // Add bookmark
+    bookmarks.push(moduleKey);
+    await setMetadata('bookmarkedModules', bookmarks);
+    return true;
+  } else {
+    // Remove bookmark
+    bookmarks.splice(index, 1);
+    await setMetadata('bookmarkedModules', bookmarks);
+    return false;
+  }
+}
+
+// ============================================================================
+// PERSONAL NOTES
+// ============================================================================
+
+/**
+ * Get personal notes
+ */
+export async function getPersonalNotes(): Promise<string> {
+  return (await getMetadata('personalNotes')) ?? '';
+}
+
+/**
+ * Save personal notes
+ */
+export async function savePersonalNotes(notes: string): Promise<void> {
+  await setMetadata('personalNotes', notes);
+}
+
+// ============================================================================
+// INITIALIZATION
+// ============================================================================
+
 /**
  * Initialize storage for local-only mode
  *

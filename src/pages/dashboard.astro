@@ -2,10 +2,21 @@
 /**
  * Dashboard Page - Local-Only App
  *
- * Shows quick access to toolkit modules.
+ * Shows user progress tracking and quick access to toolkit modules.
+ * Displays:
+ * - Progress metrics (items completed, modules started, streak)
+ * - Recent activity feed
+ * - Module-by-module progress
+ * - Personal notes section
+ * - Export data functionality
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import UserProgressDashboard from '../components/UserProgressDashboard';
+import StreakGoalCard from '../components/StreakGoalCard';
+import PersonalNotes from '../components/PersonalNotes';
+import ExportDataButton from '../components/ExportDataButton';
+import WhatsNewCard from '../components/WhatsNewCard';
 import { HeartPulse, Users, BookOpen, ArrowRight, Siren, HardDrive, Download } from 'lucide-react';
 
 // Featured modules for quick access
@@ -36,115 +47,125 @@ const featuredModules = [
 
 <BaseLayout title="Dashboard - Resilience Hub Toolkit">
   <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <!-- Hero Section -->
-      <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">
-                Dashboard
-              </h1>
-              <p class="mt-1 text-gray-600 dark:text-gray-400">
-                Get started with your resilience journey
-              </p>
-            </div>
+    <!-- Hero Section -->
+    <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">
+              Dashboard
+            </h1>
+            <p class="mt-1 text-gray-600 dark:text-gray-400">
+              Track your resilience journey
+            </p>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Main Content -->
-          <div class="lg:col-span-2 space-y-6">
-            <!-- REMOVED: Your Hubs Section (auth disabled) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 flex flex-col gap-6">
+          <!-- User Progress Dashboard -->
+          <UserProgressDashboard client:load />
 
-            <!-- Quick Access to Modules -->
-            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  Get Started
-                </h2>
-                <a
-                  href="/modules"
-                  class="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
-                >
-                  View all modules
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </div>
+          <!-- Personal Notes -->
+          <PersonalNotes client:load />
 
-              <div class="grid grid-cols-1 gap-4">
-                {featuredModules.map((module) => {
-                  const Icon = module.icon;
-                  return (
-                    <a
-                      href={module.href}
-                      class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group"
-                    >
-                      <div class="flex items-start gap-3">
-                        <div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                          <Icon className="w-5 h-5 text-primary" />
-                        </div>
-                        <div class="flex-1">
-                          <h3 class="font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors">
-                            {module.title}
-                          </h3>
-                          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            {module.description}
-                          </p>
-                        </div>
-                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
+          <!-- What's New -->
+          <WhatsNewCard client:load />
+
+          <!-- Quick Access to Modules -->
+          <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                Toolkit Modules
+              </h2>
+              <a
+                href="/modules"
+                class="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
+              >
+                View all modules
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+              {featuredModules.map((module) => {
+                const Icon = module.icon;
+                return (
+                  <a
+                    href={module.href}
+                    class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group"
+                  >
+                    <div class="flex items-start gap-3">
+                      <div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                        <Icon className="w-5 h-5 text-primary" />
                       </div>
-                    </a>
-                  );
-                })}
+                      <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                          {module.title}
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                          {module.description}
+                        </p>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="flex flex-col gap-6">
+          <!-- Streak & Goal Tracking -->
+          <StreakGoalCard client:load />
+
+          <!-- Quick Links -->
+          <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
+            <nav class="space-y-2">
+              <a
+                href="/downloads"
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                Downloads
+              </a>
+              <a
+                href="/about"
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+              >
+                <BookOpen className="w-4 h-4" />
+                About the Toolkit
+              </a>
+            </nav>
+          </section>
+
+          <!-- Storage Info -->
+          <section class="bg-primary/5 rounded-lg border border-primary/20 p-4">
+            <div class="flex items-start gap-3">
+              <div class="p-1.5 bg-primary/10 rounded-lg">
+                <HardDrive className="w-4 h-4 text-primary" />
               </div>
-            </section>
-          </div>
-
-          <!-- Sidebar -->
-          <div class="space-y-6">
-            <!-- REMOVED: Account Info (auth disabled) -->
-
-            <!-- Quick Links -->
-            <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
-              <nav class="space-y-2">
-                <a
-                  href="/downloads"
-                  class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  Downloads
-                </a>
-                <a
-                  href="/about"
-                  class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  About the Toolkit
-                </a>
-              </nav>
-            </section>
-
-            <!-- Storage Info -->
-            <section class="bg-primary/5 rounded-lg border border-primary/20 p-4">
-              <div class="flex items-start gap-3">
-                <div class="p-1.5 bg-primary/10 rounded-lg">
-                  <HardDrive className="w-4 h-4 text-primary" />
-                </div>
-                <div class="flex-1">
-                  <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                    Local Storage
-                  </h4>
-                  <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">
-                    All your data is stored locally on your device. The toolkit works completely offline.
-                  </p>
-                </div>
+              <div class="flex-1">
+                <h4 class="text-sm font-medium text-gray-900 dark:text-white">
+                  Local Storage
+                </h4>
+                <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">
+                  All your data is stored locally on your device. The toolkit works completely offline.
+                </p>
               </div>
-            </section>
-          </div>
+            </div>
+          </section>
+
+          <!-- Export Data Button -->
+          <ExportDataButton client:load />
         </div>
       </div>
     </div>

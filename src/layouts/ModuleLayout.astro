@@ -5,6 +5,7 @@
  * This layout wraps BaseLayout and adds module-specific features:
  * - Section header with breadcrumb navigation
  * - Previous/Next section navigation
+ * - Table of Contents sidebar (for section pages)
  * - Print and export functionality
  * - Module metadata display (tags, difficulty, time estimate)
  *
@@ -19,6 +20,7 @@
  * - Breadcrumb: Home → Modules → Module → Section
  * - Prev/Next buttons between sections within a module
  * - "Back to Modules" link to module index
+ * - Table of Contents sidebar for section pages
  *
  * @see src/types/section-navigation.ts for SectionData type definition
  */
@@ -27,6 +29,7 @@ import { getPdfUrlForSection } from '@/lib/pdfLookup';
 import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { FolderOpen } from 'lucide-react';
+import { TableOfContents, TableOfContentsMobile } from '@/components/TableOfContents';
 
 interface SectionData {
   number: string;
@@ -68,162 +71,181 @@ const phaseColors = {
   During: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   After: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
 };
+
+// Generate moduleKey for TOC progress tracking
+const moduleKey = sectionData
+  ? `${sectionData.modulePath?.split('/').pop() || 'module'}-${sectionData.number.replace('.', '-')}`
+  : 'module';
+
+// Determine if we should show the TOC (only for section pages)
+const showTOC = !!sectionData;
 ---
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
-  <article class="container mx-auto px-4 py-8 max-w-4xl">
-    {sectionData && (
-      <!-- Breadcrumb navigation for section pages -->
-      <nav class="mb-6 text-sm text-text-muted no-print">
-        <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
-        <span class="mx-2">/</span>
-        <a href={sectionData.modulePath || "/modules"} class="hover:text-text-primary transition-colors">
-          {sectionData.moduleTitle}
-        </a>
-        <span class="mx-2">/</span>
-        <span class="text-text-primary">{sectionData.number}</span>
-      </nav>
+  <!-- Wrapper: Grid layout for section pages, standard container otherwise -->
+  <div class={showTOC ? "module-layout py-8" : ""}>
+    {showTOC && (
+      <TableOfContents client:load moduleKey={moduleKey} />
     )}
 
-    <!-- Module Header -->
-    <header class="mb-8">
-      {sectionData ? (
-        <!-- Section-based header -->
-        <h1 class="text-hero font-semibold mb-2">
-          {sectionData.number} {sectionData.title}
-        </h1>
-      ) : frontmatter && (
-        <!-- Frontmatter-based header -->
-        <>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-            {frontmatter.phase && (
-              <span class={`px-3 py-1 rounded-full text-sm font-medium ${phaseColors[frontmatter.phase]}`}>
-                {frontmatter.phase}
-              </span>
-            )}
-            {frontmatter.difficulty && (
-              <span class="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
-                {frontmatter.difficulty}
-              </span>
-            )}
-            {frontmatter.time_to_complete && (
-              <span class="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
-                {frontmatter.time_to_complete}
-              </span>
-            )}
-          </div>
-
-          <h1 class="text-4xl font-bold text-foreground mb-3">
-            {frontmatter.title}
-          </h1>
-
-          {frontmatter.summary && (
-            <p class="text-lg text-muted-foreground">
-              {frontmatter.summary}
-            </p>
-          )}
-
-          {frontmatter.tags && frontmatter.tags.length > 0 && (
-            <div class="flex flex-wrap gap-2 mt-4">
-              {frontmatter.tags.map((tag) => (
-                <span class="px-2 py-1 text-xs rounded bg-accent text-accent-foreground">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </>
+    <article class={showTOC ? "module-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
+      {sectionData && (
+        <!-- Breadcrumb navigation for section pages -->
+        <nav class="mb-6 text-sm text-text-muted no-print">
+          <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
+          <span class="mx-2">/</span>
+          <a href={sectionData.modulePath || "/modules"} class="hover:text-text-primary transition-colors">
+            {sectionData.moduleTitle}
+          </a>
+          <span class="mx-2">/</span>
+          <span class="text-text-primary">{sectionData.number}</span>
+        </nav>
       )}
-    </header>
 
-    <!-- Action Bar with View PDF and Export Buttons -->
-    <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print">
-      {pdfUrl ? (
-        <a
-          href={pdfUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-          </svg>
-          View PDF
-        </a>
-      ) : (
+      <!-- Module Header -->
+      <header class="mb-8">
+        {sectionData ? (
+          <!-- Section-based header -->
+          <h1 class="text-hero font-semibold mb-2">
+            {sectionData.number} {sectionData.title}
+          </h1>
+        ) : frontmatter && (
+          <!-- Frontmatter-based header -->
+          <>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              {frontmatter.phase && (
+                <span class={`px-3 py-1 rounded-full text-sm font-medium ${phaseColors[frontmatter.phase]}`}>
+                  {frontmatter.phase}
+                </span>
+              )}
+              {frontmatter.difficulty && (
+                <span class="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+                  {frontmatter.difficulty}
+                </span>
+              )}
+              {frontmatter.time_to_complete && (
+                <span class="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+                  {frontmatter.time_to_complete}
+                </span>
+              )}
+            </div>
+
+            <h1 class="text-4xl font-bold text-foreground mb-3">
+              {frontmatter.title}
+            </h1>
+
+            {frontmatter.summary && (
+              <p class="text-lg text-muted-foreground">
+                {frontmatter.summary}
+              </p>
+            )}
+
+            {frontmatter.tags && frontmatter.tags.length > 0 && (
+              <div class="flex flex-wrap gap-2 mt-4">
+                {frontmatter.tags.map((tag) => (
+                  <span class="px-2 py-1 text-xs rounded bg-accent text-accent-foreground">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </header>
+
+      <!-- Action Bar with View PDF and Export Buttons -->
+      <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print">
+        {pdfUrl ? (
+          <a
+            href={pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            View PDF
+          </a>
+        ) : (
+          <button
+            disabled
+            class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
+            title="PDF not available for this section"
+          >
+            View PDF (Not Available)
+          </button>
+        )}
+
+        {resourcesUrl ? (
+          <ExternalLink href={resourcesUrl} class="inline-block">
+            <button
+              class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+            >
+              <FolderOpen size={18} />
+              <span>See Additional Resources</span>
+            </button>
+          </ExternalLink>
+        ) : null}
+
         <button
           disabled
           class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
-          title="PDF not available for this section"
+          title="Export functionality coming soon"
         >
-          View PDF (Not Available)
+          Export local data (Coming soon)
         </button>
+      </div>
+
+      <!-- Module Content -->
+      <div class={sectionData ? "space-y-8" : "prose prose-lg max-w-none prose-headings:text-foreground prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-4 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mb-3 prose-h2:mt-8 prose-h3:text-xl prose-h3:font-semibold prose-h3:mb-2 prose-h3:mt-6 prose-p:text-foreground prose-p:mb-4 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-strong:font-semibold prose-ul:my-4 prose-ul:list-disc prose-ul:pl-6 prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-6 prose-li:text-foreground prose-li:mb-1 prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic"}>
+        <slot />
+      </div>
+
+      {sectionData && (
+        <!-- Section navigation for section-based pages -->
+        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
+          {sectionData.prevSection ? (
+            <a
+              href={`${sectionData.modulePath || '/modules'}/${sectionData.prevSection.slug}`}
+              class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Previous: {sectionData.prevSection.number} {sectionData.prevSection.title}</span>
+            </a>
+          ) : (
+            <a
+              href={sectionData.modulePath || '/modules'}
+              class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Overview
+            </a>
+          )}
+
+          {sectionData.nextSection && (
+            <a
+              href={`${sectionData.modulePath || '/modules'}/${sectionData.nextSection.slug}`}
+              class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors ml-auto"
+            >
+              <span class="mr-2">Next: {sectionData.nextSection.number} {sectionData.nextSection.title}</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          )}
+        </nav>
       )}
+    </article>
+  </div>
 
-      {resourcesUrl ? (
-        <ExternalLink href={resourcesUrl} class="inline-block">
-          <button
-            class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
-          >
-            <FolderOpen size={18} />
-            <span>See Additional Resources</span>
-          </button>
-        </ExternalLink>
-      ) : null}
-
-      <button
-        disabled
-        class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
-        title="Export functionality coming soon"
-      >
-        Export local data (Coming soon)
-      </button>
-    </div>
-
-    <!-- Module Content -->
-    <div class={sectionData ? "space-y-8" : "prose prose-lg max-w-none prose-headings:text-foreground prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-4 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mb-3 prose-h2:mt-8 prose-h3:text-xl prose-h3:font-semibold prose-h3:mb-2 prose-h3:mt-6 prose-p:text-foreground prose-p:mb-4 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-strong:font-semibold prose-ul:my-4 prose-ul:list-disc prose-ul:pl-6 prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-6 prose-li:text-foreground prose-li:mb-1 prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic"}>
-      <slot />
-    </div>
-
-    {sectionData && (
-      <!-- Section navigation for section-based pages -->
-      <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
-        {sectionData.prevSection ? (
-          <a
-            href={`${sectionData.modulePath || '/modules'}/${sectionData.prevSection.slug}`}
-            class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Previous: {sectionData.prevSection.number} {sectionData.prevSection.title}</span>
-          </a>
-        ) : (
-          <a
-            href={sectionData.modulePath || '/modules'}
-            class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Overview
-          </a>
-        )}
-
-        {sectionData.nextSection && (
-          <a
-            href={`${sectionData.modulePath || '/modules'}/${sectionData.nextSection.slug}`}
-            class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors ml-auto"
-          >
-            <span class="mr-2">Next: {sectionData.nextSection.number} {sectionData.nextSection.title}</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-        )}
-      </nav>
-    )}
-  </article>
+  {showTOC && (
+    <TableOfContentsMobile client:visible moduleKey={moduleKey} />
+  )}
 
   <script>
     // Print functionality removed - replaced with direct PDF links

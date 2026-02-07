@@ -3,41 +3,28 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import ActionButton from '@/components/ActionButton.astro';
 import Badge from '@/components/Badge.astro';
 import Card from '@/components/Card.astro';
-import { BookOpen, Users, Siren, HeartPulse, Download } from 'lucide-react';
+import { modules, getPhaseCounts, phaseDotColors } from '@/data/modules';
 
-// Featured modules for homepage
-const featuredModules = [
+// Phase filter configuration
+const phases = ['All', 'Before', 'During', 'After'] as const;
+const phaseCounts = getPhaseCounts();
+
+const fieldSnapshots = [
   {
-    title: 'Introduction',
-    url: '/introduction',
-    icon: BookOpen,
-    summary: 'Learn what a Community Resilience Hub is and how to use this toolkit to strengthen disaster preparedness.'
+    label: 'Field Snapshot',
+    image: '/images/culvert-road.png',
+    alt: 'Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs.',
+    caption: 'Road closed for culvert repair, July 2023'
   },
   {
-    title: 'Knowing Your Community',
-    url: '/modules/knowing-your-community',
-    icon: Users,
-    summary: 'Map community assets, identify vulnerable populations, and understand the unique characteristics of your area.'
-  },
-  {
-    title: 'Emergency Preparedness and Response',
-    url: '/modules/emergency-preparedness',
-    icon: Siren,
-    summary: 'Build emergency kits, create response plans, and prepare for immediate disaster response.'
-  },
-  {
-    title: 'Baseline Resilience',
-    url: '/modules/baseline-resilience',
-    icon: HeartPulse,
-    summary: 'Strengthen everyday community systems for food, shelter, tools, and mutual support.'
-  },
-  {
-    title: 'Downloads',
-    url: '/downloads',
-    icon: Download,
-    summary: 'Access printable checklists, forms, and templates to support your hub\'s work.'
+    label: 'Field Snapshot',
+    image: '/images/river-bend-washout.png',
+    alt: 'River bend washout where floodwaters carved a channel dangerously close to the gravel road.',
+    caption: 'River bend washout cutting off access, July 2023'
   }
 ];
+
+const defaultSnapshot = fieldSnapshots[0];
 ---
 
 <BaseLayout
@@ -45,7 +32,7 @@ const featuredModules = [
   description="Local-first tools to organize systems, stuff, and people before, during, and after disasters."
 >
   <!-- Hero Section -->
-  <section class="bg-gradient-to-b from-primary/10 to-background py-16">
+  <section class="relative bg-gradient-to-b from-primary/10 to-background pt-16 pb-8">
     <div class="container mx-auto px-4 text-center max-w-4xl">
       <div class="flex justify-center mb-6">
         <Badge variant="success">Born When the Water Rose</Badge>
@@ -72,11 +59,331 @@ const featuredModules = [
         </ActionButton>
       </div>
 
-      <p class="mt-5 text-body text-muted-foreground font-medium">
+      <p class="mt-5 mb-10 text-body text-muted-foreground font-medium">
         Works even when the internet doesn't.<a href="#offline" class="text-primary no-underline hover:underline">*</a>
       </p>
     </div>
   </section>
+
+  <!-- Explore the Toolkit Section -->
+  <section class="py-12 bg-card" id="explore-toolkit">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="bg-background border border-border rounded-3xl shadow-xl px-6 py-10 md:px-12 md:py-12">
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <h2 class="text-headline font-semibold text-foreground mb-3">
+            Explore the toolkit yourself.
+          </h2>
+          <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
+            Select a phase or topic to jump into the guides. Everything works offline.
+          </p>
+        </div>
+
+        <!-- Phase Filter Pills -->
+        <div
+          class="flex flex-wrap justify-center gap-2 mb-8"
+          role="group"
+          aria-label="Filter modules by phase"
+          data-phase-filter-group
+        >
+          {phases.map((phase, index) => (
+            <button
+              type="button"
+              class:list={[
+                'px-4 py-2 rounded-full text-body font-medium',
+                'transition-all duration-200',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                index === 0
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground bg-muted/50 hover:text-foreground hover:bg-muted'
+              ]}
+              data-phase-filter={phase}
+              aria-pressed={index === 0 ? 'true' : 'false'}
+            >
+              {phase}
+              <span class="ml-1.5 text-body-small opacity-75">
+                ({phaseCounts[phase as keyof typeof phaseCounts]})
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <!-- Module Explorer: Pills + Detail Panel -->
+        <div class="flex flex-col lg:flex-row gap-6 mb-8" data-module-explorer>
+
+          <!-- Module Pills Grid -->
+          <div class="flex-1">
+            <div
+              class="flex flex-wrap gap-3 justify-center lg:justify-start"
+              role="list"
+              aria-label="Toolkit modules"
+              data-module-pills
+            >
+              {modules.map((module) => (
+                <a
+                  href={module.url}
+                  class:list={[
+                    'group inline-flex items-center gap-2',
+                    'px-4 py-2.5 rounded-full',
+                    'border border-border bg-card',
+                    'text-body font-medium text-foreground',
+                    'transition-all duration-200',
+                    'hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/50',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                  ]}
+                  data-module-pill
+                  data-module-slug={module.slug}
+                  data-module-phases={module.frontmatter.phases?.join(',') || ''}
+                  data-module-summary={module.frontmatter.summary}
+                  data-module-title={module.frontmatter.title}
+                >
+                  <module.icon
+                    className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+                    strokeWidth={1.5}
+                  />
+                  <span>{module.frontmatter.title}</span>
+                  {module.frontmatter.phases && module.frontmatter.phases.length > 0 && (
+                    <span class="flex gap-0.5 ml-1">
+                      {module.frontmatter.phases.map((phase) => (
+                        <span
+                          class={`w-2 h-2 rounded-full ${phaseDotColors[phase]}`}
+                          title={phase}
+                        />
+                      ))}
+                    </span>
+                  )}
+                </a>
+              ))}
+            </div>
+
+            <!-- Mobile Detail Panel (shown below pills on small screens) -->
+            <div
+              class="lg:hidden mt-4 hidden"
+              data-mobile-detail-panel
+            >
+              <div class="p-4 rounded-xl bg-muted/30 border border-border">
+                <h4 class="text-subtitle font-semibold text-foreground mb-2" data-mobile-detail-title></h4>
+                <p class="text-body-small text-muted-foreground mb-3" data-mobile-detail-summary></p>
+                <a
+                  href="#"
+                  class="inline-flex items-center gap-1 text-primary font-medium text-body-small hover:underline"
+                  data-mobile-detail-link
+                >
+                  Open module
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Desktop Detail Panel (sticky on right side) -->
+          <div
+            class="lg:w-72 flex-shrink-0 hidden lg:block"
+            data-detail-panel
+            aria-live="polite"
+          >
+            <div class="sticky top-24 p-5 rounded-xl bg-muted/30 border border-border min-h-[140px]">
+              <p class="text-body-small text-muted-foreground italic" data-detail-placeholder>
+                Hover over a module to see its description.
+              </p>
+              <div class="hidden" data-detail-content>
+                <h4 class="text-subtitle font-semibold text-foreground mb-2" data-detail-title></h4>
+                <p class="text-body-small text-muted-foreground" data-detail-summary></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Row -->
+        <div class="mb-8" data-pagefind-search>
+          <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center">
+            <p class="text-body-small text-muted-foreground text-center sm:text-left">
+              Or search by keyword:
+            </p>
+            <div class="relative w-full sm:w-80">
+              <div class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </div>
+              <input
+                type="search"
+                id="pagefind-search"
+                placeholder="Try 'mutual aid' or 'go bag'"
+                autocomplete="off"
+                class:list={[
+                  'w-full h-12 pl-12 pr-4',
+                  'bg-input border border-border rounded-lg',
+                  'text-body text-foreground placeholder:text-muted-foreground',
+                  'shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]',
+                  'transition-all duration-200',
+                  'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent focus:bg-background',
+                  'hover:bg-muted'
+                ]}
+              />
+            </div>
+          </div>
+
+          <!-- Search Results Container -->
+          <div
+            class="mt-4 rounded-xl border border-border bg-card overflow-hidden hidden"
+            data-search-results
+          >
+            <div class="p-4 text-center text-body-small text-muted-foreground" data-search-status>
+              Searching...
+            </div>
+            <div data-search-hits></div>
+          </div>
+        </div>
+
+        <!-- CTA Button -->
+        <div class="text-center">
+          <ActionButton href="/modules" variant="primary" size="lg">
+            Explore All Modules
+          </ActionButton>
+        </div>
+
+        <!-- No-JS Fallback -->
+        <noscript>
+          <div class="mt-8 p-6 bg-muted/30 rounded-xl border border-border">
+            <h3 class="text-subtitle font-semibold text-foreground mb-4">All Modules</h3>
+            <ul class="space-y-3">
+              {modules.map((module) => (
+                <li>
+                  <a
+                    href={module.url}
+                    class="text-primary hover:underline font-medium"
+                  >
+                    {module.frontmatter.title}
+                  </a>
+                  <span class="text-muted-foreground ml-2">
+                    — {module.frontmatter.summary}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </noscript>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Field Snapshot -->
+  <section class="relative z-10 py-12 px-4">
+    <div class="mx-auto max-w-5xl">
+      <figure class="bg-background border border-border rounded-3xl shadow-2xl overflow-hidden" data-field-snapshot>
+        <div class="relative h-64 sm:h-72 md:h-80">
+          <img
+            src={defaultSnapshot.image}
+            alt={defaultSnapshot.alt}
+            class="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            data-field-image
+          />
+          <span class="absolute top-4 left-4 bg-primary/90 text-white text-xs font-semibold tracking-wide uppercase px-3 py-1 rounded-full shadow-lg backdrop-blur" data-field-label>
+            {defaultSnapshot.label}
+          </span>
+          <span class="absolute bottom-4 left-4 inline-flex items-center rounded-full bg-black/90 text-white text-sm sm:text-base font-medium px-4 py-1.5 shadow-lg backdrop-blur border border-white/20" data-field-caption>
+            {defaultSnapshot.caption}
+          </span>
+          <button
+            type="button"
+            class="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full bg-primary/90 text-white text-xs font-semibold tracking-wide uppercase px-3 py-1 shadow-lg backdrop-blur hover:bg-primary transition-colors"
+            data-snapshot-gallery-open
+          >
+            View gallery
+          </button>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <dialog
+    data-snapshot-gallery-dialog
+    class="rounded-3xl border border-border p-0 w-[min(90vw,640px)] bg-background text-foreground shadow-2xl backdrop:bg-black/60"
+  >
+    <div class="p-6 sm:p-8 space-y-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold tracking-wide text-primary uppercase">Gallery</p>
+          <h3 class="text-title font-semibold text-foreground">Field Snapshots</h3>
+        </div>
+        <button
+          type="button"
+          class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          data-snapshot-gallery-close
+        >
+          Close
+        </button>
+      </div>
+      <div class="grid grid-cols-1 gap-4">
+        {fieldSnapshots.map((shot, idx) => (
+          <button
+            type="button"
+            class="text-left overflow-hidden rounded-2xl border border-border bg-card hover:-translate-y-0.5 hover:shadow-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            data-snapshot-detail-trigger
+            data-image={shot.image}
+            data-alt={shot.alt}
+            data-caption={shot.caption}
+          >
+            <figure>
+              <div class="h-48 sm:h-56">
+                <img
+                  src={shot.image}
+                  alt={shot.alt}
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption class="p-4">
+                <p class="text-sm font-semibold text-foreground">{shot.caption}</p>
+                <p class="text-xs text-muted-foreground mt-1">{shot.alt}</p>
+              </figcaption>
+            </figure>
+          </button>
+        ))}
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    data-snapshot-detail-dialog
+    class="rounded-2xl border border-border p-0 w-[min(98vw,1600px)] h-[min(96vh,1200px)] bg-background text-foreground shadow-2xl backdrop:bg-black/80"
+  >
+    <div class="flex flex-col h-full p-3 sm:p-4">
+      <div class="flex items-center justify-between gap-4 mb-3">
+        <p class="text-sm font-semibold text-primary uppercase tracking-wide">Field Snapshot</p>
+        <button
+          type="button"
+          class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          data-snapshot-detail-close
+        >
+          Close
+        </button>
+      </div>
+      <div class="flex-1 min-h-0 rounded-xl overflow-hidden border border-border">
+        <img
+          src=""
+          alt=""
+          class="w-full h-full object-contain"
+          loading="lazy"
+          decoding="async"
+          data-detail-image
+        />
+      </div>
+      <div class="mt-3">
+        <p class="text-base font-semibold text-foreground" data-detail-caption></p>
+        <p class="text-sm text-muted-foreground mt-1" data-detail-alt></p>
+      </div>
+    </div>
+  </dialog>
 
   <!-- Origin Story Section -->
   <section class="py-12 bg-card">
@@ -162,50 +469,6 @@ const featuredModules = [
             Track recovery progress, support rebuilding, and strengthen long-term community resilience.
           </p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Featured Modules -->
-  <section class="py-12 bg-card">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <div class="text-center mb-10">
-        <h2 class="text-headline font-semibold text-foreground mb-3">
-          What's Inside the Toolkit
-        </h2>
-        <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
-          Three comprehensive modules covering every phase of disaster preparedness,
-          response, and recovery. All content works completely offline.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {featuredModules.map((module) => (
-          <a
-            href={module.url}
-            class="group block p-6 rounded-lg border border-border bg-background hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-          >
-            <div class="flex items-start gap-3 mb-3">
-              {module.icon && (
-                <module.icon className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-              )}
-              <h3 class="text-subtitle font-semibold text-foreground group-hover:text-primary transition-colors">
-                {module.title}
-              </h3>
-            </div>
-            {module.summary && (
-              <p class="text-body-small text-muted-foreground line-clamp-3">
-                {module.summary}
-              </p>
-            )}
-          </a>
-        ))}
-      </div>
-
-      <div class="text-center mt-10">
-        <ActionButton href="/modules" variant="primary" size="lg">
-          Explore All Modules
-        </ActionButton>
       </div>
     </div>
   </section>
@@ -447,4 +710,384 @@ const featuredModules = [
       </div>
     </div>
   </section>
+
+  <!-- Pagefind Search -->
+  <script is:inline>
+    (() => {
+      const init = () => {
+        const input = document.getElementById('pagefind-search');
+        const resultsContainer = document.querySelector('[data-search-results]');
+        const statusEl = document.querySelector('[data-search-status]');
+        const hitsEl = document.querySelector('[data-search-hits]');
+        if (!input || !resultsContainer || !statusEl || !hitsEl) return;
+
+        let pagefind = null;
+        let debounceTimer = null;
+
+        const loadPagefind = async () => {
+          if (pagefind) return pagefind;
+          try {
+            pagefind = await import('/pagefind/pagefind.js');
+            await pagefind.init();
+            return pagefind;
+          } catch (err) {
+            console.warn('Pagefind not available:', err);
+            return null;
+          }
+        };
+
+        const clearHits = () => {
+          while (hitsEl.firstChild) hitsEl.removeChild(hitsEl.firstChild);
+        };
+
+        // Pagefind excerpts use <mark> for highlights. This is trusted
+        // build-time content from our own site. We parse safely via a
+        // template element and only allow <mark> tags and text nodes.
+        const safeExcerptNodes = (excerptHtml) => {
+          const tpl = document.createElement('template');
+          tpl.innerHTML = excerptHtml;
+          const fragment = tpl.content;
+          const safe = document.createDocumentFragment();
+          fragment.childNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              safe.appendChild(document.createTextNode(node.textContent));
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'MARK') {
+              const mark = document.createElement('mark');
+              mark.textContent = node.textContent;
+              safe.appendChild(mark);
+            }
+          });
+          return safe;
+        };
+
+        const renderResults = async (results) => {
+          clearHits();
+
+          if (results.length === 0) {
+            statusEl.textContent = 'No results found.';
+            statusEl.classList.remove('hidden');
+            return;
+          }
+
+          statusEl.classList.add('hidden');
+          const toShow = results.slice(0, 5);
+
+          for (const result of toShow) {
+            const data = await result.data();
+
+            const item = document.createElement('a');
+            item.href = data.url;
+            item.className = 'block p-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-200';
+
+            const title = document.createElement('p');
+            title.className = 'text-subtitle font-semibold text-primary mb-1';
+            title.textContent = data.meta?.title || data.url;
+            item.appendChild(title);
+
+            if (data.excerpt) {
+              const excerpt = document.createElement('p');
+              excerpt.className = 'text-body-small text-muted-foreground';
+              excerpt.appendChild(safeExcerptNodes(data.excerpt));
+              item.appendChild(excerpt);
+            }
+
+            hitsEl.appendChild(item);
+          }
+
+          if (results.length > 5) {
+            const more = document.createElement('div');
+            more.className = 'p-3 text-center text-body-small text-muted-foreground border-t border-border';
+            more.textContent = (results.length - 5) + ' more results \u2014 refine your search to narrow down.';
+            hitsEl.appendChild(more);
+          }
+        };
+
+        const doSearch = async (query) => {
+          if (!query || query.length < 2) {
+            resultsContainer.classList.add('hidden');
+            clearHits();
+            return;
+          }
+
+          resultsContainer.classList.remove('hidden');
+          statusEl.textContent = 'Searching\u2026';
+          statusEl.classList.remove('hidden');
+
+          const pf = await loadPagefind();
+          if (!pf) {
+            statusEl.textContent = 'Search requires a production build. Run: pnpm build && pnpm preview';
+            return;
+          }
+
+          const search = await pf.search(query);
+          await renderResults(search.results);
+        };
+
+        input.addEventListener('input', () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => doSearch(input.value.trim()), 200);
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            input.value = '';
+            resultsContainer.classList.add('hidden');
+            clearHits();
+          }
+        });
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init, { once: true });
+      } else {
+        init();
+      }
+    })();
+  </script>
+
+  <!-- Pagefind highlight styling -->
+  <style is:inline>
+    [data-search-results] mark {
+      background-color: oklch(0.5756 0.1368 42.8 / 0.2);
+      color: inherit;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+  </style>
+
+  <!-- Module Explorer Interactivity -->
+  <script is:inline>
+    (() => {
+      const run = () => {
+        if (typeof window === 'undefined') return;
+
+        // Phase filter functionality
+        const filterGroup = document.querySelector('[data-phase-filter-group]');
+        const filterButtons = filterGroup?.querySelectorAll('[data-phase-filter]');
+        const modulePills = document.querySelectorAll('[data-module-pill]');
+
+        if (filterButtons && modulePills.length) {
+          filterButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const phase = btn.getAttribute('data-phase-filter');
+
+              // Update button states
+              filterButtons.forEach((b) => {
+                const isActive = b === btn;
+                b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                b.classList.toggle('bg-primary', isActive);
+                b.classList.toggle('text-primary-foreground', isActive);
+                b.classList.toggle('shadow-sm', isActive);
+                b.classList.toggle('text-muted-foreground', !isActive);
+                b.classList.toggle('bg-muted/50', !isActive);
+              });
+
+              // Filter modules (phaseless modules always visible)
+              modulePills.forEach((pill) => {
+                const pillPhases = pill.getAttribute('data-module-phases');
+                const phases = pillPhases ? pillPhases.split(',') : [];
+                // Show if: "All" selected, OR module has no phases, OR module includes selected phase
+                const shouldShow = phase === 'All' || phases.length === 0 || phases.includes(phase);
+
+                pill.style.display = shouldShow ? '' : 'none';
+                pill.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+              });
+            });
+          });
+        }
+
+        // Desktop detail panel hover functionality
+        const detailPanel = document.querySelector('[data-detail-panel]');
+        const detailPlaceholder = document.querySelector('[data-detail-placeholder]');
+        const detailContent = document.querySelector('[data-detail-content]');
+        const detailTitle = document.querySelector('[data-detail-title]');
+        const detailSummary = document.querySelector('[data-detail-summary]');
+
+        // Mobile detail panel elements
+        const mobilePanel = document.querySelector('[data-mobile-detail-panel]');
+        const mobileTitle = document.querySelector('[data-mobile-detail-title]');
+        const mobileSummary = document.querySelector('[data-mobile-detail-summary]');
+        const mobileLink = document.querySelector('[data-mobile-detail-link]');
+
+        const showDesktopDetail = (pill) => {
+          const title = pill.getAttribute('data-module-title');
+          const summary = pill.getAttribute('data-module-summary');
+
+          if (detailTitle) detailTitle.textContent = title;
+          if (detailSummary) detailSummary.textContent = summary;
+          if (detailPlaceholder) detailPlaceholder.classList.add('hidden');
+          if (detailContent) detailContent.classList.remove('hidden');
+        };
+
+        const hideDesktopDetail = () => {
+          if (detailPlaceholder) detailPlaceholder.classList.remove('hidden');
+          if (detailContent) detailContent.classList.add('hidden');
+        };
+
+        const showMobileDetail = (pill) => {
+          const title = pill.getAttribute('data-module-title');
+          const summary = pill.getAttribute('data-module-summary');
+          const url = pill.getAttribute('href');
+
+          if (mobileTitle) mobileTitle.textContent = title;
+          if (mobileSummary) mobileSummary.textContent = summary;
+          if (mobileLink) mobileLink.setAttribute('href', url);
+          if (mobilePanel) mobilePanel.classList.remove('hidden');
+        };
+
+        if (modulePills.length) {
+          modulePills.forEach((pill) => {
+            // Desktop: hover and focus
+            pill.addEventListener('mouseenter', () => showDesktopDetail(pill));
+            pill.addEventListener('focus', () => showDesktopDetail(pill));
+
+            // Mobile: show detail on focus (touch triggers focus)
+            pill.addEventListener('focus', () => {
+              if (window.innerWidth < 1024) {
+                showMobileDetail(pill);
+              }
+            });
+          });
+
+          // Hide desktop detail when leaving the pills area
+          const pillsContainer = document.querySelector('[data-module-pills]');
+          if (pillsContainer && detailPanel) {
+            pillsContainer.addEventListener('mouseleave', hideDesktopDetail);
+          }
+        }
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run, { once: true });
+      } else {
+        run();
+      }
+    })();
+  </script>
+
+  <script
+    type="application/json"
+    id="fieldSnapshotData"
+    set:html={JSON.stringify(fieldSnapshots).replace(/</g, '\\u003c')}
+  ></script>
+  <script is:inline>
+    (() => {
+      const run = () => {
+        if (typeof window === 'undefined') {
+          return;
+        }
+
+        const dataEl = document.getElementById('fieldSnapshotData');
+        if (!dataEl) {
+          return;
+        }
+
+        let snapshots = [];
+        try {
+          snapshots = JSON.parse(dataEl.textContent ?? '[]');
+        } catch (error) {
+          console.warn('Unable to parse field snapshot data', error);
+          return;
+        }
+
+        if (!Array.isArray(snapshots) || snapshots.length === 0) {
+          return;
+        }
+
+        const figure = document.querySelector('[data-field-snapshot]');
+        if (figure) {
+          const img = figure.querySelector('[data-field-image]');
+          const label = figure.querySelector('[data-field-label]');
+          const caption = figure.querySelector('[data-field-caption]');
+          const storageKey = 'fieldSnapshotIndex';
+          let storedIndex = -1;
+
+          try {
+            const storedValue = window.localStorage?.getItem(storageKey);
+            const parsed = Number(storedValue);
+            storedIndex = Number.isInteger(parsed) ? parsed : -1;
+          } catch (error) {
+            console.warn('Unable to read snapshot index from storage', error);
+          }
+
+          const nextIndex = (storedIndex + 1) % snapshots.length;
+          try {
+            window.localStorage?.setItem(storageKey, String(nextIndex));
+          } catch (error) {
+            console.warn('Unable to persist snapshot index', error);
+          }
+
+          const snapshot = snapshots[nextIndex];
+          if (img && snapshot?.image) {
+            img.src = snapshot.image;
+            if (snapshot.alt) {
+              img.alt = snapshot.alt;
+            }
+          }
+          if (label && snapshot?.label) {
+            label.textContent = snapshot.label;
+          }
+          if (caption && snapshot?.caption) {
+            caption.textContent = snapshot.caption;
+          }
+        }
+
+        const openBtn = document.querySelector('[data-snapshot-gallery-open]');
+        const dialog = document.querySelector('[data-snapshot-gallery-dialog]');
+        const closeBtn = dialog?.querySelector('[data-snapshot-gallery-close]');
+
+        if (openBtn && dialog && typeof dialog.showModal === 'function') {
+          openBtn.addEventListener('click', () => dialog.showModal());
+          closeBtn?.addEventListener('click', () => dialog.close());
+          dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) {
+              dialog.close();
+            }
+          });
+        }
+
+        const detailDialog = document.querySelector('[data-snapshot-detail-dialog]');
+        const detailClose = detailDialog?.querySelector('[data-snapshot-detail-close]');
+        const detailImage = detailDialog?.querySelector('[data-detail-image]');
+        const detailCaption = detailDialog?.querySelector('[data-detail-caption]');
+        const detailAlt = detailDialog?.querySelector('[data-detail-alt]');
+
+        if (detailDialog && typeof detailDialog.showModal === 'function') {
+          document.querySelectorAll('[data-snapshot-detail-trigger]').forEach((trigger) => {
+            trigger.addEventListener('click', () => {
+              const image = trigger.getAttribute('data-image');
+              const caption = trigger.getAttribute('data-caption');
+              const alt = trigger.getAttribute('data-alt');
+
+              if (detailImage && image) {
+                detailImage.src = image;
+                detailImage.alt = alt ?? '';
+              }
+              if (detailCaption) {
+                detailCaption.textContent = caption ?? '';
+              }
+              if (detailAlt) {
+                detailAlt.textContent = alt ?? '';
+              }
+
+              detailDialog.showModal();
+            });
+          });
+
+          detailClose?.addEventListener('click', () => detailDialog.close());
+          detailDialog.addEventListener('click', (event) => {
+            if (event.target === detailDialog) {
+              detailDialog.close();
+            }
+          });
+        }
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run, { once: true });
+      } else {
+        run();
+      }
+    })();
+  </script>
 </BaseLayout>

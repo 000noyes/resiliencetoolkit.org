@@ -20,7 +20,7 @@ export interface ModuleDownload {
   number: string;           // "0", "1.1", "2.3"
   name: string;             // "Emergency preparedness kits"
   section: string;          // "Section 0", "Section 1", "Section 2"
-  onlineUrl: string;        // "/modules/emergency-preparedness/1-1-kits"
+  onlineUrl: string;        // "/modules/emergency-preparedness/1-1"
   pdfFilename: string;      // "Section 1.1_2025 Resilience Hub Toolkit.pdf"
   resourcesUrl?: string;    // Google Drive folder URL (optional, TBD)
 }
@@ -108,7 +108,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.1',
     name: 'Emergency preparedness kits',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-1-kits',
+    onlineUrl: '/modules/emergency-preparedness/1-1',
     pdfFilename: 'Section 1.1_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F?usp=drive_link'
   },
@@ -116,7 +116,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.2',
     name: 'Food and water',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-2-food-water',
+    onlineUrl: '/modules/emergency-preparedness/1-2',
     pdfFilename: 'Section 1.2_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu?usp=drive_link'
   },
@@ -124,7 +124,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.3',
     name: 'First aid and medical',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-3-medical',
+    onlineUrl: '/modules/emergency-preparedness/1-3',
     pdfFilename: 'Section 1.3_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH?usp=drive_link'
   },
@@ -132,7 +132,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.4',
     name: 'Power supply',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-4-power',
+    onlineUrl: '/modules/emergency-preparedness/1-4',
     pdfFilename: 'Section 1.4_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU?usp=drive_link'
   },
@@ -140,7 +140,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.5',
     name: 'Warming/cooling/emergency shelter',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-5-shelter',
+    onlineUrl: '/modules/emergency-preparedness/1-5',
     pdfFilename: 'Section 1.5_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF?usp=drive_link'
   },
@@ -148,7 +148,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.6',
     name: 'Vehicles and equipment',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-6-vehicles',
+    onlineUrl: '/modules/emergency-preparedness/1-6',
     pdfFilename: 'Section 1.6_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1KYOLws3XyfnWG622Zv5UpgeEKAqb2mJ5?usp=drive_link'
   },
@@ -156,7 +156,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.7',
     name: 'Sanitation and hygiene',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-7-sanitation',
+    onlineUrl: '/modules/emergency-preparedness/1-7',
     pdfFilename: 'Section 1.7_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1b1h7aUHjcx3LudPM6kFB7-ypshucSGOL?usp=drive_link'
   },
@@ -164,7 +164,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.8',
     name: 'Populations with specific needs',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-8-special-populations',
+    onlineUrl: '/modules/emergency-preparedness/1-8',
     pdfFilename: 'Section 1.8_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1pVuxTqRsFs2ZprmP6qJKCekvJubQ_YKi'
   },
@@ -172,7 +172,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.9',
     name: 'Community emergency response plans',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-9-response-plans',
+    onlineUrl: '/modules/emergency-preparedness/1-9',
     pdfFilename: 'Section 1.9_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1ZP8p1LZ9F5tOJ3Yo-sLllSWd22ydXzNQ?usp=drive_link'
   },
@@ -180,7 +180,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.10',
     name: 'Volunteer Management',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-10-volunteers',
+    onlineUrl: '/modules/emergency-preparedness/1-10',
     pdfFilename: 'Section 1.10_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1QGrMJ_mv5LSGZ4ECDOuuOs9OJtcOfZY3?usp=drive_link'
   },
@@ -188,7 +188,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.11',
     name: 'Flood recovery supplies and work',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-11-flood-recovery',
+    onlineUrl: '/modules/emergency-preparedness/1-11',
     pdfFilename: 'Section 1.11_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r?usp=drive_link'
   },
@@ -196,7 +196,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.12',
     name: 'Mutual Aid',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-12-mutual-aid',
+    onlineUrl: '/modules/emergency-preparedness/1-12',
     pdfFilename: 'Section 1.12_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1lgAo_M6Jq3i4AR9xbtpxDpFLv5MAAVyg?usp=drive_link'
   },
@@ -204,7 +204,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '1.13',
     name: 'Financial resources',
     section: 'Section 1',
-    onlineUrl: '/modules/emergency-preparedness/1-13-financial-resources',
+    onlineUrl: '/modules/emergency-preparedness/1-13',
     pdfFilename: 'Section 1.13_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N?usp=drive_link'
   },
@@ -214,7 +214,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '2.1',
     name: 'Basic needs',
     section: 'Section 2',
-    onlineUrl: '/modules/baseline-resilience/2-1-basic-needs',
+    onlineUrl: '/modules/baseline-resilience/2-1',
     pdfFilename: 'Section 2.1_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I?usp=drive_link'
   },
@@ -222,7 +222,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '2.2',
     name: 'Shared tools',
     section: 'Section 2',
-    onlineUrl: '/modules/baseline-resilience/2-2-shared-tools',
+    onlineUrl: '/modules/baseline-resilience/2-2',
     pdfFilename: 'Section 2.2_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C?usp=drive_link'
   },
@@ -230,7 +230,7 @@ export const moduleDownloads: ModuleDownload[] = [
     number: '2.3',
     name: 'Community building',
     section: 'Section 2',
-    onlineUrl: '/modules/baseline-resilience/2-3-community-building',
+    onlineUrl: '/modules/baseline-resilience/2-3',
     pdfFilename: 'Section 2.3_2025 Resilience Hub Toolkit.pdf',
     resourcesUrl: 'https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4?usp=drive_link'
   }

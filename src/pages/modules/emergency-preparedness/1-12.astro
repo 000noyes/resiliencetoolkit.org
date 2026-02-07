@@ -10,8 +10,8 @@ const sectionData: SectionData = {
   title: "Mutual Aid/Neighbor to Neighbor (N2N)",
   moduleTitle: "Emergency Preparedness and Response",
   modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.11", title: "Flood Recovery Supplies and Work", slug: "1-11-flood-recovery" },
-  nextSection: { number: "1.13", title: "Financial Resources", slug: "1-13-financial-resources" }
+  prevSection: { number: "1.11", title: "Flood Recovery Supplies and Work", slug: "1-11" },
+  nextSection: { number: "1.13", title: "Financial Resources", slug: "1-13" }
 };
 ---
 
@@ -35,7 +35,12 @@ const sectionData: SectionData = {
         </thead>
         <tbody>
           <tr>
-            <td>
+            <td colspan="2">
+              <strong>Mutual Aid Tenets & Checklist</strong>
+            </td>
+          </tr>
+          <tr>
+            <td data-label="Systems">
               <strong>Mutual Aid Tenets</strong>
               <div class="guide-table__checklist">
                 <Todo id="ma-solidarity" moduleKey="mutual-aid" client:load>
@@ -58,7 +63,7 @@ const sectionData: SectionData = {
                 </Todo>
               </div>
             </td>
-            <td>
+            <td data-label="Stuff">
               <strong>Mutual Aid Checklist</strong>
               <div class="guide-table__checklist">
                 <Todo id="ma-identify-groups" moduleKey="mutual-aid" client:load>

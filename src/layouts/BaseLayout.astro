@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
 import GuestModeBanner from '../components/GuestModeBanner.tsx';
+import WhatsNewBanner from '../components/WhatsNewBanner.tsx';
 // import OfflineReadyBanner from '../components/OfflineReadyBanner.astro';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
@@ -80,9 +81,10 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
   <body class="min-h-screen flex flex-col">
     {!isPrintMode && <StatusBanner />}
     {!isPrintMode && <GuestModeBanner client:load />}
+    {!isPrintMode && <WhatsNewBanner client:load />}
     {!isPrintMode && <Header />}
 
-    <main class="flex-1">
+    <main class="flex-1" data-pagefind-body>
       <slot />
     </main>
 
@@ -94,6 +96,40 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
 
     <!-- Offline ready notification (disabled for now) -->
     {/* !isPrintMode && <OfflineReadyBanner /> */}
+
+    <script>
+      // Keep CSS header height variable in sync with the rendered sticky header
+      (() => {
+        const root = document.documentElement;
+        const headerSelector = 'header.sticky';
+
+        const updateHeaderHeight = () => {
+          const header = document.querySelector(headerSelector);
+          if (!header) return;
+          const { height } = header.getBoundingClientRect();
+          if (height > 0) {
+            root.style.setProperty('--header-height', `${Math.round(height)}px`);
+          }
+        };
+
+        const init = () => {
+          updateHeaderHeight();
+          const header = document.querySelector(headerSelector);
+          if (!header) return;
+          if ('ResizeObserver' in window) {
+            const resizeObserver = new ResizeObserver(updateHeaderHeight);
+            resizeObserver.observe(header);
+          }
+          window.addEventListener('resize', updateHeaderHeight);
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init, { once: true });
+        } else {
+          init();
+        }
+      })();
+    </script>
 
     <script>
       // Register service worker for offline functionality

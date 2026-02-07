@@ -1,0 +1,37 @@
+name: Send Changelog Emails
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/data/changelog.ts'
+
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Send changelog emails
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+        run: node scripts/send-changelog-email.mjs
+
+      - name: Commit updated tracking file
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .changelog-sent.json
+          git diff --staged --quiet || git commit -m "chore: update changelog sent tracking"
+          git push

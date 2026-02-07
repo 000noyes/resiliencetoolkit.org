@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && node scripts/update-sw-assets.mjs",
+    "build": "astro check && astro build && npx pagefind --site dist && node scripts/update-sw-assets.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "generate-icons": "node scripts/generate-icons.mjs"
@@ -33,6 +33,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitest/browser-playwright": "^4.0.15",
     "@vitest/coverage-v8": "^4.0.15",
+    "pagefind": "^1.4.0",
     "playwright": "^1.57.0",
     "sharp": "^0.34.5",
     "vitest": "^4.0.15"
