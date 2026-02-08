@@ -111,11 +111,11 @@ export const changelogEntries: ChangelogEntry[] = [
         content: `
           <p>The Find Your Town page now features a map, showing regional service areas across Vermont.</p>
           <p>Click the map to open it full-size in a new browser tab—especially helpful on mobile devices where you can pinch to zoom. Interactive features coming soon.</p>
-          <p><a href="/map">View the Community Asset Map</a></p>
+          <p><a href="/map">View the Community Resilience Map</a></p>
         `,
         image: {
-          src: '/changelog/001-community-asset-map.png',
-          alt: 'Community Asset Map showing CRO service areas across Vermont counties',
+          src: '/changelog/001-cros-map.png',
+          alt: 'Community Resilience Map showing CRO service areas across Vermont counties',
           caption: 'Community Resilience Map on the /map page',
         },
       },
