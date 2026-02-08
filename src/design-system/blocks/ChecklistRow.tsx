@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTodo, toggleTodo } from '@/lib/storage';
+import { getTodo, toggleTodo, updateStreak, incrementWeeklyProgress } from '@/lib/storage';
 
 interface ChecklistRowProps {
   id: string;
@@ -54,7 +54,13 @@ export default function ChecklistRow({
       const newCompleted = await toggleTodo(moduleKey, id);
       setCompleted(newCompleted);
 
-      window.dispatchEvent(
+      // Update streak and weekly progress when completing a task
+      if (newCompleted) {
+        await updateStreak();
+        await incrementWeeklyProgress();
+      }
+
+      document.dispatchEvent(
         new CustomEvent('todo-changed', {
           detail: { moduleKey, id, completed: newCompleted },
         })

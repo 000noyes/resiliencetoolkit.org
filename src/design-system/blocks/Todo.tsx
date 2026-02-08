@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getTodo, toggleTodo, updateTodoNote } from '@/lib/storage';
+import { getTodo, toggleTodo, updateTodoNote, updateStreak, incrementWeeklyProgress } from '@/lib/storage';
 import { StickyNote } from 'lucide-react';
 
 interface TodoProps {
@@ -63,6 +63,12 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
     try {
       const newCompleted = await toggleTodo(moduleKey, id);
       setCompleted(newCompleted);
+
+      // Update streak and weekly progress when completing a task
+      if (newCompleted) {
+        await updateStreak();
+        await incrementWeeklyProgress();
+      }
 
       // Dispatch event for potential sync
       document.dispatchEvent(

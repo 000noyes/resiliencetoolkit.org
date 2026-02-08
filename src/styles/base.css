@@ -1010,7 +1010,7 @@ a.button-link:focus-visible {
 @media (max-width: 1023px) {
   .module-layout {
     grid-template-columns: 1fr;
-    padding: 0;
+    padding: 0 var(--spacing-md);
   }
 
   .toc-sidebar:not(.toc-sidebar--mobile) {
@@ -1286,11 +1286,11 @@ table tr td:only-child strong[id] {
   display: none;
   position: fixed;
   bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
+  left: var(--spacing-lg);
   z-index: 40;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  height: 40px;
+  padding: 0 var(--spacing-md);
+  border-radius: 9999px;
   background: var(--primary);
   color: var(--primary-foreground);
   border: none;
@@ -1298,16 +1298,19 @@ table tr td:only-child strong[id] {
   cursor: pointer;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .toc-mobile-trigger:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-xl);
 }
 
 .toc-mobile-trigger:active {
-  transform: scale(0.95);
+  transform: translateY(1px);
 }
 
 @media (max-width: 1023px) {

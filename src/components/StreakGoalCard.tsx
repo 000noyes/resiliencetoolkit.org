@@ -54,10 +54,12 @@ export default function StreakGoalCard({ className = '' }: StreakGoalCardProps) 
     };
 
     document.addEventListener('todo-changed', handleTodoChange);
+    document.addEventListener('table-changed', handleTodoChange);
 
     return () => {
       mounted = false;
       document.removeEventListener('todo-changed', handleTodoChange);
+      document.removeEventListener('table-changed', handleTodoChange);
     };
   }, []);
 

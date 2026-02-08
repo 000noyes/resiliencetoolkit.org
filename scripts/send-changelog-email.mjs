@@ -77,58 +77,97 @@ async function getChangelogEntries() {
   return entries;
 }
 
+const SITE_URL = 'https://resiliencetoolkit.org';
+
 /**
- * Convert a changelog entry to an email body
+ * Strip template-literal indentation so content lines start flush-left.
+ */
+function normalizeHTML(html) {
+  return html.split('\n').map(line => line.trim()).filter(line => line).join('\n');
+}
+
+/**
+ * Convert simple HTML (as used in changelog entries) to clean Markdown.
+ */
+function htmlToMarkdown(html) {
+  let text = normalizeHTML(html);
+
+  // Block elements → Markdown structure
+  text = text.replace(/<p>([\s\S]*?)<\/p>/g, '$1\n\n');
+  text = text.replace(/<\/?ul>/g, '\n');
+  text = text.replace(/<\/?ol>/g, '\n');
+  text = text.replace(/<li>([\s\S]*?)<\/li>/g, '- $1\n');
+
+  // Inline elements → Markdown
+  text = text.replace(/<strong>([\s\S]*?)<\/strong>/g, '**$1**');
+  text = text.replace(/<em>([\s\S]*?)<\/em>/g, '_$1_');
+  text = text.replace(/<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g, (_, href, label) => {
+    const url = href.startsWith('/') ? `${SITE_URL}${href}` : href;
+    return `[${label}](${url})`;
+  });
+
+  // Strip any remaining HTML tags
+  text = text.replace(/<[^>]+>/g, '');
+
+  return collapseWhitespace(text);
+}
+
+/**
+ * Reduce excessive blank lines to a single blank line, trim each line.
+ */
+function collapseWhitespace(text) {
+  return text
+    .split('\n')
+    .map(line => line.trimEnd())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+/**
+ * Build an email-safe HTML image block with inline styles for sizing.
+ */
+function createEmailImage(image) {
+  let html = `<img src="${SITE_URL}${image.src}" alt="${image.alt}" style="max-width:600px;width:100%;height:auto;display:block;margin:16px 0;" />`;
+  if (image.caption) {
+    html += `\n<p style="margin:4px 0 0;font-size:14px;font-style:italic;color:#666;">${image.caption}</p>`;
+  }
+  return html;
+}
+
+/**
+ * Convert a changelog entry to a clean email body.
+ * Output: Markdown text with HTML only for images (for proper sizing in email clients).
  */
 function entryToEmailBody(entry) {
-  let body = `# ${entry.title}\n\n`;
+  const parts = [];
 
-  // Add summary bullets
-  if (entry.summary && entry.summary.length > 0) {
-    body += entry.summary.map(item => `- ${item}`).join('\n');
-    body += '\n\n';
+  // Title
+  parts.push(`# ${entry.title}`);
+
+  // Summary bullets
+  if (entry.summary?.length > 0) {
+    parts.push(entry.summary.map(item => `- ${item}`).join('\n'));
   }
 
-  // Add sections
+  // Sections
   for (const section of entry.sections) {
     if (section.heading) {
-      body += `## ${section.heading}\n\n`;
+      parts.push(`## ${section.heading}`);
     }
 
-    // Convert HTML content to plain text (basic conversion)
-    let content = section.content
-      .replace(/<p>/g, '')
-      .replace(/<\/p>/g, '\n\n')
-      .replace(/<ul>/g, '')
-      .replace(/<\/ul>/g, '\n')
-      .replace(/<ol>/g, '')
-      .replace(/<\/ol>/g, '\n')
-      .replace(/<li>/g, '- ')
-      .replace(/<\/li>/g, '\n')
-      .replace(/<strong>/g, '**')
-      .replace(/<\/strong>/g, '**')
-      .replace(/<em>/g, '_')
-      .replace(/<\/em>/g, '_')
-      .replace(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g, '[$2]($1)')
-      .replace(/<[^>]+>/g, '') // Remove any remaining HTML tags
-      .trim();
+    parts.push(htmlToMarkdown(section.content));
 
-    body += content + '\n\n';
-
-    // Add image link if present
     if (section.image) {
-      body += `![${section.image.alt}](https://resiliencetoolkit.org${section.image.src})\n`;
-      if (section.image.caption) {
-        body += `*${section.image.caption}*\n`;
-      }
-      body += '\n';
+      parts.push(createEmailImage(section.image));
     }
   }
 
-  body += '---\n\n';
-  body += '[View full changelog](https://resiliencetoolkit.org/changelog)\n';
+  // Footer
+  parts.push('---');
+  parts.push(`[View full changelog](${SITE_URL}/changelog)`);
 
-  return body;
+  return collapseWhitespace(parts.join('\n\n'));
 }
 
 /**

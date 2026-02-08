@@ -117,7 +117,7 @@ export default function EditableTable({
       setRows((prev) => prev.map((r) => (r.rowId === rowId ? updatedRow : r)));
 
       // Dispatch event for potential sync
-      window.dispatchEvent(
+      document.dispatchEvent(
         new CustomEvent('table-changed', {
           detail: { moduleKey, tableId, rowId },
         })

@@ -3,6 +3,32 @@
  *
  * Structured changelog entries following the Eden-style format.
  * Each entry has an ID, date, title, summary bullets, and detailed sections.
+ *
+ * ── Writing Guidelines ──────────────────────────────────────────────
+ *
+ * Audience:  Non-technical. Includes older rural residents who may not
+ *            be familiar with web or technology terms.
+ *
+ * Tone:      Warm, clear, and direct — like a community newsletter.
+ *
+ * DO:
+ *   - Lead with the benefit to the reader, not how it works.
+ *   - Use everyday language ("works without an internet connection").
+ *   - Keep sentences short and scannable.
+ *
+ * AVOID:
+ *   - Developer jargon: client-side, service worker, API, cache,
+ *     build time, index, render, component, deploy, etc.
+ *   - Performance metrics: file-size reductions, percentages,
+ *     optimization details.
+ *   - Implementation details: library names (Pagefind, React, etc.),
+ *     technical architecture, or how something is built.
+ *
+ * Example:
+ *   ✗  "Search index is cached by the service worker for offline use."
+ *   ✓  "Search works even without an internet connection."
+ *
+ * ────────────────────────────────────────────────────────────────────
  */
 
 export interface ChangelogSection {
@@ -33,11 +59,10 @@ export const changelogEntries: ChangelogEntry[] = [
     title: 'Dashboard, Search, Navigation & More',
     summary: [
       'New personal dashboard tracks your progress, recent activity, and streaks across all modules',
-      'Full-text search indexes all toolkit content and works offline',
-      'Interactive module explorer with phase filtering on the homepage',
-      '"On this page" sidebar for module pages with scroll tracking and checklist progress',
+      'Browse and filter modules by disaster phase on the homepage, with a built-in keyword search',
+      '"On this page" sidebar on module pages helps you see what\'s covered and jump to any section',
       'Community Resilience Map added to the /map page',
-      'Homepage Field Snapshot photo gallery with optimized images',
+      'Homepage photo gallery featuring real flood response work',
     ],
     sections: [
       {
@@ -55,16 +80,11 @@ export const changelogEntries: ChangelogEntry[] = [
         },
       },
       {
-        heading: 'Full-Text Search',
-        content: `
-          <p>Powered by Pagefind, search now indexes all toolkit pages at build time and works entirely client-side. Type at least two characters to see results appear inline with highlighted keyword matches. The search index is cached by the service worker for offline use.</p>
-        `,
-      },
-      {
         heading: 'Interactive Module Explorer',
         content: `
-          <p>The homepage now features an "Explore the toolkit yourself" card with phase filter pills. Click Before, During, or After to see which modules apply to each disaster phase. Modules without a specific phase (Introduction and Resource Library) always remain visible so new visitors can orient themselves.</p>
-          <p>Each module appears as a pill-shaped button with its icon and colored phase dots. Hover or focus on any pill to see its summary in a detail panel on the right (desktop) or below (mobile).</p>
+          <p>The homepage now features an "Explore the toolkit yourself" section with phase filters. Click Before, During, or After to see which modules apply to each stage of a disaster. General modules like the Introduction and Resource Library always stay visible so new visitors can find their way around.</p>
+          <p>Each module appears as a button with its icon and colored phase dots. Hover or tap on any module to see a short description.</p>
+          <p>The explorer also includes a keyword search — just start typing to find content across the entire toolkit. Results appear as you type, with your search terms highlighted. This search works even without an internet connection.</p>
           <p><a href="/">Try it on the homepage</a></p>
         `,
         image: {
@@ -89,21 +109,21 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         heading: 'Community Resilience Map',
         content: `
-          <p>The Community Assets & Resources page now features the CROs (Community Resilience Organizations) Map, showing regional service areas across Vermont.</p>
+          <p>The Find Your Town page now features a map, showing regional service areas across Vermont.</p>
           <p>Click the map to open it full-size in a new browser tab—especially helpful on mobile devices where you can pinch to zoom. Interactive features coming soon.</p>
           <p><a href="/map">View the Community Asset Map</a></p>
         `,
         image: {
           src: '/changelog/001-community-asset-map.png',
           alt: 'Community Asset Map showing CRO service areas across Vermont counties',
-          caption: 'The CROs Community Resilience Map on the /map page',
+          caption: 'Community Resilience Map on the /map page',
         },
       },
       {
         heading: 'Homepage Photo Gallery',
         content: `
-          <p>A new Field Snapshot section appears on the homepage, highlighting real flood response work. The photos rotate on each visit, and you can click "View gallery" to browse all photos in a modal with full-size detail views.</p>
-          <p>Homepage photos have been optimized, reducing file sizes by over 90% without losing quality.</p>
+          <p>A new Field Snapshots section appears on the homepage, highlighting real flood response work. The photos rotate on each visit, and you can click "View gallery" to browse all photos with full-size views and captions.</p>
+          <p>Photos load quickly, even on slower connections.</p>
         `,
         image: {
           src: '/changelog/001-gallery.png',
@@ -118,7 +138,7 @@ export const changelogEntries: ChangelogEntry[] = [
         `,
       },
     ],
-    tags: ['feature', 'design', 'search', 'performance'],
+    tags: ['feature', 'design', 'search'],
   },
 ];
 

@@ -63,7 +63,8 @@ export function TableOfContentsMobile({
         aria-expanded={isOpen}
         aria-controls="toc-mobile-drawer"
       >
-        <List size={24} />
+        <List size={18} />
+        <span>Contents</span>
       </button>
 
       {/* Backdrop */}
