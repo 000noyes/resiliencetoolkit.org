@@ -138,7 +138,7 @@ export const changelogEntries: ChangelogEntry[] = [
         `,
       },
     ],
-    tags: ['feature', 'design', 'search'],
+    tags: ['feature', 'design', 'search', 'navigation'],
   },
 ];
 
