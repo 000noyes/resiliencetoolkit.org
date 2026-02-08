@@ -49,7 +49,9 @@ export function TableOfContentsMobile({
 
   // Wrap the original onClick to also close drawer
   const handleNavigation = useCallback(() => {
-    // Small delay to allow scroll to start
+    // Restore body scroll immediately so scrollToSection works on mobile
+    document.body.style.overflow = '';
+    // Small delay to allow scroll to start before closing drawer visually
     setTimeout(closeDrawer, 150);
   }, []);
 
@@ -93,7 +95,7 @@ export function TableOfContentsMobile({
           </button>
         </header>
 
-        <div className="toc-mobile-content" onClick={handleNavigation}>
+        <div className="toc-mobile-content" onClickCapture={handleNavigation}>
           <TableOfContents
             moduleKey={moduleKey}
             containerSelector={containerSelector}
