@@ -50,45 +50,48 @@ import Badge from '@/components/Badge.astro';
   <!-- ╚═══════════════════════════════════════╝ -->
   <article id="proposal-content" class="hidden">
 
-    <!-- Sticky Progress Bar (tracks journey stages in Vision section) -->
-    <nav class="journey-progress" aria-label="Learning journey progress">
+    <!-- Chapter Nav (tracks proposal sections + Vision sub-stages) -->
+    <nav class="chapter-nav" aria-label="Proposal sections">
       <div class="container mx-auto px-4 max-w-5xl">
-        <ol class="journey-progress__stages">
-          <li class="journey-progress__stage">
-            <button class="journey-progress__button" data-target="stage-foundation" aria-current="true">
-              <span class="journey-progress__number">1</span>
-              <span class="journey-progress__label">Foundation</span>
+        <ol class="chapter-nav__list">
+          <li>
+            <button class="chapter-nav__btn" data-target="chapter-proof" data-chapter="proof" aria-current="true">
+              <span class="chapter-nav__indicator"></span>
+              <span class="chapter-nav__label">Proof</span>
             </button>
           </li>
-          <li class="journey-progress__stage">
-            <button class="journey-progress__button" data-target="stage-relationships" aria-current="false">
-              <span class="journey-progress__number">2</span>
-              <span class="journey-progress__label">Relationships</span>
+          <li class="chapter-nav__vision-group">
+            <button class="chapter-nav__btn chapter-nav__btn--expandable" data-target="chapter-vision" data-chapter="vision" aria-current="false" aria-expanded="false">
+              <span class="chapter-nav__indicator"></span>
+              <span class="chapter-nav__label">Vision</span>
+            </button>
+            <ol class="chapter-nav__sub">
+              <li><button class="chapter-nav__sub-btn" data-target="stage-foundation" aria-current="false">1</button></li>
+              <li><button class="chapter-nav__sub-btn" data-target="stage-relationships" aria-current="false">2</button></li>
+              <li><button class="chapter-nav__sub-btn" data-target="stage-preparedness" aria-current="false">3</button></li>
+              <li><button class="chapter-nav__sub-btn" data-target="stage-systems" aria-current="false">4</button></li>
+            </ol>
+          </li>
+          <li>
+            <button class="chapter-nav__btn" data-target="chapter-process" data-chapter="process" aria-current="false">
+              <span class="chapter-nav__indicator"></span>
+              <span class="chapter-nav__label">Process</span>
             </button>
           </li>
-          <li class="journey-progress__stage">
-            <button class="journey-progress__button" data-target="stage-preparedness" aria-current="false">
-              <span class="journey-progress__number">3</span>
-              <span class="journey-progress__label">Preparedness</span>
-            </button>
-          </li>
-          <li class="journey-progress__stage">
-            <button class="journey-progress__button" data-target="stage-systems" aria-current="false">
-              <span class="journey-progress__number">4</span>
-              <span class="journey-progress__label">Systems</span>
+          <li>
+            <button class="chapter-nav__btn" data-target="chapter-scope" data-chapter="scope" aria-current="false">
+              <span class="chapter-nav__indicator"></span>
+              <span class="chapter-nav__label">Scope</span>
             </button>
           </li>
         </ol>
-        <div class="journey-progress__track">
-          <div class="journey-progress__fill" id="progress-fill"></div>
-        </div>
       </div>
     </nav>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <!--               OPENING                 -->
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <section class="py-16 border-b border-border">
+    <section class="py-16 border-b border-border" id="chapter-proof">
       <div class="container mx-auto px-4 max-w-4xl">
         <div class="mb-4">
           <Badge variant="primary">Proposal</Badge>
@@ -99,8 +102,11 @@ import Badge from '@/components/Badge.astro';
         <h1 class="text-hero font-semibold text-foreground mb-2">
           Learning Journey &amp; Interface Workflow Development
         </h1>
-        <p class="text-title text-primary font-medium mb-8">
-          $12,000 · 3-Month Concentrated Delivery + 9-Month Maintenance
+        <p class="text-title text-primary font-medium mb-4">
+          $5,600 – $12,000
+        </p>
+        <p class="text-body text-muted-foreground mb-8">
+          Two scopes aligned to CROs' $50K and $77K Resilience Hub Toolkit stewardship and assessment proposal. 
         </p>
         <div class="space-y-4 max-w-3xl">
           <p class="text-body-large text-muted-foreground leading-relaxed">
@@ -108,6 +114,16 @@ import Badge from '@/components/Badge.astro';
           </p>
           <p class="text-body text-muted-foreground">
             This work converts live technical assistance and organizing knowledge into durable, navigable digital infrastructure.
+          </p>
+        </div>
+
+        <!-- SOW Context -->
+        <div class="space-y-4 max-w-3xl mt-8 pt-8 border-t border-border">
+          <p class="text-body-large text-muted-foreground leading-relaxed">
+            The <strong class="text-foreground">Resilience Hub Toolkit Cohort</strong> is composed of grassroots responders to flooding, community caretakers, and experienced facilitators and problem-solvers. Community Resilience Organizations (CROs), founded in 2011 after Hurricane Irene, convened this cohort in 2024 after two years of catastrophic flooding. Together, we created the Resilience Hub Toolkit — available in online/offline formats at resiliencetoolkit.org.
+          </p>
+          <p class="text-body text-muted-foreground">
+            Access Ecologies' interface work is one component of the cohort's broader scope: connecting the Toolkit to existing emergency systems, supporting implementation across Vermont communities, assessing efficacy, and concluding the first year of implementation with a clear proof of concept.
           </p>
           <p class="text-body text-foreground font-medium mt-6">
             Before we describe what's next, here's what already exists.
@@ -157,7 +173,7 @@ import Badge from '@/components/Badge.astro';
           What's Already Built
         </h2>
         <p class="text-body text-muted-foreground mb-8 max-w-2xl">
-          ResilienceToolkit.org is not a concept — it's production infrastructure, live and in use. Learning journeys are the next layer on top of this foundation.
+          ResilienceToolkit.org has moved from concept to fully deployed, production-ready infrastructure. Learning journeys are the next layer that builds on this foundation.
         </p>
         <div class="infra-grid">
           <div class="infra-card" data-reveal>
@@ -238,7 +254,7 @@ import Badge from '@/components/Badge.astro';
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 
     <!-- Vision Narrative Intro -->
-    <section class="py-16">
+    <section class="py-16" id="chapter-vision">
       <div class="container mx-auto px-4 max-w-3xl">
         <div class="mb-4">
           <Badge variant="info">Vision</Badge>
@@ -715,7 +731,7 @@ import Badge from '@/components/Badge.astro';
     <section class="py-12 bg-muted">
       <div class="container mx-auto px-4 max-w-3xl">
         <p class="text-body-large text-muted-foreground leading-relaxed mb-8">
-          This is one journey — the <strong class="text-foreground">New Community Organizer</strong> path. The same infrastructure supports 3–4 different roles, each seeing only what applies to them. A post-flood recovery coordinator would see a different sequence. A town planning commissioner, another.
+          This is one journey — the <strong class="text-foreground">New Community Organizer</strong> path. The same infrastructure supports different roles, each seeing only what applies to them. A post-flood recovery coordinator would see a different sequence. A town planning commissioner, another.
         </p>
 
         <!-- Dashboard Evolution Card -->
@@ -756,7 +772,7 @@ import Badge from '@/components/Badge.astro';
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <!--              PROCESS                  -->
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <section class="py-16">
+    <section class="py-16" id="chapter-process">
       <div class="container mx-auto px-4 max-w-5xl">
         <div class="max-w-3xl mb-12">
           <div class="mb-4">
@@ -830,7 +846,7 @@ import Badge from '@/components/Badge.astro';
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 
     <!-- Value Framing -->
-    <section class="py-12 bg-muted">
+    <section class="py-12 bg-muted" id="chapter-scope">
       <div class="container mx-auto px-4 max-w-3xl">
         <div class="mb-4">
           <Badge variant="neutral">Scope</Badge>
@@ -838,175 +854,364 @@ import Badge from '@/components/Badge.astro';
         <h2 class="text-headline font-semibold text-foreground mb-4">
           Investment
         </h2>
-        <p class="text-body-large text-muted-foreground leading-relaxed">
-          Architecture, implementation, field testing with real organizers, and nine months of sustained maintenance — built on a foundation that's already serving 2,000+ visitors per quarter.
+        <p class="text-body-large text-muted-foreground leading-relaxed mb-8">
+          Two scope tiers are available, aligned to CROs' budget scenarios. Select a tier below to see the detailed breakdown.
         </p>
+
+        <!-- Tier Switcher -->
+        <div class="tier-switcher" role="tablist" aria-label="Budget tier selection">
+          <button
+            class="tier-switcher__tab tier-switcher__tab--active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tier-core"
+            data-tier="core"
+          >
+            <span class="tier-switcher__label">Core</span>
+            <span class="tier-switcher__price">$5,600</span>
+            <span class="tier-switcher__context">$50K CROs Budget</span>
+          </button>
+          <button
+            class="tier-switcher__tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tier-full"
+            data-tier="full"
+          >
+            <span class="tier-switcher__label">Full</span>
+            <span class="tier-switcher__price">$12,000</span>
+            <span class="tier-switcher__context">$77K CROs Budget</span>
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- Line-Item Table -->
-    <section class="py-12">
-      <div class="container mx-auto px-4 max-w-5xl">
-        <h3 class="text-title font-semibold text-foreground mb-6">
-          Detailed Line-Item Breakdown
-        </h3>
-        <div class="overflow-x-auto">
-          <table class="guide-table">
-            <thead>
-              <tr>
-                <th>Line Item</th>
-                <th>Focus Area</th>
-                <th>Key Activities</th>
-                <th>Primary Role(s)</th>
-                <th>Deliverables</th>
-                <th>Cost</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td data-label="Line Item"><strong>Learning Journey Architecture</strong></td>
-                <td data-label="Focus Area">Role-based onboarding logic</td>
-                <td data-label="Key Activities">Identify core user roles; define stages of participation; map progression and success states</td>
-                <td data-label="Primary Role(s)">Access Ecologies (lead); Rad Weavers input</td>
-                <td data-label="Deliverables">Journey maps for 3–4 roles; stage definitions</td>
-                <td data-label="Cost"><strong>$2,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Line Item"><strong>Workflow &amp; Interface Design</strong></td>
-                <td data-label="Focus Area">Digital flow and sequencing</td>
-                <td data-label="Key Activities">Design interface workflows that guide users step-by-step; reduce cognitive load</td>
-                <td data-label="Primary Role(s)">Access Ecologies (lead)</td>
-                <td data-label="Deliverables">Low- and mid-fidelity flow designs; page structure</td>
-                <td data-label="Cost"><strong>$1,500</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Line Item"><strong>Journey Implementation (Frontend)</strong></td>
-                <td data-label="Focus Area">Live interface build</td>
-                <td data-label="Key Activities">Build learning journey pages; implement entry points, navigation, and state cues within existing stack</td>
-                <td data-label="Primary Role(s)">Access Ecologies (build)</td>
-                <td data-label="Deliverables">Live journey paths on ResilienceToolkit.org</td>
-                <td data-label="Cost"><strong>$2,500</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Line Item"><strong>Content Structuring &amp; Integration</strong></td>
-                <td data-label="Focus Area">Making existing material usable</td>
-                <td data-label="Key Activities">Re-organize existing Toolkit content into journeys; clarify labels and descriptions</td>
-                <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers reviewers</td>
-                <td data-label="Deliverables">Integrated content aligned to journeys</td>
-                <td data-label="Cost"><strong>$1,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Line Item"><strong>Field Testing &amp; Iteration</strong></td>
-                <td data-label="Focus Area">Real-world validation</td>
-                <td data-label="Key Activities">Observe use during trainings/TA; gather feedback; refine flows</td>
-                <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers organizers</td>
-                <td data-label="Deliverables">Refined workflows; usability fixes</td>
-                <td data-label="Cost"><strong>$1,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Line Item"><strong>Stewardship, Documentation &amp; Handoff</strong></td>
-                <td data-label="Focus Area">Independence &amp; Sustainability</td>
-                <td data-label="Key Activities">Comprehensive internal documentation: admin guides, content update procedures, architecture overview, and recorded walkthroughs. Goal: full operational independence — no ongoing dependency on Access Ecologies.</td>
-                <td data-label="Primary Role(s)">Access Ecologies</td>
-                <td data-label="Deliverables">Complete admin guide; content update playbook; architecture documentation; video walkthroughs</td>
-                <td data-label="Cost"><strong>$1,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Line Item"><strong>Maintenance &amp; Light Iterations</strong></td>
-                <td data-label="Focus Area">Onboarding support</td>
-                <td data-label="Key Activities">Observe live use and resolve minor usability issues; refine labels, sequencing, and navigation as needed</td>
-                <td data-label="Primary Role(s)">Access Ecologies</td>
-                <td data-label="Deliverables">Maintenance log; quarterly reporting</td>
-                <td data-label="Cost"><strong>$3,000</strong></td>
-              </tr>
-              <tr class="total-row">
-                <td data-label=""><strong>Total</strong></td>
-                <td data-label=""></td>
-                <td data-label=""></td>
-                <td data-label=""></td>
-                <td data-label=""></td>
-                <td data-label="Total"><strong>$12,000</strong></td>
+    <!-- ═══ CORE TIER PANEL ($5,600) ═══ -->
+    <div id="tier-core" class="tier-panel tier-panel--active" role="tabpanel" aria-labelledby="tab-core">
+
+      <!-- Line-Item Table -->
+      <section class="py-12">
+        <div class="container mx-auto px-4 max-w-5xl">
+          <div class="tier-panel__header">
+            <h3 class="text-title font-semibold text-foreground">
+              Detailed Line-Item Breakdown
+            </h3>
+            <Badge variant="info">$50K Budget · Interface Steward</Badge>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="guide-table">
+              <thead>
+                <tr>
+                  <th>Line Item</th>
+                  <th>Focus Area</th>
+                  <th>Key Activities</th>
+                  <th>Primary Role(s)</th>
+                  <th>Deliverables</th>
+                  <th>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Line Item"><strong>Learning Journey Architecture</strong></td>
+                  <td data-label="Focus Area">Role-based onboarding logic</td>
+                  <td data-label="Key Activities">Identify core user roles; define stages of participation; map progression</td>
+                  <td data-label="Primary Role(s)">Access Ecologies (lead); Rad Weavers input</td>
+                  <td data-label="Deliverables">Journey maps for 2–3 roles; stage definitions</td>
+                  <td data-label="Cost"><strong>$1,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Workflow &amp; Interface Design</strong></td>
+                  <td data-label="Focus Area">Digital flow and sequencing</td>
+                  <td data-label="Key Activities">Design core interface workflows; reduce cognitive load for primary audiences</td>
+                  <td data-label="Primary Role(s)">Access Ecologies (lead)</td>
+                  <td data-label="Deliverables">Low-fidelity flow designs; page structure</td>
+                  <td data-label="Cost"><strong>$800</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Journey Implementation (Frontend)</strong></td>
+                  <td data-label="Focus Area">Live interface build</td>
+                  <td data-label="Key Activities">Build learning journey pages; implement entry points and navigation within existing stack</td>
+                  <td data-label="Primary Role(s)">Access Ecologies (build)</td>
+                  <td data-label="Deliverables">Live journey paths on ResilienceToolkit.org</td>
+                  <td data-label="Cost"><strong>$1,500</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Content Structuring &amp; Integration</strong></td>
+                  <td data-label="Focus Area">Making existing material usable</td>
+                  <td data-label="Key Activities">Organize existing Toolkit content into journeys; clarify labels</td>
+                  <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers reviewers</td>
+                  <td data-label="Deliverables">Content aligned to journeys</td>
+                  <td data-label="Cost"><strong>$600</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Field Testing &amp; Iteration</strong></td>
+                  <td data-label="Focus Area">Real-world validation</td>
+                  <td data-label="Key Activities">Observe use during trainings; gather feedback; refine flows</td>
+                  <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers organizers</td>
+                  <td data-label="Deliverables">Refined workflows; usability fixes</td>
+                  <td data-label="Cost"><strong>$500</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Stewardship, Documentation &amp; Handoff</strong></td>
+                  <td data-label="Focus Area">Independence &amp; Sustainability</td>
+                  <td data-label="Key Activities">Internal documentation: admin guide, content update procedures, and architecture overview</td>
+                  <td data-label="Primary Role(s)">Access Ecologies</td>
+                  <td data-label="Deliverables">Admin guide; content update playbook; architecture docs</td>
+                  <td data-label="Cost"><strong>$500</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Maintenance &amp; Light Iterations</strong></td>
+                  <td data-label="Focus Area">Onboarding support</td>
+                  <td data-label="Key Activities">Resolve minor usability issues; refine labels and navigation as needed</td>
+                  <td data-label="Primary Role(s)">Access Ecologies</td>
+                  <td data-label="Deliverables">Maintenance log; monthly check-ins</td>
+                  <td data-label="Cost"><strong>$700</strong></td>
+                </tr>
+                <tr class="total-row">
+                  <td data-label=""><strong>Total</strong></td>
+                  <td data-label=""></td>
+                  <td data-label=""></td>
+                  <td data-label=""></td>
+                  <td data-label=""></td>
+                  <td data-label="Total"><strong>$5,600</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Multi-org funding note
+      <section class="py-6">
+        <div class="container mx-auto px-4 max-w-5xl">
+          <p class="text-body text-muted-foreground italic">
+            This scope can be supported by multiple funding sources across participating organizations. The work benefits every org in the Rad Weavers network — shared investment, shared infrastructure.
+          </p>
+        </div>
+      </section> -->
+
+      <!-- Timeline Table -->
+      <section class="py-12 bg-muted">
+        <div class="container mx-auto px-4 max-w-5xl">
+          <h3 class="text-title font-semibold text-foreground mb-6">
+            Timeline Overview
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="guide-table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Primary Focus</th>
+                  <th>Outcomes</th>
+                  <th>Unit Cost</th>
+                  <th>Units</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Month"><strong>Month 1</strong></td>
+                  <td data-label="Primary Focus">Architecture &amp; Design</td>
+                  <td data-label="Outcomes">Clear journey logic; agreed workflows</td>
+                  <td data-label="Unit Cost">$2,000</td>
+                  <td data-label="Units">1</td>
+                  <td data-label="Subtotal"><strong>$2,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Month"><strong>Month 2</strong></td>
+                  <td data-label="Primary Focus">Implementation &amp; Testing</td>
+                  <td data-label="Outcomes">Live learning journeys; documented handoff</td>
+                  <td data-label="Unit Cost">$2,000</td>
+                  <td data-label="Units">1</td>
+                  <td data-label="Subtotal"><strong>$2,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Month"><strong>Months 3–10</strong></td>
+                  <td data-label="Primary Focus">Maintenance &amp; Light Iterations</td>
+                  <td data-label="Outcomes">Sustained growth through real use</td>
+                  <td data-label="Unit Cost">$200</td>
+                  <td data-label="Units">8</td>
+                  <td data-label="Subtotal"><strong>$1,600</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ═══ FULL TIER PANEL ($12,000) ═══ -->
+    <div id="tier-full" class="tier-panel" role="tabpanel" aria-labelledby="tab-full" hidden>
+
+      <!-- Line-Item Table -->
+      <section class="py-12">
+        <div class="container mx-auto px-4 max-w-5xl">
+          <div class="tier-panel__header">
+            <h3 class="text-title font-semibold text-foreground">
+              Detailed Line-Item Breakdown
+            </h3>
+            <Badge variant="success">$77K Budget · Interface Steward</Badge>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="guide-table">
+              <thead>
+                <tr>
+                  <th>Line Item</th>
+                  <th>Focus Area</th>
+                  <th>Key Activities</th>
+                  <th>Primary Role(s)</th>
+                  <th>Deliverables</th>
+                  <th>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Line Item"><strong>Learning Journey Architecture</strong></td>
+                  <td data-label="Focus Area">Role-based onboarding logic</td>
+                  <td data-label="Key Activities">Identify core user roles; define stages of participation; map progression and success states</td>
+                  <td data-label="Primary Role(s)">Access Ecologies (lead); Rad Weavers input</td>
+                  <td data-label="Deliverables">Journey maps for 3–4 roles; stage definitions</td>
+                  <td data-label="Cost"><strong>$2,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Workflow &amp; Interface Design</strong></td>
+                  <td data-label="Focus Area">Digital flow and sequencing</td>
+                  <td data-label="Key Activities">Design interface workflows that guide users step-by-step; reduce cognitive load</td>
+                  <td data-label="Primary Role(s)">Access Ecologies (lead)</td>
+                  <td data-label="Deliverables">Low- and mid-fidelity flow designs; page structure</td>
+                  <td data-label="Cost"><strong>$1,500</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Journey Implementation (Frontend)</strong></td>
+                  <td data-label="Focus Area">Live interface build</td>
+                  <td data-label="Key Activities">Build learning journey pages; implement entry points, navigation, and state cues within existing stack</td>
+                  <td data-label="Primary Role(s)">Access Ecologies (build)</td>
+                  <td data-label="Deliverables">Live journey paths on ResilienceToolkit.org</td>
+                  <td data-label="Cost"><strong>$2,500</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Content Structuring &amp; Integration</strong></td>
+                  <td data-label="Focus Area">Making existing material usable</td>
+                  <td data-label="Key Activities">Re-organize existing Toolkit content into journeys; clarify labels and descriptions</td>
+                  <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers reviewers</td>
+                  <td data-label="Deliverables">Integrated content aligned to journeys</td>
+                  <td data-label="Cost"><strong>$1,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Field Testing &amp; Iteration</strong></td>
+                  <td data-label="Focus Area">Real-world validation</td>
+                  <td data-label="Key Activities">Observe use during trainings/TA; gather feedback; refine flows</td>
+                  <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers organizers</td>
+                  <td data-label="Deliverables">Refined workflows; usability fixes</td>
+                  <td data-label="Cost"><strong>$1,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Stewardship, Documentation &amp; Handoff</strong></td>
+                  <td data-label="Focus Area">Independence &amp; Sustainability</td>
+                  <td data-label="Key Activities">Comprehensive internal documentation: admin guides, content update procedures, architecture overview, and recorded walkthroughs. Goal: full operational independence — no ongoing dependency on Access Ecologies.</td>
+                  <td data-label="Primary Role(s)">Access Ecologies</td>
+                  <td data-label="Deliverables">Complete admin guide; content update playbook; architecture documentation; video walkthroughs</td>
+                  <td data-label="Cost"><strong>$1,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Line Item"><strong>Maintenance &amp; Light Iterations</strong></td>
+                  <td data-label="Focus Area">Onboarding support</td>
+                  <td data-label="Key Activities">Observe live use and resolve minor usability issues; refine labels, sequencing, and navigation as needed</td>
+                  <td data-label="Primary Role(s)">Access Ecologies</td>
+                  <td data-label="Deliverables">Maintenance log; quarterly reporting</td>
+                  <td data-label="Cost"><strong>$3,000</strong></td>
+                </tr>
+                <tr class="total-row">
+                  <td data-label=""><strong>Total</strong></td>
+                  <td data-label=""></td>
+                  <td data-label=""></td>
+                  <td data-label=""></td>
+                  <td data-label=""></td>
+                  <td data-label="Total"><strong>$12,000</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Multi-org funding note -->
+      <section class="py-6">
+        <div class="container mx-auto px-4 max-w-5xl">
+          <p class="text-body text-muted-foreground italic">
+            This scope can be supported by multiple funding sources across participating organizations. The work benefits every org in the Rad Weavers network — shared investment, shared infrastructure.
+          </p>
+        </div>
+      </section>
+
+      <!-- Timeline Table -->
+      <section class="py-12 bg-muted">
+        <div class="container mx-auto px-4 max-w-5xl">
+          <h3 class="text-title font-semibold text-foreground mb-6">
+            Timeline Overview
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="guide-table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Primary Focus</th>
+                  <th>Outcomes</th>
+                  <th>Unit Cost</th>
+                  <th>Units</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-label="Month"><strong>Month 1</strong></td>
+                  <td data-label="Primary Focus">Architecture &amp; Design</td>
+                  <td data-label="Outcomes">Clear journey logic; agreed workflows</td>
+                  <td data-label="Unit Cost">$3,000</td>
+                  <td data-label="Units">1</td>
+                  <td data-label="Subtotal"><strong>$3,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Month"><strong>Month 2</strong></td>
+                  <td data-label="Primary Focus">Implementation</td>
+                  <td data-label="Outcomes">Live learning journeys and interface flows</td>
+                  <td data-label="Unit Cost">$3,000</td>
+                  <td data-label="Units">1</td>
+                  <td data-label="Subtotal"><strong>$3,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Month"><strong>Month 3</strong></td>
+                  <td data-label="Primary Focus">Testing &amp; Refinement</td>
+                  <td data-label="Outcomes">Stable, fully documented onboarding system with complete handoff materials</td>
+                  <td data-label="Unit Cost">$3,000</td>
+                  <td data-label="Units">1</td>
+                  <td data-label="Subtotal"><strong>$3,000</strong></td>
+                </tr>
+                <tr>
+                  <td data-label="Month"><strong>Months 4–12</strong></td>
+                  <td data-label="Primary Focus">Maintenance &amp; Light Iterations</td>
+                  <td data-label="Outcomes">Sustained growth through real use</td>
+                  <td data-label="Unit Cost">$333</td>
+                  <td data-label="Units">9</td>
+                  <td data-label="Subtotal"><strong>$3,000</strong></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-    </section>
+      </section>
 
-    <!-- Multi-org funding note -->
-    <section class="py-6">
-      <div class="container mx-auto px-4 max-w-5xl">
-        <p class="text-body text-muted-foreground italic">
-          This scope can be supported by multiple funding sources across participating organizations. The work benefits every org in the Rad Weavers network — shared investment, shared infrastructure.
-        </p>
-      </div>
-    </section>
+    </div>
 
-    <!-- Timeline Table -->
-    <section class="py-12 bg-muted">
-      <div class="container mx-auto px-4 max-w-5xl">
-        <h3 class="text-title font-semibold text-foreground mb-6">
-          Timeline Overview
-        </h3>
-        <div class="overflow-x-auto">
-          <table class="guide-table">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Primary Focus</th>
-                <th>Outcomes</th>
-                <th>Unit Cost</th>
-                <th>Units</th>
-                <th>Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td data-label="Month"><strong>Month 1</strong></td>
-                <td data-label="Primary Focus">Architecture &amp; Design</td>
-                <td data-label="Outcomes">Clear journey logic; agreed workflows</td>
-                <td data-label="Unit Cost">$3,000</td>
-                <td data-label="Units">1</td>
-                <td data-label="Subtotal"><strong>$3,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Month"><strong>Month 2</strong></td>
-                <td data-label="Primary Focus">Implementation</td>
-                <td data-label="Outcomes">Live learning journeys and interface flows</td>
-                <td data-label="Unit Cost">$3,000</td>
-                <td data-label="Units">1</td>
-                <td data-label="Subtotal"><strong>$3,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Month"><strong>Month 3</strong></td>
-                <td data-label="Primary Focus">Testing &amp; Refinement</td>
-                <td data-label="Outcomes">Stable, fully documented onboarding system with complete handoff materials</td>
-                <td data-label="Unit Cost">$3,000</td>
-                <td data-label="Units">1</td>
-                <td data-label="Subtotal"><strong>$3,000</strong></td>
-              </tr>
-              <tr>
-                <td data-label="Month"><strong>Months 4–12</strong></td>
-                <td data-label="Primary Focus">Maintenance &amp; Light Iterations</td>
-                <td data-label="Outcomes">Sustained growth through real use</td>
-                <td data-label="Unit Cost">$333</td>
-                <td data-label="Units">9</td>
-                <td data-label="Subtotal"><strong>$3,000</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Out of Scope -->
+    <!-- Out of Scope (shared across both tiers) -->
     <section class="py-12">
       <div class="container mx-auto px-4 max-w-3xl">
         <h3 class="text-title font-semibold text-foreground mb-4">
           What Is Out of Scope
         </h3>
         <p class="text-body text-muted-foreground">
-          This scope does not include new feature development, additional learning journeys beyond the initial 3–4 roles, or expansion to new program areas. All deliverables are designed for full organizational independence — no ongoing dependency on Access Ecologies beyond this scope.
+          This scope does not include new feature development, additional learning journeys beyond the initial agreement, or expansion to new program areas. All deliverables are designed for full organizational independence — no ongoing dependency on Access Ecologies beyond this scope.
         </p>
       </div>
     </section>
@@ -1016,7 +1221,7 @@ import Badge from '@/components/Badge.astro';
       <div class="container mx-auto px-4 max-w-3xl">
         <blockquote class="closing-quote" data-reveal>
           <p class="text-body-large text-foreground italic leading-relaxed">
-            "This scope funds the conversion of live organizing knowledge into durable digital infrastructure — designed with the people who do the work."
+            This scope channels lived organizing wisdom into resilient digital infrastructure, built to be shared, maintained, and extended by communities themselves.
           </p>
         </blockquote>
       </div>
@@ -1053,10 +1258,11 @@ import Badge from '@/components/Badge.astro';
         if (sessionStorage.getItem(KEY) === 'true') {
           gate.classList.add('hidden');
           content.classList.remove('hidden');
-          initJourneyProgress();
+          initChapterNav();
           initRevealAnimations();
           initDashboardDialog();
           initModuleDialogs();
+          initTierSwitcher();
           return;
         }
 
@@ -1066,10 +1272,11 @@ import Badge from '@/components/Badge.astro';
             sessionStorage.setItem(KEY, 'true');
             gate.classList.add('hidden');
             content.classList.remove('hidden');
-            initJourneyProgress();
+            initChapterNav();
             initRevealAnimations();
             initDashboardDialog();
             initModuleDialogs();
+            initTierSwitcher();
           } else {
             error.classList.remove('hidden');
             input.value = '';
@@ -1085,52 +1292,84 @@ import Badge from '@/components/Badge.astro';
         });
       };
 
-      function initJourneyProgress() {
-        const stages = document.querySelectorAll('.journey-stage');
-        const buttons = document.querySelectorAll('.journey-progress__button');
-        const fill = document.getElementById('progress-fill');
+      function initChapterNav() {
+        const chapterIds = ['chapter-proof', 'chapter-vision', 'chapter-process', 'chapter-scope'];
+        const chapterEls = chapterIds.map(id => document.getElementById(id)).filter(Boolean);
+        const chapterBtns = document.querySelectorAll('.chapter-nav__btn');
+        const subStages = document.querySelectorAll('.journey-stage');
+        const subBtns = document.querySelectorAll('.chapter-nav__sub-btn');
+        const visionBtn = document.querySelector('.chapter-nav__btn--expandable');
 
-        if (stages.length === 0 || buttons.length === 0) return;
+        if (chapterEls.length === 0 || chapterBtns.length === 0) return;
 
-        let activeIndex = 0;
-
-        const setActive = (index) => {
-          if (index === activeIndex && index !== 0) return;
-          activeIndex = index;
-          buttons.forEach((btn, i) => {
-            btn.setAttribute('aria-current', i === index ? 'true' : 'false');
-          });
-          if (fill) {
-            fill.style.width = ((index + 1) / stages.length * 100) + '%';
-          }
+        const scrollTo = (target) => {
+          if (!target) return;
+          const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 56;
+          const top = target.getBoundingClientRect().top + window.scrollY - headerH - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
         };
 
-        const observer = new IntersectionObserver(
+        let activeChapter = '';
+
+        const setActiveChapter = (id) => {
+          if (id === activeChapter) return;
+          activeChapter = id;
+          chapterBtns.forEach((btn) => {
+            const isActive = btn.dataset.target === id;
+            btn.setAttribute('aria-current', isActive ? 'true' : 'false');
+            if (btn.hasAttribute('aria-expanded')) {
+              btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            }
+          });
+        };
+
+        const setActiveSubStage = (idx) => {
+          subBtns.forEach((btn, i) => {
+            btn.setAttribute('aria-current', i === idx ? 'true' : 'false');
+          });
+        };
+
+        // Chapter-level observer
+        const chapterObserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                const idx = parseInt(entry.target.dataset.stage, 10) - 1;
-                if (!isNaN(idx)) setActive(idx);
+              if (entry.isIntersecting && entry.target.id) {
+                setActiveChapter(entry.target.id);
               }
             });
           },
           { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
         );
+        chapterEls.forEach((el) => chapterObserver.observe(el));
 
-        stages.forEach((s) => observer.observe(s));
+        // Sub-stage observer (Vision stages 1–4)
+        if (subStages.length > 0) {
+          const subObserver = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  const idx = parseInt(entry.target.dataset.stage, 10) - 1;
+                  if (!isNaN(idx)) setActiveSubStage(idx);
+                }
+              });
+            },
+            { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
+          );
+          subStages.forEach((s) => subObserver.observe(s));
+        }
 
-        buttons.forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const target = document.getElementById(btn.dataset.target);
-            if (target) {
-              const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 56;
-              const top = target.getBoundingClientRect().top + window.scrollY - headerH - 80;
-              window.scrollTo({ top, behavior: 'smooth' });
-            }
-          });
+        // Click handlers — chapter buttons
+        chapterBtns.forEach((btn) => {
+          btn.addEventListener('click', () => scrollTo(document.getElementById(btn.dataset.target)));
         });
 
-        setActive(0);
+        // Click handlers — sub-stage buttons
+        subBtns.forEach((btn) => {
+          btn.addEventListener('click', () => scrollTo(document.getElementById(btn.dataset.target)));
+        });
+
+        // Initial state
+        setActiveChapter('chapter-proof');
       }
 
       function initRevealAnimations() {
@@ -1251,6 +1490,40 @@ import Badge from '@/components/Badge.astro';
             if (e.target === dialog) { dialog.close(); unlockScroll(); }
           });
           dialog.addEventListener('close', unlockScroll);
+        });
+      }
+
+      function initTierSwitcher() {
+        const tabs = document.querySelectorAll('.tier-switcher__tab');
+        const panels = document.querySelectorAll('.tier-panel');
+        if (!tabs.length || !panels.length) return;
+
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const tier = tab.dataset.tier;
+
+            // Update tabs
+            tabs.forEach((t) => {
+              const isActive = t.dataset.tier === tier;
+              t.classList.toggle('tier-switcher__tab--active', isActive);
+              t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            // Update panels
+            panels.forEach((p) => {
+              const isActive = p.id === 'tier-' + tier;
+              p.classList.toggle('tier-panel--active', isActive);
+              p.hidden = !isActive;
+            });
+
+            // Trigger reveal animations on newly visible panel elements
+            const activePanel = document.getElementById('tier-' + tier);
+            if (activePanel) {
+              activePanel.querySelectorAll('[data-reveal]:not(.revealed)').forEach((el) => {
+                el.classList.add('revealed');
+              });
+            }
+          });
         });
       }
 
@@ -1389,10 +1662,10 @@ import Badge from '@/components/Badge.astro';
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    /*          PROGRESS BAR (Glassmorphism)        */
+    /*          CHAPTER NAV (Glassmorphism)         */
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    .journey-progress {
+    .chapter-nav {
       position: sticky;
       top: 56px;
       z-index: 40;
@@ -1403,92 +1676,162 @@ import Badge from '@/components/Badge.astro';
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .journey-progress__stages {
+    .chapter-nav__list {
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
       list-style: none;
-      padding: 12px 0 4px;
+      padding: 8px 0;
       margin: 0;
     }
 
-    .journey-progress__stage {
-      flex: 1;
+    .chapter-nav__list > li {
       display: flex;
-      justify-content: center;
+      align-items: center;
     }
 
-    .journey-progress__button {
+    .chapter-nav__vision-group {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 4px;
-      padding: 8px;
+      gap: 0;
+    }
+
+    /* ── Chapter Buttons ── */
+
+    .chapter-nav__btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
       background: transparent;
       border: none;
+      border-radius: 20px;
       cursor: pointer;
-      transition: all 180ms ease;
-      border-radius: 8px;
+      transition: all 200ms ease;
       font-family: inherit;
     }
 
-    .journey-progress__button:hover {
+    .chapter-nav__btn:hover {
       background: color-mix(in srgb, var(--muted) 70%, transparent);
     }
 
-    .journey-progress__number {
-      width: 32px;
-      height: 32px;
+    .chapter-nav__indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 250ms ease;
+      flex-shrink: 0;
+    }
+
+    .chapter-nav__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      transition: all 200ms ease;
+      white-space: nowrap;
+    }
+
+    /* ── Active states per chapter color ── */
+
+    .chapter-nav__btn[aria-current="true"] {
+      background: color-mix(in srgb, var(--muted) 50%, transparent);
+    }
+
+    .chapter-nav__btn[aria-current="true"] .chapter-nav__label {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+
+    /* Proof — Amber */
+    .chapter-nav__btn[data-chapter="proof"][aria-current="true"] .chapter-nav__indicator {
+      background: rgb(234, 179, 8);
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+    }
+
+    /* Vision — Green/Primary */
+    .chapter-nav__btn[data-chapter="vision"][aria-current="true"] .chapter-nav__indicator {
+      background: var(--primary);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--primary) 50%, transparent);
+    }
+
+    /* Process — Blue */
+    .chapter-nav__btn[data-chapter="process"][aria-current="true"] .chapter-nav__indicator {
+      background: rgb(59, 130, 246);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    /* Scope — Neutral */
+    .chapter-nav__btn[data-chapter="scope"][aria-current="true"] .chapter-nav__indicator {
+      background: var(--muted-foreground);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--muted-foreground) 30%, transparent);
+    }
+
+    /* ── Vision Sub-markers (1 2 3 4) ── */
+
+    .chapter-nav__sub {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-width 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 200ms ease,
+                  margin 300ms ease;
+      margin-left: 0;
+    }
+
+    .chapter-nav__btn--expandable[aria-expanded="true"] ~ .chapter-nav__sub {
+      max-width: 140px;
+      opacity: 1;
+      margin-left: 4px;
+    }
+
+    .chapter-nav__sub-btn {
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 600;
       background: var(--muted);
       color: var(--muted-foreground);
-      border: 2px solid var(--border);
-      transition: all 250ms ease;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 200ms ease;
+      font-family: inherit;
+      padding: 0;
     }
 
-    .journey-progress__button[aria-current="true"] .journey-progress__number {
+    .chapter-nav__sub-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .chapter-nav__sub-btn[aria-current="true"] {
       background: var(--primary);
       color: var(--primary-foreground);
       border-color: var(--primary);
-      transform: scale(1.1);
-      box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 40%, transparent);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--primary) 40%, transparent);
     }
 
-    .journey-progress__label {
-      font-size: 12px;
-      color: var(--muted-foreground);
-      transition: all 180ms ease;
-    }
-
-    .journey-progress__button[aria-current="true"] .journey-progress__label {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    .journey-progress__track {
-      height: 3px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .journey-progress__fill {
-      height: 100%;
-      background: var(--primary);
-      border-radius: 3px;
-      transition: width 300ms cubic-bezier(0.3, 0.7, 0.4, 1);
-      width: 25%;
-      box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 50%, transparent);
-    }
+    /* ── Mobile ── */
 
     @media (max-width: 640px) {
-      .journey-progress__label { display: none; }
-      .journey-progress__number { width: 28px; height: 28px; font-size: 12px; }
+      .chapter-nav__label { display: none; }
+      .chapter-nav__btn { padding: 8px 10px; }
+      .chapter-nav__indicator { width: 10px; height: 10px; }
+      .chapter-nav__sub-btn { width: 20px; height: 20px; font-size: 10px; }
+      .chapter-nav__btn--expandable[aria-expanded="true"] ~ .chapter-nav__sub {
+        max-width: 110px;
+      }
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -2282,6 +2625,90 @@ import Badge from '@/components/Badge.astro';
       padding-top: var(--spacing-md);
       padding-bottom: var(--spacing-md);
       font-size: 1.05em;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /*          TIER SWITCHER                        */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+    .tier-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 480px;
+    }
+
+    .tier-switcher__tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 16px 20px;
+      border-radius: var(--radius-xl);
+      border: 2px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      transition: all var(--motion-duration-base) var(--motion-easing-standard);
+      font-family: inherit;
+    }
+
+    .tier-switcher__tab:hover {
+      border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+      box-shadow: 0 0 16px -4px color-mix(in srgb, var(--primary) 15%, transparent);
+    }
+
+    .tier-switcher__tab--active {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 5%, var(--card));
+      box-shadow: 0 0 20px -4px color-mix(in srgb, var(--primary) 25%, transparent);
+    }
+
+    .tier-switcher__label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted-foreground);
+    }
+
+    .tier-switcher__tab--active .tier-switcher__label {
+      color: var(--primary);
+    }
+
+    .tier-switcher__price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .tier-switcher__context {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Tab panels */
+    .tier-panel {
+      display: none;
+    }
+    .tier-panel--active {
+      display: block;
+    }
+
+    .tier-panel__header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .tier-switcher {
+        max-width: 100%;
+      }
+      .tier-switcher__price {
+        font-size: 1.25rem;
+      }
     }
   </style>
 </BaseLayout>
