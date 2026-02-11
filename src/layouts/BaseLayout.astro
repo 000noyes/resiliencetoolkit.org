@@ -183,16 +183,27 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
 
     <script>
       // Initialize local storage (no auth checks - app is fully local)
-      import { initializeStorage } from '@/lib/storage';
+      import { initializeStorage, verifyStorage, exportAllData, getModuleTodos } from '@/lib/storage';
 
       // Run immediately (IIFE - Immediately Invoked Function Expression)
       (async () => {
         try {
           console.log('[BaseLayout] Initializing local storage (no auth)...');
 
-          // Always initialize in local-only mode
+          // Always initialize in local-only mode (also pre-warms IndexedDB)
           const { userId } = await initializeStorage();
           console.log('[BaseLayout] Initialized storage:', { userId });
+
+          // Expose debug utilities on window for developer console access
+          (window as any).debugStorage = {
+            healthCheck: verifyStorage,
+            async inspect(moduleKey: string) {
+              const todos = await getModuleTodos(moduleKey);
+              console.table(todos);
+              return todos;
+            },
+            exportAll: exportAllData,
+          };
         } catch (error) {
           console.error('[BaseLayout] Failed to initialize storage:', error);
         }

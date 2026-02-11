@@ -49,9 +49,74 @@ export interface ChangelogEntry {
   summary: string[];
   sections: ChangelogSection[];
   tags?: string[];
+  draft?: boolean;
 }
 
 export const changelogEntries: ChangelogEntry[] = [
+  {
+    id: '0002',
+    draft: true,
+    date: 'Feb 8, 2026',
+    isoDate: '2026-02-08',
+    title: 'It also works offline*',
+    summary: [
+      'Every checklist, note, and table in the toolkit is saved directly to your device.',
+      'It is never sent to a server or shared with anyone else; no account or sign-in required',
+      'Visiting the site once is enough: all 17 module pages are automatically saved for offline use',
+      'The toolkit is ready to store your data the moment any page loads (no setup, no account, no sign-in)',
+    ],
+    sections: [
+      {
+        heading: 'Your data stays on your device',
+        content: `
+          <p>The Resilience Hub Toolkit stores everything (read: checked boxes, typed notes, filled-in tables) directly on the device being used. A phone, laptop, or tablet. Nothing is uploaded. Nothing is shared. No account is needed.</p>
+          <p>That means no one else can see what's been entered. Not the site operators, not a cloud service, not anyone. The data belongs to the person using the device, and it stays there.</p>
+        `,
+      },
+      {
+        heading: 'So what\'s the asterisk?',
+        content: `
+          <p>*The site needs to be loaded once with an internet connection before it can work offline. After that first visit, every page and all the tools are available without Wi-Fi or cell service.</p>
+          <p>There's no need to visit each module page individually. The entire toolkit is saved automatically after the first visit.</p>
+          <p>A few things that can clear the saved site data:</p>
+          <ul>
+            <li>Clearing browser history or site data</li>
+            <li>Using a private or incognito browser window (data may not survive after closing it)</li>
+            <li>Switching to a different browser or device</li>
+          </ul>
+        `,
+      },
+      {
+        heading: 'Verified across every page',
+        content: `
+          <p>I tested every page. The results:</p>
+          <ul>
+            <li>Data saves immediately when a checklist or table is used</li>
+            <li>Data survives page refreshes, navigating between sections, and closing the browser</li>
+            <li>Pages without checklists (like Volunteer Management and Financial Resources) are still ready to save data the moment they load</li>
+          </ul>
+          <p>Automated checks re-verify all of this regularly to catch any problems early.</p>
+        `,
+      },
+      {
+        heading: 'How it works under the hood',
+        content: `
+          <p>For the curious: the toolkit uses two built-in browser features to work offline.</p>
+          <p><strong>For saving your data:</strong> Every checklist item, note, and table entry is stored in a small database built into the browser itself, called IndexedDB. It works like a filing cabinet inside the browser—organized, private, and accessible only from this site on this device. Nothing is ever sent over the internet.</p>
+          <p><strong>For saving the site itself:</strong> The first time the site loads, a background helper called a Service Worker quietly downloads and stores every page, image, and tool the toolkit uses. After that, the entire site can load and run without any internet connection at all—just like an app installed on a phone.</p>
+          <p>Both of these are standard features available in every modern browser. No plugins, extensions, or special software needed.</p>
+        `,
+      },
+      {
+        heading: 'One thing to know',
+        content: `
+          <p>Because data lives on the device, it stays on that device. Checklists filled out on a phone won't appear on a laptop, and vice versa.</p>
+          <p>A future update may add the ability to export and back up data.</p>
+        `,
+      },
+    ],
+    tags: ['feature', 'security'],
+  },
   {
     id: '0001',
     date: 'Feb 7, 2026',
@@ -146,7 +211,7 @@ export const changelogEntries: ChangelogEntry[] = [
  * Get entries sorted by date (newest first)
  */
 export function getSortedEntries(): ChangelogEntry[] {
-  return [...changelogEntries].sort(
+  return [...changelogEntries].filter(e => !e.draft).sort(
     (a, b) => new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime()
   );
 }

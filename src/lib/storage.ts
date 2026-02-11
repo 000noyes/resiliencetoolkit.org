@@ -830,9 +830,55 @@ export async function initializeStorage(): Promise<{
       console.log('[Storage] Generated new device ID:', deviceId);
     }
 
+    // Pre-warm the database connection so components don't pay the cost
+    await getDB();
+
     return { userId: deviceId };
   }
 
   throw new Error('Cannot initialize storage on server-side');
+}
+
+// ============================================================================
+// DIAGNOSTICS
+// ============================================================================
+
+/**
+ * Verify storage health - checks DB connection, stores, and record counts.
+ * Can be called from browser console via `debugStorage.healthCheck()`
+ * or used in automated tests.
+ */
+export async function verifyStorage(): Promise<{
+  status: 'healthy' | 'error';
+  deviceId: string | null;
+  dbVersion: number;
+  stores: string[];
+  counts: { todos: number; tables: number; metadata: number };
+  error?: string;
+}> {
+  try {
+    const db = await getDB();
+    const [todos, tables, metadata] = await Promise.all([
+      db.count('todos'),
+      db.count('tables'),
+      db.count('metadata'),
+    ]);
+    return {
+      status: 'healthy',
+      deviceId: localStorage.getItem('deviceId'),
+      dbVersion: db.version,
+      stores: Array.from(db.objectStoreNames),
+      counts: { todos, tables, metadata },
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      deviceId: localStorage.getItem('deviceId'),
+      dbVersion: 0,
+      stores: [],
+      counts: { todos: 0, tables: 0, metadata: 0 },
+      error: String(error),
+    };
+  }
 }
 
