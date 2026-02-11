@@ -1,0 +1,1314 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Badge from '@/components/Badge.astro';
+
+type BadgeVariant = 'primary' | 'neutral' | 'success' | 'warning' | 'info' | 'danger';
+
+interface SummaryBadge {
+  label: string;
+  variant: BadgeVariant;
+}
+
+interface FundingPath {
+  id: 'preserve' | 'guide' | 'connect';
+  tier: 1 | 2 | 3;
+  title: string;
+  subtitle: string;
+  range: string;
+  emphasis?: string;
+  summaryBadges: SummaryBadge[];
+  whatThisFunds: string[];
+  deliverables: string[];
+  why: string;
+  likelyFunders: string[];
+  fullProposalHref?: string;
+  defaultOpen?: boolean;
+}
+
+interface ComparisonRow {
+  feature: string;
+  preserve: string[];
+  guide: string[];
+  connect: string[];
+}
+
+interface PathFlowStep {
+  label: string;
+  title: string;
+  description: string;
+}
+
+const fundingPaths: FundingPath[] = [
+  {
+    id: 'preserve',
+    tier: 1,
+    title: 'Preserve the Infrastructure',
+    subtitle: 'Stabilize the local-first backbone so trainings never stall.',
+    range: '$3K–$10K',
+    summaryBadges: [
+      { label: 'Complexity: Low', variant: 'success' },
+      { label: 'Risk: Minimal', variant: 'neutral' }
+    ],
+    whatThisFunds: [
+      'Proactive maintenance sprints for Astro, TypeScript, and IndexedDB synchronization so the Toolkit keeps saving data offline.',
+      'Accessibility and performance audits to ensure the site stays inclusive and usable as new features are added.',
+      'Documentation updates and hand-off support so multiple developers can keep the site running without a single point of failure.'
+    ],
+    deliverables: [
+      'Maintenance log with documented updates, tests, and redundancy plans so the next steward can pick up without a scramble.',
+      'Accessibility and performance review report with prioritized fixes.',
+      'Refreshed PDF/print exports and updated admin documentation so volunteers can continue service without us on call.'
+    ],
+    why: 'This tier is how we promise that what already exists will stay online, accessible, and trustworthy while future investment decisions are made.',
+    likelyFunders: [
+      'Rapid-response or bridge funding pools',
+      'Local community foundations and civic innovation offices',
+      'Individual donors aligned with resilient infrastructure'
+    ]
+  },
+  {
+    id: 'guide',
+    tier: 2,
+    title: 'Guide Participation',
+    subtitle: 'Turn the Toolkit into guided journeys that connect every visitor to the right tools.',
+    range: '~$12K',
+    emphasis: 'Recommended',
+    summaryBadges: [
+      { label: 'Complexity: Medium', variant: 'warning' },
+      { label: 'Risk: Coordinated Build', variant: 'neutral' }
+    ],
+    whatThisFunds: [
+      'Human-centered research to map three anchor roles entering the Toolkit, with voice and calls-to-action tuned for each.',
+      'Design and build text-hero moments, entry forms, and sequencing logic that connect people to the right tools at the right depth.',
+      'Guides, facilitation scripts, and instrumentation that turn the learning journey into a shared experience whether someone is self-guiding or a facilitator is leading a group through it.'
+    ],
+    deliverables: [
+      'Three authored entry flows with role-based messaging, tool recommendations, and a customized landing experience.',
+      'Analytics instrumentation and dashboards that show how people enter, where they drop off, and what tools they engage with most.',
+      'Maintainer hand-off kit: annotated wireframes, content schema, and a recorded walkthrough.'
+    ],
+    why: 'This path converts infrastructure into action. It aligns leadership, messaging, and the existing modules so every funder or community member can instantly understand what fits them.',
+    likelyFunders: [
+      'Movement partners who want the journey realized',
+      'Arts and culture or narrative strategy funders',
+      'Civic tech programs focused on adoption and onboarding'
+    ],
+    fullProposalHref: '/journey'
+  },
+  {
+    id: 'connect',
+    tier: 3,
+    title: 'Connect the Network',
+    subtitle: 'Scale the Toolkit into a shared mesh for partners.',
+    range: '$25K–$60K',
+    summaryBadges: [
+      { label: 'Complexity: High', variant: 'danger' },
+      { label: 'Risk: Shared Partnership', variant: 'neutral' }
+    ],
+    whatThisFunds: [
+       'Multi-organizational pilots that interconnect dashboards, data-export formats, and learning journeys without centralizing ownership.',
+      'Facilitated convenings and alignment work to define shared vocabularies, governance agreements, and care expectations across partners.',
+      'Optional profile and messaging experiments that stay browser-based and local-first while letting participants collaborate across hubs.'
+    ],
+    deliverables: [
+      'Distributed coordination kit: facilitation agendas, shared vocabulary, print-ready canvases, and async templates.',
+      'Localization and translation protocols that lets partners easily adapt the site to their language and context while sharing improvements back to the network.',
+      'Network health instrumentation, light-touch API hooks, and governance agreements covering consent, privacy, and care expectations.'
+    ],
+    why: 'Expands ResilienceToolkit.org from a single site into connective tissue. Communities can interlink resources without surrendering autonomy or data, and each deployment remains portable.',
+    likelyFunders: [
+      'Regional or national collaboratives such as Just Recovery or mutual aid coalitions',
+      'Infrastructure philanthropies investing in open digital public goods',
+      'Participatory grantmaking tables that need transparent coordination layers'
+    ]
+  }
+];
+
+const comparisonRows: ComparisonRow[] = [
+  {
+    feature: 'Price',
+    preserve: ['$3K–$10K (flexible and splittable across micro-grants)'],
+    guide: ['~$12K (fixed scope, ready for immediate kickoff)'],
+    connect: ['$25K–$60K (phased, co-fundable by multiple partners)']
+  },
+  {
+    feature: 'Timeline',
+    preserve: ['4–6 weeks of stabilization with follow-up check-ins'],
+    guide: ['12-week build plus optional 9-month light maintenance'],
+    connect: ['Phase 1: 12-week pilot · Phase 2: 3–6 months to roll across partners']
+  },
+  {
+    feature: 'Complexity',
+    preserve: ['Low — documented updates, tests, redundancy'],
+    guide: ['Medium — UX research, narrative, and frontend implementation'],
+    connect: ['High — cross-org alignment, translation, and governance']
+  },
+  {
+    feature: 'Infrastructure needed',
+    preserve: ['Existing Astro + IndexedDB stack; access to health metrics'],
+    guide: ['Stable Path 1 base, analytics instrumentation, stakeholder interviews'],
+    connect: ['Paths 1 + 2 delivered, plus partner agreements on data stewardship']
+  },
+  {
+    feature: 'Key deliverables',
+    preserve: [
+      'Maintenance log & health reviews',
+      'Accessibility + performance QA',
+      'Updated admin + print assets'
+    ],
+    guide: [
+      'Three guided entry flows & hero',
+      'Journey instrumentation + dashboards',
+      'Facilitator and onboarding scripts'
+    ],
+    connect: [
+      'Distributed coordination kit',
+      'Localization + translation pipeline',
+      'Network health instrumentation & consent agreements'
+    ]
+  }
+];
+
+const pathFlow: PathFlowStep[] = [
+  {
+    label: 'Stabilize',
+    title: 'Preserve the Infrastructure',
+    description: 'Guarantees reliability so communities can depend on existing tools while future investments are considered.'
+  },
+  {
+    label: 'Improve',
+    title: 'Guide Participation',
+    description: 'Turns strategy into guided journeys so each audience knows how to plug in with confidence.'
+  },
+  {
+    label: 'Expand',
+    title: 'Connect the Network',
+    description: 'Links multiple hubs without centralizing ownership, scaling trust, visibility, and learning loops.'
+  }
+];
+
+const additiveNotes = [
+  'Each path can be funded independently; every contract ships on its own timeline.',
+  'Paths stack cleanly: Path 1 keeps uptime high, Path 2 clarifies adoption, Path 3 federates the results.',
+  'Shared measurement instrumentation lets multiple funders see their contribution regardless of tier.',
+  'Open licensing and local-first design mean deliverables stay portable across partners and geographies.'
+];
+
+const principleStatements = [
+  'Offline-first architecture keeps every checklist, journal, and dashboard entry stored locally — no forced sync or vendor lock-in.',
+  'Account-free participation ensures no community member has to hand over personal data just to learn or contribute.',
+  'No surveillance or data harvesting: analytics stay aggregated, self-hosted, and privacy-respecting.',
+  'If Path 3 pilots optional profiles, they remain local-first and never concentrate power in a central server.'
+];
+---
+
+<BaseLayout
+  title="Investment Paths | Resilience Toolkit"
+  description="Tiered funding paths that show how to preserve, guide, and connect the Toolkit."
+>
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+  <meta slot="head" name="googlebot" content="noindex, nofollow" />
+
+  <!-- Password Gate -->
+  <div id="password-gate" class="password-gate">
+    <div class="password-gate__card">
+      <h1 class="text-title font-semibold text-foreground mb-2 text-center">
+        This page is protected
+      </h1>
+      <p class="text-body-small text-muted-foreground mb-6 text-center">
+        Enter the password to view the investment paths.
+      </p>
+      <form id="password-form" class="space-y-4">
+        <div>
+          <label for="password-input" class="sr-only">Password</label>
+          <input
+            id="password-input"
+            type="password"
+            placeholder="Password"
+            autocomplete="off"
+            class="password-gate__input"
+          />
+        </div>
+        <button
+          type="submit"
+          class="password-gate__submit"
+        >
+          View Investment Paths
+        </button>
+        <p id="password-error" class="hidden text-body-small text-destructive text-center" aria-live="polite">
+          Incorrect password. Please try again.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <article id="invest-content" class="hidden">
+    <section class="py-16 border-b border-border invest-hero">
+      <div class="container mx-auto px-4 max-w-5xl" data-reveal>
+        <div class="mb-4">
+          <Badge variant="primary">Investment Paths</Badge>
+        </div>
+        <p class="text-body-small text-muted-foreground uppercase tracking-[0.3em] mb-3">
+          Access Ecologies / Infrastructure Stewardship
+        </p>
+        <h1 class="text-hero font-semibold text-foreground mb-4">
+          Choose Your Investment Level
+        </h1>
+        <p class="text-title text-muted-foreground max-w-3xl">
+          Three independent paths — Preserve, Guide, Connect — let different funders enter at the level that matches their mandate while still reinforcing a single evolution roadmap.
+        </p>
+        <p class="text-body text-foreground mt-6 max-w-3xl">
+          Path 1 keeps the infrastructure steady, Path 2 brings the $12K learning journey to life, and Path 3 connects the entire network. Pick one or combine them; the work remains interoperable and local-first.
+        </p>
+      </div>
+    </section>
+
+    <!-- Three Investment Paths -->
+    <section class="py-16">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="invest-section-header" data-reveal>
+          <p class="text-body-small text-muted-foreground uppercase tracking-[0.24em] mb-2">Core Offering</p>
+          <h2 class="text-headline font-semibold text-foreground mb-3">Three Paths, One Stewardship Roadmap</h2>
+          <p class="text-body-large text-muted-foreground max-w-3xl">
+            Each path is contract-ready on its own. Fund what fits your goals and still contribute to a cohesive, well-maintained, and community-aligned infrastructure. Scroll down for a side-by-side comparison or click each card for the full proposal details.
+          </p>
+        </div>
+        <div class="invest-cards">
+          {fundingPaths.map((path, index) => (
+            <article
+              id={path.id}
+              class:list={['invest-card', `invest-card--tier-${path.tier}`, path.emphasis ? 'invest-card--highlight' : '']}
+              data-reveal
+              data-reveal-delay={`${index * 80}`}
+              tabindex="0"
+              aria-label={`${path.title} investment details`}
+              data-default-open={path.defaultOpen ? 'true' : undefined}
+            >
+              <div class="invest-card__summary">
+                <div class="invest-card__summary-grid">
+                  <div>
+                    <p class="invest-card__eyebrow">Path {path.tier}</p>
+                    <h3 class="invest-card__title">{path.title}</h3>
+                    <p class="invest-card__subtitle">{path.subtitle}</p>
+                  </div>
+                  <div class="invest-card__summary-meta">
+                    {path.emphasis && (
+                      <Badge variant="primary" class="invest-card__recommendation">{path.emphasis}</Badge>
+                    )}
+                    <p class="invest-card__range">{path.range}</p>
+                  </div>
+                </div>
+                <div class="invest-card__badge-row">
+                  {path.summaryBadges.map((badge) => (
+                    <Badge variant={badge.variant} class="invest-card__badge">{badge.label}</Badge>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  class="invest-card__toggle"
+                  aria-expanded="false"
+                  aria-controls={`${path.id}-details`}
+                  data-open-label="Hide details"
+                  data-closed-label="View full breakdown"
+                >
+                  <span class="invest-card__toggle-content">
+                    <span class="invest-card__toggle-label">View full breakdown</span>
+                    <span class="invest-card__toggle-subtext">Tap to see deliverables, why it matters, and likely funders</span>
+                  </span>
+                  <span class="invest-card__caret" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+              <div class="invest-card__body" id={`${path.id}-details`}>
+                <div class="invest-card__section">
+                  <p class="invest-card__section-label">What This Funds</p>
+                  <ul class="invest-card__list">
+                    {path.whatThisFunds.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div class="invest-card__section">
+                  <p class="invest-card__section-label">Deliverables</p>
+                  <ul class="invest-card__list">
+                    {path.deliverables.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div class="invest-card__section">
+                  <p class="invest-card__section-label">Why It Matters</p>
+                  <p class="invest-card__copy">{path.why}</p>
+                  {path.fullProposalHref && (
+                    <p class="invest-card__link-text">
+                      <a href={path.fullProposalHref}>Open the full $12K proposal</a>.
+                    </p>
+                  )}
+                </div>
+                <div class="invest-card__section">
+                  <p class="invest-card__section-label">Likely Funders</p>
+                  <ul class="invest-card__tags">
+                    {path.likelyFunders.map((funder) => (
+                      <li>{funder}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Strategic Framing -->
+    <section class="py-16 bg-muted/50">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="invest-section-header" data-reveal>
+          <p class="text-body-small text-muted-foreground uppercase tracking-[0.24em] mb-2">Strategic Framing</p>
+          <h2 class="text-headline font-semibold text-foreground mb-3">Why Three Paths</h2>
+          <p class="text-body-large text-muted-foreground max-w-3xl">
+            Stabilize → Improve → Expand is how Access Ecologies continues acting as an infrastructure steward instead of a service vendor.
+          </p>
+        </div>
+        <div class="invest-framing">
+          <div class="invest-framing__card" data-reveal>
+            <p class="invest-framing__eyebrow">Stabilize → Improve → Expand</p>
+            <ol class="invest-framing__timeline">
+              {pathFlow.map((step, idx) => (
+                <li>
+                  <div class="invest-framing__timeline-number">{idx + 1}</div>
+                  <div>
+                    <p class="invest-framing__timeline-label">{step.label}</p>
+                    <p class="invest-framing__timeline-title">{step.title}</p>
+                    <p class="invest-framing__timeline-copy">{step.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div class="invest-framing__card" data-reveal data-reveal-delay="120">
+            <p class="invest-framing__eyebrow">Independent but additive</p>
+            <h3 class="invest-framing__title">Fund what fits and still advance the roadmap.</h3>
+            <ul class="invest-framing__list">
+              {additiveNotes.map((note) => (
+                <li>{note}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Principles -->
+    <section class="py-16">
+      <div class="container mx-auto px-4 max-w-4xl">
+        <div class="invest-principles" data-reveal>
+          <p class="text-body-small text-muted-foreground uppercase tracking-[0.24em] mb-2">Principles</p>
+          <h2 class="text-headline font-semibold text-foreground mb-4">What We Protect</h2>
+          <blockquote class="invest-principles__quote">
+            <p>
+              “We build local-first, offline-capable infrastructure that keeps power in community hands. No accounts, no surveillance, no extraction — even when Path 3 experiments with optional profiles, every participant keeps control of their own data.”
+            </p>
+          </blockquote>
+          <ul class="invest-principles__list">
+            {principleStatements.map((statement) => (
+              <li>{statement}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="py-16 bg-muted/40">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="invest-section-header" data-reveal>
+          <p class="text-body-small text-muted-foreground uppercase tracking-[0.24em] mb-2">Side-by-Side</p>
+          <h2 class="text-headline font-semibold text-foreground mb-3">Compare The Paths</h2>
+          <p class="text-body-large text-muted-foreground max-w-3xl">
+            Quickly scan price, timeline, complexity, infrastructure requirements, and deliverables. On mobile, tap each feature row for the full description.
+          </p>
+        </div>
+        <div class="invest-table__wrapper" data-reveal>
+          <div class="overflow-x-auto">
+            <table class="invest-table">
+              <thead>
+                <tr>
+                  <th scope="col">Feature</th>
+                  <th scope="col">Preserve</th>
+                  <th scope="col">Guide</th>
+                  <th scope="col">Connect</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row) => (
+                  <tr>
+                    <th scope="row" data-label="Feature">{row.feature}</th>
+                    <td data-label="Preserve">
+                      <ul class="invest-table__cell-list">
+                        {row.preserve.map((item) => (
+                          <li>{item}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td data-label="Guide">
+                      <ul class="invest-table__cell-list">
+                        {row.guide.map((item) => (
+                          <li>{item}</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td data-label="Connect">
+                      <ul class="invest-table__cell-list">
+                        {row.connect.map((item) => (
+                          <li>{item}</li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing -->
+    <section class="py-16">
+      <div class="container mx-auto px-4 max-w-4xl">
+        <div class="invest-closing" data-reveal>
+          <p class="invest-closing__label">Presented by</p>
+          <div class="invest-closing__signature">
+            <img src="/access/access_spirallogo_vector.svg" alt="Access Ecologies spiral logo" class="invest-closing__logo" loading="lazy" decoding="async" />
+            <div>
+              <p class="invest-closing__name">Access Ecologies</p>
+            </div>
+          </div>
+          <p class="invest-closing__note">
+            Infrastructure steward for ResilienceToolkit.org
+          </p>
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (() => {
+      const CORRECT = 'laob';
+      const KEY = 'invest-unlocked';
+
+      const init = () => {
+        const gate = document.getElementById('password-gate');
+        const content = document.getElementById('invest-content');
+        const form = document.getElementById('password-form');
+        const input = document.getElementById('password-input');
+        const error = document.getElementById('password-error');
+
+        const unlock = () => {
+          gate?.classList.add('hidden');
+          content?.classList.remove('hidden');
+          initRevealAnimations();
+          initInvestCardAccordions();
+          initHashBehavior();
+        };
+
+        if (sessionStorage.getItem(KEY) === 'true') {
+          unlock();
+          return;
+        }
+
+        form?.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const value = input?.value.trim().toLowerCase();
+          if (value === CORRECT) {
+            sessionStorage.setItem(KEY, 'true');
+            unlock();
+            return;
+          }
+
+          if (error) {
+            error.classList.remove('hidden');
+            setTimeout(() => error.classList.add('hidden'), 3000);
+          }
+          if (input) {
+            input.value = '';
+            input.focus();
+          }
+          const card = gate?.querySelector('.password-gate__card');
+          if (card) {
+            card.classList.add('gate-error');
+            setTimeout(() => card.classList.remove('gate-error'), 600);
+          }
+        });
+      };
+
+      function initRevealAnimations() {
+        const els = document.querySelectorAll('[data-reveal]');
+        if (!els.length) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          els.forEach((el) => el.classList.add('revealed'));
+          return;
+        }
+
+        const revealObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                revealObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12 }
+        );
+        els.forEach((el) => revealObserver.observe(el));
+      }
+
+      function initHashBehavior() {
+        const cards = document.querySelectorAll('.invest-card');
+        if (!cards.length) return;
+
+        const highlightCard = (card) => {
+          cards.forEach((c) => c.classList.remove('invest-card--hash-target'));
+          card.classList.add('invest-card--hash-target');
+          setTimeout(() => card.classList.remove('invest-card--hash-target'), 1600);
+        };
+
+        const focusFromHash = (hash) => {
+          if (!hash) return;
+          const slug = hash.replace('#', '');
+          if (!slug) return;
+          const target = document.getElementById(slug);
+          if (target) {
+            setCardExpansion(target, true);
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            highlightCard(target);
+            target.focus({ preventScroll: true });
+          }
+        };
+
+        window.addEventListener('hashchange', () => focusFromHash(window.location.hash));
+        focusFromHash(window.location.hash);
+      }
+
+      function initInvestCardAccordions() {
+        const cards = document.querySelectorAll('.invest-card');
+        if (!cards.length) return;
+
+        cards.forEach((card) => {
+          const toggle = card.querySelector('.invest-card__toggle');
+          if (!toggle) return;
+
+          const shouldOpen = card.dataset.defaultOpen === 'true';
+          setCardExpansion(card, shouldOpen);
+
+          toggle.addEventListener('click', () => {
+            const nextState = !card.classList.contains('invest-card--open');
+            setCardExpansion(card, nextState);
+          });
+        });
+      }
+
+      function setCardExpansion(element, shouldOpen) {
+        const card = element?.classList?.contains('invest-card')
+          ? element
+          : element?.closest?.('.invest-card');
+        if (!card) return;
+
+        const toggle = card.querySelector('.invest-card__toggle');
+        const body = card.querySelector('.invest-card__body');
+        if (!toggle) return;
+
+        card.classList.toggle('invest-card--open', shouldOpen);
+        toggle.setAttribute('aria-expanded', String(shouldOpen));
+        if (body) {
+          if (shouldOpen) {
+            body.removeAttribute('hidden');
+          } else {
+            body.setAttribute('hidden', 'true');
+          }
+        }
+
+        const openLabel = toggle.dataset.openLabel || 'Hide details';
+        const closedLabel = toggle.dataset.closedLabel || 'View full breakdown';
+        const labelEl = toggle.querySelector('.invest-card__toggle-label');
+        if (labelEl) {
+          labelEl.textContent = shouldOpen ? openLabel : closedLabel;
+        }
+
+        const subtextEl = toggle.querySelector('.invest-card__toggle-subtext');
+        if (subtextEl) {
+          subtextEl.textContent = shouldOpen
+            ? 'Collapse to keep the Path summary in view'
+            : 'Tap to see deliverables, why it matters, and likely funders';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+
+  <style>
+    /* Reveal animation */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    [data-reveal].revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    [data-reveal-delay="80"] { transition-delay: 80ms; }
+    [data-reveal-delay="160"] { transition-delay: 160ms; }
+    [data-reveal-delay="240"] { transition-delay: 240ms; }
+    [data-reveal-delay="320"] { transition-delay: 320ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      [data-reveal] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    /* Password gate */
+    .password-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 1rem;
+      background: var(--muted);
+      overflow: hidden;
+    }
+    .password-gate.hidden {
+      display: none;
+    }
+    .password-gate::before {
+      content: '';
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, color-mix(in srgb, var(--primary) 6%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+    .password-gate__card {
+      max-width: 24rem;
+      width: 100%;
+      padding: 2rem;
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      background: color-mix(in srgb, var(--card) 80%, transparent);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow:
+        0 0 40px -8px color-mix(in srgb, var(--primary) 10%, transparent),
+        0 8px 32px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 1;
+      transition: box-shadow 0.3s ease;
+    }
+    .password-gate__card.gate-error {
+      box-shadow:
+        0 0 40px -8px rgba(239, 68, 68, 0.3),
+        0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+    .password-gate__input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--background);
+      color: var(--foreground);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+    .password-gate__input::placeholder { color: var(--muted-foreground); }
+    .password-gate__input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent),
+                  0 0 16px -4px color-mix(in srgb, var(--primary) 15%, transparent);
+    }
+    .password-gate__submit {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 20px -4px color-mix(in srgb, var(--primary) 30%, transparent);
+    }
+    .password-gate__submit:hover {
+      opacity: 0.92;
+      box-shadow: 0 0 28px -4px color-mix(in srgb, var(--primary) 45%, transparent);
+    }
+
+    /* Investment cards */
+    .invest-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .invest-card {
+      --tier-color: var(--primary);
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+      background: color-mix(in srgb, var(--card) 95%, transparent);
+      box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color var(--motion-duration) var(--motion-easing),
+                  box-shadow var(--motion-duration) var(--motion-easing),
+                  transform var(--motion-duration) var(--motion-easing);
+      outline: none;
+    }
+    .invest-card:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--tier-color) 60%, var(--ring));
+      outline-offset: 4px;
+    }
+    .invest-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--tier-color) 65%, transparent), transparent 70%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--motion-duration) var(--motion-easing);
+    }
+    .invest-card:hover,
+    .invest-card:focus-within,
+    .invest-card--hash-target {
+      opacity: 1;
+      filter: none;
+    }
+    .invest-card--hash-target {
+      box-shadow: 0 40px 90px -40px color-mix(in srgb, var(--tier-color) 70%, transparent);
+    }
+    .invest-card:hover {
+      border-color: transparent;
+      transform: translateY(-4px);
+      box-shadow: 0 30px 80px -40px color-mix(in srgb, var(--tier-color) 60%, transparent);
+    }
+    .invest-card:hover::after {
+      opacity: 1;
+    }
+    .invest-card--tier-1 { --tier-color: var(--ring); }
+    .invest-card--tier-2 { --tier-color: var(--primary); }
+    .invest-card--tier-3 { --tier-color: var(--chart-2); }
+
+    .invest-card__summary {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+    .invest-card__summary-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .invest-card__summary-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .invest-card__eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--tier-color) 60%, var(--muted-foreground));
+      margin: 0;
+    }
+    .invest-card__title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--foreground);
+    }
+    .invest-card__subtitle {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+    .invest-card__range {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin: 0;
+    }
+    .invest-card__badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .invest-card__badge {
+      font-size: 0.75rem;
+    }
+    .invest-card__recommendation {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+    }
+    .invest-card__toggle {
+      margin-top: 18px;
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--tier-color) 45%, transparent);
+      background: color-mix(in srgb, var(--tier-color) 6%, transparent);
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color var(--motion-duration) var(--motion-easing),
+                  background var(--motion-duration) var(--motion-easing),
+                  box-shadow var(--motion-duration) var(--motion-easing);
+    }
+    .invest-card__toggle:hover {
+      border-color: color-mix(in srgb, var(--tier-color) 70%, var(--ring));
+      box-shadow: 0 15px 32px -24px color-mix(in srgb, var(--tier-color) 60%, rgba(0, 0, 0, 0.45));
+    }
+    .invest-card__toggle:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--tier-color) 75%, var(--ring));
+      outline-offset: 4px;
+    }
+    .invest-card__toggle-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .invest-card__toggle-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .invest-card__toggle-subtext {
+      font-size: 0.8rem;
+      color: var(--muted-foreground);
+    }
+    .invest-card__caret {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--tier-color) 38%, transparent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: color-mix(in srgb, var(--tier-color) 90%, var(--foreground));
+      background: color-mix(in srgb, var(--tier-color) 12%, transparent);
+      transition: transform var(--motion-duration) var(--motion-easing);
+      flex-shrink: 0;
+    }
+    .invest-card__caret svg {
+      transition: transform var(--motion-duration) var(--motion-easing);
+    }
+    .invest-card--open .invest-card__caret svg {
+      transform: rotate(180deg);
+    }
+
+    .invest-card__body {
+      padding: 0 28px;
+      display: none;
+      gap: 24px;
+      border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    }
+    .invest-card--open .invest-card__body {
+      display: grid;
+      padding: 28px;
+    }
+    .invest-card__section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .invest-card__section-label {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      margin: 0;
+    }
+    .invest-card__list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .invest-card__list li {
+      font-size: 0.95rem;
+      color: var(--foreground);
+      line-height: 1.6;
+      position: relative;
+      padding-left: 18px;
+    }
+    .invest-card__list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--tier-color) 80%, var(--primary));
+    }
+    .invest-card__copy {
+      font-size: 0.95rem;
+      color: var(--muted-foreground);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .invest-card__tags {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .invest-card__tags li {
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      background: color-mix(in srgb, var(--tier-color) 12%, transparent);
+      color: color-mix(in srgb, var(--tier-color) 70%, var(--foreground));
+      border: 1px solid color-mix(in srgb, var(--tier-color) 40%, transparent);
+    }
+    .invest-card__link-text {
+      font-size: 0.9rem;
+      color: var(--muted-foreground);
+      margin: 0;
+    }
+    .invest-card__link-text a {
+      color: var(--tier-color);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1024px) {
+      .invest-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 768px) {
+      .invest-cards {
+        grid-template-columns: 1fr;
+      }
+      .invest-card__summary-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Strategic framing */
+    .invest-framing {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .invest-framing__card {
+      border-radius: 16px;
+      border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      background: color-mix(in srgb, var(--card) 90%, transparent);
+      padding: 32px;
+      box-shadow: 0 20px 50px -30px rgba(0, 0, 0, 0.35);
+    }
+    .invest-framing__eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+      margin: 0 0 12px;
+    }
+    .invest-framing__timeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .invest-framing__timeline li {
+      display: flex;
+      gap: 16px;
+    }
+    .invest-framing__timeline-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--primary-foreground);
+      background: var(--primary);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 40%, transparent);
+      flex-shrink: 0;
+    }
+    .invest-framing__timeline-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin: 0;
+      color: var(--muted-foreground);
+    }
+    .invest-framing__timeline-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 2px 0;
+      color: var(--foreground);
+    }
+    .invest-framing__timeline-copy {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .invest-framing__title {
+      font-size: 1.25rem;
+      margin: 0 0 16px;
+      color: var(--foreground);
+    }
+    .invest-framing__list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .invest-framing__list li {
+      position: relative;
+      padding-left: 20px;
+      color: var(--muted-foreground);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .invest-framing__list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.6rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--primary) 70%, transparent);
+    }
+
+    @media (max-width: 900px) {
+      .invest-framing {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Principles */
+    .invest-principles {
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+      padding: 32px;
+      background: color-mix(in srgb, var(--card) 96%, transparent);
+      box-shadow: 0 24px 60px -40px rgba(0, 0, 0, 0.4);
+    }
+    .invest-principles__quote {
+      margin: 0 0 20px;
+      padding-left: 20px;
+      border-left: 4px solid var(--primary);
+      color: var(--foreground);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+    .invest-principles__list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .invest-principles__list li {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      padding-left: 18px;
+      position: relative;
+    }
+    .invest-principles__list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 3px;
+      background: color-mix(in srgb, var(--ring) 60%, var(--primary));
+    }
+
+    /* Comparison table */
+    .invest-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 24px;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      box-shadow: 0 24px 60px -36px rgba(0, 0, 0, 0.4);
+    }
+    .invest-table thead {
+      background: color-mix(in srgb, var(--muted) 75%, transparent);
+    }
+    .invest-table th,
+    .invest-table td {
+      padding: 18px;
+      text-align: left;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      vertical-align: top;
+      font-size: 0.95rem;
+    }
+    .invest-table th {
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+    .invest-table tbody th {
+      color: var(--foreground);
+      font-size: 0.95rem;
+      letter-spacing: 0;
+      text-transform: none;
+      min-width: 160px;
+    }
+    .invest-table__cell-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .invest-table thead {
+        display: none;
+      }
+      .invest-table,
+      .invest-table tbody,
+      .invest-table tr,
+      .invest-table td,
+      .invest-table th {
+        display: block;
+        width: 100%;
+      }
+      .invest-table tr {
+        margin-bottom: 20px;
+        border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .invest-table tbody th {
+        background: color-mix(in srgb, var(--muted) 60%, transparent);
+      }
+      .invest-table td,
+      .invest-table tbody th {
+        border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      }
+      .invest-table td {
+        position: relative;
+        padding-left: 120px;
+      }
+      .invest-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 16px;
+        top: 18px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.75rem;
+        color: var(--muted-foreground);
+      }
+    }
+
+    /* Closing */
+    .invest-closing {
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      padding: 32px;
+      text-align: center;
+      background: color-mix(in srgb, var(--card) 96%, transparent);
+      box-shadow: 0 30px 70px -40px rgba(0, 0, 0, 0.4);
+    }
+    .invest-closing__label {
+      font-size: 0.78rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+      margin-bottom: 16px;
+    }
+    .invest-closing__signature {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .invest-closing__logo {
+      width: 48px;
+      height: 48px;
+    }
+    .invest-closing__name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .invest-closing__role {
+      margin: 0;
+      color: var(--muted-foreground);
+    }
+    .invest-closing__note {
+      margin: 12px auto 0;
+      max-width: 32rem;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+    }
+
+    @media print {
+      #password-gate { display: none !important; }
+      .invest-card { border-color: #000; box-shadow: none; }
+      .invest-card__body { opacity: 1 !important; max-height: none !important; visibility: visible !important; }
+      .invest-card__caret { display: none; }
+    }
+  </style>
+</BaseLayout>

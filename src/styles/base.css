@@ -150,8 +150,8 @@
   --surface-muted: oklch(0.2393 0 0);
   --surface-elevated: oklch(0.2603 0 0);
   --text-primary: oklch(0.9288 0.0126 255.5078);
-  --text-secondary: oklch(0.7122 0 0);
-  --text-muted: oklch(0.6301 0 0);
+  --text-secondary: oklch(0.78 0 0);
+  --text-muted: oklch(0.7 0 0);
 
   /* Legacy aliases for backward compatibility */
   --card: oklch(0.2046 0 0);
@@ -170,7 +170,7 @@
 
   /* Muted/Accent colors */
   --muted: oklch(0.2393 0 0);
-  --muted-foreground: oklch(0.7122 0 0);
+  --muted-foreground: oklch(0.76 0 0);
   --accent: oklch(0.3132 0 0);
   --accent-foreground: oklch(0.9851 0 0);
 
@@ -192,7 +192,7 @@
 
   /* Sidebar tokens - 240px dark */
   --sidebar: oklch(0.1822 0 0);
-  --sidebar-foreground: oklch(0.6301 0 0);
+  --sidebar-foreground: oklch(0.7 0 0);
   --sidebar-primary: oklch(0.8348 0.1302 160.9080);
   --sidebar-primary-foreground: oklch(0.2626 0.0147 166.4589);
   --sidebar-accent: oklch(0.3132 0 0);
@@ -205,8 +205,8 @@
   --table-surface: var(--surface);
   --table-surface-subtle: oklch(0.2603 0 0);
   --table-heading: oklch(0.9288 0.0126 255.5078);
-  --table-body: oklch(0.7122 0 0);
-  --table-text-muted: oklch(0.6301 0 0);
+  --table-body: oklch(0.78 0 0);
+  --table-text-muted: oklch(0.7 0 0);
   --table-link: oklch(0.75 0.08 220);
   --table-link-hover: oklch(0.85 0.08 220);
   --table-checkbox-border: oklch(0.5452 0 0);
