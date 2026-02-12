@@ -103,7 +103,7 @@ import Badge from '@/components/Badge.astro';
           Learning Journey &amp; Interface Workflow Development
         </h1>
         <p class="text-title text-primary font-medium mb-4">
-          $5,600 – $12,000
+          $7,400 – $12,000
         </p>
         <p class="text-body text-muted-foreground mb-8">
           Two scopes aligned to CROs' $50K and $77K Resilience Hub Toolkit stewardship and assessment proposal. 
@@ -803,7 +803,7 @@ import Badge from '@/components/Badge.astro';
               <li>Identifying what gets re-explained every time — that's what the journey automates</li>
             </ul>
             <p class="process-phase__deliverable">
-              <strong>Delivers:</strong> Journey maps for 3–4 roles; stage definitions
+              <strong>Delivers:</strong> Journey maps for up to 5 roles; stage definitions
             </p>
           </div>
           <!-- Phase 2 -->
@@ -858,7 +858,7 @@ import Badge from '@/components/Badge.astro';
           Two scope tiers are available, aligned to CROs' budget scenarios. Select a tier below to see the detailed breakdown.
         </p>
 
-        <!-- Tier Switcher -->
+        <!-- Tier Cards (switcher + summary combined) -->
         <div class="tier-switcher" role="tablist" aria-label="Budget tier selection">
           <button
             class="tier-switcher__tab tier-switcher__tab--active"
@@ -867,9 +867,9 @@ import Badge from '@/components/Badge.astro';
             aria-controls="tier-core"
             data-tier="core"
           >
-            <span class="tier-switcher__label">Core</span>
-            <span class="tier-switcher__price">$5,600</span>
-            <span class="tier-switcher__context">$50K CROs Budget</span>
+            <span class="tier-switcher__badge">Core · $50K CROs Budget</span>
+            <span class="tier-switcher__price">$7,400</span>
+            <p class="tier-switcher__desc">Funds initial journey architecture, implementation, and light stewardship. Delivers a working onboarding layer.</p>
           </button>
           <button
             class="tier-switcher__tab"
@@ -878,15 +878,15 @@ import Badge from '@/components/Badge.astro';
             aria-controls="tier-full"
             data-tier="full"
           >
-            <span class="tier-switcher__label">Full</span>
+            <span class="tier-switcher__badge">Full · $77K CROs Budget</span>
             <span class="tier-switcher__price">$12,000</span>
-            <span class="tier-switcher__context">$77K CROs Budget</span>
+            <p class="tier-switcher__desc">Embeds onboarding as durable infrastructure: expanded role logic, stronger field validation, deeper documentation, and full redundancy so the site can be operated without reliance on Access Ecologies.</p>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ═══ CORE TIER PANEL ($5,600) ═══ -->
+    <!-- ═══ CORE TIER PANEL ($7,400) ═══ -->
     <div id="tier-core" class="tier-panel tier-panel--active" role="tabpanel" aria-labelledby="tab-core">
 
       <!-- Line-Item Table -->
@@ -917,7 +917,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Identify core user roles; define stages of participation; map progression</td>
                   <td data-label="Primary Role(s)">Access Ecologies (lead); Rad Weavers input</td>
                   <td data-label="Deliverables">Journey maps for 2–3 roles; stage definitions</td>
-                  <td data-label="Cost"><strong>$1,000</strong></td>
+                  <td data-label="Cost"><strong>$1,400</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Line Item"><strong>Workflow &amp; Interface Design</strong></td>
@@ -925,7 +925,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Design core interface workflows; reduce cognitive load for primary audiences</td>
                   <td data-label="Primary Role(s)">Access Ecologies (lead)</td>
                   <td data-label="Deliverables">Low-fidelity flow designs; page structure</td>
-                  <td data-label="Cost"><strong>$800</strong></td>
+                  <td data-label="Cost"><strong>$1,000</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Line Item"><strong>Journey Implementation (Frontend)</strong></td>
@@ -933,7 +933,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Build learning journey pages; implement entry points and navigation within existing stack</td>
                   <td data-label="Primary Role(s)">Access Ecologies (build)</td>
                   <td data-label="Deliverables">Live journey paths on ResilienceToolkit.org</td>
-                  <td data-label="Cost"><strong>$1,500</strong></td>
+                  <td data-label="Cost"><strong>$1,900</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Line Item"><strong>Content Structuring &amp; Integration</strong></td>
@@ -941,7 +941,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Organize existing Toolkit content into journeys; clarify labels</td>
                   <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers reviewers</td>
                   <td data-label="Deliverables">Content aligned to journeys</td>
-                  <td data-label="Cost"><strong>$600</strong></td>
+                  <td data-label="Cost"><strong>$800</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Line Item"><strong>Field Testing &amp; Iteration</strong></td>
@@ -949,7 +949,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Observe use during trainings; gather feedback; refine flows</td>
                   <td data-label="Primary Role(s)">Access Ecologies; Rad Weavers organizers</td>
                   <td data-label="Deliverables">Refined workflows; usability fixes</td>
-                  <td data-label="Cost"><strong>$500</strong></td>
+                  <td data-label="Cost"><strong>$800</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Line Item"><strong>Stewardship, Documentation &amp; Handoff</strong></td>
@@ -957,7 +957,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Internal documentation: admin guide, content update procedures, and architecture overview</td>
                   <td data-label="Primary Role(s)">Access Ecologies</td>
                   <td data-label="Deliverables">Admin guide; content update playbook; architecture docs</td>
-                  <td data-label="Cost"><strong>$500</strong></td>
+                  <td data-label="Cost"><strong>$700</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Line Item"><strong>Maintenance &amp; Light Iterations</strong></td>
@@ -965,7 +965,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Key Activities">Resolve minor usability issues; refine labels and navigation as needed</td>
                   <td data-label="Primary Role(s)">Access Ecologies</td>
                   <td data-label="Deliverables">Maintenance log; monthly check-ins</td>
-                  <td data-label="Cost"><strong>$700</strong></td>
+                  <td data-label="Cost"><strong>$800</strong></td>
                 </tr>
                 <tr class="total-row">
                   <td data-label=""><strong>Total</strong></td>
@@ -973,7 +973,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label=""></td>
                   <td data-label=""></td>
                   <td data-label=""></td>
-                  <td data-label="Total"><strong>$5,600</strong></td>
+                  <td data-label="Total"><strong>$7,400</strong></td>
                 </tr>
               </tbody>
             </table>
@@ -1013,25 +1013,25 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Month"><strong>Month 1</strong></td>
                   <td data-label="Primary Focus">Architecture &amp; Design</td>
                   <td data-label="Outcomes">Clear journey logic; agreed workflows</td>
-                  <td data-label="Unit Cost">$2,000</td>
+                  <td data-label="Unit Cost">$2,400</td>
                   <td data-label="Units">1</td>
-                  <td data-label="Subtotal"><strong>$2,000</strong></td>
+                  <td data-label="Subtotal"><strong>$2,400</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Month"><strong>Month 2</strong></td>
                   <td data-label="Primary Focus">Implementation &amp; Testing</td>
                   <td data-label="Outcomes">Live learning journeys; documented handoff</td>
-                  <td data-label="Unit Cost">$2,000</td>
+                  <td data-label="Unit Cost">$3,500</td>
                   <td data-label="Units">1</td>
-                  <td data-label="Subtotal"><strong>$2,000</strong></td>
+                  <td data-label="Subtotal"><strong>$3,500</strong></td>
                 </tr>
                 <tr>
                   <td data-label="Month"><strong>Months 3–10</strong></td>
                   <td data-label="Primary Focus">Maintenance &amp; Light Iterations</td>
                   <td data-label="Outcomes">Sustained growth through real use</td>
-                  <td data-label="Unit Cost">$200</td>
+                  <td data-label="Unit Cost">$188</td>
                   <td data-label="Units">8</td>
-                  <td data-label="Subtotal"><strong>$1,600</strong></td>
+                  <td data-label="Subtotal"><strong>$1,500</strong></td>
                 </tr>
               </tbody>
             </table>
@@ -1071,7 +1071,7 @@ import Badge from '@/components/Badge.astro';
                   <td data-label="Focus Area">Role-based onboarding logic</td>
                   <td data-label="Key Activities">Identify core user roles; define stages of participation; map progression and success states</td>
                   <td data-label="Primary Role(s)">Access Ecologies (lead); Rad Weavers input</td>
-                  <td data-label="Deliverables">Journey maps for 3–4 roles; stage definitions</td>
+                  <td data-label="Deliverables">Journey maps for up to 5 roles; stage definitions</td>
                   <td data-label="Cost"><strong>$2,000</strong></td>
                 </tr>
                 <tr>
@@ -2634,22 +2634,22 @@ import Badge from '@/components/Badge.astro';
     .tier-switcher {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      max-width: 480px;
+      gap: 16px;
     }
 
     .tier-switcher__tab {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 16px 20px;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 20px 24px;
       border-radius: var(--radius-xl);
       border: 2px solid var(--border);
       background: var(--card);
       cursor: pointer;
       transition: all var(--motion-duration-base) var(--motion-easing-standard);
       font-family: inherit;
+      text-align: left;
     }
 
     .tier-switcher__tab:hover {
@@ -2663,15 +2663,15 @@ import Badge from '@/components/Badge.astro';
       box-shadow: 0 0 20px -4px color-mix(in srgb, var(--primary) 25%, transparent);
     }
 
-    .tier-switcher__label {
+    .tier-switcher__badge {
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       color: var(--muted-foreground);
     }
 
-    .tier-switcher__tab--active .tier-switcher__label {
+    .tier-switcher__tab--active .tier-switcher__badge {
       color: var(--primary);
     }
 
@@ -2679,11 +2679,14 @@ import Badge from '@/components/Badge.astro';
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--foreground);
+      line-height: 1.2;
     }
 
-    .tier-switcher__context {
-      font-size: 0.75rem;
+    .tier-switcher__desc {
+      font-size: 0.875rem;
+      line-height: 1.55;
       color: var(--muted-foreground);
+      margin: 4px 0 0;
     }
 
     /* Tab panels */
@@ -2704,7 +2707,7 @@ import Badge from '@/components/Badge.astro';
 
     @media (max-width: 640px) {
       .tier-switcher {
-        max-width: 100%;
+        grid-template-columns: 1fr;
       }
       .tier-switcher__price {
         font-size: 1.25rem;
