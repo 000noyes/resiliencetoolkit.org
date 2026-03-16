@@ -20,6 +20,8 @@
     "@astrojs/mdx": "^4.3.12",
     "@astrojs/react": "^4.4.2",
     "@astrojs/tailwind": "^6.0.2",
+    "@keystatic/astro": "^5.0.6",
+    "@keystatic/core": "^0.5.48",
     "astro": "^5.16.4",
     "idb": "^8.0.3",
     "lucide-react": "^0.552.0",

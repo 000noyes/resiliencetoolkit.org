@@ -1,0 +1,22 @@
+slug: baseline-resilience
+title: "Baseline Resilience"
+order: 2
+icon: HeartPulse
+phases:
+  - Before
+  - After
+summary: "Build everyday resilience through shared resources, community building, and mutual aid."
+tags:
+  - baseline-resilience
+  - community
+basePath: /modules/baseline-resilience
+sections:
+  - slug: "2-1"
+    number: "2.1"
+    title: "Basic Needs"
+  - slug: "2-2"
+    number: "2.2"
+    title: "Shared Tools"
+  - slug: "2-3"
+    number: "2.3"
+    title: "Community Building"

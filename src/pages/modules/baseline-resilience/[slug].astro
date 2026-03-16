@@ -1,0 +1,32 @@
+---
+/**
+ * Dynamic Route for CMS-Managed Baseline Resilience Sections
+ *
+ * Renders MDX content from the 'sections' content collection using ModuleLayout.
+ * Auto-computes navigation (prev/next) from the module's section order.
+ */
+import { getCollection, render } from 'astro:content';
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+import { getSectionNavigation } from '@/lib/navigation';
+
+export async function getStaticPaths() {
+  const allSections = await getCollection('sections');
+  const brSections = allSections.filter(s => s.data.module === 'baseline-resilience');
+
+  return brSections.map(section => ({
+    params: { slug: section.data.slug },
+    props: { section },
+  }));
+}
+
+const { section } = Astro.props;
+const { Content } = await render(section);
+
+const sectionData = await getSectionNavigation(section.data.slug);
+---
+
+{sectionData && (
+  <ModuleLayout sectionData={sectionData}>
+    <Content />
+  </ModuleLayout>
+)}
