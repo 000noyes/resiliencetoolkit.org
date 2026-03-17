@@ -12,15 +12,25 @@
   },
   "pnpm": {
     "overrides": {
-      "@astrojs/react": "^4.4.2"
-    }
+      "@astrojs/react": "^4.4.2",
+      "minimatch": ">=9.0.7",
+      "rollup": ">=4.59.0",
+      "svgo": ">=4.0.1",
+      "undici": ">=7.24.0"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "^4.3.12",
     "@astrojs/react": "^4.4.2",
     "@astrojs/tailwind": "^6.0.2",
-    "astro": "^5.16.4",
+    "@keystatic/astro": "^5.0.6",
+    "@keystatic/core": "^0.5.48",
+    "astro": "^5.18.1",
     "idb": "^8.0.3",
     "lucide-react": "^0.552.0",
     "react": "^18.3.1",

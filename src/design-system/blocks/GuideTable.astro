@@ -1,0 +1,50 @@
+---
+/**
+ * GuideTable - Astro wrapper for the Systems/Stuff two-column table pattern.
+ *
+ * Must be an Astro component (not React) so that children can use
+ * client:load directives for Todo/ExternalLink hydration.
+ *
+ * Usage in MDX:
+ * <GuideTable>
+ *   <tr><td colSpan={2}><strong>Section title</strong></td></tr>
+ *   <tr>
+ *     <td>Systems description...</td>
+ *     <td>
+ *       <div className="guide-table__checklist">
+ *         <Todo id="..." moduleKey="..." client:load>...</Todo>
+ *       </div>
+ *     </td>
+ *   </tr>
+ * </GuideTable>
+ */
+interface Props {
+  systemsWidth?: string;
+  stuffWidth?: string;
+  systemsLabel?: string;
+  stuffLabel?: string;
+}
+
+const {
+  systemsWidth = '30%',
+  stuffWidth = '70%',
+  systemsLabel = 'Systems',
+  stuffLabel = 'Stuff',
+} = Astro.props;
+---
+
+<table class="guide-table">
+  <thead>
+    <tr>
+      <th style={`width: ${systemsWidth}`}>
+        <strong>{systemsLabel}</strong>
+      </th>
+      <th style={`width: ${stuffWidth}`}>
+        <strong>{stuffLabel}</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <slot />
+  </tbody>
+</table>

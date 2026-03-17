@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v25-comprehensive-offline';
+const CACHE_VERSION = 'v26-comprehensive-offline';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -63,55 +63,54 @@ const PRECACHE_ASSETS = [
   // PWA Configuration
   '/manifest.json',
 
-                                        // ASSETS_START - Auto-generated section - do not manually edit
+                                          // ASSETS_START - Auto-generated section - do not manually edit
   // Critical JavaScript bundles (Astro-generated)
-  '/_astro/client.nc8uITnr.js',
-  '/_astro/index.DK-fsZOb.js',
-  '/_astro/storage.f_LD3a61.js',
-  '/_astro/EditableTable.CvcuhiNG.js',
-  '/_astro/ExternalLink.Bl_E_QGY.js',
-  '/_astro/FeedbackWidgetWrapper.By8Wbg0d.js',
-  '/_astro/Todo.COZM6rx0.js',
-  '/_astro/createLucideIcon.Wb5B6754.js',
-  '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.Dat3PwEB.js',
-  '/_astro/GuestModeBanner.BosJr2tb.js',
-  '/_astro/jsx-runtime.ClP7wGfN.js',
+  '/_astro/client.T4gOcinq.js',
+  '/_astro/index.CJjwWAPb.js',
+  '/_astro/storage.ClsaB4A6.js',
+  '/_astro/EditableTable.D8H1RpE7.js',
+  '/_astro/ExternalLink.Bqu4jKUg.js',
+  '/_astro/FeedbackWidgetWrapper.C1h6otq1.js',
+  '/_astro/Todo.C-wM6Uv3.js',
+  '/_astro/createLucideIcon.DxhCkCsF.js',
+  '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.1VgbOoqf.js',
+  '/_astro/GuestModeBanner.Bx4q3ep1.js',
   '/_astro/UserMenuWrapper.ChG-6rmU.js',
-  '/_astro/x.BqmJGQCg.js',
+  '/_astro/x.3cDoBHD9.js',
 
   // Critical CSS
 
   // Pagefind search assets (offline search)
   '/pagefind/pagefind-entry.json',
   '/pagefind/pagefind.js',
-  '/pagefind/fragment/en_1022667.pf_fragment',
-  '/pagefind/fragment/en_1467aac.pf_fragment',
-  '/pagefind/fragment/en_1d6d3d4.pf_fragment',
+  '/pagefind/fragment/en_1038b5d.pf_fragment',
+  '/pagefind/fragment/en_1ca7c05.pf_fragment',
   '/pagefind/fragment/en_1eb8f58.pf_fragment',
-  '/pagefind/fragment/en_1f51db2.pf_fragment',
-  '/pagefind/fragment/en_38f5263.pf_fragment',
-  '/pagefind/fragment/en_40e9d16.pf_fragment',
-  '/pagefind/fragment/en_41dad4c.pf_fragment',
-  '/pagefind/fragment/en_4fd7aac.pf_fragment',
+  '/pagefind/fragment/en_279296e.pf_fragment',
+  '/pagefind/fragment/en_2cfcf69.pf_fragment',
+  '/pagefind/fragment/en_33372b2.pf_fragment',
+  '/pagefind/fragment/en_3a52d76.pf_fragment',
+  '/pagefind/fragment/en_453ac11.pf_fragment',
+  '/pagefind/fragment/en_47b07b5.pf_fragment',
+  '/pagefind/fragment/en_4847ae4.pf_fragment',
   '/pagefind/fragment/en_595ed76.pf_fragment',
-  '/pagefind/fragment/en_64da879.pf_fragment',
   '/pagefind/fragment/en_6dfac2f.pf_fragment',
   '/pagefind/fragment/en_719bfbe.pf_fragment',
   '/pagefind/fragment/en_755616d.pf_fragment',
-  '/pagefind/fragment/en_87d5159.pf_fragment',
-  '/pagefind/fragment/en_8c6c72c.pf_fragment',
-  '/pagefind/fragment/en_983d969.pf_fragment',
-  '/pagefind/fragment/en_9ccf943.pf_fragment',
-  '/pagefind/fragment/en_a64d0cb.pf_fragment',
-  '/pagefind/fragment/en_aa704b2.pf_fragment',
-  '/pagefind/fragment/en_ab479fd.pf_fragment',
-  '/pagefind/fragment/en_b76bf09.pf_fragment',
+  '/pagefind/fragment/en_75abdbf.pf_fragment',
+  '/pagefind/fragment/en_84d333f.pf_fragment',
+  '/pagefind/fragment/en_9c2552e.pf_fragment',
+  '/pagefind/fragment/en_9f5b1cd.pf_fragment',
+  '/pagefind/fragment/en_a3b17bf.pf_fragment',
+  '/pagefind/fragment/en_aa57901.pf_fragment',
+  '/pagefind/fragment/en_ae5bd24.pf_fragment',
+  '/pagefind/fragment/en_c5bae6c.pf_fragment',
   '/pagefind/fragment/en_c6e24e8.pf_fragment',
-  '/pagefind/fragment/en_d82a309.pf_fragment',
-  '/pagefind/fragment/en_d88cdb5.pf_fragment',
-  '/pagefind/fragment/en_eb7ae58.pf_fragment',
+  '/pagefind/fragment/en_d9dd9a5.pf_fragment',
+  '/pagefind/fragment/en_e8a9927.pf_fragment',
+  '/pagefind/fragment/en_eb782ea.pf_fragment',
   '/pagefind/fragment/en_f6963ec.pf_fragment',
-  '/pagefind/index/en_127789e.pf_index',
+  '/pagefind/index/en_59f62bf.pf_index',
   // ASSETS_END - Auto-generated section - do not manually edit
 ];
 
