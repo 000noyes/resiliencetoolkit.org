@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v26-comprehensive-offline';
+const CACHE_VERSION = 'v27-comprehensive-offline';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -63,14 +63,14 @@ const PRECACHE_ASSETS = [
   // PWA Configuration
   '/manifest.json',
 
-                                          // ASSETS_START - Auto-generated section - do not manually edit
+                                            // ASSETS_START - Auto-generated section - do not manually edit
   // Critical JavaScript bundles (Astro-generated)
   '/_astro/client.T4gOcinq.js',
   '/_astro/index.CJjwWAPb.js',
   '/_astro/storage.ClsaB4A6.js',
   '/_astro/EditableTable.D8H1RpE7.js',
   '/_astro/ExternalLink.Bqu4jKUg.js',
-  '/_astro/FeedbackWidgetWrapper.C1h6otq1.js',
+  '/_astro/FeedbackWidgetWrapper.D2ZvZpW9.js',
   '/_astro/Todo.C-wM6Uv3.js',
   '/_astro/createLucideIcon.DxhCkCsF.js',
   '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.1VgbOoqf.js',
@@ -94,13 +94,13 @@ const PRECACHE_ASSETS = [
   '/pagefind/fragment/en_47b07b5.pf_fragment',
   '/pagefind/fragment/en_4847ae4.pf_fragment',
   '/pagefind/fragment/en_595ed76.pf_fragment',
+  '/pagefind/fragment/en_63737ee.pf_fragment',
   '/pagefind/fragment/en_6dfac2f.pf_fragment',
   '/pagefind/fragment/en_719bfbe.pf_fragment',
   '/pagefind/fragment/en_755616d.pf_fragment',
   '/pagefind/fragment/en_75abdbf.pf_fragment',
   '/pagefind/fragment/en_84d333f.pf_fragment',
   '/pagefind/fragment/en_9c2552e.pf_fragment',
-  '/pagefind/fragment/en_9f5b1cd.pf_fragment',
   '/pagefind/fragment/en_a3b17bf.pf_fragment',
   '/pagefind/fragment/en_aa57901.pf_fragment',
   '/pagefind/fragment/en_ae5bd24.pf_fragment',
@@ -110,7 +110,7 @@ const PRECACHE_ASSETS = [
   '/pagefind/fragment/en_e8a9927.pf_fragment',
   '/pagefind/fragment/en_eb782ea.pf_fragment',
   '/pagefind/fragment/en_f6963ec.pf_fragment',
-  '/pagefind/index/en_59f62bf.pf_index',
+  '/pagefind/index/en_5b8a5be.pf_index',
   // ASSETS_END - Auto-generated section - do not manually edit
 ];
 

@@ -4,7 +4,6 @@ export default function FeedbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -13,27 +12,21 @@ export default function FeedbackWidget() {
       return;
     }
 
-    // Create mailto link with subject and body
     const subject = encodeURIComponent('Resilience Toolkit Feedback');
     const body = encodeURIComponent(feedback);
     const mailtoLink = `mailto:resiliencetoolkit@gocros.org?subject=${subject}&body=${body}`;
 
-    // Show success message and start loading animation
+    // Open email client immediately
+    window.location.href = mailtoLink;
+
     setIsSubmitted(true);
-    setIsLoading(true);
 
-    // Open email client after 5-second animation
-    setTimeout(() => {
-      window.location.href = mailtoLink;
-      setIsLoading(false);
-    }, 5000);
-
-    // Reset and close modal after 7 seconds total
+    // Auto-close after 3 seconds
     setTimeout(() => {
       setFeedback('');
       setIsSubmitted(false);
       setIsOpen(false);
-    }, 7000);
+    }, 3000);
   };
 
   const handleClose = () => {
@@ -44,18 +37,6 @@ export default function FeedbackWidget() {
 
   return (
     <>
-      {/* CSS for progress ring animation */}
-      <style>{`
-        @keyframes progressFill {
-          from {
-            stroke-dashoffset: 125.6;
-          }
-          to {
-            stroke-dashoffset: 0;
-          }
-        }
-      `}</style>
-
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
@@ -138,50 +119,27 @@ export default function FeedbackWidget() {
               <div className="p-lg">
                 {isSubmitted ? (
                   <div className="text-center py-xl">
-                    <div className="inline-flex items-center justify-center w-12 h-12 mb-md relative">
-                      {/* Background circle */}
-                      <svg className="w-12 h-12 absolute" viewBox="0 0 48 48">
-                        <circle
-                          cx="24"
-                          cy="24"
-                          r="20"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          className="text-primary/10"
-                        />
-                      </svg>
-                      {/* Animated progress circle */}
-                      <svg
-                        className="w-12 h-12 absolute -rotate-90"
-                        viewBox="0 0 48 48"
-                        style={{
-                          animation: isLoading ? 'progress 5s linear forwards' : 'none'
-                        }}
-                      >
-                        <circle
-                          cx="24"
-                          cy="24"
-                          r="20"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          className="text-primary"
-                          strokeDasharray="125.6"
-                          strokeDashoffset="125.6"
-                          style={{
-                            animation: isLoading ? 'progressFill 5s linear forwards' : 'none'
-                          }}
-                        />
+                    <div className="inline-flex items-center justify-center w-12 h-12 mb-md">
+                      <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                     <p className="text-body font-medium text-foreground">
-                      Opening your email client...
+                      Your email client should be open.
                     </p>
-                    {/* <p className="text-body-small text-muted-foreground mt-xs">
-                      This goes to a real inbox.
-                    </p> */}
+                    <p className="text-body-small text-muted-foreground mt-xs">
+                      If it didn't open, email us directly at{' '}
+                      <a href="mailto:resiliencetoolkit@gocros.org" className="text-primary hover:underline">
+                        resiliencetoolkit@gocros.org
+                      </a>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="mt-md h-10 px-lg rounded-full border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-all duration-default"
+                    >
+                      Close
+                    </button>
                   </div>
                 ) : (
                   <div>
@@ -195,7 +153,7 @@ export default function FeedbackWidget() {
                       id="feedback-textarea"
                       value={feedback}
                       onChange={(e) => setFeedback(e.target.value)}
-                      placeholder="What’s working? What’s confusing? What’s missing?"
+                      placeholder="What's working? What's confusing? What's missing?"
                       rows={5}
                       className="w-full px-md py-md border border-border rounded-lg bg-input text-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-default ease-default shadow-ambient resize-none"
                       required

@@ -2,18 +2,17 @@
 /**
  * Newsletter Subscription Component
  *
- * Embeds a Buttondown subscription form.
- * Replace YOUR_BUTTONDOWN_USERNAME with your actual Buttondown username.
+ * TODO: Add Beehiiv embed when publication ID is available.
+ * Replace this placeholder with a Beehiiv iframe embed:
+ * <iframe src="https://embeds.beehiiv.com/{publicationId}" width="100%" height="320" frameborder="0" scrolling="no"></iframe>
  */
 
 interface Props {
-  buttondownUsername?: string;
   title?: string;
   description?: string;
 }
 
 const {
-  buttondownUsername = 'YOUR_BUTTONDOWN_USERNAME',
   title = 'Subscribe to updates',
   description = 'Get notified when we release new features and improvements.'
 } = Astro.props;
@@ -22,31 +21,5 @@ const {
 <div class="newsletter-subscribe bg-muted/50 border border-border rounded-lg p-6">
   <h3 class="text-lg font-semibold text-foreground mb-2">{title}</h3>
   <p class="text-sm text-muted-foreground mb-4">{description}</p>
-
-  <form
-    action={`https://buttondown.com/api/emails/embed-subscribe/${buttondownUsername}`}
-    method="post"
-    target="popupwindow"
-    onsubmit={`window.open('https://buttondown.com/${buttondownUsername}', 'popupwindow')`}
-    class="flex flex-col sm:flex-row gap-3"
-  >
-    <input
-      type="email"
-      name="email"
-      id="bd-email"
-      placeholder="your@email.com"
-      required
-      class="flex-1 px-4 py-2 rounded-md border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-    />
-    <button
-      type="submit"
-      class="px-6 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
-    >
-      Subscribe
-    </button>
-  </form>
-
-  <p class="text-xs text-muted-foreground mt-3">
-    Powered by <a href="https://buttondown.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Buttondown</a>. No spam, unsubscribe anytime.
-  </p>
+  <p class="text-sm text-muted-foreground italic">Newsletter signup coming soon.</p>
 </div>
