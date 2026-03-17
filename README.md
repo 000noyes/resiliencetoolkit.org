@@ -252,12 +252,13 @@ const sectionData: SectionData = {
 
 ### Security Headers
 
-Security headers are configured at the hosting platform level for protection:
-- **Content-Security-Policy** - Prevents XSS attacks
-- **X-Frame-Options: DENY** - Prevents clickjacking
-- **X-Content-Type-Options: nosniff** - Prevents MIME sniffing
-- **Referrer-Policy** - Controls referrer information
-- **Strict-Transport-Security** - HTTPS enforcement (production only)
+Security headers are configured via `public/_headers` (Render static site hosting):
+- **Content-Security-Policy** — Restricts script/style/image sources; blocks framing
+- **X-Frame-Options: DENY** — Prevents clickjacking
+- **X-Content-Type-Options: nosniff** — Prevents MIME sniffing
+- **Referrer-Policy: strict-origin-when-cross-origin** — Controls referrer information
+- **Permissions-Policy** — Disables camera, microphone, geolocation
+- **Strict-Transport-Security** — HTTPS enforcement with `includeSubDomains`
 
 ## Customization
 
