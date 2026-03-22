@@ -827,7 +827,9 @@ export async function initializeStorage(): Promise<{
       // Generate new device ID
       deviceId = `device-${crypto.randomUUID()}`;
       localStorage.setItem('deviceId', deviceId);
-      console.log('[Storage] Generated new device ID:', deviceId);
+      if (import.meta.env.DEV) {
+        console.log('[Storage] Generated new device ID:', deviceId);
+      }
     }
 
     // Pre-warm the database connection so components don't pay the cost
