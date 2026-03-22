@@ -2,7 +2,9 @@
 
 **Local-first tools to organize systems, stuff, and people before, during, and after disasters.**
 
-An offline-capable resilience dashboard and workspace for towns and grassroots groups to map assets, coordinate response, and track recovery.
+A living resource built as a local-first, offline-capable workflow tool. Unlike other disaster preparedness resources that publish content for people to read, the Resilience Toolkit gives people interactive checklists that persist on their device — turning "read about preparedness" into "do preparedness and track your progress."
+
+All 17 section pages are managed through Keystatic CMS with MDX content collections, enabling governed content contributions from community resilience organizations.
 
 ## Features
 
@@ -47,122 +49,48 @@ pnpm dev
 
 ```
 resiliencetoolkit.org/
-├── dist/                          # Production build output
-├── docs/                          # Documentation files
-├── node_modules/                  # Dependencies (pnpm)
-├── public/                        # Static assets
-│   ├── favicon.svg
-│   ├── manifest.json             # PWA manifest
-│   ├── sw.js                     # Service worker
-│   ├── RHT_orange.svg            # Logo assets
-│   ├── RHT_text.png
-│   ├── icons/                    # PWA icons (16x16 to 512x512)
-│   └── toolkit/                  # Toolkit resources
-├── scripts/                       # Build and utility scripts
 ├── src/
-│   ├── assets/                   # Images and media
-│   ├── components/               # Astro and React UI components
-│   │   ├── ActionButton.astro
-│   │   ├── Badge.astro
-│   │   ├── Card.astro
-│   │   ├── EmptyState.astro
-│   │   ├── ExternalLink.astro
-│   │   ├── ExternalLink.tsx
-│   │   ├── ExternalLinkModal.tsx
-│   │   ├── FeedbackWidget.tsx
-│   │   ├── FeedbackWidgetWrapper.tsx
-│   │   ├── Footer.astro
-│   │   ├── Header.astro
-│   │   ├── IconButton.astro
-│   │   ├── InfoCallout.astro
-│   │   ├── LogoHoverCard.tsx
-│   │   ├── MetricCard.astro
-│   │   ├── Modal.astro
-│   │   ├── OfflineReadyBanner.astro
-│   │   ├── SearchField.astro
-│   │   ├── SegmentedControl.astro
-│   │   ├── Sidebar.astro
-│   │   ├── SidebarItem.astro
-│   │   ├── StatusBanner.astro
-│   │   └── UserMenuWrapper.tsx
-│   ├── data/                     # Data files and configuration
-│   ├── design-system/            # Interactive React components
-│   │   └── blocks/
-│   │       ├── ChecklistRow.tsx
-│   │       ├── ChecklistSection.tsx
-│   │       ├── EditableTable.tsx
-│   │       ├── InteractiveChecklist.tsx
-│   │       ├── Todo.tsx
-│   │       └── index.ts
-│   ├── layouts/                  # Page layouts
-│   │   ├── BaseLayout.astro      # Base HTML with head, analytics
-│   │   └── ModuleLayout.astro    # Module layout with navigation
-│   ├── lib/                      # Core utilities and services
-│   │   ├── externalLinkPreferences.ts
-│   │   ├── fileSize.ts
-│   │   ├── icons.ts
-│   │   ├── mdx-components.tsx
-│   │   ├── pdfLookup.ts
-│   │   ├── resourcesLookup.ts
-│   │   ├── storage.ts            # IndexedDB wrapper
-│   │   └── validateRedirect.ts
-│   ├── pages/                    # Routes (file-based routing)
-│   │   ├── modules/
-│   │   │   ├── baseline-resilience/
-│   │   │   │   ├── index.astro
-│   │   │   │   ├── 2-1-basic-needs.astro
-│   │   │   │   ├── 2-2-shared-tools.astro
-│   │   │   │   └── 2-3-community-building.astro
-│   │   │   ├── emergency-preparedness/
-│   │   │   │   ├── index.astro
-│   │   │   │   ├── 1-1-kits.astro
-│   │   │   │   ├── 1-2-food-water.astro
-│   │   │   │   ├── 1-3-medical.astro
-│   │   │   │   ├── 1-4-power.astro
-│   │   │   │   ├── 1-5-shelter.astro
-│   │   │   │   ├── 1-6-vehicles.astro
-│   │   │   │   ├── 1-7-sanitation.astro
-│   │   │   │   ├── 1-8-special-populations.astro
-│   │   │   │   ├── 1-9-response-plans.astro
-│   │   │   │   ├── 1-10-volunteers.astro
-│   │   │   │   ├── 1-11-flood-recovery.astro
-│   │   │   │   ├── 1-12-mutual-aid.astro
-│   │   │   │   └── 1-13-financial-resources.astro
-│   │   │   ├── index.astro
-│   │   │   └── knowing-your-community.astro
-│   │   ├── about.astro
-│   │   ├── dashboard.astro
-│   │   ├── downloads.astro
-│   │   ├── downloads-and-templates.astro
-│   │   ├── index.astro
-│   │   ├── introduction.astro
-│   │   ├── LICENSE.astro
-│   │   └── map.astro
-│   ├── styles/
-│   │   └── base.css              # Global styles and design tokens
-│   ├── types/                    # TypeScript type definitions
-│   │   ├── section-navigation.ts
-│   │   └── storybook.d.ts
-│   └── env.d.ts
-├── astro.config.mjs              # Astro configuration
-├── LICENSE_MIT                   # MIT License
-├── package.json                  # Dependencies and scripts
-├── pnpm-lock.yaml               # Lockfile
-├── README.md                     # This file
-├── render.yaml                   # Render deployment config
-├── tailwind.config.mjs           # Tailwind CSS configuration
-├── tsconfig.json                 # TypeScript configuration
-├── vitest.config.ts              # Vitest test configuration
-└── vitest.shims.d.ts            # Vitest type shims
+│   ├── content/                   # CMS-managed content (Keystatic)
+│   │   ├── modules/              # Module metadata (YAML)
+│   │   │   ├── emergency-preparedness.yaml
+│   │   │   ├── baseline-resilience.yaml
+│   │   │   └── knowing-your-community.yaml
+│   │   └── sections/             # Section content (MDX)
+│   │       ├── 1-1-emergency-preparedness-kits.mdx
+│   │       ├── 1-2-food-water.mdx
+│   │       ├── ...               # 17 section files total
+│   │       └── 2-3-community-building.mdx
+│   ├── pages/modules/            # Dynamic routes
+│   │   ├── emergency-preparedness/
+│   │   │   ├── [slug].astro      # Renders MDX sections
+│   │   │   └── index.astro       # Module overview
+│   │   ├── baseline-resilience/
+│   │   │   ├── [slug].astro
+│   │   │   └── index.astro
+│   │   └── knowing-your-community/
+│   │       └── [slug].astro
+│   ├── components/               # Astro + React UI components
+│   ├── design-system/blocks/     # Interactive components (Todo, EditableTable, GuideTable)
+│   ├── layouts/                  # BaseLayout.astro → ModuleLayout.astro
+│   ├── lib/
+│   │   ├── storage.ts            # IndexedDB wrapper (typed, no `any`)
+│   │   ├── navigation.ts         # Auto-computes prev/next from module YAML
+│   │   └── data-preservation.test.ts  # Regression test for IndexedDB keys
+│   └── styles/base.css           # oklch design tokens
+├── tests/e2e/                    # Playwright E2E tests
+├── public/                       # Static assets, SW, PWA manifest
+├── scripts/                      # Build scripts (icon gen, SW update)
+└── (config files)
 ```
 
 ## Available Scripts
 
-- `pnpm dev` - Start development server at localhost:4321
-- `pnpm build` - Build for production (includes TypeScript checking)
+- `pnpm dev` - Start development server at localhost:4321 (Keystatic admin at /keystatic)
+- `pnpm build` - Build for production (astro check → astro build → pagefind → update-sw-assets)
 - `pnpm preview` - Preview production build locally
-- `pnpm astro` - Run Astro CLI commands
-- `pnpm astro check` - Run TypeScript type checking
+- `pnpm vitest run` - Run unit tests (31 tests: 28 storage + 3 data preservation)
+- `pnpm run astro check` - TypeScript type checking
+- `npx playwright test` - E2E tests (requires dev server running)
 
 ## Documentation
 
@@ -175,7 +103,7 @@ resiliencetoolkit.org/
 - **Framework**: [Astro](https://astro.build/) v5.16.4 - Static site generation
 - **UI Library**: [React](https://react.dev/) v18.3.1 - For interactive components only
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) v3.4.18 - Utility-first CSS
-- **Content**: Astro pages (.astro files) - Component-based content with frontmatter
+- **Content**: MDX via Astro Content Collections + [Keystatic](https://keystatic.com/) CMS
 - **Local Storage**: [idb](https://github.com/jakearchibald/idb) v8.0.3 - IndexedDB wrapper for persistent local data
 - **TypeScript**: v5.9.3 - Strict type checking enabled
 
@@ -202,34 +130,48 @@ IndexedDB (persistent local storage)
 Data stays on device forever
 ```
 
-## Module Content
+## Content Architecture
 
-Modules are written as **Astro pages** (.astro files) with TypeScript frontmatter and component imports:
+All 17 section pages are managed as **MDX content collections** via Keystatic CMS. Each section is an MDX file with YAML frontmatter:
 
-```astro
+```mdx
 ---
-import ModuleLayout from '@/layouts/ModuleLayout.astro';
+number: "1.1"
+title: "Emergency preparedness kits"
+module: emergency-preparedness
+slug: "1-1"
+moduleKey: "emergency-preparedness-kits"
+contentType: guide-table
+---
 import Todo from '@/design-system/blocks/Todo';
-import type { SectionData } from '@/types/section-navigation';
+import GuideTable from '@/design-system/blocks/GuideTable.astro';
 
-const sectionData: SectionData = {
-  number: "1.1",
-  title: "Emergency Preparedness Kits",
-  moduleTitle: "Emergency Preparedness",
-  modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.0", title: "Overview", slug: "index" },
-  nextSection: { number: "1.2", title: "Food and Water", slug: "1-2-food-water" }
-};
----
-
-<ModuleLayout sectionData={sectionData}>
-  <h3>Essential Supplies</h3>
-
-  <Todo id="household-kit" moduleKey="emergency-preparedness" client:load>
-    Assemble a 72-hour emergency kit for your household
-  </Todo>
-</ModuleLayout>
+<GuideTable>
+  <tr>
+    <td>
+      <Todo id="household-kit" moduleKey="emergency-preparedness-kits" client:idle>
+        Assemble a 72-hour emergency kit for your household
+      </Todo>
+    </td>
+  </tr>
+</GuideTable>
 ```
+
+### Module YAML metadata
+
+Module metadata (section order, titles, slugs) lives in `src/content/modules/*.yaml`. Navigation is auto-computed from this data — never hand-code prev/next links.
+
+### Keystatic CMS
+
+Keystatic provides a web-based editing interface at `/keystatic` during development. The target architecture for governed contributions:
+
+1. Contributors authenticate via GitHub OAuth
+2. Edit content in the Keystatic web UI
+3. Changes create pull requests automatically
+4. Admin reviews and merges
+5. Render auto-deploys on merge
+
+Production contributor access is a future deployment step.
 
 ## Using the Toolkit
 
@@ -260,22 +202,31 @@ Security headers are configured via `public/_headers` (Render static site hostin
 - **Permissions-Policy** — Disables camera, microphone, geolocation
 - **Strict-Transport-Security** — HTTPS enforcement with `includeSubDomains`
 
+## Data Preservation
+
+Users have filled out checklists on real devices. IndexedDB keys are composites of `moduleKey` and `todoId` (e.g., `food-and-water-backup-food-community`). **Changing these keys destroys real user data.**
+
+### moduleKey Conventions
+
+- Each section has a `moduleKey` in its frontmatter (e.g., `food-and-water`, `mutual-aid`)
+- Todo components reference their section's moduleKey: `<Todo id="..." moduleKey="food-and-water">`
+- The canonical set of 19 moduleKeys is enforced by `src/lib/data-preservation.test.ts`
+- **Adding** new moduleKeys is safe. **Renaming or removing** moduleKeys is NOT.
+- Run `pnpm vitest run` before any content change to verify keys are preserved
+
+### Adding New Sections
+
+1. Create an MDX file in `src/content/sections/` with proper frontmatter
+2. Add the section to the appropriate `src/content/modules/*.yaml`
+3. Choose a unique `moduleKey` for any interactive components
+4. Add the new moduleKey to the canonical set in `data-preservation.test.ts`
+5. Run tests: `pnpm vitest run`
+
 ## Customization
-
-### Adding New Modules
-
-1. Create a new `.astro` file in `src/pages/modules/` (or a subdirectory like `emergency-preparedness/`)
-2. Import `ModuleLayout` and pass `sectionData` with navigation information
-3. Import interactive components like `<Todo>` and `<EditableTable>` from `@/design-system/blocks/`
-4. The module will automatically appear in file-based routing
-
-### Custom Components
-
-Add new interactive components in `src/design-system/blocks/` and import them directly in your Astro pages.
 
 ### Styling
 
-Design tokens are defined in `src/styles/base.css`. Modify CSS variables to customize colors, spacing, typography, and shadows.
+Design tokens are defined in `src/styles/base.css` using oklch color space. Modify CSS variables to customize colors, spacing, typography, and shadows.
 
 ## Deployment
 
@@ -350,11 +301,20 @@ If you want to use your own Umami instance, update the script tag in [src/layout
 
 We welcome contributions! This is an open source project built with and for community organizers.
 
+### For CRO staff and content contributors
+
+The toolkit uses Keystatic CMS for content management. The governed contribution process:
+
+1. **Propose**: Edit content through the Keystatic web interface (creates a PR automatically)
+2. **Review**: Admin reviews the PR for accuracy and alignment with the canonical PDF
+3. **Merge**: Approved changes are merged and auto-deployed
+
+### For developers
+
 - Report bugs or request features via GitHub Issues
-- Submit pull requests for code improvements
-- Contribute new modules or templates
-- Improve documentation
-- Share your experience using the toolkit
+- All work happens on feature branches — never commit directly to main
+- Run `pnpm vitest run` and `pnpm run astro check` before submitting PRs
+- The data preservation test must pass — it protects real user data
 
 ## License
 
