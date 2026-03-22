@@ -28,6 +28,8 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
  *
  * Defines three object stores with their keys, values, and indexes.
  */
+type MetadataValue = string | number | boolean | null | string[] | Record<string, unknown>;
+
 interface ResilienceDB extends DBSchema {
   /** Todo/checklist completion tracking */
   todos: {
@@ -50,7 +52,7 @@ interface ResilienceDB extends DBSchema {
       moduleKey: string; // Module identifier
       tableId: string; // Table identifier within module
       rowId: string; // Row identifier (generated)
-      data: Record<string, any>; // Column data as key-value pairs
+      data: Record<string, string>; // Column data as key-value pairs
       updatedAt: string; // ISO timestamp of last local update
     };
     indexes: { 'by-table': [string, string] }; // Compound index: [moduleKey, tableId]
@@ -60,7 +62,7 @@ interface ResilienceDB extends DBSchema {
     key: string; // Setting key (e.g., "activeHubId", "lastSyncTime")
     value: {
       key: string; // Same as key (required for keyPath)
-      value: any; // Setting value (type varies)
+      value: MetadataValue; // Setting value
       updatedAt: string; // ISO timestamp of last update
     };
   };
@@ -201,7 +203,7 @@ export interface TableRow {
   moduleKey: string;
   tableId: string;
   rowId: string;
-  data: Record<string, any>;
+  data: Record<string, string>;
   updatedAt: string;
 }
 
@@ -259,7 +261,7 @@ export async function deleteTableRow(
 /**
  * Get metadata value
  */
-export async function getMetadata(key: string): Promise<any> {
+export async function getMetadata(key: string): Promise<MetadataValue | undefined> {
   const db = await getDB();
   const result = await db.get('metadata', key);
   return result?.value;
@@ -268,7 +270,7 @@ export async function getMetadata(key: string): Promise<any> {
 /**
  * Set metadata value
  */
-export async function setMetadata(key: string, value: any): Promise<void> {
+export async function setMetadata(key: string, value: MetadataValue): Promise<void> {
   const db = await getDB();
   await db.put('metadata', {
     key,
@@ -319,7 +321,7 @@ export async function getModuleData(modulePath: string): Promise<{
 export async function exportAllData(): Promise<{
   todos: Todo[];
   tables: TableRow[];
-  metadata: Record<string, any>;
+  metadata: Record<string, MetadataValue>;
 }> {
   const db = await getDB();
 
@@ -327,7 +329,7 @@ export async function exportAllData(): Promise<{
   const tables = await db.getAll('tables');
   const metadataArray = await db.getAll('metadata');
 
-  const metadata: Record<string, any> = {};
+  const metadata: Record<string, MetadataValue> = {};
   metadataArray.forEach((item) => {
     metadata[item.key] = item.value;
   });
@@ -662,8 +664,8 @@ export interface StreakData {
  * Get current streak data
  */
 export async function getStreakData(): Promise<StreakData> {
-  const currentStreak = (await getMetadata('currentStreak')) ?? 0;
-  const lastActivityDate = (await getMetadata('streakLastActivityDate')) ?? null;
+  const currentStreak = ((await getMetadata('currentStreak')) ?? 0) as number;
+  const lastActivityDate = ((await getMetadata('streakLastActivityDate')) ?? null) as string | null;
   return { currentStreak, lastActivityDate };
 }
 
@@ -725,7 +727,7 @@ function getCurrentWeekStart(): string {
 export async function getWeeklyProgress(): Promise<WeeklyProgress> {
   const currentWeekStart = getCurrentWeekStart();
   const storedWeekStart = (await getMetadata('weekStartDate')) ?? null;
-  const goal = (await getMetadata('weeklyGoal')) ?? 5; // Default goal: 5 items
+  const goal = ((await getMetadata('weeklyGoal')) ?? 5) as number; // Default goal: 5 items
 
   // Reset if we're in a new week
   if (storedWeekStart !== currentWeekStart) {
@@ -734,7 +736,7 @@ export async function getWeeklyProgress(): Promise<WeeklyProgress> {
     return { completed: 0, goal, weekStartDate: currentWeekStart };
   }
 
-  const completed = (await getMetadata('weeklyCompleted')) ?? 0;
+  const completed = ((await getMetadata('weeklyCompleted')) ?? 0) as number;
   return { completed, goal, weekStartDate: currentWeekStart };
 }
 
@@ -764,7 +766,7 @@ export async function setWeeklyGoal(goal: number): Promise<void> {
  * Get list of bookmarked module keys
  */
 export async function getBookmarkedModules(): Promise<string[]> {
-  return (await getMetadata('bookmarkedModules')) ?? [];
+  return ((await getMetadata('bookmarkedModules')) ?? []) as string[];
 }
 
 /**
@@ -796,7 +798,7 @@ export async function toggleBookmark(moduleKey: string): Promise<boolean> {
  * Get personal notes
  */
 export async function getPersonalNotes(): Promise<string> {
-  return (await getMetadata('personalNotes')) ?? '';
+  return ((await getMetadata('personalNotes')) ?? '') as string;
 }
 
 /**
