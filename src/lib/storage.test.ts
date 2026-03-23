@@ -441,7 +441,7 @@ describe('importAllData', () => {
     await expect(importAllData({ todos: [], tables: [{ moduleKey: 'x' }] })).rejects.toThrow('Wrong schema');
   });
 
-  it('should preserve existing data on import failure', async () => {
+  it('should preserve existing data on schema validation failure', async () => {
     await initializeStorage();
 
     // Create a todo before the failing import
@@ -454,5 +454,31 @@ describe('importAllData', () => {
     const kept = await getTodo('import-preserve', 'keep-me');
     expect(kept).not.toBeNull();
     expect(kept!.completed).toBe(true);
+  });
+
+  it('should rollback on mid-transaction IDB error', async () => {
+    await initializeStorage();
+
+    // Create a todo before the import attempt
+    await saveTodo({ moduleKey: 'import-rollback', todoId: 'survivor', completed: true });
+
+    // Craft a payload that passes schema validation but has a todo missing the
+    // required 'id' keyPath — IDB will reject the put() inside the transaction
+    const badPayload = {
+      todos: [
+        { moduleKey: 'x', id: 'x-1', todoId: '1', completed: false },
+        { moduleKey: 'y', todoId: '2', completed: false },  // has moduleKey+id check passes, but 'id' is undefined at runtime
+      ],
+      tables: [],
+    };
+    // Manually set id to undefined to pass our validation but fail IDB keyPath
+    (badPayload.todos[1] as Record<string, unknown>).id = undefined;
+
+    await expect(importAllData(badPayload)).rejects.toThrow();
+
+    // The transaction should have rolled back — original todo preserved
+    const survivor = await getTodo('import-rollback', 'survivor');
+    expect(survivor).not.toBeNull();
+    expect(survivor!.completed).toBe(true);
   });
 });

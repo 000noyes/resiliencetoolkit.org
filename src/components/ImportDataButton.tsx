@@ -7,7 +7,7 @@ type ImportError = 'invalid-json' | 'wrong-schema' | 'import-failed';
 const errorMessages: Record<ImportError, string> = {
   'invalid-json': 'This file is not valid JSON. Please select a file exported from the Resilience Toolkit.',
   'wrong-schema': 'This file is missing required fields. Make sure you are importing a Resilience Toolkit backup.',
-  'import-failed': 'Something went wrong during import. Your previous data has been preserved. Try again?',
+  'import-failed': 'Something went wrong during import. Try exporting your data to check its state, then try again.',
 };
 
 export default function ImportDataButton({ className = '' }: { className?: string }) {
