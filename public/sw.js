@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v28-comprehensive-offline';
+const CACHE_VERSION = 'v29-mdx-migration';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -23,25 +23,28 @@ const PRECACHE_ASSETS = [
   '/modules/baseline-resilience/',
   '/modules/knowing-your-community',
 
-  // Emergency Preparedness sub-modules (1-1 through 1-13)
-  '/modules/emergency-preparedness/1-1-kits',
-  '/modules/emergency-preparedness/1-2-food-water',
-  '/modules/emergency-preparedness/1-3-medical',
-  '/modules/emergency-preparedness/1-4-power',
-  '/modules/emergency-preparedness/1-5-shelter',
-  '/modules/emergency-preparedness/1-6-vehicles',
-  '/modules/emergency-preparedness/1-7-sanitation',
-  '/modules/emergency-preparedness/1-8-special-populations',
-  '/modules/emergency-preparedness/1-9-response-plans',
-  '/modules/emergency-preparedness/1-10-volunteers',
-  '/modules/emergency-preparedness/1-11-flood-recovery',
-  '/modules/emergency-preparedness/1-12-mutual-aid',
-  '/modules/emergency-preparedness/1-13-financial-resources',
+  // Emergency Preparedness sections (dynamic MDX routes)
+  '/modules/emergency-preparedness/1-1',
+  '/modules/emergency-preparedness/1-2',
+  '/modules/emergency-preparedness/1-3',
+  '/modules/emergency-preparedness/1-4',
+  '/modules/emergency-preparedness/1-5',
+  '/modules/emergency-preparedness/1-6',
+  '/modules/emergency-preparedness/1-7',
+  '/modules/emergency-preparedness/1-8',
+  '/modules/emergency-preparedness/1-9',
+  '/modules/emergency-preparedness/1-10',
+  '/modules/emergency-preparedness/1-11',
+  '/modules/emergency-preparedness/1-12',
+  '/modules/emergency-preparedness/1-13',
 
-  // Baseline Resilience sub-modules (2-1 through 2-3)
-  '/modules/baseline-resilience/2-1-basic-needs',
-  '/modules/baseline-resilience/2-2-shared-tools',
-  '/modules/baseline-resilience/2-3-community-building',
+  // Baseline Resilience sections (dynamic MDX routes)
+  '/modules/baseline-resilience/2-1',
+  '/modules/baseline-resilience/2-2',
+  '/modules/baseline-resilience/2-3',
+
+  // Knowing Your Community section
+  '/modules/knowing-your-community/0-1',
 
   // PWA Icons (all sizes for proper installation)
   '/icons/icon-16x16.png',

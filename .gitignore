@@ -128,3 +128,4 @@ legacy_modules/
 .storybook/
 docs/
 src/stories/
+.gstack/
