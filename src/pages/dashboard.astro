@@ -164,10 +164,26 @@ const featuredModules = [
             </div>
           </section>
 
-          <!-- Export Data Button -->
-          <ExportDataButton client:load />
+          <!-- Export Data -->
+          <div>
+            <ExportDataButton client:load />
+            <p id="last-export-display" class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2"></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    const el = document.getElementById('last-export-display');
+    if (el) {
+      const ts = localStorage.getItem('lastExportTimestamp');
+      if (ts) {
+        const d = new Date(ts);
+        el.textContent = `Last exported: ${d.toLocaleDateString()}`;
+      } else {
+        el.textContent = 'Never exported';
+      }
+    }
+  </script>
 </BaseLayout>
