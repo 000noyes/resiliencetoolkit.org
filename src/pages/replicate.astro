@@ -1,0 +1,116 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Replicate | Fork the Resilience Hub Toolkit for Your Community"
+  description="Step-by-step guide to fork, customize, and deploy the Resilience Hub Toolkit for your own community."
+>
+  <section class="py-16 bg-gradient-to-b from-primary/5 to-background">
+    <div class="container mx-auto px-4 max-w-3xl text-center">
+      <h1 class="text-hero font-semibold mb-4 text-foreground">
+        Replicate This Toolkit
+      </h1>
+      <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
+        The Resilience Hub Toolkit is open source and designed to be adapted by other communities.
+        Here's how to make it yours.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <div class="space-y-12">
+
+        <!-- Step 1 -->
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">1</span>
+            <h2 class="text-title font-semibold text-foreground">Fork the repository</h2>
+          </div>
+          <div class="ml-11 space-y-3">
+            <p class="text-muted-foreground">
+              Visit <a href="https://github.com/000noyes/resiliencetoolkit.org" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">github.com/000noyes/resiliencetoolkit.org</a> and click "Fork" to create your own copy.
+            </p>
+            <pre class="bg-muted rounded-lg p-4 text-sm overflow-x-auto"><code>git clone https://github.com/YOUR-ORG/resiliencetoolkit.org.git
+cd resiliencetoolkit.org/resiliencetoolkit.org
+pnpm install
+pnpm dev</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">2</span>
+            <h2 class="text-title font-semibold text-foreground">Customize content via Keystatic CMS</h2>
+          </div>
+          <div class="ml-11 space-y-3">
+            <p class="text-muted-foreground">
+              Run <code class="bg-muted px-1.5 py-0.5 rounded text-sm">pnpm dev</code> and navigate to <code class="bg-muted px-1.5 py-0.5 rounded text-sm">localhost:4321/keystatic</code> to access the CMS. From there you can:
+            </p>
+            <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
+              <li>Edit section content (the 17 MDX files in <code class="bg-muted px-1 py-0.5 rounded text-xs">src/content/sections/</code>)</li>
+              <li>Update module metadata (section order, titles, phases)</li>
+              <li>Replace Vermont-specific references with your own region's resources</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">3</span>
+            <h2 class="text-title font-semibold text-foreground">Localize for your region</h2>
+          </div>
+          <div class="ml-11 space-y-3">
+            <p class="text-muted-foreground">
+              The toolkit was built for Vermont, but most content applies anywhere. Key places to localize:
+            </p>
+            <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
+              <li><strong>Knowing Your Community</strong> — Replace the Vermont Town Directory link with your own regional directory</li>
+              <li><strong>External links</strong> — Update links to local emergency management agencies, mutual aid networks, and government resources</li>
+              <li><strong>Map page</strong> — Point to your region's GIS data or resource map</li>
+              <li><strong>Hero copy</strong> — Update the origin story to reference your community's experience</li>
+              <li><strong>About page</strong> — Update organization name, contact info, and acknowledgements</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">4</span>
+            <h2 class="text-title font-semibold text-foreground">Deploy</h2>
+          </div>
+          <div class="ml-11 space-y-3">
+            <p class="text-muted-foreground">
+              The toolkit builds to a static site — no server required. Deploy anywhere:
+            </p>
+            <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
+              <li><strong><a href="https://render.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Render</a></strong> (current host) — Free static site hosting</li>
+              <li><strong><a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Cloudflare Pages</a></strong> — Global edge network, generous free tier</li>
+              <li><strong><a href="https://netlify.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Netlify</a></strong> — Git-based deployment</li>
+              <li><strong><a href="https://vercel.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Vercel</a></strong> — Zero-config deployment</li>
+            </ul>
+            <p class="text-muted-foreground">
+              Build command: <code class="bg-muted px-1.5 py-0.5 rounded text-sm">pnpm build</code> &middot;
+              Publish directory: <code class="bg-muted px-1.5 py-0.5 rounded text-sm">dist</code>
+            </p>
+          </div>
+        </div>
+
+        <!-- Help -->
+        <div class="p-6 rounded-lg border border-primary/20 bg-primary/5">
+          <h3 class="text-lg font-semibold text-foreground mb-2">Need help?</h3>
+          <p class="text-muted-foreground">
+            We're happy to help communities adapt this toolkit. Reach out to
+            <a href="mailto:resiliencetoolkit@gocros.org" class="text-primary hover:underline">resiliencetoolkit@gocros.org</a>
+            for consultation or technical support.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>
