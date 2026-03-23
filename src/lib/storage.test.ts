@@ -343,7 +343,7 @@ describe('exportAllData', () => {
     const before = await exportAllData();
 
     await saveTodo({ moduleKey: 'export-test', todoId: 'exp-1', completed: true });
-    await saveTableRow({ moduleKey: 'export-test', tableId: 'tbl', rowId: 'r1', data: { x: 1 } });
+    await saveTableRow({ moduleKey: 'export-test', tableId: 'tbl', rowId: 'r1', data: { x: '1' } });
     await setMetadata('export-setting', 'value');
 
     const exported = await exportAllData();

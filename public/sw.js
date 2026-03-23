@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v27-comprehensive-offline';
+const CACHE_VERSION = 'v29-mdx-migration';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -23,25 +23,28 @@ const PRECACHE_ASSETS = [
   '/modules/baseline-resilience/',
   '/modules/knowing-your-community',
 
-  // Emergency Preparedness sub-modules (1-1 through 1-13)
-  '/modules/emergency-preparedness/1-1-kits',
-  '/modules/emergency-preparedness/1-2-food-water',
-  '/modules/emergency-preparedness/1-3-medical',
-  '/modules/emergency-preparedness/1-4-power',
-  '/modules/emergency-preparedness/1-5-shelter',
-  '/modules/emergency-preparedness/1-6-vehicles',
-  '/modules/emergency-preparedness/1-7-sanitation',
-  '/modules/emergency-preparedness/1-8-special-populations',
-  '/modules/emergency-preparedness/1-9-response-plans',
-  '/modules/emergency-preparedness/1-10-volunteers',
-  '/modules/emergency-preparedness/1-11-flood-recovery',
-  '/modules/emergency-preparedness/1-12-mutual-aid',
-  '/modules/emergency-preparedness/1-13-financial-resources',
+  // Emergency Preparedness sections (dynamic MDX routes)
+  '/modules/emergency-preparedness/1-1',
+  '/modules/emergency-preparedness/1-2',
+  '/modules/emergency-preparedness/1-3',
+  '/modules/emergency-preparedness/1-4',
+  '/modules/emergency-preparedness/1-5',
+  '/modules/emergency-preparedness/1-6',
+  '/modules/emergency-preparedness/1-7',
+  '/modules/emergency-preparedness/1-8',
+  '/modules/emergency-preparedness/1-9',
+  '/modules/emergency-preparedness/1-10',
+  '/modules/emergency-preparedness/1-11',
+  '/modules/emergency-preparedness/1-12',
+  '/modules/emergency-preparedness/1-13',
 
-  // Baseline Resilience sub-modules (2-1 through 2-3)
-  '/modules/baseline-resilience/2-1-basic-needs',
-  '/modules/baseline-resilience/2-2-shared-tools',
-  '/modules/baseline-resilience/2-3-community-building',
+  // Baseline Resilience sections (dynamic MDX routes)
+  '/modules/baseline-resilience/2-1',
+  '/modules/baseline-resilience/2-2',
+  '/modules/baseline-resilience/2-3',
+
+  // Knowing Your Community section
+  '/modules/knowing-your-community/0-1',
 
   // PWA Icons (all sizes for proper installation)
   '/icons/icon-16x16.png',
@@ -63,18 +66,17 @@ const PRECACHE_ASSETS = [
   // PWA Configuration
   '/manifest.json',
 
-                                            // ASSETS_START - Auto-generated section - do not manually edit
+                                              // ASSETS_START - Auto-generated section - do not manually edit
   // Critical JavaScript bundles (Astro-generated)
   '/_astro/client.T4gOcinq.js',
   '/_astro/index.CJjwWAPb.js',
   '/_astro/storage.ClsaB4A6.js',
-  '/_astro/EditableTable.D8H1RpE7.js',
-  '/_astro/ExternalLink.Bqu4jKUg.js',
-  '/_astro/FeedbackWidgetWrapper.D2ZvZpW9.js',
-  '/_astro/Todo.C-wM6Uv3.js',
+  '/_astro/EditableTable.DMVAORlx.js',
+  '/_astro/ExternalLink.D86MPtBo.js',
+  '/_astro/FeedbackWidgetWrapper.C_C-rqJZ.js',
+  '/_astro/Todo.DgUN0oCT.js',
   '/_astro/createLucideIcon.DxhCkCsF.js',
   '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.1VgbOoqf.js',
-  '/_astro/GuestModeBanner.Bx4q3ep1.js',
   '/_astro/UserMenuWrapper.ChG-6rmU.js',
   '/_astro/x.3cDoBHD9.js',
 
@@ -124,7 +126,6 @@ const CACHE_FIRST_PATTERNS = [
 
 const NETWORK_FIRST_PATTERNS = [
   /\/api\//,
-  /supabase/,
 ];
 
 /**
