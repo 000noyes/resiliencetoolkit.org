@@ -42,4 +42,29 @@
 **Context:** Pre-existing architectural concern. Blocked by Keystatic's lack of read-only field support. Mitigated by the data preservation regression test.
 **Depends on:** Keystatic feature: read-only fields or validation hooks
 
+## MDX Content QA (vs PDF source — 2026-03-27)
+
+### 1.1 — Placeholder `href="#"` links in Systems column
+**Priority:** P2
+**Description:** Four items in the `guide-table` Systems column use `href="#"` placeholder links: emergency plans, emergency kits, storing backup food, and go bags. These should link to real resources or be converted to plain text if no URL is available.
+**Context:** Found during MDX accuracy QA pass against PDF source.
+
+### 1.5 — `low-stimulation-areas` Todo in wrong subsection
+**Priority:** P3
+**Description:** The `low-stimulation-areas` Todo ("Identify quiet, low-stimulation areas...") is placed in the Warming/Cooling subsection but belongs in the overnight shelter subsection per the PDF. Content is accurate, placement is slightly off.
+**Context:** Found during MDX accuracy QA pass against PDF source.
+
+### 1.7 — Missing href on "Example here" in `free-laundry-services`
+**Priority:** P2
+**Description:** The `free-laundry-services` Todo contains "Example here" as link text with no `href` — renders as a broken/missing link. Should be replaced with a real URL or removed.
+**Context:** Found during MDX accuracy QA pass against PDF source.
+
+### 1.8 — Three items missing from seniors/disabilities Communication section
+**Priority:** P2
+**Description:** The following three items appear in the PDF but are absent from the MDX:
+- "Have first responders learn basics of American Sign Language"
+- "Include visual aids on important informational resources"
+- "Consult with the Vermont Center for Independent Living when creating emergency plans"
+**Context:** Found during MDX accuracy QA pass against PDF source. These belong in the Communication and Coordination subsection.
+
 ## Completed

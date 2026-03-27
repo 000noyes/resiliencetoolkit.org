@@ -52,6 +52,8 @@ const CANONICAL_MODULE_KEYS = new Set([
   'vehicles-equipment',
   'mutual-aid',
   'flood-recovery',
+  'community-emergency-response',
+  'volunteer-management',
   'community-building',
   'knowing-community',
   'bringing-people-together',
@@ -85,7 +87,7 @@ describe('Data Preservation', () => {
   });
 
   it('canonical moduleKey set has not shrunk (no keys removed)', () => {
-    expect(CANONICAL_MODULE_KEYS.size).toBe(19);
+    expect(CANONICAL_MODULE_KEYS.size).toBe(21);
   });
 
   it('every section file with interactive components has a moduleKey', () => {

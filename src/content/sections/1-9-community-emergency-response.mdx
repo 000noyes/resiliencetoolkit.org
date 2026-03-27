@@ -4,65 +4,128 @@ title: "Community Emergency Response Plans"
 module: emergency-preparedness
 slug: "1-9"
 moduleKey: "community-emergency-response"
-contentType: informational
+contentType: todo-list
 pdfFilename: "Section 1.9_2025 Resilience Hub Toolkit.pdf"
 ---
+import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
 
-<h3 class="text-title font-semibold">Before disaster</h3>
+<section>
+  <h2 class="text-title font-semibold mb-4">Before disaster</h2>
 
-- Identify if there are already local documents outlining the emergency response plan for your town and town's leaders during an emergency:
-  - Emergency Management Director (EMD): plans for/leads disaster response; develops, updates, and implements local emergency management plan (<ExternalLink href="https://drive.google.com/file/d/1ds67bbFqr4C5ZsaBgJFVusylEhogWepo/view?usp=drive_link">LEMPs</ExternalLink>).
-  - Fire Department: often first line of disaster rescue, sometimes helps with recovery. May have machinery for vehicle extraction.
-  - First Responders/Emergency Medical Services (EMS)
-  - Town Clerk/Administrator/Manager
-  - Select Board Members
-  - Town Road Crew
-  - Mutual Aid and/or Neighbor-to-Neighbor Network leader(s)
-- <ExternalLink href="https://drive.google.com/file/d/1T53T9L9naTi0IibuIFdXohQXkCHitwZ3/view?usp=drive_link">Create a directory of emergency managers</ExternalLink>, municipal leaders, heads of neighbor-to-neighbor groups, etc. that will be used to coordinate and communicate at the town-wide level. Places to gather information: The **911 EMS agency** that covers any given town should have a list of local first-responders.
-  - In the event that the ambulance comes from several towns away, there may be local first-responders, including the fire department, who are linked in with the EMS agency responsible for covering your town more immediately.
-- Share this directory with everyone listed in it, or organize an event where everyone can meet one another and strategize/role play around what they do when disaster strikes
-- Create a clear communication system specifically for emergency response
-- Organize neighborhood pods with block captain/<ExternalLink href="https://drive.google.com/file/d/1k7SXv4md2Kjh0t-nGx5xIKVPpg0bSPmn/view?usp=drive_link">phone tree systems</ExternalLink> if there is phone service
-- <ExternalLink href="https://drive.google.com/file/d/1volnFb9p7K24iROikMt_zOg9_RT9WRVR/view?usp=drive_link">Create a directory of neighbors</ExternalLink> with street addresses, landline contacts, etc.
-- <ExternalLink href="https://drive.google.com/file/d/1_s3dzOMkIUT5BGBFjfFlEDeHfHcc5m-N/view?usp=drive_link">Create a directory of local first responders</ExternalLink>, paid and volunteer
-- Identify people trained in HAM radio
-- Identify an evacuation plan and options for sheltering nearby if evacuation is not possible.
-- Create a plan for volunteers to physically sweep known problem areas - EMS does not monitor these!
-- Identify a core team of people to do pre-outreach by town or volunteer/supply hub to <ExternalLink href="https://drive.google.com/file/d/1kFn8Lmia51X-Y5ZCzu2VlsWJd7JEq1dy/view?usp=drive_link">share information about preparedness</ExternalLink>, and distribute info on available resources and where to direct needs.
-- If there is none, establish a neighbor-to-neighbor or mutual aid group in your town. Consider partnering with an existing group that already holds a lot of relationships. EMS and some municipalities often have lists of vulnerable people. Make sure those folk are known to the neighbor-to-neighbor group.
-- Identify language access needs and utilize tools like the <ExternalLink href="https://www.vtlanguagejustice.org/ify?">VT Language Justice Project app</ExternalLink> to support communication during emergencies.
+  <div class="space-y-4">
+    <Todo id="identify-local-emp-docs" moduleKey="community-emergency-response" client:idle>
+      Identify if there are already local documents outlining the emergency response plan for your town — including plans from the Emergency Management Director (<ExternalLink href="https://drive.google.com/file/d/1ds67bbFqr4C5ZsaBgJFVusylEhogWepo/view?usp=drive_link">LEMPs</ExternalLink>), Fire Department, First Responders/EMS, Town Clerk, Select Board Members, Town Road Crew, and Mutual Aid/Neighbor-to-Neighbor Network leaders.
+    </Todo>
 
-<h3 class="text-title font-semibold">During disaster</h3>
+    <Todo id="create-emergency-manager-directory" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/1T53T9L9naTi0IibuIFdXohQXkCHitwZ3/view?usp=drive_link">Create a directory of emergency managers</ExternalLink>, municipal leaders, and heads of neighbor-to-neighbor groups to coordinate and communicate at the town-wide level. The 911 EMS agency covering your town should have a list of local first-responders.
+    </Todo>
 
-- Hold daily meetings w/ key stakeholders (Mutual Aid Orgs, EMS, EMD, selectboard, etc) and create <ExternalLink href="https://docs.google.com/document/d/1p7EPPThPDA--5NxEKXIi6MZDzHthwg8VGi5XX1tq9Ek/edit?usp=drive_link">situation reports</ExternalLink> about actions taken during emergency response
-- Hold regular public assemblies at an accessible time/place; share easy to absorb information; distribute other things people need (food, water, fuel). Advertise assemblies with posters and by word of mouth. If you have access to the internet and phone service, utilize phone trees, Front Porch Forum, social media, and local listservs/messaging threads.
-- Create hand-outs/digital surveys to capture requests from impacted residents, which integrate into a tracker for case management
-- Use weather maps at <ExternalLink href="https://waterdata.usgs.gov/vt/nwis/rt">waterdata.usgs.gov/vt/nwis/rt</ExternalLink> and the <ExternalLink href="https://www.riveraware.app/">River Aware app</ExternalLink>, Identify people to look at the river and watch for ice and debris dams.
-- Receive/submit alerts at <ExternalLink href="https://vem.vermont.gov/vtalert">vem.vermont.gov/vtalert</ExternalLink> and TextMyGov.
+    <Todo id="share-directory" moduleKey="community-emergency-response" client:idle>
+      Share the directory with everyone listed in it, or organize an event where everyone can meet and strategize around what to do when disaster strikes.
+    </Todo>
 
-<h3 class="text-title font-semibold">Planning for other kinds of climate disaster</h3>
+    <Todo id="communication-system" moduleKey="community-emergency-response" client:idle>
+      Create a clear communication system specifically for emergency response.
+    </Todo>
 
-While flooding is VT's most common climate disaster, consider other potential events in emergency plans:
+    <Todo id="neighborhood-pods" moduleKey="community-emergency-response" client:idle>
+      Organize neighborhood pods with block captain/<ExternalLink href="https://drive.google.com/file/d/1k7SXv4md2Kjh0t-nGx5xIKVPpg0bSPmn/view?usp=drive_link">phone tree systems</ExternalLink> if there is phone service.
+    </Todo>
 
-- <ExternalLink href="https://drive.google.com/file/d/1W8BnUVz9kKa5PFywiWXJgacrnKS93ssK/view">Wildfire smoke</ExternalLink>: prolonged exposure to wildfire smoke can cause respiratory issues and other health problems.
-  - Monitor air quality levels via <ExternalLink href="https://www.airnow.gov/">AirNow.gov</ExternalLink>
-  - Store N95s/KN95s/respirators along with other emergency supplies to protect people from dangerous air quality (1.4)
-  - Identify public spaces with air filtration if you do not have air filtration at home like libraries, schools, health centers (similar to warming and cooling shelters, 1.5).
-- <ExternalLink href="https://drive.google.com/file/d/10X2ipgJTjW1SdCaNbJZfEOI4ukD8UVYz/view">Wet bulb temperatures & High Heat Index</ExternalLink>: a hazardous combination of high heat and high humidity. Above around 86ºF plus high humidity can create wet bulb conditions.
-  - Communicate across community networks and public information channels when heat advisories are in effect (1.9)
-  - Remind people about the importance of hydration; create access to drinking water in public places on hot days by putting out water coolers and signage (1.2)
-  - Especially during the hottest part of the day (11am - 3pm), stay in the shade or in other cool locations, including cooling shelters (1.5).
-  - Learn the signs of, and communicate about, heat exhaustion (headache, fever, dizziness, fainting, shallow breathing, increased thirst, muscle aches, and nausea).
-- <ExternalLink href="https://drive.google.com/file/d/1glq_jPse9R4geIkeaCUr7rnAgNG5JOyW/view">Drought</ExternalLink>: Unlike other weather-related disasters, drought often comes on slowly in our region.
-  - Keep an eye on fire danger to protect people, buildings, and ecosystems from preventable fire damage during drought conditions. Fire forecasts here: <ExternalLink href="https://fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger">fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger</ExternalLink>
-  - During drought, cut back on watering lawns and non-food plants. Conserve water by turning off taps and reducing toilet flushing.
-- <ExternalLink href="https://drive.google.com/file/d/10xdbWN2CSxa_C-__rtC2H4iSBzgDVO-s/view">Ice & Wind storms</ExternalLink> can take out power lines, and in turn, heat and cooling.
-  - At home, store emergency food that does not need electricity to prepare and water on hand (1.2), and back-up power/heating (1.4)
-  - If staying home is not safe, leave home before travel conditions worsen
-  - Identify local warming and cooling shelters (1.5) ahead of the storm
-  - Consider back-up communications (radios, walkies, default meetup plans) as electricity, wifi and phones may go down (1.9; 2.2)
-- Public health emergencies and <ExternalLink href="https://drive.google.com/file/d/1_e3AA4pD7dJCAcfMHLVJ3dqJgK5_5Wrc/view?usp=drive_link">pandemics</ExternalLink>
-  - Emergent public health threats can be difficult to plan for, but keeping people healthy as a baseline can protect communities from the worst impacts of pandemics and other health emergencies. See Section 2.1 of the toolkit for information on meeting basic needs, including health needs.
-  - Creating community emergency response plans (1.9) before disaster strikes, plans to support populations with specific needs (1.8), and setting up mutual aid/neighbor to neighbor networks (1.12) can increase community resilience amid public health crises.
-  - Stay up to date with new information coming from local, state, or federal government sources, as well as public health officials and experts in your community. Hold community gatherings (2.3) to share information.
+    <Todo id="neighbor-directory" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/1volnFb9p7K24iROikMt_zOg9_RT9WRVR/view?usp=drive_link">Create a directory of neighbors</ExternalLink> with street addresses, landline contacts, etc.
+    </Todo>
+
+    <Todo id="first-responder-directory" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/1_s3dzOMkIUT5BGBFjfFlEDeHfHcc5m-N/view?usp=drive_link">Create a directory of local first responders</ExternalLink>, paid and volunteer.
+    </Todo>
+
+    <Todo id="ham-radio" moduleKey="community-emergency-response" client:idle>
+      Identify people trained in HAM radio.
+    </Todo>
+
+    <Todo id="evacuation-plan" moduleKey="community-emergency-response" client:idle>
+      Identify an evacuation plan and options for sheltering nearby if evacuation is not possible.
+    </Todo>
+
+    <Todo id="volunteer-sweep-plan" moduleKey="community-emergency-response" client:idle>
+      Create a plan for volunteers to physically sweep known problem areas — EMS does not monitor these.
+    </Todo>
+
+    <Todo id="pre-outreach-team" moduleKey="community-emergency-response" client:idle>
+      Identify a core team to do pre-outreach by town or volunteer/supply hub to <ExternalLink href="https://drive.google.com/file/d/1kFn8Lmia51X-Y5ZCzu2VlsWJd7JEq1dy/view?usp=drive_link">share information about preparedness</ExternalLink> and distribute info on available resources.
+    </Todo>
+
+    <Todo id="mutual-aid-group" moduleKey="community-emergency-response" client:idle>
+      If none exists, establish a neighbor-to-neighbor or mutual aid group in your town. Consider partnering with an existing group that already holds relationships. EMS and some municipalities often have lists of vulnerable people — make sure those folk are known to the neighbor-to-neighbor group.
+    </Todo>
+
+    <Todo id="language-access" moduleKey="community-emergency-response" client:idle>
+      Identify language access needs and utilize tools like the <ExternalLink href="https://www.vtlanguagejustice.org/ify?">VT Language Justice Project app</ExternalLink> to support communication during emergencies.
+    </Todo>
+  </div>
+</section>
+
+<section>
+  <h2 class="text-title font-semibold mb-4">During disaster</h2>
+
+  <div class="space-y-4">
+    <Todo id="daily-stakeholder-meetings" moduleKey="community-emergency-response" client:idle>
+      Hold daily meetings with key stakeholders (Mutual Aid Orgs, EMS, EMD, selectboard, etc.) and create <ExternalLink href="https://docs.google.com/document/d/1p7EPPThPDA--5NxEKXIi6MZDzHthwg8VGi5XX1tq9Ek/edit?usp=drive_link">situation reports</ExternalLink> about actions taken during emergency response.
+    </Todo>
+
+    <Todo id="public-assemblies" moduleKey="community-emergency-response" client:idle>
+      Hold regular public assemblies at an accessible time and place. Share easy-to-absorb information and distribute things people need (food, water, fuel). Advertise with posters, word of mouth, phone trees, Front Porch Forum, social media, and local listservs.
+    </Todo>
+
+    <Todo id="resident-request-tracker" moduleKey="community-emergency-response" client:idle>
+      Create hand-outs or digital surveys to capture requests from impacted residents, integrating into a tracker for case management.
+    </Todo>
+
+    <Todo id="water-monitoring" moduleKey="community-emergency-response" client:idle>
+      Use weather maps at <ExternalLink href="https://waterdata.usgs.gov/vt/nwis/rt">waterdata.usgs.gov/vt/nwis/rt</ExternalLink> and the <ExternalLink href="https://www.riveraware.app/">River Aware app</ExternalLink>. Identify people to watch the river for ice and debris dams.
+    </Todo>
+
+    <Todo id="emergency-alerts" moduleKey="community-emergency-response" client:idle>
+      Receive and submit alerts at <ExternalLink href="https://vem.vermont.gov/vtalert">vem.vermont.gov/vtalert</ExternalLink> and TextMyGov.
+    </Todo>
+  </div>
+</section>
+
+<section>
+  <h2 class="text-title font-semibold mb-4">Planning for other kinds of climate disaster</h2>
+
+  <p class="mb-4">While flooding is Vermont's most common climate disaster, consider other potential events in emergency plans.</p>
+
+  <div class="space-y-4">
+    <Todo id="wildfire-smoke-supplies" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/1W8BnUVz9kKa5PFywiWXJgacrnKS93ssK/view">Wildfire smoke</ExternalLink>: Store N95s/KN95s/respirators with emergency supplies. Monitor air quality via <ExternalLink href="https://www.airnow.gov/">AirNow.gov</ExternalLink>.
+    </Todo>
+
+    <Todo id="wildfire-smoke-shelters" moduleKey="community-emergency-response" client:idle>
+      Identify public spaces with air filtration (libraries, schools, health centers) for people without home air filtration during smoke events.
+    </Todo>
+
+    <Todo id="heat-advisories" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/10X2ipgJTjW1SdCaNbJZfEOI4ukD8UVYz/view">Wet bulb temperatures and high heat</ExternalLink>: Communicate across community networks when heat advisories are in effect. Remind people about hydration and create access to drinking water in public places on hot days.
+    </Todo>
+
+    <Todo id="cooling-shelters" moduleKey="community-emergency-response" client:idle>
+      Identify cooling shelters and encourage people to stay in shade or cool locations during the hottest part of the day (11am–3pm). Learn and share signs of heat exhaustion.
+    </Todo>
+
+    <Todo id="drought-fire-danger" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/1glq_jPse9R4geIkeaCUr7rnAgNG5JOyW/view">Drought</ExternalLink>: Monitor fire danger at <ExternalLink href="https://fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger">fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger</ExternalLink>. Conserve water by reducing lawn watering, turning off taps, and reducing toilet flushing.
+    </Todo>
+
+    <Todo id="ice-wind-storm-prep" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/10xdbWN2CSxa_C-__rtC2H4iSBzgDVO-s/view">Ice and wind storms</ExternalLink>: Store emergency food and water (1.2) and back-up power/heating (1.4). Identify local warming shelters (1.5) ahead of storms. Plan back-up communications (radios, walkies, default meetup plans) in case electricity and phones go down.
+    </Todo>
+
+    <Todo id="pandemic-preparedness" moduleKey="community-emergency-response" client:idle>
+      <ExternalLink href="https://drive.google.com/file/d/1_e3AA4pD7dJCAcfMHLVJ3dqJgK5_5Wrc/view?usp=drive_link">Public health emergencies</ExternalLink>: Keep people healthy as a baseline. Create community emergency response plans, support populations with specific needs (1.8), and set up mutual aid networks (1.12). Stay up to date with information from local, state, and federal sources.
+    </Todo>
+  </div>
+</section>

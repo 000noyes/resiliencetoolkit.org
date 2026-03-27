@@ -4,55 +4,140 @@ title: "Volunteer Management"
 module: emergency-preparedness
 slug: "1-10"
 moduleKey: "volunteer-management"
-contentType: informational
+contentType: todo-list
 pdfFilename: "Section 1.10_2025 Resilience Hub Toolkit.pdf"
 ---
+import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
 
-<h3 class="text-title font-semibold">Recruiting volunteers</h3>
+<section>
+  <h2 class="text-title font-semibold mb-4">Recruiting volunteers</h2>
 
-- Post about volunteer opportunities on Front Porch Forum, social media, and in your local paper.
-- See if a local restaurant can provide meals to volunteers.
-- Make lists of organizations and individuals in the community who are willing to volunteer and/or willing to coordinate volunteers during disaster:
-  - Mutual aid and neighbor-to-neighbor networks
-  - Local companies that can offer employee volunteer hours
-  - Faith communities
-  - Schools
-  - American Legion
-  - Elks Club
-  - Rotary Club
-  - <ExternalLink href="https://www.healthvermont.gov/about-us/contact-us">AHS / VDH regional field Directors can be a conduit to local organizations</ExternalLink>
+  <div class="space-y-4">
+    <Todo id="post-volunteer-opportunities" moduleKey="volunteer-management" client:idle>
+      Post about volunteer opportunities on Front Porch Forum, social media, and in your local paper.
+    </Todo>
 
-<h3 class="text-title font-semibold">Setting up volunteer shifts</h3>
+    <Todo id="restaurant-meals" moduleKey="volunteer-management" client:idle>
+      See if a local restaurant can provide meals to volunteers.
+    </Todo>
 
-- <ExternalLink href="https://www.signupgenius.com/nonprofit-volunteer-management">SignUp Genius</ExternalLink> is free and helpful for creating volunteer shifts. The paid version allows multiple volunteer coordinators to log in; you can cancel payment as soon as you're done using it. Download your data regularly to maintain a contact list. You can also use a <ExternalLink href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9">shareable spreadsheet</ExternalLink> on Google or Cryptpad.
-- Create specific time slots and tasks for people to help with.
-- Be clear on what physical abilities people need to be safe and also helpful.
-- Have a diversity of tasks to make space for everyone to engage.
-  - Assess if projects are within your team's "scope" or ability to help.—the home might be gone, it may be structurally unsound or dangerous, you may be unable to get permission from a landlord or homeowner to do work, etc.
+    <Todo id="volunteer-org-list" moduleKey="volunteer-management" client:idle>
+      Make lists of organizations and individuals willing to volunteer and/or coordinate volunteers during disaster: mutual aid networks, local companies offering employee volunteer hours, faith communities, schools, American Legion, Elks Club, Rotary Club, and <ExternalLink href="https://www.healthvermont.gov/about-us/contact-us">AHS/VDH regional field directors</ExternalLink>.
+    </Todo>
+  </div>
+</section>
 
-<h3 class="text-title font-semibold">Potential volunteer tasks for flood recovery</h3>
+<section>
+  <h2 class="text-title font-semibold mb-4">Setting up volunteer shifts</h2>
 
-- Holding down the supply/volunteer dispatch hub
-- Organizing supplies – especially tracking inventory and restocking Work Totes
-- Supply runs – gathering supplies purchasing or donations
-- Survivor outreach through knocking on doors (canvassing) and making phone calls
-- Data management – tracking projects, updating databases and/or volunteer and survivor contacts
-- Volunteer recruitment, training, and outreach
-- Mucking and gutting houses (see section 1.11)
-- Laundry – Expensive safety equipment like rubber-faced work gloves can be reused if washed, and P100 face masks can be reused if the mouthpiece is wiped with a sanitizing wipe
-- Mental health and child care support for flood survivors
-- Meal providers/servers
-- Caretaking for first responders, organizers and community leaders (meals, respite days, transportation, etc)
+  <div class="space-y-4">
+    <Todo id="signup-tool" moduleKey="volunteer-management" client:idle>
+      Use <ExternalLink href="https://www.signupgenius.com/nonprofit-volunteer-management">SignUp Genius</ExternalLink> (free) or a <ExternalLink href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9">shareable spreadsheet</ExternalLink> to create volunteer shifts. Download your data regularly to maintain a contact list.
+    </Todo>
 
-<h3 class="text-title font-semibold">Managing volunteers</h3>
+    <Todo id="specific-time-slots" moduleKey="volunteer-management" client:idle>
+      Create specific time slots and tasks for people to help with.
+    </Todo>
 
-- People will want to bring children to the sites to help volunteer. Handle this on a case by case basis and do not send children to locations where there is a concern for bodily safety, such as mold.
-- Know what work needs to get done. Use <ExternalLink href="http://crisiscleanup.org">Crisis Cleanup</ExternalLink> and track projects in a spreadsheet.
-- Conduct interviews with homeowners to determine scope of work (this can be a volunteer task that precedes other volunteer tasks). Questions for these interviews are pre-loaded in Crisis Cleanup.
-- Create a work sheet for volunteers with info about where they're going, who they're meeting, and what they're doing. This helps coordinate multiple teams at once.
-- For legal/insurance reasons, have flood volunteers <ExternalLink href="https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true">sign a waiver</ExternalLink> regardless of the scope of their work. Link to your agreement wherever volunteers are signing up for shifts and have people sign agreements before starting work.
-- Tell volunteers what to bring to do the work (sunscreen, water, snacks, durable footwear, etc.)
-- Train volunteers in the tasks assigned each shift and include the importance of taking breaks and hydrating.
-- Organize volunteers into work crews of 3-6 people, ideally large enough so people can take breaks and not work for more than 5 hours. Coordinating work is challenging and situations shift but the more organized you can be, the more likely you'll be to retain volunteers.
-- Feed volunteers! Think about how else you can thank and appreciate them.
+    <Todo id="physical-requirements" moduleKey="volunteer-management" client:idle>
+      Be clear on what physical abilities people need to be safe and helpful.
+    </Todo>
+
+    <Todo id="diverse-tasks" moduleKey="volunteer-management" client:idle>
+      Have a diversity of tasks to make space for everyone to engage. Assess if projects are within your team's scope — the home might be structurally unsound, you may be unable to get permission from a landlord, etc.
+    </Todo>
+  </div>
+</section>
+
+<section>
+  <h2 class="text-title font-semibold mb-4">Managing volunteers</h2>
+
+  <div class="space-y-4">
+    <Todo id="children-policy" moduleKey="volunteer-management" client:idle>
+      Handle children at volunteer sites on a case-by-case basis. Do not send children to locations with safety concerns such as mold.
+    </Todo>
+
+    <Todo id="crisis-cleanup" moduleKey="volunteer-management" client:idle>
+      Know what work needs to get done. Use <ExternalLink href="http://crisiscleanup.org">Crisis Cleanup</ExternalLink> and track projects in a spreadsheet.
+    </Todo>
+
+    <Todo id="homeowner-interviews" moduleKey="volunteer-management" client:idle>
+      Conduct interviews with homeowners to determine scope of work (this can itself be a volunteer task). Interview questions are pre-loaded in Crisis Cleanup.
+    </Todo>
+
+    <Todo id="volunteer-worksheets" moduleKey="volunteer-management" client:idle>
+      Create a work sheet for volunteers with info about where they're going, who they're meeting, and what they're doing.
+    </Todo>
+
+    <Todo id="volunteer-waivers" moduleKey="volunteer-management" client:idle>
+      For legal and insurance reasons, have flood volunteers <ExternalLink href="https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true">sign a waiver</ExternalLink> before starting work. Link to the agreement wherever volunteers sign up for shifts.
+    </Todo>
+
+    <Todo id="volunteer-supplies-info" moduleKey="volunteer-management" client:idle>
+      Tell volunteers what to bring (sunscreen, water, snacks, durable footwear, etc.).
+    </Todo>
+
+    <Todo id="volunteer-training" moduleKey="volunteer-management" client:idle>
+      Train volunteers in the tasks assigned each shift. Include the importance of taking breaks and hydrating.
+    </Todo>
+
+    <Todo id="work-crews" moduleKey="volunteer-management" client:idle>
+      Organize volunteers into work crews of 3–6 people, large enough so people can take breaks and not work more than 5 hours at a stretch.
+    </Todo>
+
+    <Todo id="feed-volunteers" moduleKey="volunteer-management" client:idle>
+      Feed volunteers and find ways to thank and appreciate them.
+    </Todo>
+  </div>
+</section>
+
+<section>
+  <h2 class="text-title font-semibold mb-4">Potential volunteer tasks for flood recovery</h2>
+
+  <div class="space-y-4">
+    <Todo id="task-supply-hub" moduleKey="volunteer-management" client:idle>
+      Holding down the supply/volunteer dispatch hub.
+    </Todo>
+
+    <Todo id="task-organizing-supplies" moduleKey="volunteer-management" client:idle>
+      Organizing supplies — especially tracking inventory and restocking Work Totes.
+    </Todo>
+
+    <Todo id="task-supply-runs" moduleKey="volunteer-management" client:idle>
+      Supply runs — gathering supplies through purchasing or donations.
+    </Todo>
+
+    <Todo id="task-survivor-outreach" moduleKey="volunteer-management" client:idle>
+      Survivor outreach through door-knocking (canvassing) and phone calls.
+    </Todo>
+
+    <Todo id="task-data-management" moduleKey="volunteer-management" client:idle>
+      Data management — tracking projects, updating databases, and managing volunteer and survivor contacts.
+    </Todo>
+
+    <Todo id="task-volunteer-recruitment" moduleKey="volunteer-management" client:idle>
+      Volunteer recruitment, training, and outreach.
+    </Todo>
+
+    <Todo id="task-mucking-gutting" moduleKey="volunteer-management" client:idle>
+      Mucking and gutting houses (see section 1.11).
+    </Todo>
+
+    <Todo id="task-laundry" moduleKey="volunteer-management" client:idle>
+      Laundry — rubber-faced work gloves can be reused if washed; P100 face masks can be reused if the mouthpiece is wiped with a sanitizing wipe.
+    </Todo>
+
+    <Todo id="task-mental-health-childcare" moduleKey="volunteer-management" client:idle>
+      Mental health and child care support for flood survivors.
+    </Todo>
+
+    <Todo id="task-meals" moduleKey="volunteer-management" client:idle>
+      Meal providers and servers.
+    </Todo>
+
+    <Todo id="task-caretaking" moduleKey="volunteer-management" client:idle>
+      Caretaking for first responders, organizers, and community leaders (meals, respite days, transportation, etc.).
+    </Todo>
+  </div>
+</section>
