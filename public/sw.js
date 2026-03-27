@@ -2,7 +2,7 @@
 // Provides offline functionality through caching strategies
 
 // IMPORTANT: Increment this version whenever you update CSS, JS, or design system
-const CACHE_VERSION = 'v29-mdx-migration';
+const CACHE_VERSION = 'build-placeholder'; // set by scripts/update-sw-assets.mjs at build time
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -66,53 +66,8 @@ const PRECACHE_ASSETS = [
   // PWA Configuration
   '/manifest.json',
 
-                                              // ASSETS_START - Auto-generated section - do not manually edit
-  // Critical JavaScript bundles (Astro-generated)
-  '/_astro/client.T4gOcinq.js',
-  '/_astro/index.CJjwWAPb.js',
-  '/_astro/storage.ClsaB4A6.js',
-  '/_astro/EditableTable.DMVAORlx.js',
-  '/_astro/ExternalLink.D86MPtBo.js',
-  '/_astro/FeedbackWidgetWrapper.C_C-rqJZ.js',
-  '/_astro/Todo.DgUN0oCT.js',
-  '/_astro/createLucideIcon.DxhCkCsF.js',
-  '/_astro/BaseLayout.astro_astro_type_script_index_0_lang.1VgbOoqf.js',
-  '/_astro/UserMenuWrapper.ChG-6rmU.js',
-  '/_astro/x.3cDoBHD9.js',
-
-  // Critical CSS
-
-  // Pagefind search assets (offline search)
-  '/pagefind/pagefind-entry.json',
-  '/pagefind/pagefind.js',
-  '/pagefind/fragment/en_1038b5d.pf_fragment',
-  '/pagefind/fragment/en_1ca7c05.pf_fragment',
-  '/pagefind/fragment/en_1eb8f58.pf_fragment',
-  '/pagefind/fragment/en_279296e.pf_fragment',
-  '/pagefind/fragment/en_2cfcf69.pf_fragment',
-  '/pagefind/fragment/en_33372b2.pf_fragment',
-  '/pagefind/fragment/en_3a52d76.pf_fragment',
-  '/pagefind/fragment/en_453ac11.pf_fragment',
-  '/pagefind/fragment/en_47b07b5.pf_fragment',
-  '/pagefind/fragment/en_4847ae4.pf_fragment',
-  '/pagefind/fragment/en_595ed76.pf_fragment',
-  '/pagefind/fragment/en_63737ee.pf_fragment',
-  '/pagefind/fragment/en_6dfac2f.pf_fragment',
-  '/pagefind/fragment/en_719bfbe.pf_fragment',
-  '/pagefind/fragment/en_755616d.pf_fragment',
-  '/pagefind/fragment/en_75abdbf.pf_fragment',
-  '/pagefind/fragment/en_84d333f.pf_fragment',
-  '/pagefind/fragment/en_9c2552e.pf_fragment',
-  '/pagefind/fragment/en_a3b17bf.pf_fragment',
-  '/pagefind/fragment/en_aa57901.pf_fragment',
-  '/pagefind/fragment/en_ae5bd24.pf_fragment',
-  '/pagefind/fragment/en_c5bae6c.pf_fragment',
-  '/pagefind/fragment/en_c6e24e8.pf_fragment',
-  '/pagefind/fragment/en_d9dd9a5.pf_fragment',
-  '/pagefind/fragment/en_e8a9927.pf_fragment',
-  '/pagefind/fragment/en_eb782ea.pf_fragment',
-  '/pagefind/fragment/en_f6963ec.pf_fragment',
-  '/pagefind/index/en_5b8a5be.pf_index',
+  // ASSETS_START - Auto-generated section - do not manually edit
+  // (populated by scripts/update-sw-assets.mjs at build time — do not add entries here)
   // ASSETS_END - Auto-generated section - do not manually edit
 ];
 
