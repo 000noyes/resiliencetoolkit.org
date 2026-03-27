@@ -54,6 +54,13 @@ test.describe('MDX render verification — all 17 section pages', () => {
       if (section.interactive === 'todo') {
         const todos = page.locator('[data-todo], input.todo-checkbox');
         await expect(todos.first()).toBeAttached({ timeout: 10000 });
+
+        // 1.3 (First Aid) has GuideTable content — verify the content area is non-empty
+        // Production bug: blank content area caused by stale SW asset hashes
+        if (section.url.includes('1-3')) {
+          const contentArea = page.locator('table, .guide-table, [data-content]').first();
+          await expect(contentArea).toBeVisible({ timeout: 5000 });
+        }
       } else if (section.interactive === 'editable-table') {
         const tables = page.locator('[data-editable-table], table');
         await expect(tables.first()).toBeAttached({ timeout: 10000 });
