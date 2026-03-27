@@ -67,6 +67,15 @@ export async function getSectionNavigation(sectionSlug: string): Promise<Section
     };
   }
 
+  // Handle cross-module navigation for last section of emergency-preparedness → baseline-resilience
+  if (currentIndex === sectionOrder.length - 1 && moduleData.slug === 'emergency-preparedness') {
+    nextSection = {
+      number: '2.1',
+      title: 'Basic needs',
+      slug: '../baseline-resilience/2-1',
+    };
+  }
+
   return {
     number: section.data.number,
     title: section.data.title,
