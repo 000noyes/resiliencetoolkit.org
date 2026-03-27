@@ -9,6 +9,7 @@
  * Once all sections are migrated to MDX, the old .astro pages can be removed.
  */
 import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import { getSectionNavigation } from '@/lib/navigation';
 
@@ -30,7 +31,18 @@ const { Content } = await render(section);
 const sectionData = await getSectionNavigation(section.data.slug);
 ---
 
-{sectionData && (
+{!sectionData ? (
+  <BaseLayout title="Section not found">
+    <div style="max-width: 640px; margin: 4rem auto; padding: 0 1rem; font-family: system-ui;">
+      <h1>Section not found</h1>
+      <p>This section could not be loaded. It may have moved or be temporarily unavailable.</p>
+      <p>
+        <a href="/modules">Back to modules</a> ·{' '}
+        <a href="mailto:rhizome@accessecologies.com">Report this issue</a>
+      </p>
+    </div>
+  </BaseLayout>
+) : (
   <ModuleLayout sectionData={sectionData}>
     <Content />
   </ModuleLayout>
