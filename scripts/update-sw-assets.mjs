@@ -25,26 +25,31 @@ const CRITICAL_ASSETS = [
   { base: 'x', type: 'js' },
 ];
 
-export async function main() {
+export async function main(base = process.cwd()) {
+  const distDir    = `${base}/${DIST_DIR}`;
+  const pagefindDir = `${base}/${PAGEFIND_DIR}`;
+  const swTemplate = `${base}/${SW_TEMPLATE}`;
+  const swOutput   = `${base}/${SW_OUTPUT}`;
+
   try {
     console.log('🔄 Updating service worker assets...');
 
     // 1. Read dist directory
-    const distFiles = await readdir(DIST_DIR);
+    const distFiles = await readdir(distDir);
 
     // 2. Find matching hashed files
     const assetPaths = [];
     const missing = [];
 
-    for (const { base, type } of CRITICAL_ASSETS) {
+    for (const { base: assetBase, type } of CRITICAL_ASSETS) {
       const match = distFiles.find(file =>
-        file.startsWith(base + '.') && file.endsWith(`.${type}`)
+        file.startsWith(assetBase + '.') && file.endsWith(`.${type}`)
       );
 
       if (match) {
         assetPaths.push(`  '/_astro/${match}',`);
       } else {
-        missing.push(`${base}.*.${type}`);
+        missing.push(`${assetBase}.*.${type}`);
       }
     }
 
@@ -55,8 +60,8 @@ export async function main() {
 
     // 2b. Add Pagefind assets for offline search
     const pagefindPaths = [];
-    if (existsSync(PAGEFIND_DIR)) {
-      const pfFiles = await readdir(PAGEFIND_DIR);
+    if (existsSync(pagefindDir)) {
+      const pfFiles = await readdir(pagefindDir);
       // Core files needed for search to work offline
       for (const file of pfFiles) {
         if (
@@ -69,7 +74,7 @@ export async function main() {
       }
       // Also include fragment and index chunks (small for ~28 pages)
       for (const subdir of ['fragment', 'index']) {
-        const subdirPath = `${PAGEFIND_DIR}/${subdir}`;
+        const subdirPath = `${pagefindDir}/${subdir}`;
         if (existsSync(subdirPath)) {
           const subFiles = await readdir(subdirPath);
           for (const file of subFiles) {
@@ -83,7 +88,7 @@ export async function main() {
     }
 
     // 3. Read service worker template
-    let swContent = await readFile(SW_TEMPLATE, 'utf8');
+    let swContent = await readFile(swTemplate, 'utf8');
 
     // 4. Replace asset block
     const jsAssets = assetPaths.filter(p => p.includes('.js'));
@@ -117,7 +122,7 @@ export async function main() {
     console.log(`  📦 Cache version: ${newVersion}`);
 
     // 6. Write to dist/sw.js (NOT public/sw.js)
-    await writeFile(SW_OUTPUT, swContent, 'utf8');
+    await writeFile(swOutput, swContent, 'utf8');
 
     console.log(`✅ Service Worker updated successfully`);
     console.log(`   Found ${assetPaths.length}/${CRITICAL_ASSETS.length} critical assets`);
