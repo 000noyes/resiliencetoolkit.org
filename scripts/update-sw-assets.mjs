@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
 const DIST_DIR = 'dist/_astro';
 const PAGEFIND_DIR = 'dist/pagefind';
-const SW_PATH = 'public/sw.js';
+const SW_TEMPLATE = 'public/sw.js';
+const SW_OUTPUT   = 'dist/sw.js';
 
 // Critical assets to track (base names without hashes)
 const CRITICAL_ASSETS = [
@@ -17,33 +20,36 @@ const CRITICAL_ASSETS = [
   { base: 'Todo', type: 'js' },
   { base: 'createLucideIcon', type: 'js' },
   { base: 'BaseLayout.astro_astro_type_script_index_0_lang', type: 'js' },
-  { base: 'GuestModeBanner', type: 'js' },
   { base: 'jsx-runtime', type: 'js' },
   { base: 'UserMenuWrapper', type: 'js' },
   { base: 'x', type: 'js' },
-  { base: '2-1-basic-needs', type: 'css' },
 ];
 
-async function main() {
+export async function main(base = process.cwd()) {
+  const distDir    = `${base}/${DIST_DIR}`;
+  const pagefindDir = `${base}/${PAGEFIND_DIR}`;
+  const swTemplate = `${base}/${SW_TEMPLATE}`;
+  const swOutput   = `${base}/${SW_OUTPUT}`;
+
   try {
     console.log('🔄 Updating service worker assets...');
 
     // 1. Read dist directory
-    const distFiles = await readdir(DIST_DIR);
+    const distFiles = await readdir(distDir);
 
     // 2. Find matching hashed files
     const assetPaths = [];
     const missing = [];
 
-    for (const { base, type } of CRITICAL_ASSETS) {
+    for (const { base: assetBase, type } of CRITICAL_ASSETS) {
       const match = distFiles.find(file =>
-        file.startsWith(base + '.') && file.endsWith(`.${type}`)
+        file.startsWith(assetBase + '.') && file.endsWith(`.${type}`)
       );
 
       if (match) {
         assetPaths.push(`  '/_astro/${match}',`);
       } else {
-        missing.push(`${base}.*.${type}`);
+        missing.push(`${assetBase}.*.${type}`);
       }
     }
 
@@ -54,8 +60,8 @@ async function main() {
 
     // 2b. Add Pagefind assets for offline search
     const pagefindPaths = [];
-    if (existsSync(PAGEFIND_DIR)) {
-      const pfFiles = await readdir(PAGEFIND_DIR);
+    if (existsSync(pagefindDir)) {
+      const pfFiles = await readdir(pagefindDir);
       // Core files needed for search to work offline
       for (const file of pfFiles) {
         if (
@@ -68,7 +74,7 @@ async function main() {
       }
       // Also include fragment and index chunks (small for ~28 pages)
       for (const subdir of ['fragment', 'index']) {
-        const subdirPath = `${PAGEFIND_DIR}/${subdir}`;
+        const subdirPath = `${pagefindDir}/${subdir}`;
         if (existsSync(subdirPath)) {
           const subFiles = await readdir(subdirPath);
           for (const file of subFiles) {
@@ -81,8 +87,8 @@ async function main() {
       console.warn('⚠️  Pagefind directory not found - search will not work offline');
     }
 
-    // 3. Read service worker
-    let swContent = await readFile(SW_PATH, 'utf8');
+    // 3. Read service worker template
+    let swContent = await readFile(swTemplate, 'utf8');
 
     // 4. Replace asset block
     const jsAssets = assetPaths.filter(p => p.includes('.js'));
@@ -106,23 +112,17 @@ async function main() {
       newBlock
     );
 
-    // 5. Auto-increment cache version
+    // 5. Set cache version from content hash
+    const assetHash = createHash('sha1').update(assetPaths.join(',')).digest('hex').slice(0, 8);
+    const newVersion = `build-${assetHash}`;
     swContent = swContent.replace(
-      /const CACHE_VERSION = '(.+)';/,
-      (match, currentVersion) => {
-        const versionMatch = currentVersion.match(/v(\d+)/);
-        if (versionMatch) {
-          const newNum = parseInt(versionMatch[1]) + 1;
-          const newVersion = currentVersion.replace(/v\d+/, `v${newNum}`);
-          console.log(`  📦 Cache version: ${currentVersion} → ${newVersion}`);
-          return `const CACHE_VERSION = '${newVersion}';`;
-        }
-        return match;
-      }
+      /const CACHE_VERSION = '([^']+)';/,
+      `const CACHE_VERSION = '${newVersion}';`
     );
+    console.log(`  📦 Cache version: ${newVersion}`);
 
-    // 6. Write back
-    await writeFile(SW_PATH, swContent, 'utf8');
+    // 6. Write to dist/sw.js (NOT public/sw.js)
+    await writeFile(swOutput, swContent, 'utf8');
 
     console.log(`✅ Service Worker updated successfully`);
     console.log(`   Found ${assetPaths.length}/${CRITICAL_ASSETS.length} critical assets`);
@@ -133,4 +133,4 @@ async function main() {
   }
 }
 
-main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) { main(); }
