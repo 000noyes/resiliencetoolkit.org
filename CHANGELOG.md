@@ -2,6 +2,32 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.3] - 2026-03-28
+
+### Added
+- `/replicate` page — step-by-step guide for other communities to fork and deploy their own Resilience Hub on Cloudflare Pages.
+- Data import/export on the dashboard now uses a single atomic IndexedDB transaction — a mid-import crash no longer leaves data in a partially-written state.
+- Dashboard empty state shows a CTA linking to Module 1 when no progress has been recorded yet.
+- Export button shows the timestamp of the last export.
+- CONTRIBUTING.md with fork-and-deploy instructions for Cloudflare Pages.
+
+### Changed
+- Service worker replaced with a minimal 65-line cache-first SW (down from 309 lines). Removes dead background-sync code and eliminates the build-time hash-update step that caused cache staleness on deploys.
+- Build script simplified to `astro check && astro build` — pagefind and the SW asset updater are no longer build dependencies.
+- Homepage search widget gracefully hides itself when pagefind is not built (instead of showing a broken search UI).
+- Deployment target updated from Render to Cloudflare Pages (`astro.config.mjs` site URL, `replicate.astro` instructions).
+
+### Fixed
+- WCAG AA: skip-to-content link added for keyboard and screen reader users.
+- Todo checkmark animation uses opacity transitions instead of conditional rendering — no layout shift on toggle.
+- Minimum 44px tap targets on interactive elements per WCAG touch target guidelines.
+- `importAllData()` no longer references an undefined TypeScript type (`MetadataValue`) on this branch.
+
+### Removed
+- Keystatic CMS integration and MDX content pipeline (simplification — content lives in `.astro` files).
+- `pagefind` dependency and post-build search index generation.
+- `scripts/update-sw-assets.mjs` and `render.yaml` (no longer needed).
+
 ## [0.0.2] - 2026-03-27
 
 ### Added

@@ -25,6 +25,7 @@ import {
   setMetadata,
   verifyStorage,
   exportAllData,
+  importAllData,
   getChecklistItems,
   getChecklistStats,
   batchUpdateChecklistItems,
@@ -396,5 +397,88 @@ describe('Concurrent Operations', () => {
 
     const item2 = await getTodo('rw-test', 'item-2');
     expect(item2!.notes).toBe('Note added concurrently');
+  });
+});
+
+describe('importAllData', () => {
+  it('should round-trip export and import data', async () => {
+    await initializeStorage();
+
+    // Create test data with unique keys
+    await saveTodo({ moduleKey: 'import-rt-mod', todoId: 'rt-1', completed: true, completedAt: '2026-01-01T00:00:00Z' });
+    await saveTodo({ moduleKey: 'import-rt-mod', todoId: 'rt-2', completed: false });
+    await saveTableRow({ moduleKey: 'import-rt-mod', tableId: 'tbl', rowId: 'row1', data: { col: 'val' } });
+
+    // Export
+    const exported = await exportAllData();
+    expect(exported.todos.length).toBeGreaterThanOrEqual(2);
+
+    // Import the exported data back
+    const result = await importAllData(exported);
+    expect(result.todosImported).toBeGreaterThanOrEqual(2);
+    expect(result.tablesImported).toBeGreaterThanOrEqual(1);
+
+    // Verify data preserved
+    const todo1 = await getTodo('import-rt-mod', 'rt-1');
+    expect(todo1).not.toBeNull();
+    expect(todo1!.completed).toBe(true);
+  });
+
+  it('should reject invalid JSON input', async () => {
+    await expect(importAllData('not json')).rejects.toThrow('Invalid format');
+    await expect(importAllData(null)).rejects.toThrow('Invalid format');
+    await expect(importAllData(42)).rejects.toThrow('Invalid format');
+  });
+
+  it('should reject data with wrong schema', async () => {
+    // Missing todos array
+    await expect(importAllData({ tables: [] })).rejects.toThrow('Wrong schema');
+    // Missing tables array
+    await expect(importAllData({ todos: [] })).rejects.toThrow('Wrong schema');
+    // Todo missing required fields
+    await expect(importAllData({ todos: [{ foo: 'bar' }], tables: [] })).rejects.toThrow('Wrong schema');
+    // Table missing required fields
+    await expect(importAllData({ todos: [], tables: [{ moduleKey: 'x' }] })).rejects.toThrow('Wrong schema');
+  });
+
+  it('should preserve existing data on schema validation failure', async () => {
+    await initializeStorage();
+
+    // Create a todo before the failing import
+    await saveTodo({ moduleKey: 'import-preserve', todoId: 'keep-me', completed: true });
+
+    // Attempt import with invalid schema — this should reject before clearing
+    await expect(importAllData({ todos: 'not-array', tables: [] })).rejects.toThrow();
+
+    // Verify original data still exists
+    const kept = await getTodo('import-preserve', 'keep-me');
+    expect(kept).not.toBeNull();
+    expect(kept!.completed).toBe(true);
+  });
+
+  it('should rollback on mid-transaction IDB error', async () => {
+    await initializeStorage();
+
+    // Create a todo before the import attempt
+    await saveTodo({ moduleKey: 'import-rollback', todoId: 'survivor', completed: true });
+
+    // Craft a payload that passes schema validation but has a todo missing the
+    // required 'id' keyPath — IDB will reject the put() inside the transaction
+    const badPayload = {
+      todos: [
+        { moduleKey: 'x', id: 'x-1', todoId: '1', completed: false },
+        { moduleKey: 'y', todoId: '2', completed: false },  // has moduleKey+id check passes, but 'id' is undefined at runtime
+      ],
+      tables: [],
+    };
+    // Manually set id to undefined to pass our validation but fail IDB keyPath
+    (badPayload.todos[1] as Record<string, unknown>).id = undefined;
+
+    await expect(importAllData(badPayload)).rejects.toThrow();
+
+    // The transaction should have rolled back — original todo preserved
+    const survivor = await getTodo('import-rollback', 'survivor');
+    expect(survivor).not.toBeNull();
+    expect(survivor!.completed).toBe(true);
   });
 });

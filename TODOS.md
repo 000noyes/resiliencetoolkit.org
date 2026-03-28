@@ -2,69 +2,28 @@
 
 ## Storage & Data Safety
 
-### Non-atomic batch operations in storage.ts
+### ~~Non-atomic batch operations in storage.ts~~ RESOLVED
 **Priority:** P2
-**Description:** `batchUpdateChecklistItems` (lines 384-399) and `clearCompletedItems` (lines 404-416) each open separate IndexedDB transactions per item. A crash mid-batch leaves data in an inconsistent state. Should use a single IDB transaction for atomicity.
-**Context:** Found by adversarial review on `migration-first-foundation` branch (2026-03-23). Pre-existing pattern, not introduced by the MDX migration. Risk is low for typical usage but matters during disaster scenarios (low battery, offline, spotty power).
-**Depends on:** None
+**Status:** Fixed in `cloudflare-minimal` (cherry-picked from `glass-box-expanded` Phase 7). Both `batchUpdateChecklistItems` and `clearCompletedItems` now use single IDB transactions.
 
 ### Unsafe `as` type casts on metadata values
 **Priority:** P3
-**Description:** storage.ts uses `as number`, `as string[]` etc. on `getMetadata()` returns without runtime validation. If stored data has wrong type (from a bug or version mismatch), arithmetic silently produces NaN. Consider adding runtime type guards.
-**Context:** Introduced by type safety improvements in this branch. The `any` type was replaced with `MetadataValue` union, but casts bypass the union's safety guarantees at runtime.
+**Description:** `storage.ts` uses `as number`, `as string[]` etc. on `getMetadata()` returns without runtime validation. If stored data has the wrong type (from a bug or version mismatch), arithmetic silently produces NaN. Consider adding runtime type guards.
+**Context:** Pre-existing. The `any` type was replaced with `MetadataValue` union, but casts bypass the union's safety guarantees at runtime.
 **Depends on:** None
 
-## Routing & Navigation
+## Service Worker
 
-### Duplicate pages for knowing-your-community
-**Priority:** P1
-**Description:** Both `/modules/knowing-your-community` (static .astro) and `/modules/knowing-your-community/0-1` (MDX dynamic) serve the same content. The static page should redirect to the MDX version, or be removed with the route handled by the MDX dynamic route only.
-**Context:** The static page was preserved during migration for backwards compatibility. It should be converted to a redirect in the next branch.
-**Depends on:** None
-
-### Null sectionData produces blank page
-**Priority:** P2
-**Description:** All three `[slug].astro` files conditionally render `{sectionData && (...)}`. If `getSectionNavigation()` returns null (slug mismatch, YAML misconfiguration), the page renders blank with HTTP 200 — no error, no 404. Should show a 404 or error message.
-**Context:** Pre-existing pattern. Affects all dynamic section routes.
-**Depends on:** None
-
-## Content Schema
-
-### No enum validation for `module` field in content schema
+### SW precache is all-or-nothing — no per-asset resilience
 **Priority:** P3
-**Description:** The sections content collection schema uses `z.string()` for the `module` field. A typo like `emergancy-preparedness` would build fine but the section would be invisible — not matched by any `[slug].astro` `getStaticPaths()`. Should use `z.enum()` with valid module slugs.
-**Context:** Pre-existing. Low risk while edits go through code review, but becomes important when Keystatic CMS is enabled for external contributors.
+**Description:** `cache.addAll(PRECACHE_ASSETS)` is atomic — if any single URL returns non-200, the entire SW install fails and offline mode is unavailable. The old SW used `Promise.allSettled` with per-asset error logging so a single dead URL wouldn't block the rest. The current minimal SW trades this resilience for simplicity.
+**Context:** Flagged in code review of `cloudflare-minimal`. All current precache URLs are verified valid, so risk is low. Becomes more important if pages are added or removed without updating the list.
 **Depends on:** None
 
-### Keystatic has no guard against moduleKey changes
-**Priority:** P2
-**Description:** The `moduleKey` field in Keystatic is a plain text input. An editor could rename it, silently orphaning all user data in IndexedDB. The data preservation test catches this in CI, but CMS editors may not run tests locally.
-**Context:** Pre-existing architectural concern. Blocked by Keystatic's lack of read-only field support. Mitigated by the data preservation regression test.
-**Depends on:** Keystatic feature: read-only fields or validation hooks
+## Search
 
-## MDX Content QA (vs PDF source — 2026-03-27)
-
-### 1.1 — Placeholder `href="#"` links in Systems column
-**Priority:** P2
-**Description:** Four items in the `guide-table` Systems column use `href="#"` placeholder links: emergency plans, emergency kits, storing backup food, and go bags. These should link to real resources or be converted to plain text if no URL is available.
-**Context:** Found during MDX accuracy QA pass against PDF source.
-
-### 1.5 — `low-stimulation-areas` Todo in wrong subsection
+### Homepage search hidden — add back or rethink approach
 **Priority:** P3
-**Description:** The `low-stimulation-areas` Todo ("Identify quiet, low-stimulation areas...") is placed in the Warming/Cooling subsection but belongs in the overnight shelter subsection per the PDF. Content is accurate, placement is slightly off.
-**Context:** Found during MDX accuracy QA pass against PDF source.
-
-### 1.7 — Missing href on "Example here" in `free-laundry-services`
-**Priority:** P2
-**Description:** The `free-laundry-services` Todo contains "Example here" as link text with no `href` — renders as a broken/missing link. Should be replaced with a real URL or removed.
-**Context:** Found during MDX accuracy QA pass against PDF source.
-
-### 1.8 — Three items missing from seniors/disabilities Communication section
-**Priority:** P2
-**Description:** The following three items appear in the PDF but are absent from the MDX:
-- "Have first responders learn basics of American Sign Language"
-- "Include visual aids on important informational resources"
-- "Consult with the Vermont Center for Independent Living when creating emergency plans"
-**Context:** Found during MDX accuracy QA pass against PDF source. These belong in the Communication and Coordination subsection.
-
-## Completed
+**Description:** Pagefind was removed in `cloudflare-minimal` (simplification goal: remove build complexity). The homepage search widget now auto-hides itself via JS when `/pagefind/pagefind.js` is absent. Re-evaluate for July LAOB deployment: pagefind is lightweight and the search UX is good. Options: (a) restore pagefind to build script, (b) replace with a simpler client-side search over a static JSON manifest, (c) remove the search UI entirely.
+**Context:** Search hidden is better than search broken. The widget code is preserved — re-enabling pagefind in `package.json` + build script restores it immediately.
+**Depends on:** July deployment feedback

@@ -337,28 +337,44 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
     );
   }
 
-  // Empty state for new users
+  // Empty state for new users — motivational CTA with module cards
   if (!hasData) {
+    const starterModules = [
+      { key: 'knowing-your-community', name: 'Knowing Your Community', desc: 'Map your local resources and connections', href: '/modules/knowing-your-community/0-1' },
+      { key: 'emergency-preparedness', name: 'Emergency Preparedness', desc: 'Build your household emergency kit', href: '/modules/emergency-preparedness' },
+      { key: 'baseline-resilience', name: 'Baseline Resilience', desc: 'Assess and improve community readiness', href: '/modules/baseline-resilience' },
+    ];
+
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center text-center py-12 px-6 rounded-lg bg-gradient-to-br from-primary/5 to-transparent border border-primary/10">
-          <div className="mb-4 p-3 bg-primary/10 rounded-full">
-            <Sparkles className="w-8 h-8 text-primary" />
+        <div className="py-8 px-6 rounded-lg bg-gradient-to-br from-primary/5 to-transparent border border-primary/10">
+          <div className="text-center mb-6">
+            <div className="mb-3 inline-flex p-3 bg-primary/10 rounded-full">
+              <Sparkles className="w-7 h-7 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+              Ready to start?
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Pick a module to begin building your community's resilience.
+            </p>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            Start Your Resilience Journey
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
-            Complete checklists and fill out worksheets in the modules below. Your
-            progress will appear here automatically.
-          </p>
-          <a
-            href="/modules/emergency-preparedness"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
-          >
-            Get Started
-            <ChevronRight className="w-4 h-4" />
-          </a>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {starterModules.map((mod) => (
+              <a
+                key={mod.key}
+                href={mod.href}
+                className="flex flex-col p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary/50 hover:shadow-md transition-all group no-underline"
+              >
+                <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors mb-1">
+                  {mod.name}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {mod.desc}
+                </span>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     );

@@ -10,14 +10,12 @@ interface Props {
   title?: string;
   description?: string;
   noPrint?: string[]; // Classes to hide when printing
-  searchable?: boolean; // Set to false to exclude page from Pagefind search index
 }
 
 const {
   title = 'Resilience Hub Toolkit',
   description = 'Local-first tools to organize systems, stuff, and people before, during, and after disasters.',
   noPrint = [],
-  searchable = true,
 } = Astro.props;
 
 // Preserve `noPrint` for upcoming print layout work.
@@ -78,10 +76,18 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     <script defer src="https://cloud.umami.is/script.js" data-website-id="0270ad49-8b3f-407f-9245-d666a62e5e8c"></script>
   </head>
   <body class="min-h-screen flex flex-col">
+    <!-- Skip to content link for keyboard/screen reader users -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:shadow-lg focus:outline-none"
+    >
+      Skip to main content
+    </a>
+
     {!isPrintMode && <StatusBanner />}
     {!isPrintMode && <Header />}
 
-    <main class="flex-1" {...(searchable ? { 'data-pagefind-body': true } : {})}>
+    <main id="main-content" class="flex-1">
       <slot />
     </main>
 

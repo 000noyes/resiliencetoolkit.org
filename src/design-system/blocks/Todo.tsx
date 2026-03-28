@@ -230,27 +230,27 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
               }}
               aria-checked={completed}
             />
-            {completed && (
-              <svg
-                viewBox="0 0 20 20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.8}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="todo-checkmark-svg absolute text-white pointer-events-none"
-                aria-hidden="true"
-                style={{
-                  top: '50%',
-                  left: '50%',
-                  width: '20px',
-                  height: '20px',
-                  transform: 'translate(-50%, -50%) translateX(-3.6px)'
-                }}
-              >
-                <path d="M6.2 10.6 9.1 13.4 13.8 7.2" />
-              </svg>
-            )}
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="todo-checkmark-svg absolute text-white pointer-events-none"
+              aria-hidden="true"
+              style={{
+                top: '50%',
+                left: '50%',
+                width: '20px',
+                height: '20px',
+                transform: 'translate(-50%, -50%) translateX(-3.6px)',
+                opacity: completed ? 1 : 0,
+                transition: 'opacity 200ms ease',
+              }}
+            >
+              <path d="M6.2 10.6 9.1 13.4 13.8 7.2" />
+            </svg>
           </div>
           <span
             className={`todo-text flex-1 text-base transition-colors duration-base ${

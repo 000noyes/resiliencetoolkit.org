@@ -337,6 +337,84 @@ export async function exportAllData(): Promise<{
   return { todos, tables, metadata };
 }
 
+/**
+ * Validate and import data from a JSON export file.
+ * Uses a multi-store IDB transaction — if any write fails, the entire import rolls back.
+ *
+ * @throws Error with specific message for invalid JSON, wrong schema, or transaction failure
+ */
+export async function importAllData(data: unknown): Promise<{ todosImported: number; tablesImported: number }> {
+  // Validate top-level structure
+  if (!data || typeof data !== 'object') {
+    throw new Error('Invalid format: expected a JSON object');
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  if (!Array.isArray(obj.todos) || !Array.isArray(obj.tables)) {
+    throw new Error('Wrong schema: missing "todos" or "tables" arrays');
+  }
+
+  const todos = obj.todos as Record<string, unknown>[];
+  const tables = obj.tables as Record<string, unknown>[];
+
+  // Validate required fields on todos
+  for (const todo of todos) {
+    if (!todo.moduleKey || !todo.id) {
+      throw new Error('Wrong schema: todo items must have "moduleKey" and "id" fields');
+    }
+  }
+
+  // Validate required fields on tables
+  for (const table of tables) {
+    if (!table.moduleKey || !table.tableId || !table.rowId) {
+      throw new Error('Wrong schema: table items must have "moduleKey", "tableId", and "rowId" fields');
+    }
+  }
+
+  const db = await getDB();
+
+  // Use a multi-store transaction for atomicity
+  const tx = db.transaction(['todos', 'tables', 'metadata'], 'readwrite');
+
+  try {
+    // Clear existing data
+    await tx.objectStore('todos').clear();
+    await tx.objectStore('tables').clear();
+
+    // Import todos
+    const todoStore = tx.objectStore('todos');
+    for (const todo of todos) {
+      await todoStore.put(todo as unknown as ResilienceDB['todos']['value']);
+    }
+
+    // Import tables
+    const tableStore = tx.objectStore('tables');
+    for (const table of tables) {
+      await tableStore.put(table as unknown as ResilienceDB['tables']['value']);
+    }
+
+    // Import metadata if present
+    if (obj.metadata && typeof obj.metadata === 'object' && !Array.isArray(obj.metadata)) {
+      const metadataStore = tx.objectStore('metadata');
+      const metadata = obj.metadata as Record<string, unknown>;
+      for (const [key, value] of Object.entries(metadata)) {
+        await metadataStore.put({
+          key,
+          value,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    }
+
+    await tx.done;
+    return { todosImported: todos.length, tablesImported: tables.length };
+  } catch (error) {
+    // Transaction automatically rolls back on error
+    throw new Error(`Import failed: ${error instanceof Error ? error.message : 'transaction error'}`);
+  }
+}
+
 // ============================================================================
 // CHECKLIST OPERATIONS (use existing todos store)
 // ============================================================================
@@ -379,7 +457,7 @@ export async function getChecklistStats(
 }
 
 /**
- * Batch update multiple checklist items
+ * Batch update multiple checklist items using a single transaction for atomicity.
  */
 export async function batchUpdateChecklistItems(
   updates: Array<{
@@ -388,18 +466,28 @@ export async function batchUpdateChecklistItems(
     completed: boolean;
   }>
 ): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction('todos', 'readwrite');
+  const store = tx.objectStore('todos');
+
   for (const update of updates) {
-    await saveTodo({
+    const id = `${update.moduleKey}-${update.todoId}`;
+    const existing = await store.get(id);
+    await store.put({
+      id,
       moduleKey: update.moduleKey,
       todoId: update.todoId,
       completed: update.completed,
       completedAt: update.completed ? new Date().toISOString() : undefined,
+      notes: existing?.notes,
     });
   }
+
+  await tx.done;
 }
 
 /**
- * Clear all completed items for a module or section
+ * Clear all completed items for a module or section using a single transaction.
  */
 export async function clearCompletedItems(
   moduleKey: string,
@@ -408,10 +496,18 @@ export async function clearCompletedItems(
   const items = await getChecklistItems(moduleKey, sectionId);
   const completedItems = items.filter((item) => item.completed);
 
+  if (completedItems.length === 0) return 0;
+
+  const db = await getDB();
+  const tx = db.transaction('todos', 'readwrite');
+  const store = tx.objectStore('todos');
+
   for (const item of completedItems) {
-    await deleteTodo(item.moduleKey, item.todoId);
+    const id = `${item.moduleKey}-${item.todoId}`;
+    await store.delete(id);
   }
 
+  await tx.done;
   return completedItems.length;
 }
 

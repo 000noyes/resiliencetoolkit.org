@@ -38,6 +38,9 @@ export default function ExportDataButton({ className = '' }: ExportDataButtonPro
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      // Record export timestamp for status panel + dashboard
+      localStorage.setItem('lastExportTimestamp', new Date().toISOString());
+
       setStatus('success');
 
       // Reset to idle after 2 seconds

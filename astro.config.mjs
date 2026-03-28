@@ -1,17 +1,13 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  // Production site URL - Update this with your actual domain after deployment
-  site: 'https://resiliencetoolkit-org.onrender.com',
+  site: 'https://resiliencetoolkit.org',
 
-  // Static site generation for fully local app
   output: 'static',
 
-  // Image optimization with Sharp
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp'
@@ -20,7 +16,6 @@ export default defineConfig({
 
   integrations: [
     react(),
-    mdx(),
     tailwind({
       applyBaseStyles: false,
     }),
