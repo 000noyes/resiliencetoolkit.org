@@ -1,6 +1,6 @@
 ---
 /**
- * Dynamic Route for CMS-Managed Baseline Resilience Sections
+ * Dynamic Route for CMS-Managed Module Sections
  *
  * Renders MDX content from the 'sections' content collection using ModuleLayout.
  * Auto-computes navigation (prev/next) from the module's section order.
@@ -12,9 +12,9 @@ import { getSectionNavigation } from '@/lib/navigation';
 
 export async function getStaticPaths() {
   const allSections = await getCollection('sections');
-  const brSections = allSections.filter(s => s.data.module === 'baseline-resilience');
+  const kycSections = allSections.filter(s => s.data.module === 'knowing-your-community');
 
-  return brSections.map(section => ({
+  return kycSections.map(section => ({
     params: { slug: section.data.slug },
     props: { section },
   }));

@@ -128,3 +128,11 @@ legacy_modules/
 .storybook/
 docs/
 src/stories/
+.gstack/
+
+# Local notes (not for version control)
+TODOS.md
+
+# Playwright test artifacts
+test-results/
+playwright-report/

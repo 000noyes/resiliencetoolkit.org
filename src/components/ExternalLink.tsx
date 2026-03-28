@@ -13,6 +13,7 @@ export default function ExternalLink({ href, children, className = '' }: Externa
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isHoverCapable, setIsHoverCapable] = useState(false);
+  const [isExternal, setIsExternal] = useState(false);
   const linkRef = useRef<HTMLAnchorElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout>();
@@ -42,15 +43,15 @@ export default function ExternalLink({ href, children, className = '' }: Externa
 
   const domain = getDomain(href);
 
-  // Check if link is external (safe to use window since this is client:only)
-  const isExternal = (() => {
+  // Determine if link is external — must run client-side to access window
+  useEffect(() => {
     try {
       const url = new URL(href, window.location.origin);
-      return url.hostname !== window.location.hostname;
+      setIsExternal(url.hostname !== window.location.hostname);
     } catch {
-      return false;
+      setIsExternal(false);
     }
-  })();
+  }, [href]);
 
   // Handle click - check preferences before opening modal
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -126,7 +127,7 @@ export default function ExternalLink({ href, children, className = '' }: Externa
     };
   }, []);
 
-  // If not external, render as regular link
+  // If not external (or not yet hydrated), render as a regular link
   if (!isExternal) {
     return (
       <a href={href} className={className}>
