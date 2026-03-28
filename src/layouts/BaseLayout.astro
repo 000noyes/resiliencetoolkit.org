@@ -1,5 +1,8 @@
 ---
 import '../styles/base.css';
+import '@fontsource/outfit/400.css';
+import '@fontsource/outfit/500.css';
+import '@fontsource/outfit/600.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
@@ -44,12 +47,6 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
       }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
     <meta name="generator" content={Astro.generator} />
 
     <!-- Open Graph / Social -->
