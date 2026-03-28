@@ -395,7 +395,7 @@ export async function importAllData(data: unknown): Promise<{ todosImported: num
     // Import metadata if present
     if (obj.metadata && typeof obj.metadata === 'object' && !Array.isArray(obj.metadata)) {
       const metadataStore = tx.objectStore('metadata');
-      const metadata = obj.metadata as Record<string, MetadataValue>;
+      const metadata = obj.metadata as Record<string, unknown>;
       for (const [key, value] of Object.entries(metadata)) {
         await metadataStore.put({
           key,
