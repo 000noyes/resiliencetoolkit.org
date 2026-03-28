@@ -401,7 +401,7 @@ export async function importAllData(data: unknown): Promise<{ todosImported: num
       for (const [key, value] of Object.entries(metadata)) {
         await metadataStore.put({
           key,
-          value,
+          value: value as MetadataValue,
           updatedAt: new Date().toISOString(),
         });
       }
