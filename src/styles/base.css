@@ -1000,7 +1000,13 @@ a.button-link:focus-visible {
 }
 
 .module-layout .module-content {
+  grid-column: 2; /* Stay in content column even while TOC is hydrating */
   min-width: 0; /* Prevent grid blowout */
+}
+
+/* When TableOfContents returns null (no headings found), expand content to full width */
+.module-layout:not(:has(> .toc-sidebar)) .module-content {
+  grid-column: 1 / -1;
 }
 
 .module-layout .toc-sidebar {

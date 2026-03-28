@@ -123,19 +123,31 @@ self.addEventListener('install', (event) => {
 });
 
 /**
- * Activate event - clean up old caches
+ * Activate event - clean up old caches and notify clients to reload
  */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    }).then(() => {
-      return self.clients.claim();
-    })
+    (async () => {
+      const cacheNames = await caches.keys();
+      const oldCaches = cacheNames.filter((name) => name !== CACHE_NAME);
+      const isUpdate = oldCaches.length > 0;
+
+      // Delete stale caches from previous deploys
+      await Promise.all(oldCaches.map((name) => caches.delete(name)));
+
+      // Claim all clients immediately
+      await self.clients.claim();
+
+      // On update (not fresh install): tell existing tabs to reload so they get
+      // fresh HTML with correct asset hashes. Without this, skipWaiting() would
+      // leave tabs with old HTML pointing to old bundle URLs that 404 on the new deploy.
+      if (isUpdate) {
+        const allClients = await self.clients.matchAll({ type: 'window' });
+        allClients.forEach((client) => {
+          client.postMessage({ type: 'SW_UPDATED' });
+        });
+      }
+    })()
   );
 });
 
