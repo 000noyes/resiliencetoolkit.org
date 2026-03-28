@@ -10,14 +10,12 @@ interface Props {
   title?: string;
   description?: string;
   noPrint?: string[]; // Classes to hide when printing
-  searchable?: boolean; // Set to false to exclude page from Pagefind search index
 }
 
 const {
   title = 'Resilience Hub Toolkit',
   description = 'Local-first tools to organize systems, stuff, and people before, during, and after disasters.',
   noPrint = [],
-  searchable = true,
 } = Astro.props;
 
 // Preserve `noPrint` for upcoming print layout work.
@@ -89,7 +87,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     {!isPrintMode && <StatusBanner />}
     {!isPrintMode && <Header />}
 
-    <main id="main-content" class="flex-1" {...(searchable ? { 'data-pagefind-body': true } : {})}>
+    <main id="main-content" class="flex-1">
       <slot />
     </main>
 

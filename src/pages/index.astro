@@ -771,6 +771,14 @@ const defaultSnapshot = fieldSnapshots[0];
           }
         };
 
+        // Hide the search widget if pagefind isn't built into this deployment
+        loadPagefind().then((pf) => {
+          if (!pf) {
+            const searchSection = input.closest('[data-pagefind-search]');
+            if (searchSection) searchSection.style.display = 'none';
+          }
+        });
+
         const clearHits = () => {
           while (hitsEl.firstChild) hitsEl.removeChild(hitsEl.firstChild);
         };
