@@ -167,7 +167,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
         }));
       });
 
-      // Listen for sync messages from service worker
+      // Listen for messages from service worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data && event.data.type === 'SYNC_DATA') {
@@ -176,6 +176,13 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
             document.dispatchEvent(new CustomEvent('background-sync', {
               detail: { timestamp: event.data.timestamp }
             }));
+          }
+
+          // SW updated to a new version — reload to get fresh HTML with correct
+          // asset hashes. Prevents the skipWaiting() race where existing tabs get
+          // old HTML pointing to old bundle URLs that 404 on the new deploy.
+          if (event.data && event.data.type === 'SW_UPDATED') {
+            window.location.reload();
           }
         });
       }
@@ -209,29 +216,6 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
         }
       })();
 
-      /* COMMENTED OUT - Supabase auth check removed
-      import { getSession } from '@/lib/supabase';
-
-      (async () => {
-        try {
-          console.log('[BaseLayout] Checking authentication status...');
-
-          // Check if user is authenticated
-          const session = await getSession();
-
-          if (session) {
-            console.log('[BaseLayout] User is authenticated, skipping guest mode');
-          } else {
-            // If not authenticated, initialize guest mode
-            console.log('[BaseLayout] User is not authenticated, initializing guest mode...');
-            const { userId, isGuest } = await initializeStorage();
-            console.log('[BaseLayout] Initialized storage:', { userId, isGuest });
-          }
-        } catch (error) {
-          console.error('[BaseLayout] Failed to initialize storage:', error);
-        }
-      })();
-      */
     </script>
   </body>
 </html>
