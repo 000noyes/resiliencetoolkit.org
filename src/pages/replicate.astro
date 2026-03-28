@@ -43,17 +43,20 @@ pnpm dev</code></pre>
         <div>
           <div class="flex items-center gap-3 mb-3">
             <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">2</span>
-            <h2 class="text-title font-semibold text-foreground">Customize content via Keystatic CMS</h2>
+            <h2 class="text-title font-semibold text-foreground">Edit the content directly</h2>
           </div>
           <div class="ml-11 space-y-3">
             <p class="text-muted-foreground">
-              Run <code class="bg-muted px-1.5 py-0.5 rounded text-sm">pnpm dev</code> and navigate to <code class="bg-muted px-1.5 py-0.5 rounded text-sm">localhost:4321/keystatic</code> to access the CMS. From there you can:
+              Content lives in <code class="bg-muted px-1 py-0.5 rounded text-xs">.astro</code> files — no CMS required. Open any page in <code class="bg-muted px-1 py-0.5 rounded text-xs">src/pages/</code> and edit it directly:
             </p>
             <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Edit section content (the 17 MDX files in <code class="bg-muted px-1 py-0.5 rounded text-xs">src/content/sections/</code>)</li>
-              <li>Update module metadata (section order, titles, phases)</li>
-              <li>Replace Vermont-specific references with your own region's resources</li>
+              <li>Replace Vermont-specific references with your region's resources</li>
+              <li>Update external links to local emergency management agencies and mutual aid networks</li>
+              <li>Edit module titles, phases, and section copy as needed</li>
             </ul>
+            <p class="text-muted-foreground">
+              Run <code class="bg-muted px-1.5 py-0.5 rounded text-sm">pnpm dev</code> to preview changes at <code class="bg-muted px-1.5 py-0.5 rounded text-sm">localhost:4321</code>.
+            </p>
           </div>
         </div>
 
@@ -88,9 +91,8 @@ pnpm dev</code></pre>
               The toolkit builds to a static site — no server required. Deploy anywhere:
             </p>
             <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li><strong><a href="https://render.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Render</a></strong> (current host) — Free static site hosting</li>
-              <li><strong><a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Cloudflare Pages</a></strong> — Global edge network, generous free tier</li>
-              <li><strong><a href="https://netlify.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Netlify</a></strong> — Git-based deployment</li>
+              <li><strong><a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Cloudflare Pages</a></strong> — Recommended. Connect your GitHub fork, set build command to <code class="bg-muted px-1 py-0.5 rounded text-xs">pnpm build</code>, output to <code class="bg-muted px-1 py-0.5 rounded text-xs">dist</code>. Free tier is generous.</li>
+              <li><strong><a href="https://netlify.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Netlify</a></strong> — Git-based deployment, also free</li>
               <li><strong><a href="https://vercel.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Vercel</a></strong> — Zero-config deployment</li>
             </ul>
             <p class="text-muted-foreground">
