@@ -1,37 +1,37 @@
 // Service Worker — Resilience Hub Toolkit
 // Cache-first offline strategy. Bump CACHE_VERSION on every deploy.
-const CACHE_VERSION = 'v28-minimal';
+const CACHE_VERSION = 'v29-cf-pages';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
   '/',
-  '/modules',
-  '/downloads',
-  '/about',
-  '/dashboard',
-  '/introduction',
-  '/map',
-  '/downloads-and-templates',
-  '/LICENSE',
+  '/modules/',
+  '/downloads/',
+  '/about/',
+  '/dashboard/',
+  '/introduction/',
+  '/map/',
+  '/downloads-and-templates/',
+  '/LICENSE/',
   '/modules/emergency-preparedness/',
   '/modules/baseline-resilience/',
-  '/modules/knowing-your-community',
-  '/modules/emergency-preparedness/1-1-kits',
-  '/modules/emergency-preparedness/1-2-food-water',
-  '/modules/emergency-preparedness/1-3-medical',
-  '/modules/emergency-preparedness/1-4-power',
-  '/modules/emergency-preparedness/1-5-shelter',
-  '/modules/emergency-preparedness/1-6-vehicles',
-  '/modules/emergency-preparedness/1-7-sanitation',
-  '/modules/emergency-preparedness/1-8-special-populations',
-  '/modules/emergency-preparedness/1-9-response-plans',
-  '/modules/emergency-preparedness/1-10-volunteers',
-  '/modules/emergency-preparedness/1-11-flood-recovery',
-  '/modules/emergency-preparedness/1-12-mutual-aid',
-  '/modules/emergency-preparedness/1-13-financial-resources',
-  '/modules/baseline-resilience/2-1-basic-needs',
-  '/modules/baseline-resilience/2-2-shared-tools',
-  '/modules/baseline-resilience/2-3-community-building',
+  '/modules/knowing-your-community/',
+  '/modules/emergency-preparedness/1-1-kits/',
+  '/modules/emergency-preparedness/1-2-food-water/',
+  '/modules/emergency-preparedness/1-3-medical/',
+  '/modules/emergency-preparedness/1-4-power/',
+  '/modules/emergency-preparedness/1-5-shelter/',
+  '/modules/emergency-preparedness/1-6-vehicles/',
+  '/modules/emergency-preparedness/1-7-sanitation/',
+  '/modules/emergency-preparedness/1-8-special-populations/',
+  '/modules/emergency-preparedness/1-9-response-plans/',
+  '/modules/emergency-preparedness/1-10-volunteers/',
+  '/modules/emergency-preparedness/1-11-flood-recovery/',
+  '/modules/emergency-preparedness/1-12-mutual-aid/',
+  '/modules/emergency-preparedness/1-13-financial-resources/',
+  '/modules/baseline-resilience/2-1-basic-needs/',
+  '/modules/baseline-resilience/2-2-shared-tools/',
+  '/modules/baseline-resilience/2-3-community-building/',
   '/manifest.json',
   '/RHT_orange.svg',
   '/RHT_text.png',
@@ -58,13 +58,15 @@ self.addEventListener('fetch', (event) => {
   if (new URL(event.request.url).origin !== location.origin) return;
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+      // Don't serve cached redirected responses — let the browser follow them natively
+      if (cached && !cached.redirected) return cached;
       return fetch(event.request).then((response) => {
-        if (response.ok) {
+        // Don't cache redirected responses under the original URL
+        if (response.ok && !response.redirected) {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
         }
         return response;
-      });
+      }).catch(() => cached || new Response('Offline', { status: 503 }));
     })
   );
 });
