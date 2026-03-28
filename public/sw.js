@@ -41,8 +41,10 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) =>
+      // allSettled: one failed URL won't abort the whole precache
+      Promise.allSettled(PRECACHE_ASSETS.map(url => cache.add(url)))
+    ).then(() => self.skipWaiting())
   );
 });
 
@@ -61,9 +63,10 @@ self.addEventListener('fetch', (event) => {
       // Don't serve cached redirected responses — let the browser follow them natively
       if (cached && !cached.redirected) return cached;
       return fetch(event.request).then((response) => {
-        // Don't cache redirected responses under the original URL
+        // Clone before returning — body can only be consumed once
         if (response.ok && !response.redirected) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
       }).catch(() => cached || new Response('Offline', { status: 503 }));
