@@ -20,6 +20,13 @@
 **Context:** Flagged in code review of `cloudflare-minimal`. All current precache URLs are verified valid, so risk is low. Becomes more important if pages are added or removed without updating the list.
 **Depends on:** None
 
+### PRECACHE_ASSETS URLs don't match actual page routes
+**Priority:** P3
+**Description:** `public/sw.js` PRECACHE_ASSETS lists slugs like `/modules/emergency-preparedness/1-1-kits/`, `/1-2-food-water/` etc. but the actual built routes are `/modules/emergency-preparedness/1-1/`, `/1-2/` etc. Since `cache.addAll()` is atomic, any 404 aborts the entire SW install and offline mode is unavailable.
+**Context:** Flagged in PR #7 code review. Pre-existing before this PR. Compounds the all-or-nothing risk above — wrong URLs are guaranteed 404s, not just possible ones.
+**Fix:** Audit PRECACHE_ASSETS against `dist/` output after each build, or generate the list from the build manifest automatically.
+**Depends on:** None
+
 ## Search
 
 ### Homepage search hidden — add back or rethink approach

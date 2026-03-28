@@ -3,7 +3,9 @@
  *
  * Defines schemas for CMS-managed content:
  * - modules: Module metadata (YAML files)
- * - sections: Section content with interactive components (MDX files)
+ *
+ * Note: sections collection removed — all sections are hardcoded .astro pages.
+ * MDX migration deferred to glass-box-expanded branch.
  *
  * @see https://docs.astro.build/en/guides/content-collections/
  */
@@ -29,18 +31,4 @@ const modules = defineCollection({
   }),
 });
 
-const sections = defineCollection({
-  loader: glob({ pattern: '**/*.mdx', base: './src/content/sections' }),
-  schema: z.object({
-    number: z.string(),
-    title: z.string(),
-    module: z.string(),
-    slug: z.string(),
-    moduleKey: z.string(),
-    contentType: z.enum(['guide-table', 'todo-list', 'editable-table', 'informational']),
-    pdfFilename: z.string().optional(),
-    resourcesUrl: z.string().url().optional(),
-  }),
-});
-
-export const collections = { modules, sections };
+export const collections = { modules };
