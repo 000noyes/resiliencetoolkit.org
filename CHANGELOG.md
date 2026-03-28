@@ -2,6 +2,15 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.4] - 2026-03-28
+
+### Changed
+- Homepage field snapshot photos disabled (kept in codebase, not rendered) to reduce page weight and visual noise pending a content review.
+- Dashboard "Module 1" quick-link now points to the correct module landing page (`/modules/knowing-your-community`) instead of a broken subsection URL.
+
+### Removed
+- Changelog link removed from site footer. The `/changelog` page still exists but is not linked from navigation until content is current.
+
 ## [0.0.3] - 2026-03-28
 
 ### Added
