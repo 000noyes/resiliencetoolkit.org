@@ -1005,7 +1005,7 @@ a.button-link:focus-visible {
 }
 
 /* When TableOfContents returns null (no headings found), expand content to full width */
-.module-layout:not(:has(> .toc-sidebar)) .module-content {
+.module-layout:not(:has(.toc-sidebar)) .module-content {
   grid-column: 1 / -1;
 }
 
