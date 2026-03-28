@@ -27,6 +27,20 @@
 **Fix:** Audit PRECACHE_ASSETS against `dist/` output after each build, or generate the list from the build manifest automatically.
 **Depends on:** None
 
+## Dead Code
+
+### Remove 11 unused components + dead lib files
+**Priority:** P2
+**Description:** 11 components with zero imports anywhere in pages or layouts — artifacts from speculative design system work: `GuestModeBanner.tsx`, `LogoHoverCard.tsx`, `WhatsNewBanner.tsx`, `EmptyState.astro`, `IconButton.astro`, `MetricCard.astro`, `OfflineReadyBanner.astro`, `SearchField.astro`, `SegmentedControl.astro`, `Sidebar.astro`, `SidebarItem.astro`. Also: `validateRedirect.ts` (auth redirect logic, no callers, no auth system), `mdx-components.tsx` (MDX removed).
+**Fix:** Delete all of the above. Confirm no imports missed with a grep before deleting.
+**Depends on:** None
+
+### Investigate ExternalLink abstraction
+**Priority:** P3
+**Description:** `ExternalLink.tsx` → `ExternalLinkModal.tsx` → `externalLinkPreferences.ts` — ~300 lines to show a "you're leaving this site" modal before opening external links. Used in 16 pages. Investigate why this abstraction was added before removing — there may be a deliberate reason (accessibility, community trust, hosted-in-contexts-without-internet). If no good reason, replace with plain `<a target="_blank" rel="noopener noreferrer">` and a CSS external-link icon.
+**Fix:** Audit usage, understand original intent, decide: keep (document why) or replace (simpler `<a>`).
+**Depends on:** None
+
 ## Search
 
 ### Homepage search hidden — add back or rethink approach

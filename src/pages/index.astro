@@ -9,22 +9,27 @@ import { modules, getPhaseCounts, phaseDotColors } from '@/data/modules';
 const phases = ['All', 'Before', 'During', 'After'] as const;
 const phaseCounts = getPhaseCounts();
 
-const fieldSnapshots = [
-  {
-    label: 'Field Snapshot',
-    image: '/images/culvert-road.png',
-    alt: 'Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs.',
-    caption: 'Road closed for culvert repair, July 2023'
-  },
-  {
-    label: 'Field Snapshot',
-    image: '/images/river-bend-washout.png',
-    alt: 'River bend washout where floodwaters carved a channel dangerously close to the gravel road.',
-    caption: 'River bend washout cutting off access, July 2023'
-  }
-];
-
-const defaultSnapshot = fieldSnapshots[0];
+// DISABLED 2026-03-28: Field snapshot photos removed to reduce homepage complexity.
+// Components and images preserved for potential future use.
+// To re-enable: uncomment this block and the Field Snapshot section + dialogs below,
+// and restore the fieldSnapshotData script tag + inline script at the bottom of the file.
+//
+// const fieldSnapshots = [
+//   {
+//     label: 'Field Snapshot',
+//     image: '/images/culvert-road.png',
+//     alt: 'Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs.',
+//     caption: 'Road closed for culvert repair, July 2023'
+//   },
+//   {
+//     label: 'Field Snapshot',
+//     image: '/images/river-bend-washout.png',
+//     alt: 'River bend washout where floodwaters carved a channel dangerously close to the gravel road.',
+//     caption: 'River bend washout cutting off access, July 2023'
+//   }
+// ];
+//
+// const defaultSnapshot = fieldSnapshots[0];
 ---
 
 <BaseLayout
@@ -308,117 +313,10 @@ const defaultSnapshot = fieldSnapshots[0];
     </div>
   </section>
 
-  <!-- Field Snapshot -->
-  <section class="relative z-10 py-12 px-4">
-    <div class="mx-auto max-w-5xl">
-      <figure class="bg-background border border-border rounded-3xl shadow-2xl overflow-hidden" data-field-snapshot>
-        <div class="relative h-64 sm:h-72 md:h-80">
-          <img
-            src={defaultSnapshot.image}
-            alt={defaultSnapshot.alt}
-            class="w-full h-full object-cover"
-            loading="lazy"
-            decoding="async"
-            data-field-image
-          />
-          <span class="absolute top-4 left-4 bg-primary/90 text-white text-xs font-semibold tracking-wide uppercase px-3 py-1 rounded-full shadow-lg backdrop-blur" data-field-label>
-            {defaultSnapshot.label}
-          </span>
-          <span class="absolute bottom-4 left-4 inline-flex items-center rounded-full bg-black/90 text-white text-sm sm:text-base font-medium px-4 py-1.5 shadow-lg backdrop-blur border border-white/20" data-field-caption>
-            {defaultSnapshot.caption}
-          </span>
-          <button
-            type="button"
-            class="absolute top-4 right-4 inline-flex items-center gap-1 rounded-full bg-primary/90 text-white text-xs font-semibold tracking-wide uppercase px-3 py-1 shadow-lg backdrop-blur hover:bg-primary transition-colors"
-            data-snapshot-gallery-open
-          >
-            View gallery
-          </button>
-        </div>
-      </figure>
-    </div>
-  </section>
-
-  <dialog
-    data-snapshot-gallery-dialog
-    class="rounded-3xl border border-border p-0 w-[min(90vw,640px)] bg-background text-foreground shadow-2xl backdrop:bg-black/60"
-  >
-    <div class="p-6 sm:p-8 space-y-6">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p class="text-xs font-semibold tracking-wide text-primary uppercase">Gallery</p>
-          <h3 class="text-title font-semibold text-foreground">Field Snapshots</h3>
-        </div>
-        <button
-          type="button"
-          class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          data-snapshot-gallery-close
-        >
-          Close
-        </button>
-      </div>
-      <div class="grid grid-cols-1 gap-4">
-        {fieldSnapshots.map((shot, idx) => (
-          <button
-            type="button"
-            class="text-left overflow-hidden rounded-2xl border border-border bg-card hover:-translate-y-0.5 hover:shadow-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            data-snapshot-detail-trigger
-            data-image={shot.image}
-            data-alt={shot.alt}
-            data-caption={shot.caption}
-          >
-            <figure>
-              <div class="h-48 sm:h-56">
-                <img
-                  src={shot.image}
-                  alt={shot.alt}
-                  class="w-full h-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <figcaption class="p-4">
-                <p class="text-sm font-semibold text-foreground">{shot.caption}</p>
-                <p class="text-xs text-muted-foreground mt-1">{shot.alt}</p>
-              </figcaption>
-            </figure>
-          </button>
-        ))}
-      </div>
-    </div>
-  </dialog>
-
-  <dialog
-    data-snapshot-detail-dialog
-    class="rounded-2xl border border-border p-0 w-[min(98vw,1600px)] h-[min(96vh,1200px)] bg-background text-foreground shadow-2xl backdrop:bg-black/80"
-  >
-    <div class="flex flex-col h-full p-3 sm:p-4">
-      <div class="flex items-center justify-between gap-4 mb-3">
-        <p class="text-sm font-semibold text-primary uppercase tracking-wide">Field Snapshot</p>
-        <button
-          type="button"
-          class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          data-snapshot-detail-close
-        >
-          Close
-        </button>
-      </div>
-      <div class="flex-1 min-h-0 rounded-xl overflow-hidden border border-border">
-        <img
-          src=""
-          alt=""
-          class="w-full h-full object-contain"
-          loading="lazy"
-          decoding="async"
-          data-detail-image
-        />
-      </div>
-      <div class="mt-3">
-        <p class="text-base font-semibold text-foreground" data-detail-caption></p>
-        <p class="text-sm text-muted-foreground mt-1" data-detail-alt></p>
-      </div>
-    </div>
-  </dialog>
+  <!-- DISABLED 2026-03-28: Field Snapshot section removed to reduce homepage complexity.
+       Section, dialogs, and images (public/images/culvert-road.png, river-bend-washout.png) preserved.
+       To re-enable: uncomment the fieldSnapshots data in the frontmatter above,
+       then restore this entire block and the fieldSnapshotData script tag + inline script at the bottom. -->
 
   <!-- Origin Story Section -->
   <section class="py-12 bg-card">
@@ -1008,6 +906,10 @@ const defaultSnapshot = fieldSnapshots[0];
     })();
   </script>
 
+  <!-- DISABLED 2026-03-28: Field snapshot data + JS removed (companion to disabled section above).
+       To re-enable: restore fieldSnapshots frontmatter data, the Field Snapshot HTML section,
+       and uncomment this script block. -->
+  <!--
   <script
     type="application/json"
     id="fieldSnapshotData"
@@ -1016,116 +918,9 @@ const defaultSnapshot = fieldSnapshots[0];
   <script is:inline>
     (() => {
       const run = () => {
-        if (typeof window === 'undefined') {
-          return;
-        }
-
-        const dataEl = document.getElementById('fieldSnapshotData');
-        if (!dataEl) {
-          return;
-        }
-
-        let snapshots = [];
-        try {
-          snapshots = JSON.parse(dataEl.textContent ?? '[]');
-        } catch (error) {
-          console.warn('Unable to parse field snapshot data', error);
-          return;
-        }
-
-        if (!Array.isArray(snapshots) || snapshots.length === 0) {
-          return;
-        }
-
-        const figure = document.querySelector('[data-field-snapshot]');
-        if (figure) {
-          const img = figure.querySelector('[data-field-image]');
-          const label = figure.querySelector('[data-field-label]');
-          const caption = figure.querySelector('[data-field-caption]');
-          const storageKey = 'fieldSnapshotIndex';
-          let storedIndex = -1;
-
-          try {
-            const storedValue = window.localStorage?.getItem(storageKey);
-            const parsed = Number(storedValue);
-            storedIndex = Number.isInteger(parsed) ? parsed : -1;
-          } catch (error) {
-            console.warn('Unable to read snapshot index from storage', error);
-          }
-
-          const nextIndex = (storedIndex + 1) % snapshots.length;
-          try {
-            window.localStorage?.setItem(storageKey, String(nextIndex));
-          } catch (error) {
-            console.warn('Unable to persist snapshot index', error);
-          }
-
-          const snapshot = snapshots[nextIndex];
-          if (img && snapshot?.image) {
-            img.src = snapshot.image;
-            if (snapshot.alt) {
-              img.alt = snapshot.alt;
-            }
-          }
-          if (label && snapshot?.label) {
-            label.textContent = snapshot.label;
-          }
-          if (caption && snapshot?.caption) {
-            caption.textContent = snapshot.caption;
-          }
-        }
-
-        const openBtn = document.querySelector('[data-snapshot-gallery-open]');
-        const dialog = document.querySelector('[data-snapshot-gallery-dialog]');
-        const closeBtn = dialog?.querySelector('[data-snapshot-gallery-close]');
-
-        if (openBtn && dialog && typeof dialog.showModal === 'function') {
-          openBtn.addEventListener('click', () => dialog.showModal());
-          closeBtn?.addEventListener('click', () => dialog.close());
-          dialog.addEventListener('click', (event) => {
-            if (event.target === dialog) {
-              dialog.close();
-            }
-          });
-        }
-
-        const detailDialog = document.querySelector('[data-snapshot-detail-dialog]');
-        const detailClose = detailDialog?.querySelector('[data-snapshot-detail-close]');
-        const detailImage = detailDialog?.querySelector('[data-detail-image]');
-        const detailCaption = detailDialog?.querySelector('[data-detail-caption]');
-        const detailAlt = detailDialog?.querySelector('[data-detail-alt]');
-
-        if (detailDialog && typeof detailDialog.showModal === 'function') {
-          document.querySelectorAll('[data-snapshot-detail-trigger]').forEach((trigger) => {
-            trigger.addEventListener('click', () => {
-              const image = trigger.getAttribute('data-image');
-              const caption = trigger.getAttribute('data-caption');
-              const alt = trigger.getAttribute('data-alt');
-
-              if (detailImage && image) {
-                detailImage.src = image;
-                detailImage.alt = alt ?? '';
-              }
-              if (detailCaption) {
-                detailCaption.textContent = caption ?? '';
-              }
-              if (detailAlt) {
-                detailAlt.textContent = alt ?? '';
-              }
-
-              detailDialog.showModal();
-            });
-          });
-
-          detailClose?.addEventListener('click', () => detailDialog.close());
-          detailDialog.addEventListener('click', (event) => {
-            if (event.target === detailDialog) {
-              detailDialog.close();
-            }
-          });
-        }
+        // ... field snapshot rotation and gallery logic
+        // Full source preserved in git history (commit before 2026-03-28 simplification)
       };
-
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', run, { once: true });
       } else {
@@ -1133,4 +928,5 @@ const defaultSnapshot = fieldSnapshots[0];
       }
     })();
   </script>
+  -->
 </BaseLayout>
