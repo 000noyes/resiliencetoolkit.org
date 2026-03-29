@@ -32,7 +32,8 @@ self.addEventListener('fetch', (event) => {
       return fetch(event.request).then((response) => {
         // Don't cache redirected responses under the original URL
         if (response.ok && !response.redirected) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }
         return response;
       }).catch(() => cached || new Response('Offline', { status: 503 }));
