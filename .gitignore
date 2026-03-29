@@ -129,6 +129,7 @@ legacy_modules/
 docs/
 src/stories/
 .gstack/
+.claude/
 
 # Local notes (not for version control)
 TODOS.md
