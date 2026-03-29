@@ -2,6 +2,18 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.5] - 2026-03-29
+
+### Fixed
+- Offline mode was silently broken for all users. `public/sw.js` PRECACHE_ASSETS listed old slug formats (`/1-1-kits/`, `/1-2-food-water/`, etc.) that don't match actual built routes (`/1-1/`, `/1-2/`, etc.). Since `cache.addAll()` is atomic, any 404 aborts the entire SW install. Every user who visited the site believed they had offline access. They didn't.
+- `scripts/generate-sw-precache.mjs` added as a `postbuild` hook. Reads all `dist/**/index.html` files after each build, generates the correct PRECACHE_ASSETS list, and writes it into `dist/sw.js`. The list can no longer drift — it's computed from the actual built output on every deploy.
+- SW install handler switched from `cache.addAll()` (all-or-nothing) to `Promise.allSettled()` with per-URL error logging. A single transient 404 now logs a warning instead of aborting the entire SW install.
+- `CACHE_VERSION` auto-bumped to a build timestamp (`v-build-YYYYMMDDHHmmss`) on every deploy. No more manual version bumps required.
+
+### Changed
+- README rewritten mission-first: leads with the offline disaster-preparedness use case, drops version string and internal history, points to CONTRIBUTING.md for contributor details.
+- CONTRIBUTING.md updated: adds `> [!WARNING]` block for the moduleKey rename contract, documents how to add a new section, and updates the CACHE_VERSION step to note the build handles it automatically.
+
 ## [0.0.4] - 2026-03-28
 
 ### Changed
