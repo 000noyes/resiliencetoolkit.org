@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
+    "postbuild": "node scripts/generate-sw-precache.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "generate-icons": "node scripts/generate-icons.mjs"

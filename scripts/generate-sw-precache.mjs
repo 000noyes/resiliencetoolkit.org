@@ -1,0 +1,151 @@
+#!/usr/bin/env node
+/**
+ * generate-sw-precache.mjs
+ *
+ * Postbuild script. Reads all dist/**\/index.html files, converts them to URL
+ * routes, and writes the generated PRECACHE_ASSETS list into dist/sw.js
+ * between the __PRECACHE_ASSETS_START__ / __PRECACHE_ASSETS_END__ sentinels.
+ * Also auto-bumps CACHE_VERSION to a build timestamp.
+ *
+ * Writes to dist/sw.js (the deployed artifact) — never modifies public/sw.js.
+ * Run via: "postbuild": "node scripts/generate-sw-precache.mjs" in package.json
+ */
+
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readdirSync, statSync } from 'node:fs';
+import { join, relative, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const rootDir = join(__dirname, '..');
+const distDir = join(rootDir, 'dist');
+const swPath = join(distDir, 'sw.js');
+
+const SENTINEL_START = '// __PRECACHE_ASSETS_START__';
+const SENTINEL_END = '// __PRECACHE_ASSETS_END__';
+
+// Routes to exclude from precache (not needed offline, not in nav)
+const EXCLUDE_PREFIXES = [
+  '/_astro/',
+  '/changelog/',
+  '/replicate/',
+  '/access/',
+  '/other/',
+];
+
+// Static assets to always include (checked for existence in dist/)
+const STATIC_ASSETS = [
+  '/manifest.json',
+  '/RHT_orange.svg',
+  '/RHT_text.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+];
+
+function findIndexHtmlFiles(dir) {
+  const results = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...findIndexHtmlFiles(fullPath));
+    } else if (entry.name === 'index.html') {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
+function distPathToRoute(htmlPath) {
+  const rel = relative(distDir, htmlPath);
+  // dist/index.html → /
+  if (rel === 'index.html') return '/';
+  // dist/modules/1-1/index.html → /modules/1-1/
+  return '/' + rel.replace(/\/index\.html$/, '/');
+}
+
+// --- Validation ---
+
+if (!existsSync(distDir)) {
+  console.error('SW generator: dist/ does not exist. Run astro build first.');
+  process.exit(1);
+}
+
+if (!existsSync(swPath)) {
+  console.error('SW generator: dist/sw.js not found. Was public/sw.js present during build?');
+  process.exit(1);
+}
+
+const swContent = readFileSync(swPath, 'utf-8');
+
+if (!swContent.includes(SENTINEL_START) || !swContent.includes(SENTINEL_END)) {
+  console.error(
+    'SW generator: __PRECACHE_ASSETS_START__ sentinel missing from dist/sw.js.\n' +
+    'public/sw.js must contain the sentinel comments. Do not remove them.'
+  );
+  process.exit(1);
+}
+
+// --- Collect routes ---
+
+const htmlFiles = findIndexHtmlFiles(distDir);
+const routes = [];
+
+for (const htmlPath of htmlFiles) {
+  const route = distPathToRoute(htmlPath);
+  if (EXCLUDE_PREFIXES.some(prefix => route.startsWith(prefix))) continue;
+  routes.push(route);
+}
+
+routes.sort();
+
+// --- Add static assets (check they exist) ---
+
+const staticAssets = [];
+for (const asset of STATIC_ASSETS) {
+  const assetPath = join(distDir, asset);
+  if (existsSync(assetPath)) {
+    staticAssets.push(asset);
+  } else {
+    console.warn(`SW generator: static asset not found in dist/, omitting: ${asset}`);
+  }
+}
+
+const allAssets = [...routes, ...staticAssets];
+
+if (allAssets.length === 0) {
+  console.error('SW generator: PRECACHE_ASSETS list is empty after filtering. Something is wrong.');
+  process.exit(1);
+}
+
+// --- Build replacement block ---
+
+const assetLines = allAssets.map(a => `  '${a}',`).join('\n');
+const arrayBlock = `const PRECACHE_ASSETS = [\n${assetLines}\n];`;
+
+const replacement = `${SENTINEL_START}\n${arrayBlock}\n${SENTINEL_END}`;
+
+// --- Bump CACHE_VERSION ---
+
+const now = new Date();
+const pad = (n) => String(n).padStart(2, '0');
+const buildTs =
+  `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}` +
+  `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}`;
+const cacheVersion = `v-build-${buildTs}`;
+
+// Replace PRECACHE_ASSETS block between sentinels
+const startIdx = swContent.indexOf(SENTINEL_START);
+const endIdx = swContent.indexOf(SENTINEL_END) + SENTINEL_END.length;
+const updated = swContent.slice(0, startIdx) + replacement + swContent.slice(endIdx);
+
+// Replace CACHE_VERSION value
+const final = updated.replace(
+  /const CACHE_VERSION = '[^']*';/,
+  `const CACHE_VERSION = '${cacheVersion}';`
+);
+
+writeFileSync(swPath, final, 'utf-8');
+
+console.log(
+  `SW generator: ${routes.length} routes + ${staticAssets.length} static assets → dist/sw.js (${cacheVersion})`
+);
