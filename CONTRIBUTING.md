@@ -39,15 +39,23 @@ Connect your GitHub fork to [Cloudflare Pages](https://pages.cloudflare.com):
 
 Cloudflare Pages auto-deploys on push to your default branch. The site is fully static — no server required.
 
-**4. Bump the service worker version on each deploy**
+**4. Service worker cache**
 
-`public/sw.js` has a version string at the top:
+The build handles this automatically. `pnpm build` generates the correct `PRECACHE_ASSETS` list in `dist/sw.js` from the actual built routes and bumps `CACHE_VERSION` to a build timestamp (e.g. `v-build-20260329152126`). No manual changes to `public/sw.js` are needed on deploy.
 
-```js
-const CACHE_VERSION = 'v28-minimal';
-```
+---
 
-Increment this on every deploy so returning visitors get fresh content instead of a stale cache. Example: `v29`, `v30`, etc.
+## How to add a new section
+
+1. Create a new `.astro` file in `src/pages/modules/<module-name>/` (e.g. `1-14.astro`). Copy an existing section file as a starting point.
+2. Add the new `moduleKey` to `src/data/modules.ts`.
+3. Add a section entry to the relevant `src/content/modules/*.yaml` file (controls section order, title, and slug).
+4. Run `pnpm build` — the service worker precache updates automatically.
+
+> [!WARNING]
+> **Never rename a `moduleKey`.** The `moduleKey` is part of the IndexedDB composite key (`${moduleKey}-${todoId}`) used to store every checkbox and table entry for that section. Renaming a key destroys all stored data for anyone who has used that section. Adding new keys is safe. Renaming or removing existing keys is not.
+>
+> The canonical set of moduleKeys is enforced by `src/lib/data-preservation.test.ts`. Any rename will fail this test.
 
 ---
 
