@@ -340,7 +340,7 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
   // Empty state for new users — motivational CTA with module cards
   if (!hasData) {
     const starterModules = [
-      { key: 'knowing-your-community', name: 'Knowing Your Community', desc: 'Map your local resources and connections', href: '/modules/knowing-your-community/0-1' },
+      { key: 'knowing-your-community', name: 'Knowing Your Community', desc: 'Map your local resources and connections', href: '/modules/knowing-your-community' },
       { key: 'emergency-preparedness', name: 'Emergency Preparedness', desc: 'Build your household emergency kit', href: '/modules/emergency-preparedness' },
       { key: 'baseline-resilience', name: 'Baseline Resilience', desc: 'Assess and improve community readiness', href: '/modules/baseline-resilience' },
     ];
