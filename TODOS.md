@@ -14,18 +14,19 @@
 
 ## Service Worker
 
-### SW precache is all-or-nothing — no per-asset resilience
+### ~~SW precache is all-or-nothing — no per-asset resilience~~ RESOLVED
 **Priority:** P3
-**Description:** `cache.addAll(PRECACHE_ASSETS)` is atomic — if any single URL returns non-200, the entire SW install fails and offline mode is unavailable. The old SW used `Promise.allSettled` with per-asset error logging so a single dead URL wouldn't block the rest. The current minimal SW trades this resilience for simplicity.
-**Context:** Flagged in code review of `cloudflare-minimal`. All current precache URLs are verified valid, so risk is low. Becomes more important if pages are added or removed without updating the list.
-**Depends on:** None
+**Status:** Fixed in `sw-precache-generator`. Switched `cache.addAll()` to `Promise.allSettled()` in `public/sw.js` — a single 404 now logs a warning instead of aborting the entire SW install.
 
-### PRECACHE_ASSETS URLs don't match actual page routes
+### ~~PRECACHE_ASSETS URLs don't match actual page routes~~ RESOLVED
 **Priority:** P3
-**Description:** `public/sw.js` PRECACHE_ASSETS lists slugs like `/modules/emergency-preparedness/1-1-kits/`, `/1-2-food-water/` etc. but the actual built routes are `/modules/emergency-preparedness/1-1/`, `/1-2/` etc. Since `cache.addAll()` is atomic, any 404 aborts the entire SW install and offline mode is unavailable.
-**Context:** Flagged in PR #7 code review. Pre-existing before this PR. Compounds the all-or-nothing risk above — wrong URLs are guaranteed 404s, not just possible ones.
-**Fix:** Audit PRECACHE_ASSETS against `dist/` output after each build, or generate the list from the build manifest automatically.
-**Depends on:** None
+**Status:** Fixed in `sw-precache-generator`. `scripts/generate-sw-precache.mjs` runs as `postbuild` and generates PRECACHE_ASSETS from `dist/**/index.html`. List is now auto-computed and can never drift.
+
+### Build verification test for SW precache generator
+**Priority:** P2
+**Description:** Post-build Vitest test that reads `dist/sw.js` after build and asserts PRECACHE_ASSETS matches the actual routes in `dist/` minus excluded paths. The `generate-sw-precache.mjs` generator's exit-nonzero check handles empty-list failures; this test would catch partial route exclusions and regression in the exclusion filter logic.
+**Fix:** Write a Vitest test that runs `astro build` (or reads a pre-built dist/), then imports and runs the generator logic against a known fixture, asserting the output matches expected routes.
+**Depends on:** sw-precache-generator merged
 
 ## Dead Code
 
