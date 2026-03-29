@@ -56,7 +56,8 @@ function findIndexHtmlFiles(dir) {
 }
 
 function distPathToRoute(htmlPath) {
-  const rel = relative(distDir, htmlPath);
+  // Use forward slashes regardless of OS (Windows uses backslashes in path.relative)
+  const rel = relative(distDir, htmlPath).replace(/\\/g, '/');
   // dist/index.html → /
   if (rel === 'index.html') return '/';
   // dist/modules/1-1/index.html → /modules/1-1/
@@ -143,6 +144,12 @@ const final = updated.replace(
   /const CACHE_VERSION = '[^']*';/,
   `const CACHE_VERSION = '${cacheVersion}';`
 );
+
+// Assert CACHE_VERSION was actually replaced (guards against regex mismatch)
+if (!final.includes(`const CACHE_VERSION = '${cacheVersion}';`)) {
+  console.error('SW generator: CACHE_VERSION replacement failed — dist/sw.js not updated.');
+  process.exit(1);
+}
 
 writeFileSync(swPath, final, 'utf-8');
 

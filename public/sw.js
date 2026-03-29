@@ -1,6 +1,6 @@
 // Service Worker — Resilience Hub Toolkit
 // Cache-first offline strategy. Bump CACHE_VERSION on every deploy.
-const CACHE_VERSION = 'v29-cf-pages';
+const CACHE_VERSION = 'v-build-PENDING';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
 // __PRECACHE_ASSETS_START__
