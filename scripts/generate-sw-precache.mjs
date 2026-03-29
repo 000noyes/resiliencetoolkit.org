@@ -12,7 +12,7 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { readdirSync, statSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
