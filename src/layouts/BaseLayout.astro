@@ -94,9 +94,6 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
     {!isPrintMode && <FeedbackWidgetWrapper client:load />}
 
-    <!-- Offline ready notification (disabled for now) -->
-    {/* !isPrintMode && <OfflineReadyBanner /> */}
-
     <script>
       // Keep CSS header height variable in sync with the rendered sticky header
       (() => {

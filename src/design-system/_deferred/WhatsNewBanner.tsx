@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Megaphone, X, ArrowRight } from 'lucide-react';
-import { getSortedEntries } from '../data/changelog';
+import { getSortedEntries } from '../../data/changelog';
 
 const STORAGE_KEY = 'lastSeenChangelogId';
 
