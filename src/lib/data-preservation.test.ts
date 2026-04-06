@@ -104,8 +104,9 @@ describe('Data Preservation', () => {
       const content = fs.readFileSync(fullPath, 'utf-8');
       const hasTodo = content.includes('<Todo');
       const hasEditableTable = content.includes('<EditableTable');
+      const hasDataTable = content.includes('<DataTable');
 
-      if ((hasTodo || hasEditableTable) && extractModuleKeys(content).length === 0) {
+      if ((hasTodo || hasEditableTable || hasDataTable) && extractModuleKeys(content).length === 0) {
         filesWithoutModuleKey.push(path.relative(srcDir, fullPath));
       }
     }

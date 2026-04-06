@@ -49,7 +49,33 @@
 **Fix:** Add keyboard event handlers to DataTable: Tab moves between cells, Enter opens edit mode, Escape cancels. Add `aria-label` attributes to cells. Test with VoiceOver (macOS/iOS) and screen reader.
 **Depends on:** DataTable evolution (Phase 1 of Step 1 Template Kit)
 
-## Template Kit — Pre-Implementation
+## Template Kit — Data Safety
+
+### KYC migration column-key test
+**Priority:** P1 (Phase 1 blocker)
+**Description:** EditableTable stores row data keyed by raw column header strings (`'Prompt'`, `'Your Response'`, `'Role'`, `'Name(s)'`, `'Question'`). DataTable must use these identical strings as storage keys for KYC migration. `data-preservation.test.ts` only checks moduleKey existence, not column-level keys. Without a dedicated test, a DataTable that normalizes column keys (e.g., `'prompt'` instead of `'Prompt'`) will pass all tests and silently drop user data.
+**Fix:** Write a migration-specific Vitest test that: (1) seeds IndexedDB with mock data using the exact column key strings EditableTable uses, (2) loads DataTable for each of the 6 KYC tables, (3) asserts all seeded data resolves correctly through DataTable's read path.
+**Depends on:** DataTable component exists (Phase 1)
+
+### Expand data-preservation.test.ts per phase
+**Priority:** P2 (per-phase, starting Phase 1)
+**Description:** The test currently only checks for `<EditableTable` and `<Todo` components. It needs to also check for `<DataTable` and `<PlanForm`. The canonical moduleKey set count (currently 21) must increase as new pages get interactive content. `financial-resilience` (for page 1-13) is a NEW moduleKey not yet in the canonical set.
+**Fix:** Update `CANONICAL_MODULE_KEYS` set and component grep patterns at the start of each phase. Phase 1: add DataTable grep. Phase 2: add PlanForm grep + `financial-resilience` key. Phase 3+: increment expected count as pages gain first interactive content.
+**Depends on:** Phase 1 start
+
+### Document isInitialRow convention
+**Priority:** P2 (Phase 1)
+**Description:** EditableTable uses `rowId < 1000` to distinguish pre-populated rows (readonly prompts) from user-added rows. This convention is undocumented but load-bearing: pre-populated rows show their content as readonly text, user-added rows are fully editable. DataTable must replicate this heuristic exactly or pre-populated KYC prompts become editable (confusing) or user-added rows become readonly (data loss).
+**Fix:** Document the convention in a code comment on DataTable's row rendering logic. Add a Vitest test asserting pre-populated rows (id < 1000) render as readonly and user-added rows (id >= 1000) render as editable.
+**Depends on:** DataTable component design (Phase 1)
+
+## Template Kit — Pre-Phase 2
+
+### PlanForm storage contract definition
+**Priority:** P2 (blocker before Phase 2 starts)
+**Description:** PlanForm is a vertical key-value form (label above, input below). The current storage layer has `getTableRows()`/`saveTableRow()` for tabular multi-row data but no equivalent for single-record key-value forms. How PlanForm fields map to IndexedDB records needs to be defined: one record per field? One record per form with all fields as properties? This affects 2 Phase 2 templates (SITREP, Household Info).
+**Fix:** Design the storage contract during `/plan-eng-review` for Phase 2. Options: (a) store as a single-row table where each column is a field, (b) store as metadata key-value pairs, (c) add a new `getFormData()`/`saveFormData()` API to storage.ts.
+**Depends on:** Phase 1 shipped, `/plan-eng-review` for Phase 2
 
 ### Pre-Phase 2 column verification
 **Priority:** P2 (blocker before Phase 2 starts)
@@ -57,6 +83,12 @@
 **Templates:** 1-10 Volunteer signup, 1-2 Food Access directory, 1-1 Household Info PlanForm
 **Fix:** Read the 3 tabs, compare to field spec column lists, update spec or ColumnDefs as needed.
 **Depends on:** Phase 1 (DataTable exists before these are needed)
+
+## Template Kit — Mobile UX
+
+### ~~Annotate field spec with column priorities for mobile progressive disclosure~~ RESOLVED
+**Priority:** P2 (pre-Phase 1)
+**Status:** Completed 2026-04-06. All 32 DataTable templates annotated with priority-1 columns in `step1-template-field-spec.md` > "Mobile Column Priorities" section. Rule: tables with 4 or fewer columns show all; 5+ columns use progressive disclosure with designated priority-1 fields.
 
 ## Search
 
