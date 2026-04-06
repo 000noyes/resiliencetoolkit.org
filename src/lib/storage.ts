@@ -30,6 +30,17 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
  */
 type MetadataValue = string | number | boolean | null | string[] | Record<string, unknown>;
 
+// Runtime type guards for metadata values (replaces unsafe `as` casts)
+function isString(v: unknown): v is string {
+  return typeof v === 'string';
+}
+function isNumber(v: unknown): v is number {
+  return typeof v === 'number' && !Number.isNaN(v);
+}
+function isStringArray(v: unknown): v is string[] {
+  return Array.isArray(v) && v.every((item) => typeof item === 'string');
+}
+
 interface ResilienceDB extends DBSchema {
   /** Todo/checklist completion tracking */
   todos: {
@@ -760,8 +771,10 @@ export interface StreakData {
  * Get current streak data
  */
 export async function getStreakData(): Promise<StreakData> {
-  const currentStreak = ((await getMetadata('currentStreak')) ?? 0) as number;
-  const lastActivityDate = ((await getMetadata('streakLastActivityDate')) ?? null) as string | null;
+  const rawStreak = await getMetadata('currentStreak');
+  const currentStreak = isNumber(rawStreak) ? rawStreak : 0;
+  const rawDate = await getMetadata('streakLastActivityDate');
+  const lastActivityDate = isString(rawDate) ? rawDate : null;
   return { currentStreak, lastActivityDate };
 }
 
@@ -822,8 +835,10 @@ function getCurrentWeekStart(): string {
  */
 export async function getWeeklyProgress(): Promise<WeeklyProgress> {
   const currentWeekStart = getCurrentWeekStart();
-  const storedWeekStart = (await getMetadata('weekStartDate')) ?? null;
-  const goal = ((await getMetadata('weeklyGoal')) ?? 5) as number; // Default goal: 5 items
+  const rawWeekStart = await getMetadata('weekStartDate');
+  const storedWeekStart = isString(rawWeekStart) ? rawWeekStart : null;
+  const rawGoal = await getMetadata('weeklyGoal');
+  const goal = isNumber(rawGoal) ? rawGoal : 5; // Default goal: 5 items
 
   // Reset if we're in a new week
   if (storedWeekStart !== currentWeekStart) {
@@ -832,7 +847,8 @@ export async function getWeeklyProgress(): Promise<WeeklyProgress> {
     return { completed: 0, goal, weekStartDate: currentWeekStart };
   }
 
-  const completed = ((await getMetadata('weeklyCompleted')) ?? 0) as number;
+  const rawCompleted = await getMetadata('weeklyCompleted');
+  const completed = isNumber(rawCompleted) ? rawCompleted : 0;
   return { completed, goal, weekStartDate: currentWeekStart };
 }
 
@@ -862,7 +878,8 @@ export async function setWeeklyGoal(goal: number): Promise<void> {
  * Get list of bookmarked module keys
  */
 export async function getBookmarkedModules(): Promise<string[]> {
-  return ((await getMetadata('bookmarkedModules')) ?? []) as string[];
+  const raw = await getMetadata('bookmarkedModules');
+  return isStringArray(raw) ? raw : [];
 }
 
 /**
@@ -894,7 +911,8 @@ export async function toggleBookmark(moduleKey: string): Promise<boolean> {
  * Get personal notes
  */
 export async function getPersonalNotes(): Promise<string> {
-  return ((await getMetadata('personalNotes')) ?? '') as string;
+  const raw = await getMetadata('personalNotes');
+  return isString(raw) ? raw : '';
 }
 
 /**
