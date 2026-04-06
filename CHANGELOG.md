@@ -2,6 +2,15 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.6] - 2026-04-05
+
+### Removed
+- 8 dead components deleted: `GuestModeBanner`, `LogoHoverCard`, `IconButton`, `MetricCard`, `Sidebar`, `SidebarItem`, `validateRedirect`, `mdx-components`. All had zero imports across the codebase.
+- Commented-out `LogoHoverCard` reference in `Header.astro` and `OfflineReadyBanner` reference in `BaseLayout.astro`.
+
+### Changed
+- 5 components moved to `src/design-system/_deferred/` for potential future use: `WhatsNewBanner`, `EmptyState`, `OfflineReadyBanner`, `SearchField`, `SegmentedControl`.
+
 ## [0.0.5] - 2026-03-29
 
 ### Fixed
