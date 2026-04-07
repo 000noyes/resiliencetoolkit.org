@@ -58,14 +58,13 @@
   - lg: 24px
   - xl: 32px
   - 2xl: 48px
-  - 3xl: 64px
   - section: 80px
 
 ## Layout
 - **Approach:** Grid-disciplined
 - **Grid:** Single column on mobile (<1024px), 220px sidebar + fluid content on desktop
 - **Max content width:** 1200px (module pages), 1280px (container), 4xl/56rem (standalone content)
-- **Border radius:** Hierarchical: sm=6px, md=8px, lg=12px, xl=16px, full=9999px
+- **Border radius:** Hierarchical: sm=4px, md=6px, lg=8px, xl=12px (matches base.css CSS variables)
 - **Mobile spacing fix (KNOWN ISSUE):** On mobile (<1024px), the `.module-layout` grid collapses to `1fr` but retains `padding: 0 var(--spacing-md)` (16px each side). Combined with parent container padding, this wastes horizontal space on narrow screens (especially 375px). Fix: reduce mobile horizontal padding to `--spacing-sm` (12px) or `--spacing-xs` (8px) on module pages below 640px. The `.module-content` should also reset `grid-column` to `1 / -1` on mobile to prevent layout artifacts from the 2-column desktop grid.
 
 ## Motion

@@ -678,6 +678,7 @@ const MODULE_DISPLAY_NAMES: Record<string, string> = {
   'basic-needs': 'Basic Needs',
   'shared-tools': 'Shared Tools',
   'community-building': 'Community Building',
+  'community-emergency-response': 'Community Emergency Response',
 };
 
 /**

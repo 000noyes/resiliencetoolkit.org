@@ -14,6 +14,10 @@
  *
  * Uses existing IndexedDB storage layer (src/lib/storage.ts).
  * All colors from base.css design tokens (oklch color space).
+ *
+ * Note: EditableTable's per-table notes feature (localStorage key
+ * `table-note-${moduleKey}-${tableId}`) was intentionally not ported.
+ * Orphaned note data may remain in localStorage but is not displayed.
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, type TableRow } from '@/lib/storage';
@@ -377,6 +381,48 @@ function LoadingSkeleton({ columns }: { columns: ColumnDef[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Singleton responsive styles (injected once regardless of instance count)
+// ---------------------------------------------------------------------------
+
+const DT_STYLE_ID = 'dt-responsive-styles';
+const DT_CSS = `
+.dt-desktop-table { display: block; }
+.dt-mobile-cards { display: none; }
+@media (max-width: 767px) {
+  .dt-desktop-table { display: none !important; }
+  .dt-mobile-cards { display: block !important; }
+}
+@media print {
+  .dt-mobile-cards { display: none !important; }
+  .dt-desktop-table { display: block !important; }
+  .dt-desktop-table table { box-shadow: none; }
+  .dt-desktop-table th, .dt-desktop-table td {
+    border: 1px solid #333 !important;
+    padding: 6px 10px !important;
+  }
+  .dt-desktop-table th {
+    font-weight: bold !important;
+    background-color: #f0f0f0 !important;
+  }
+  .dt-desktop-table [role="status"],
+  .dt-desktop-table button,
+  .dt-mobile-cards button {
+    display: none !important;
+  }
+}`;
+
+function DataTableStyles() {
+  useEffect(() => {
+    if (document.getElementById(DT_STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = DT_STYLE_ID;
+    style.textContent = DT_CSS;
+    document.head.appendChild(style);
+  }, []);
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -404,6 +450,7 @@ export default function DataTable({
   const newRowRef = useRef<HTMLElement | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const addRowLockRef = useRef(false);
+  const savedRowsRef = useRef<TableRow[]>([]);
 
   // Determine which columns are priority 1
   const priorityCols = columns.filter((c) => (c.priority ?? 1) === 1).slice(0, 3);
@@ -436,8 +483,10 @@ export default function DataTable({
           await saveTableRow(row);
         }
         setRows(newRows);
+        savedRowsRef.current = newRows;
       } else {
         setRows(savedRows);
+        savedRowsRef.current = savedRows;
       }
 
       setError(null);
@@ -486,7 +535,17 @@ export default function DataTable({
       saveTimerRef.current = setTimeout(async () => {
         try {
           await saveTableRow(updatedRow);
+          savedRowsRef.current = savedRowsRef.current.map((r) =>
+            r.rowId === rowId ? updatedRow : r,
+          );
           setSaveState({ status: 'saved', at: new Date() });
+
+          // Notify dashboard/streak components
+          document.dispatchEvent(
+            new CustomEvent('table-changed', {
+              detail: { moduleKey, tableId, rowId },
+            }),
+          );
 
           // Mark trust acknowledged on first save
           try {
@@ -546,8 +605,16 @@ export default function DataTable({
       };
 
       await saveTableRow(newRow);
+      savedRowsRef.current = [...savedRowsRef.current, newRow];
       setRows((prev) => [...prev, newRow]);
       setSaveState({ status: 'saved', at: new Date() });
+
+      // Notify dashboard/streak components
+      document.dispatchEvent(
+        new CustomEvent('table-changed', {
+          detail: { moduleKey, tableId, rowId: newRowId },
+        }),
+      );
 
       // Mark trust acknowledged
       try {
@@ -748,8 +815,6 @@ export default function DataTable({
 
       {/* Table container */}
       <div
-        role="grid"
-        aria-label={tableName}
         style={{
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius-md)',
@@ -785,7 +850,7 @@ export default function DataTable({
 
         {/* Desktop table view (hidden below 768px) */}
         <div className="dt-desktop-table">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table role="grid" aria-label={tableName} style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr role="row">
                 {columns.map((col) => (
@@ -936,12 +1001,12 @@ export default function DataTable({
                                 if (e.key === 'Enter') {
                                   (e.target as HTMLInputElement).blur();
                                 } else if (e.key === 'Escape') {
-                                  // Restore to saved value
-                                  const original = rows.find((r) => r.rowId === row.rowId);
-                                  if (original) {
+                                  // Restore to last-saved value from IndexedDB
+                                  const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
+                                  if (saved) {
                                     setRows((prev) =>
                                       prev.map((r) =>
-                                        r.rowId === row.rowId ? original : r,
+                                        r.rowId === row.rowId ? saved : r,
                                       ),
                                     );
                                   }
@@ -965,7 +1030,6 @@ export default function DataTable({
                                 e.target.style.borderColor = 'var(--ring)';
                                 e.target.style.boxShadow = 'var(--shadow-focus-ring)';
                               }}
-                              onFocusCapture={undefined}
                               onBlurCapture={(e) => {
                                 (e.target as HTMLInputElement).style.borderColor = 'transparent';
                                 (e.target as HTMLInputElement).style.boxShadow = 'none';
@@ -1022,7 +1086,7 @@ export default function DataTable({
         </div>
 
         {/* Mobile card view (hidden at 768px+) */}
-        <div className="dt-mobile-cards">
+        <div className="dt-mobile-cards" role="list" aria-label={tableName}>
           {!hasRows && (
             <div
               style={{
@@ -1090,6 +1154,7 @@ export default function DataTable({
                       }}
                     >
                       <label
+                        htmlFor={isReadonly ? undefined : `dt-${tableId}-${row.rowId}-${col.key}`}
                         style={{
                           display: 'block',
                           fontSize: '12px',
@@ -1118,10 +1183,10 @@ export default function DataTable({
                         </span>
                       ) : (
                         <input
+                          id={`dt-${tableId}-${row.rowId}-${col.key}`}
                           type="text"
                           value={cellValue}
                           placeholder={col.placeholder || ''}
-                          aria-label={`${col.label} for row ${idx + 1}`}
                           onChange={(e) =>
                             setRows((prev) =>
                               prev.map((r) =>
@@ -1134,6 +1199,16 @@ export default function DataTable({
                           onBlur={(e) => saveCell(row.rowId, col.key, e.target.value)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
+                              (e.target as HTMLInputElement).blur();
+                            } else if (e.key === 'Escape') {
+                              const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
+                              if (saved) {
+                                setRows((prev) =>
+                                  prev.map((r) =>
+                                    r.rowId === row.rowId ? saved : r,
+                                  ),
+                                );
+                              }
                               (e.target as HTMLInputElement).blur();
                             }
                           }}
@@ -1313,34 +1388,7 @@ export default function DataTable({
         </div>
       )}
 
-      {/* Responsive styles — injected once */}
-      <style>{`
-        .dt-desktop-table { display: block; }
-        .dt-mobile-cards { display: none; }
-
-        @media (max-width: 767px) {
-          .dt-desktop-table { display: none !important; }
-          .dt-mobile-cards { display: block !important; }
-        }
-
-        @media print {
-          .dt-mobile-cards { display: none !important; }
-          .dt-desktop-table { display: block !important; }
-          .dt-desktop-table table { box-shadow: none; }
-          .dt-desktop-table th, .dt-desktop-table td {
-            border: 1px solid #333 !important;
-            padding: 6px 10px !important;
-          }
-          .dt-desktop-table th {
-            font-weight: bold !important;
-            background-color: #f0f0f0 !important;
-          }
-          [role="status"],
-          button {
-            display: none !important;
-          }
-        }
-      `}</style>
+      <DataTableStyles />
     </div>
   );
 }
