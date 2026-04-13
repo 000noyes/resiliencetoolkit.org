@@ -88,11 +88,21 @@
 ### Deferred Components (safe to delete)
 - WhatsNewBanner, SearchField, EmptyState, SegmentedControl, OfflineReadyBanner — all in `src/design-system/_deferred/`, zero imports
 
-### DataTable (new, Template Kit v2)
+### Textarea
+- Border: `1px solid var(--border)`, `border-radius: var(--radius-sm)` (4px)
+- Padding: `var(--spacing-sm)` (12px)
+- Focus: `outline: 2px solid var(--ring)`, `outline-offset: 2px`
+- Font: Outfit 400, 16px/body, `var(--foreground)`
+- Min height: 80px, max height: 400px with `overflow-y: auto`, `resize: none`
+- Placeholder: `var(--muted-foreground)`, "Write your response..."
+- Background states: empty = `var(--muted)` (tinted), filled = `var(--background)` (white), transition `200ms ease-out`
+
+### DataTable (Template Kit v2)
 - Replaces EditableTable with consistent API
 - Must respect this design system: green secondary for headers, orange primary for save/action states
-- Card layout on mobile (<640px), table layout on desktop
-- CSV export, IndexedDB persistence, keyboard navigation
+- **Table variant** (default): Card layout on mobile (<640px), table layout on desktop. CSV export.
+- **Journal variant** (`variant="journal"`): Stacked prompt+textarea at all widths, no green header bar, label-above pattern, HTML export, print stylesheet. Counter shows "X of Y questions answered". Completion checkmark on label when all answered.
+- IndexedDB persistence, keyboard navigation
 
 ## Decisions Log
 | Date | Decision | Rationale |

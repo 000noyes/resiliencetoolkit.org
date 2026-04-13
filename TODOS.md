@@ -90,6 +90,38 @@
 **Priority:** P2 (pre-Phase 1)
 **Status:** Completed 2026-04-06. All 32 DataTable templates annotated with priority-1 columns in `step1-template-field-spec.md` > "Mobile Column Priorities" section. Rule: tables with 4 or fewer columns show all; 5+ columns use progressive disclosure with designated priority-1 fields.
 
+## Journal Variant — Deferred Enhancements
+
+### Progressive reveal for journal questions
+**Priority:** P3 (CEO-accepted scope expansion, deferred to P3 per outside voice + user decision during eng review)
+**Description:** Questions appear one at a time on first visit. After typing in a textarea and blurring, the next question appears. All questions visible on return visits (if any response has content). Deferred because: only provides value on first visit within a single session, tables have 3-8 questions (not overwhelming without it), and it adds disproportionate complexity (state management, blur handlers, stale closure risk, aria-live announcements, layout shift from async hydration). The visual improvements in the base journal variant (textarea, stacked layout, HTML export) already deliver the core UX fix.
+**Fix:** Add `revealedCount` React state, initialize from IndexedDB data on mount (return-visit detection), increment on blur with functional updater `setRevealedCount(prev => Math.min(prev + 1, total))`, use `display: none` on unrevealed entries, add `aria-live="polite"` region with table-name-scoped announcements. ~80 LOC.
+**Depends on:** Journal variant shipped (feat/journal-variant)
+
+### Section progress arc
+**Priority:** P3
+**Description:** Replace the text counter ("3 of 6 questions answered") in journal-variant DataTables with a small circular SVG progress ring. The ring fills as questions are answered, turns green on completion. Visual polish, not functional — the text counter already works. Defer until journal variant is validated with real users.
+**Fix:** Add an inline SVG `<circle>` with `stroke-dasharray` based on answered/total ratio. ~25 LOC.
+**Depends on:** Journal variant shipped (feat/journal-variant)
+
+### Focus mode for journal entries
+**Priority:** P3
+**Description:** Toggle button that dims completed journal questions (opacity 0.4) and spotlights the current unanswered one. Potentially conflicts with progressive reveal on first visit (progressive reveal already hides unanswered questions). Reconsider only if user testing shows return visitors struggle to find where they left off.
+**Fix:** Add a `focusMode` boolean state, apply opacity CSS conditionally. ~20 LOC.
+**Depends on:** Journal variant shipped, progressive reveal validated
+
+### Auto-save contextual toast
+**Priority:** P3
+**Description:** Per-textarea inline "Saved" indicator that appears near the textarea on blur and fades after 2 seconds. The footer save indicator is sufficient now, but this would provide reassurance exactly where the user is looking. Revisit if user testing reveals save anxiety.
+**Fix:** Add a `showSavedAt` map state, render a small "Saved" label below each textarea on save, CSS transition to fade. ~25 LOC.
+**Depends on:** Journal variant shipped
+
+### HTML-to-PDF export
+**Priority:** P3
+**Description:** The HTML export opens in a browser and looks good, but a future iteration could generate a styled PDF directly for offline sharing at community meetings. Options: (a) use browser `window.print()` to trigger save-as-PDF, (b) use a lightweight PDF library. The print stylesheet already handles the formatting.
+**Fix:** Evaluate whether a "Save as PDF" button that triggers `window.print()` with print-to-PDF guidance is sufficient, or whether a library-based approach is needed.
+**Depends on:** Journal variant shipped, HTML export validated
+
 ## Search
 
 ### Homepage search hidden — add back or rethink approach

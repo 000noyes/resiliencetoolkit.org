@@ -48,6 +48,8 @@ export interface DataTableProps {
   tableName: string;
   /** Whether to show the InfoCallout above the table (first table on page) */
   showInfoCallout?: boolean;
+  /** 'table' (default) = spreadsheet grid; 'journal' = stacked prompt+textarea for reflection */
+  variant?: 'table' | 'journal';
 }
 
 // ---------------------------------------------------------------------------
@@ -85,6 +87,75 @@ function escapeCSVCell(value: string): string {
     return `"${value.replace(/"/g, '""')}"`;
   }
   return value;
+}
+
+/** Auto-resize a textarea to fit its content */
+function autoResizeTextarea(el: HTMLTextAreaElement) {
+  el.style.height = 'auto';
+  el.style.height = `${Math.min(el.scrollHeight, 400)}px`;
+}
+
+/** Convert tableName to kebab-case for filenames */
+function toKebab(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, '-');
+}
+
+/** Generate self-contained HTML export for journal responses */
+function formatHTMLExport(
+  tableName: string,
+  rows: { prompt: string; response: string }[],
+): string {
+  const entries = rows
+    .map((r) => {
+      const response = r.response.trim()
+        ? `<p>${r.response.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>`
+        : `<p class="no-response">No response</p>`;
+      return `<h3>${r.prompt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h3>\n${response}\n<hr>`;
+    })
+    .join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Community Reflection — ${tableName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</title>
+<style>
+body { font-family: 'Outfit', system-ui, -apple-system, sans-serif; max-width: 640px; margin: 0 auto; padding: 40px 24px; color: #333; background: #fff; }
+h1 { font-size: 24px; font-weight: 600; margin-bottom: 32px; }
+h3 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+p { font-size: 16px; font-weight: 400; line-height: 1.6; margin-bottom: 24px; }
+.no-response { font-style: italic; color: #8a8a8a; }
+hr { border: none; border-top: 1px solid #e5e5e5; margin: 24px 0; }
+.footer { font-size: 14px; color: #8a8a8a; margin-top: 32px; }
+</style>
+</head>
+<body>
+<h1>My Community Reflection — ${tableName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h1>
+${entries}
+<p class="footer">Exported from Resilience Hub Toolkit</p>
+</body>
+</html>`;
+}
+
+/** Inline SVG checkmark for completion indicators */
+function CheckmarkIcon() {
+  return (
+    <svg
+      width={16}
+      height={16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{ display: 'inline', verticalAlign: 'middle', marginRight: 'var(--spacing-xs)' }}
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -380,6 +451,47 @@ function LoadingSkeleton({ columns }: { columns: ColumnDef[] }) {
   );
 }
 
+function JournalLoadingSkeleton() {
+  return (
+    <div
+      style={{
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-md)',
+        padding: 'var(--spacing-lg)',
+        backgroundColor: 'var(--card)',
+      }}
+    >
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          style={{
+            marginBottom: i < 2 ? 'var(--spacing-md)' : 0,
+          }}
+        >
+          <div
+            className="animate-pulse"
+            style={{
+              height: 16,
+              width: '60%',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--muted)',
+              marginBottom: 'var(--spacing-xs)',
+            }}
+          />
+          <div
+            className="animate-pulse"
+            style={{
+              height: 80,
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--muted)',
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Singleton responsive styles (injected once regardless of instance count)
 // ---------------------------------------------------------------------------
@@ -422,6 +534,32 @@ function DataTableStyles() {
   return null;
 }
 
+const DT_JOURNAL_PRINT_ID = 'dt-journal-print-styles';
+const DT_JOURNAL_PRINT_CSS = `
+@media (max-width: 640px) {
+  .dt-journal { padding: var(--spacing-md) !important; }
+}
+@media print {
+  .dt-journal textarea { display: none; }
+  .dt-journal .print-response { display: block !important; }
+  .dt-journal .dt-journal-footer { display: none; }
+  .dt-journal { color: #333 !important; background: #fff !important; }
+  .dt-journal * { color: #333 !important; background: #fff !important; }
+  .dt-journal .dt-journal-entry { break-inside: avoid; }
+  @page { margin: 1in; }
+}`;
+
+function JournalPrintStyles() {
+  useEffect(() => {
+    if (document.getElementById(DT_JOURNAL_PRINT_ID)) return;
+    const style = document.createElement('style');
+    style.id = DT_JOURNAL_PRINT_ID;
+    style.textContent = DT_JOURNAL_PRINT_CSS;
+    document.head.appendChild(style);
+  }, []);
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -433,6 +571,7 @@ export default function DataTable({
   initialRows = [],
   tableName,
   showInfoCallout = false,
+  variant = 'table',
 }: DataTableProps) {
   const [rows, setRows] = useState<TableRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -455,6 +594,21 @@ export default function DataTable({
   // Determine which columns are priority 1
   const priorityCols = columns.filter((c) => (c.priority ?? 1) === 1).slice(0, 3);
   const needsDisclosure = columns.length > 4;
+
+  // Journal variant: derive prompt (readonly) and response (editable) columns
+  const isJournal = variant === 'journal';
+  const readonlyCols = columns.filter((c) => c.readonly);
+  const editableCols = columns.filter((c) => !c.readonly);
+  const journalValid = readonlyCols.length === 1 && editableCols.length === 1;
+  if (isJournal && !journalValid) {
+    console.error(
+      `DataTable journal variant requires exactly 1 readonly + 1 editable column, got ${readonlyCols.length} readonly + ${editableCols.length} editable`,
+    );
+  }
+  const promptCol = readonlyCols[0];
+  const responseCol = editableCols[0];
+  // Effective variant: fall back to table if column structure is invalid
+  const effectiveVariant = isJournal && journalValid ? 'journal' : 'table';
 
   // -----------------------------------------------------------------------
   // Load data
@@ -709,6 +863,34 @@ export default function DataTable({
   }, [rows, columns, tableName]);
 
   // -----------------------------------------------------------------------
+  // HTML export (journal variant)
+  // -----------------------------------------------------------------------
+  const exportHTML = useCallback(() => {
+    if (!promptCol || !responseCol) return;
+    const entries = rows.map((row) => ({
+      prompt: row.data[promptCol.key] || '',
+      response: row.data[responseCol.key] || '',
+    }));
+    const html = formatHTMLExport(tableName, entries);
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resilience-toolkit-${toKebab(tableName)}.html`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }, [rows, promptCol, responseCol, tableName]);
+
+  // -----------------------------------------------------------------------
+  // Journal counter
+  // -----------------------------------------------------------------------
+  const journalAnswered = effectiveVariant === 'journal' && responseCol
+    ? rows.filter((r) => (r.data[responseCol.key] || '').trim().length > 0).length
+    : 0;
+  const journalTotal = effectiveVariant === 'journal' ? rows.length : 0;
+  const journalComplete = journalTotal > 0 && journalAnswered === journalTotal;
+
+  // -----------------------------------------------------------------------
   // Row count for pre-populated tables
   // -----------------------------------------------------------------------
   const totalPrepopulated = initialRows.length;
@@ -793,15 +975,240 @@ export default function DataTable({
     return (
       <div style={{ margin: 'var(--spacing-lg) 0' }}>
         {showInfoCallout && <InfoCalloutBanner />}
-        <LoadingSkeleton columns={columns} />
+        {effectiveVariant === 'journal' ? <JournalLoadingSkeleton /> : <LoadingSkeleton columns={columns} />}
       </div>
     );
   }
 
   // -----------------------------------------------------------------------
+  // Auto-resize textareas on data load (journal variant)
+  // -----------------------------------------------------------------------
+  const journalContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (effectiveVariant !== 'journal' || loading) return;
+    // Auto-resize all textareas after data loads from IndexedDB
+    const container = journalContainerRef.current;
+    if (!container) return;
+    const textareas = container.querySelectorAll<HTMLTextAreaElement>('textarea');
+    textareas.forEach(autoResizeTextarea);
+  }, [effectiveVariant, loading, rows]);
+
+  // ResizeObserver for journal container — re-run auto-resize on width changes
+  useEffect(() => {
+    if (effectiveVariant !== 'journal') return;
+    const container = journalContainerRef.current;
+    if (!container) return;
+    const observer = new ResizeObserver(() => {
+      const textareas = container.querySelectorAll<HTMLTextAreaElement>('textarea');
+      textareas.forEach(autoResizeTextarea);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [effectiveVariant]);
+
+  // -----------------------------------------------------------------------
   // Render
   // -----------------------------------------------------------------------
   const hasRows = rows.length > 0;
+
+  // -----------------------------------------------------------------------
+  // JOURNAL VARIANT RENDER
+  // -----------------------------------------------------------------------
+  if (effectiveVariant === 'journal' && promptCol && responseCol) {
+    return (
+      <div ref={containerRef} style={{ margin: 'var(--spacing-lg) 0' }}>
+        {showInfoCallout && <InfoCalloutBanner />}
+
+        {error && <ErrorBanner message={error} onRetry={loadData} />}
+
+        {quotaExceeded && !error && (
+          <ErrorBanner message="Device storage is full. You can export your data but cannot add new entries." />
+        )}
+
+        {/* Journal container — no green header bar, no role="grid" */}
+        <div
+          ref={journalContainerRef}
+          className="dt-journal"
+          style={{
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-md)',
+            padding: 'var(--spacing-lg)',
+            backgroundColor: 'var(--card)',
+          }}
+        >
+          {/* Table name with completion checkmark */}
+          <div style={{ marginBottom: 'var(--spacing-md)' }}>
+            <span
+              style={{
+                fontSize: '18px',
+                fontWeight: 500,
+                color: 'var(--foreground)',
+              }}
+            >
+              {journalComplete && <CheckmarkIcon />}
+              {tableName}
+            </span>
+          </div>
+
+          {/* Journal entries */}
+          {rows.map((row, idx) => {
+            const promptValue = row.data[promptCol.key] || '';
+            const responseValue = row.data[responseCol.key] || '';
+            const textareaId = `dt-journal-${tableId}-${row.rowId}`;
+            const hasResponse = responseValue.trim().length > 0;
+
+            return (
+              <div
+                key={row.rowId}
+                className="dt-journal-entry"
+                style={{
+                  paddingBottom: idx < rows.length - 1 ? 'var(--spacing-lg)' : 0,
+                  marginBottom: idx < rows.length - 1 ? 'var(--spacing-lg)' : 0,
+                  borderBottom: idx < rows.length - 1 ? '1px solid var(--border)' : 'none',
+                }}
+              >
+                <label
+                  htmlFor={textareaId}
+                  style={{
+                    display: 'block',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    color: 'var(--foreground)',
+                    marginBottom: 'var(--spacing-xs)',
+                  }}
+                >
+                  {promptValue}
+                </label>
+                <textarea
+                  id={textareaId}
+                  value={responseValue}
+                  placeholder="Write your response..."
+                  onChange={(e) => {
+                    setRows((prev) =>
+                      prev.map((r) =>
+                        r.rowId === row.rowId
+                          ? { ...r, data: { ...r.data, [responseCol.key]: e.target.value } }
+                          : r,
+                      ),
+                    );
+                    autoResizeTextarea(e.target);
+                  }}
+                  onBlur={(e) => saveCell(row.rowId, responseCol.key, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
+                      if (saved) {
+                        setRows((prev) =>
+                          prev.map((r) =>
+                            r.rowId === row.rowId ? saved : r,
+                          ),
+                        );
+                        // Recalculate height for restored content
+                        requestAnimationFrame(() => {
+                          autoResizeTextarea(e.target as HTMLTextAreaElement);
+                        });
+                      }
+                      (e.target as HTMLTextAreaElement).blur();
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    minHeight: 80,
+                    maxHeight: 400,
+                    overflowY: 'auto',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: 'var(--spacing-sm)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: 400,
+                    color: 'var(--foreground)',
+                    backgroundColor: hasResponse ? 'var(--background)' : 'var(--muted)',
+                    outline: 'none',
+                    resize: 'none',
+                    transition: 'background-color 200ms ease-out, border-color 120ms ease, outline 120ms ease',
+                    display: 'block',
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.outline = '2px solid var(--ring)';
+                    e.target.style.outlineOffset = '2px';
+                    e.target.style.backgroundColor = 'var(--background)';
+                  }}
+                  onBlurCapture={(e) => {
+                    const ta = e.target as HTMLTextAreaElement;
+                    ta.style.outline = 'none';
+                    ta.style.outlineOffset = '0';
+                    const hasContent = ta.value.trim().length > 0;
+                    ta.style.backgroundColor = hasContent ? 'var(--background)' : 'var(--muted)';
+                  }}
+                />
+                {/* Hidden print-response span for print stylesheet */}
+                <span
+                  className="print-response"
+                  style={{ display: 'none', whiteSpace: 'pre-wrap', fontSize: '16px', lineHeight: 1.6 }}
+                >
+                  {responseValue.trim() || 'No response'}
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Footer: counter + save indicator + export */}
+          <div
+            className="dt-journal-footer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: 'var(--spacing-md)',
+              paddingTop: 'var(--spacing-md)',
+              borderTop: '1px solid var(--border)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+              {/* Counter */}
+              <span
+                aria-live="polite"
+                style={{
+                  fontSize: '14px',
+                  color: journalComplete ? 'var(--ring)' : 'var(--muted-foreground)',
+                }}
+              >
+                {journalComplete && <CheckmarkIcon />}
+                {journalComplete
+                  ? `All ${journalTotal} questions answered`
+                  : `${journalAnswered} of ${journalTotal} questions answered`}
+              </span>
+              {/* Save indicator */}
+              <SaveIndicator state={saveState} />
+            </div>
+            {/* Export button */}
+            <button
+              onClick={exportHTML}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--muted-foreground)',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-sans)',
+                padding: '4px 8px',
+              }}
+            >
+              Export responses
+            </button>
+          </div>
+        </div>
+
+        {/* No "Add Row" button in journal mode — all rows are initial rows */}
+
+        <JournalPrintStyles />
+        <DataTableStyles />
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} style={{ margin: 'var(--spacing-lg) 0' }}>
