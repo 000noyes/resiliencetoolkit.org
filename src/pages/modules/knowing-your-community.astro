@@ -1,6 +1,6 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
-import EditableTable from '@/design-system/blocks/EditableTable';
+import DataTable from '@/components/DataTable';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
 import ActionButton from '@/components/ActionButton.astro';
@@ -19,37 +19,11 @@ const sectionData: SectionData = {
 
 <ModuleLayout sectionData={sectionData}>
       <section>
-        <!-- <h2 class="text-title font-semibold mb-4">Find your regional partners</h2>
-        <p>Locate your Regional Planning Commission (RPC), Long Term Recovery Group (LTRG), and local supply hubs across Vermont.</p> -->
-
-        <!-- ArcGIS Map
-        <iframe
-          width="700"
-          height="600"
-          allow="local-network-access; geolocation"
-          title="CROS Map"
-          src="https://www.arcgis.com/apps/mapviewer/index.html?configurableview=true&webmap=f8de0ef4a49d4000b57e07f891a944b5&theme=light&legend=true&share=true&scroll=false&center=-72.879998,43.727942&scale=4622324.434309"
-          class="w-full rounded-lg border border-border"
-          loading="lazy"
-        ></iframe> -->
-
-        <!-- <div class="bg-muted p-8 rounded-lg text-center">
-          <p class="text-muted-foreground">Interactive asset map coming soon...</p>
-        </div> -->
-
-        <!-- Map Details  -->
-        <!-- <details class="mt-4 p-4 rounded-lg bg-surface-subtle border border-border">
-          <summary class="cursor-pointer font-medium text-text-primary">What's included on this map?</summary>
-          <p class="mt-2 text-body text-text-secondary">
-            This map shows Vermont counties, Regional Planning Commissions (RPCs), Long Term Recovery Groups (LTRGs), and local supply hubs—key partners in building community resilience.
-          </p>
-        </details> -->
-
         <!-- Vermont Town Directory Callout -->
         <div class="bg-primary/5 border border-primary/20 rounded-lg p-6 my-8">
           <h3 class="text-lg font-semibold mb-2">Vermont Town Directory</h3>
           <p class="text-muted-foreground mb-4">
-            Looking for specific town contacts and resources? Learn about jurisdictions and service areas for your town - what county you're in, which Regional Planning Commission (RPC) to ask for technical assistance, and which Long Term Recovery Group (LTRG) can help you if individuals are impacted by flooding.				
+            Looking for specific town contacts and resources? Learn about jurisdictions and service areas for your town - what county you're in, which Regional Planning Commission (RPC) to ask for technical assistance, and which Long Term Recovery Group (LTRG) can help you if individuals are impacted by flooding.
           </p>
           <ExternalLink
             href="https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0"
@@ -71,40 +45,52 @@ const sectionData: SectionData = {
           <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
         </InfoCallout>
 
-        <EditableTable
+        <h3 class="text-heading font-semibold mb-4" id="place-characteristics">Mapping your community</h3>
+
+        <DataTable
           moduleKey="knowing-community"
           tableId="place-characteristics"
-          columns={['Prompt', 'Your Response']}
-          initialData={[
-            { 'Prompt': 'Write down three important things about your place/what life is like here.', 'Your Response': '' },
-            { 'Prompt': 'What are the biggest challenges in your place?', 'Your Response': '' },
-            { 'Prompt': 'What are the biggest assets in your place?', 'Your Response': '' },
-            { 'Prompt': 'Describe thriving conditions for your place. Use your imagination!', 'Your Response': '' }
+          tableName="Place Characteristics"
+          variant="journal"
+          columns={[
+            { key: 'Prompt', label: 'Prompt', type: 'text', readonly: true, priority: 1 },
+            { key: 'Your Response', label: 'Your Response', type: 'text', placeholder: 'Your response', priority: 1 }
+          ]}
+          initialRows={[
+            { rowId: 'row-0', data: { 'Prompt': 'Write down three important things about your place/what life is like here.', 'Your Response': '' } },
+            { rowId: 'row-1', data: { 'Prompt': 'What are the biggest challenges in your place?', 'Your Response': '' } },
+            { rowId: 'row-2', data: { 'Prompt': 'What are the biggest assets in your place?', 'Your Response': '' } },
+            { rowId: 'row-3', data: { 'Prompt': 'Describe thriving conditions for your place. Use your imagination!', 'Your Response': '' } }
           ]}
           client:idle
         />
       </section>
 
       <section>
-        <h3 class="text-heading font-semibold mb-4">Who is in your community/place?</h3>
+        <h3 class="text-heading font-semibold mb-4" id="community-roles">Who is in your community/place?</h3>
 
-        <EditableTable
+        <DataTable
           moduleKey="knowing-community"
           tableId="community-roles"
-          columns={['Role', 'Name(s)']}
-          initialData={[
-            { 'Role': 'Long Term Recovery Group (LTRG) (groups established to support individuals after flooding)', 'Name(s)': '' },
-            { 'Role': 'Fire chief', 'Name(s)': '' },
-            { 'Role': 'Road crew', 'Name(s)': '' },
-            { 'Role': 'Emergency Management Director', 'Name(s)': '' },
-            { 'Role': 'Town clerk', 'Name(s)': '' },
-            { 'Role': 'Selectboard members', 'Name(s)': '' },
-            { 'Role': 'Mutual aid/neighbor to neighbor network leaders', 'Name(s)': '' },
-            { 'Role': 'Leaders/vocal people in your community', 'Name(s)': '' },
-            { 'Role': 'School principal', 'Name(s)': '' },
-            { 'Role': 'General store owner', 'Name(s)': '' },
-            { 'Role': 'State Senator*', 'Name(s)': '' },
-            { 'Role': 'State Representative(s)*', 'Name(s)': '' }
+          tableName="Community Roles"
+          variant="journal"
+          columns={[
+            { key: 'Role', label: 'Role', type: 'text', readonly: true, priority: 1 },
+            { key: 'Name(s)', label: 'Name(s)', type: 'text', placeholder: 'Name(s)', priority: 1 }
+          ]}
+          initialRows={[
+            { rowId: 'row-0', data: { 'Role': 'Long Term Recovery Group (LTRG) (groups established to support individuals after flooding)', 'Name(s)': '' } },
+            { rowId: 'row-1', data: { 'Role': 'Fire chief', 'Name(s)': '' } },
+            { rowId: 'row-2', data: { 'Role': 'Road crew', 'Name(s)': '' } },
+            { rowId: 'row-3', data: { 'Role': 'Emergency Management Director', 'Name(s)': '' } },
+            { rowId: 'row-4', data: { 'Role': 'Town clerk', 'Name(s)': '' } },
+            { rowId: 'row-5', data: { 'Role': 'Selectboard members', 'Name(s)': '' } },
+            { rowId: 'row-6', data: { 'Role': 'Mutual aid/neighbor to neighbor network leaders', 'Name(s)': '' } },
+            { rowId: 'row-7', data: { 'Role': 'Leaders/vocal people in your community', 'Name(s)': '' } },
+            { rowId: 'row-8', data: { 'Role': 'School principal', 'Name(s)': '' } },
+            { rowId: 'row-9', data: { 'Role': 'General store owner', 'Name(s)': '' } },
+            { rowId: 'row-10', data: { 'Role': 'State Senator*', 'Name(s)': '' } },
+            { rowId: 'row-11', data: { 'Role': 'State Representative(s)*', 'Name(s)': '' } }
           ]}
           client:idle
         />
@@ -113,48 +99,58 @@ const sectionData: SectionData = {
       </section>
 
       <section>
-        <h3 class="text-heading font-semibold mb-4">What other dynamics are present in your place?</h3>
+        <h3 class="text-heading font-semibold mb-4" id="community-dynamics">What other dynamics are present in your place?</h3>
 
-        <EditableTable
+        <DataTable
           moduleKey="knowing-community"
           tableId="community-dynamics"
-          columns={['Question', 'Your Response']}
-          initialData={[
-            { 'Question': 'Who do people listen to?', 'Your Response': '' },
-            { 'Question': 'Which voices are loudest?', 'Your Response': '' },
-            { 'Question': 'Who is always showing up to help?', 'Your Response': '' },
-            { 'Question': 'Who has been in your place the longest?', 'Your Response': '' },
-            { 'Question': 'Who is newest in your place?', 'Your Response': '' },
-            { 'Question': 'Who is struggling the most?', 'Your Response': '' },
-            { 'Question': 'Who is benefiting from how your place is right now?', 'Your Response': '' },
-            { 'Question': 'Who in your community might have different needs than most other people? What are those needs?', 'Your Response': '' }
+          tableName="Community Dynamics"
+          variant="journal"
+          columns={[
+            { key: 'Question', label: 'Question', type: 'text', readonly: true, priority: 1 },
+            { key: 'Your Response', label: 'Your Response', type: 'text', placeholder: 'Your response', priority: 1 }
+          ]}
+          initialRows={[
+            { rowId: 'row-0', data: { 'Question': 'Who do people listen to?', 'Your Response': '' } },
+            { rowId: 'row-1', data: { 'Question': 'Which voices are loudest?', 'Your Response': '' } },
+            { rowId: 'row-2', data: { 'Question': 'Who is always showing up to help?', 'Your Response': '' } },
+            { rowId: 'row-3', data: { 'Question': 'Who has been in your place the longest?', 'Your Response': '' } },
+            { rowId: 'row-4', data: { 'Question': 'Who is newest in your place?', 'Your Response': '' } },
+            { rowId: 'row-5', data: { 'Question': 'Who is struggling the most?', 'Your Response': '' } },
+            { rowId: 'row-6', data: { 'Question': 'Who is benefiting from how your place is right now?', 'Your Response': '' } },
+            { rowId: 'row-7', data: { 'Question': 'Who in your community might have different needs than most other people? What are those needs?', 'Your Response': '' } }
           ]}
           client:idle
         />
       </section>
 
       <section>
-        <h3 class="text-heading font-semibold mb-4">Stuff and systems in your community</h3>
+        <h3 class="text-heading font-semibold mb-4" id="systems">Stuff and systems in your community</h3>
 
-        <EditableTable
+        <DataTable
           moduleKey="knowing-community"
           tableId="systems"
-          columns={['Question', 'Your Response']}
-          initialData={[
-            { 'Question': 'What emergency supplies are stored in your place, and where?', 'Your Response': '' },
-            { 'Question': 'What infrastructure is important to your place? Is it maintained?', 'Your Response': '' },
-            { 'Question': 'Are there places to gather? What places do people go to most often?', 'Your Response': '' },
-            { 'Question': 'Which systems in your place work well? Which work poorly?', 'Your Response': '' },
-            { 'Question': 'What/who are the active community groups, organizations, and town committees?', 'Your Response': '' },
-            { 'Question': 'How do people receive and share information (local news, social media, gathering places)?', 'Your Response': '' },
-            { 'Question': 'What essential services are available, and which are missing?', 'Your Response': '' }
+          tableName="Stuff and Systems"
+          variant="journal"
+          columns={[
+            { key: 'Question', label: 'Question', type: 'text', readonly: true, priority: 1 },
+            { key: 'Your Response', label: 'Your Response', type: 'text', placeholder: 'Your response', priority: 1 }
+          ]}
+          initialRows={[
+            { rowId: 'row-0', data: { 'Question': 'What emergency supplies are stored in your place, and where?', 'Your Response': '' } },
+            { rowId: 'row-1', data: { 'Question': 'What infrastructure is important to your place? Is it maintained?', 'Your Response': '' } },
+            { rowId: 'row-2', data: { 'Question': 'Are there places to gather? What places do people go to most often?', 'Your Response': '' } },
+            { rowId: 'row-3', data: { 'Question': 'Which systems in your place work well? Which work poorly?', 'Your Response': '' } },
+            { rowId: 'row-4', data: { 'Question': 'What/who are the active community groups, organizations, and town committees?', 'Your Response': '' } },
+            { rowId: 'row-5', data: { 'Question': 'How do people receive and share information (local news, social media, gathering places)?', 'Your Response': '' } },
+            { rowId: 'row-6', data: { 'Question': 'What essential services are available, and which are missing?', 'Your Response': '' } }
           ]}
           client:idle
         />
       </section>
 
       <section>
-        <h2 class="text-title font-semibold mb-4">Knowing your ecosystem</h2>
+        <h2 class="text-title font-semibold mb-4" id="ecosystem">Knowing your ecosystem</h2>
 
         <p class="mb-4">Check out the ANR atlas: <ExternalLink href="https://anrmaps.vermont.gov/websites/anra5/">https://anrmaps.vermont.gov/websites/anra5/</ExternalLink> for information on the hydrogeology, flood risk, and more in your Vermont community. Click on 'Layers' on the bottom left of the window, and turn on these layers by checking the boxes next to them:</p>
 
@@ -164,14 +160,19 @@ const sectionData: SectionData = {
           <li><em>Wetland delineations</em> show where the land is always also water</li>
         </ul>
 
-        <EditableTable
+        <DataTable
           moduleKey="knowing-community"
           tableId="ecosystem"
-          columns={['Question', 'Your Response']}
-          initialData={[
-            { 'Question': 'What rivers and streams run through your place?', 'Your Response': '' },
-            { 'Question': 'Where does it get wet first?', 'Your Response': '' },
-            { 'Question': 'What else do you know about the ecosystem in your place?', 'Your Response': '' }
+          tableName="Knowing Your Ecosystem"
+          variant="journal"
+          columns={[
+            { key: 'Question', label: 'Question', type: 'text', readonly: true, priority: 1 },
+            { key: 'Your Response', label: 'Your Response', type: 'text', placeholder: 'Your response', priority: 1 }
+          ]}
+          initialRows={[
+            { rowId: 'row-0', data: { 'Question': 'What rivers and streams run through your place?', 'Your Response': '' } },
+            { rowId: 'row-1', data: { 'Question': 'Where does it get wet first?', 'Your Response': '' } },
+            { rowId: 'row-2', data: { 'Question': 'What else do you know about the ecosystem in your place?', 'Your Response': '' } }
           ]}
           client:idle
         />
@@ -206,21 +207,26 @@ const sectionData: SectionData = {
       </section>
 
       <section>
-        <h2 class="text-title font-semibold mb-4">Going deeper: finding the community work you want to do</h2>
+        <h2 class="text-title font-semibold mb-4" id="going-deeper">Going deeper: finding the community work you want to do</h2>
 
         <p class="mb-6">There are so many ways to support community resilience, and each person has a unique set of skills and interests to contribute. It can feel and be isolating to find yourself in a moment of disaster, not knowing who to turn to or how to help. The activities below can guide some of your personal preparedness for difficult times. Respond to the reflection questions below to spur your thinking. Check out this zine for more ideas.</p>
 
-        <EditableTable
+        <DataTable
           moduleKey="knowing-community"
           tableId="going-deeper"
-          columns={['Question', 'Your Response']}
-          initialData={[
-            { 'Question': 'What special skills do you have? What skills would you like to learn?', 'Your Response': '' },
-            { 'Question': 'What activities/work do you find rewarding? Think about things you do that other people consider difficult, but that you enjoy.', 'Your Response': '' },
-            { 'Question': 'Do you enjoy collaborating with people or working on projects alone?', 'Your Response': '' },
-            { 'Question': 'Do you like to spend time inside/outside? Working through a list of tasks, or imagining a new project? Do you enjoy words, numbers, visual art, or another medium?', 'Your Response': '' },
-            { 'Question': 'What problems are you most excited about solving?', 'Your Response': '' },
-            { 'Question': 'Who in your community inspires you? What do you find inspiring about them?', 'Your Response': '' }
+          tableName="Going Deeper"
+          variant="journal"
+          columns={[
+            { key: 'Question', label: 'Question', type: 'text', readonly: true, priority: 1 },
+            { key: 'Your Response', label: 'Your Response', type: 'text', placeholder: 'Your response', priority: 1 }
+          ]}
+          initialRows={[
+            { rowId: 'row-0', data: { 'Question': 'What special skills do you have? What skills would you like to learn?', 'Your Response': '' } },
+            { rowId: 'row-1', data: { 'Question': 'What activities/work do you find rewarding? Think about things you do that other people consider difficult, but that you enjoy.', 'Your Response': '' } },
+            { rowId: 'row-2', data: { 'Question': 'Do you enjoy collaborating with people or working on projects alone?', 'Your Response': '' } },
+            { rowId: 'row-3', data: { 'Question': 'Do you like to spend time inside/outside? Working through a list of tasks, or imagining a new project? Do you enjoy words, numbers, visual art, or another medium?', 'Your Response': '' } },
+            { rowId: 'row-4', data: { 'Question': 'What problems are you most excited about solving?', 'Your Response': '' } },
+            { rowId: 'row-5', data: { 'Question': 'Who in your community inspires you? What do you find inspiring about them?', 'Your Response': '' } }
           ]}
           client:idle
         />

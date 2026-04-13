@@ -2,6 +2,29 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.7] - 2026-04-13
+
+### Added
+- DataTable component (1,346 lines) replaces EditableTable with responsive cards-on-mobile/table-on-desktop layout, save indicator, CSV export, keyboard navigation, and ARIA attributes.
+- Journal variant for DataTable: stacked prompt-response layout with auto-resizing textareas, completion counter, and HTML export for printing/sharing at community meetings.
+- 3 templates deployed on section 1-9 (Response Plans): Leader Directory, Neighbor Directory, First Responder Directory.
+- KYC migration test verifying all 6 existing table column keys are preserved during EditableTable-to-DataTable migration.
+- Runtime type guards in storage.ts replacing unsafe `as` type casts on metadata values.
+- DESIGN.md documenting the project's visual design system (warm industrial aesthetic, 2-accent system, Outfit font).
+
+### Changed
+- Knowing Your Community page migrated from EditableTable to DataTable with journal variant for the 6 KYC tables.
+- Section 1-9 (Response Plans) migrated to DataTable with 3 directory templates.
+
+### Removed
+- EditableTable component deleted (zero callers remain after KYC migration).
+- useAutoResizeTextarea hook deleted (sole caller was EditableTable).
+
+### Fixed
+- Resolved `effectiveVariant` temporal dead zone error in DataTable by reordering variable declarations above hooks.
+- Fixed Rules of Hooks violation where journal-specific useEffect hooks were placed after conditional early returns.
+- Removed nested anchor tag in webinar announcement bar.
+
 ## [0.0.6] - 2026-04-05
 
 ### Removed

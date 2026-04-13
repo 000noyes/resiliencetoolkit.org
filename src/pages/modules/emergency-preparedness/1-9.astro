@@ -1,6 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
+import DataTable from '@/components/DataTable';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -27,16 +28,86 @@ const sectionData: SectionData = {
             <li>Mutual Aid and/or Neighbor-to-Neighbor Network leader(s)</li>
           </ul>
         </li>
-        <li><ExternalLink href="https://drive.google.com/file/d/1T53T9L9naTi0IibuIFdXohQXkCHitwZ3/view?usp=drive_link">Create a directory of emergency managers</ExternalLink>, municipal leaders, heads of neighbor-to-neighbor groups, etc. that will be used to coordinate and communicate at the town-wide level. Places to gather information: The <strong>911 EMS agency</strong> that covers any given town should have a list of local first-responders.
+        <li>Create a directory of emergency managers, municipal leaders, heads of neighbor-to-neighbor groups, etc. that will be used to coordinate and communicate at the town-wide level. Places to gather information: The <strong>911 EMS agency</strong> that covers any given town should have a list of local first-responders.
           <ul class="list-disc pl-6 mt-2">
             <li>In the event that the ambulance comes from several towns away, there may be local first-responders, including the fire department, who are linked in with the EMS agency responsible for covering your town more immediately.</li>
           </ul>
         </li>
+      </ul>
+
+      <h3 class="text-heading font-semibold mb-4 mt-8" id="leader-directory">Directory of Local Leaders</h3>
+      <p class="mb-4 text-body text-text-secondary">Create a directory of emergency managers, municipal leaders, heads of neighbor-to-neighbor groups, etc. that will be used to coordinate and communicate at the town-wide level.</p>
+
+      <DataTable
+        moduleKey="community-emergency-response"
+        tableId="leader-directory"
+        tableName="Leader Directory"
+        showInfoCallout={true}
+        columns={[
+          { key: 'role', label: 'Title/Role', type: 'text', readonly: true, placeholder: 'Role or title', priority: 1 },
+          { key: 'name', label: 'Name', type: 'text', placeholder: 'Name', priority: 1 },
+          { key: 'phone', label: 'Phone', type: 'text', placeholder: 'Phone number', priority: 1 },
+          { key: 'email', label: 'Email', type: 'text', placeholder: 'Email address' }
+        ]}
+        initialRows={[
+          { rowId: 'row-0', data: { role: 'State Senator(s)', name: '', phone: '', email: '' } },
+          { rowId: 'row-1', data: { role: 'State Representative(s)', name: '', phone: '', email: '' } },
+          { rowId: 'row-2', data: { role: 'Regional planning commission staff', name: '', phone: '', email: '' } },
+          { rowId: 'row-3', data: { role: 'Long Term Recovery Group', name: '', phone: '', email: '' } },
+          { rowId: 'row-4', data: { role: 'Fire chief', name: '', phone: '', email: '' } },
+          { rowId: 'row-5', data: { role: 'Road crew', name: '', phone: '', email: '' } },
+          { rowId: 'row-6', data: { role: 'Emergency Management Director', name: '', phone: '', email: '' } },
+          { rowId: 'row-7', data: { role: 'Town clerk', name: '', phone: '', email: '' } },
+          { rowId: 'row-8', data: { role: 'Selectboard members', name: '', phone: '', email: '' } },
+          { rowId: 'row-9', data: { role: 'Mutual aid/neighbor-to-neighbor leader(s)', name: '', phone: '', email: '' } },
+          { rowId: 'row-10', data: { role: 'Flood Survivor(s)', name: '', phone: '', email: '' } },
+          { rowId: 'row-11', data: { role: 'Community point people', name: '', phone: '', email: '' } },
+          { rowId: 'row-12', data: { role: 'School principal', name: '', phone: '', email: '' } },
+          { rowId: 'row-13', data: { role: 'General store owner', name: '', phone: '', email: '' } }
+        ]}
+        client:idle
+      />
+
+      <ul class="list-disc pl-6 space-y-3 mt-8">
         <li>Share this directory with everyone listed in it, or organize an event where everyone can meet one another and strategize/role play around what they do when disaster strikes</li>
         <li>Create a clear communication system specifically for emergency response</li>
         <li>Organize neighborhood pods with block captain/<ExternalLink href="https://drive.google.com/file/d/1k7SXv4md2Kjh0t-nGx5xIKVPpg0bSPmn/view?usp=drive_link">phone tree systems</ExternalLink> if there is phone service</li>
-        <li><ExternalLink href="https://drive.google.com/file/d/1volnFb9p7K24iROikMt_zOg9_RT9WRVR/view?usp=drive_link">Create a directory of neighbors</ExternalLink> with street addresses, landline contacts, etc.</li>
-        <li><ExternalLink href="https://drive.google.com/file/d/1_s3dzOMkIUT5BGBFjfFlEDeHfHcc5m-N/view?usp=drive_link">Create a directory of local first responders</ExternalLink>, paid and volunteer</li>
+      </ul>
+
+      <h3 class="text-heading font-semibold mb-4 mt-8" id="neighbor-directory">Neighbor Directory</h3>
+      <p class="mb-4 text-body text-text-secondary">Create a directory of neighbors with street addresses, landline contacts, etc.</p>
+
+      <DataTable
+        moduleKey="community-emergency-response"
+        tableId="neighbor-directory"
+        tableName="Neighbor Directory"
+        columns={[
+          { key: 'name', label: 'Name', type: 'text', placeholder: 'Name', priority: 1 },
+          { key: 'phone', label: 'Phone', type: 'text', placeholder: 'Phone number', priority: 1 },
+          { key: 'email', label: 'Email', type: 'text', placeholder: 'Email address', priority: 1 },
+          { key: 'address', label: 'Address', type: 'text', placeholder: 'Street address' }
+        ]}
+        client:idle
+      />
+
+      <h3 class="text-heading font-semibold mb-4 mt-8" id="first-responder-directory">Emergency/First Responder Directory</h3>
+      <p class="mb-4 text-body text-text-secondary">Create a directory of local first responders, paid and volunteer.</p>
+
+      <DataTable
+        moduleKey="community-emergency-response"
+        tableId="first-responder-directory"
+        tableName="First Responder Directory"
+        columns={[
+          { key: 'service', label: 'Emergency Service Name/Person', type: 'text', placeholder: 'Service or person name', priority: 1 },
+          { key: 'function', label: 'Function/Skill', type: 'text', placeholder: 'Function or skill', priority: 1 },
+          { key: 'coverage', label: 'Town/Area of coverage', type: 'text', placeholder: 'Town or area', priority: 1 },
+          { key: 'contact', label: 'Contact', type: 'text', placeholder: 'Phone or email' },
+          { key: 'notes', label: 'Notes', type: 'text', placeholder: 'Additional notes' }
+        ]}
+        client:idle
+      />
+
+      <ul class="list-disc pl-6 space-y-3 mt-8">
         <li>Identify people trained in HAM radio</li>
         <li>Identify an evacuation plan and options for sheltering nearby if evacuation is not possible.</li>
         <li>Create a plan for volunteers to physically sweep known problem areas - EMS does not monitor these!</li>
