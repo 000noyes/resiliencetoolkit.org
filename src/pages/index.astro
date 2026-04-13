@@ -762,8 +762,13 @@ const phaseCounts = getPhaseCounts();
             return;
           }
 
-          const search = await pf.search(query);
-          await renderResults(search.results);
+          try {
+            const search = await pf.search(query);
+            await renderResults(search.results);
+          } catch (err) {
+            console.error('Search error:', err);
+            statusEl.textContent = 'Search unavailable. Please try again.';
+          }
         };
 
         input.addEventListener('input', () => {

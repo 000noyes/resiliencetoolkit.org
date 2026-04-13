@@ -89,7 +89,7 @@ const showTOC = !!sectionData;
       <TableOfContents client:load moduleKey={moduleKey} />
     )}
 
-    <article class={showTOC ? "module-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
+    <article data-pagefind-body class={showTOC ? "module-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
       {sectionData && (
         <!-- Breadcrumb navigation for section pages -->
         <nav class="mb-6 text-sm text-text-muted no-print">
