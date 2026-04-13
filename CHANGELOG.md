@@ -2,6 +2,13 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.7.1] - 2026-04-13
+
+### Fixed
+- `saveTableRow` callers no longer pass extra `id` and `updatedAt` properties that were silently discarded. The type contract now matches the function signature.
+- Knowing Your Community trust callout consolidated to DataTable's built-in dismissible banner (matches 1-9 and all future template pages).
+- CSV export now includes UTF-8 BOM for correct encoding detection in Excel on Windows.
+
 ## [0.0.7] - 2026-04-13
 
 ### Added
