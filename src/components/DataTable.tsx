@@ -1370,19 +1370,6 @@ export default function DataTable({
                           {isReadonly ? (
                             <div>
                               <span>{cellValue}</span>
-                              {colIdx === 0 && (
-                                <span
-                                  style={{
-                                    display: 'block',
-                                    fontSize: '12px',
-                                    color: 'var(--muted-foreground)',
-                                    fontWeight: 400,
-                                    marginTop: 2,
-                                  }}
-                                >
-                                  (example)
-                                </span>
-                              )}
                             </div>
                           ) : (
                             <input
@@ -1569,11 +1556,6 @@ export default function DataTable({
                         }}
                       >
                         {col.label}
-                        {isReadonly && colIdx === 0 && (
-                          <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 'normal', marginLeft: 6 }}>
-                            (example)
-                          </span>
-                        )}
                       </label>
                       {isReadonly ? (
                         <span
