@@ -657,7 +657,12 @@ export default function DataTable({
         }));
 
         for (const row of newRows) {
-          await saveTableRow(row);
+          await saveTableRow({
+            moduleKey: row.moduleKey,
+            tableId: row.tableId,
+            rowId: row.rowId,
+            data: row.data,
+          });
         }
         setRows(newRows);
         savedRowsRef.current = newRows;
@@ -711,7 +716,12 @@ export default function DataTable({
 
       saveTimerRef.current = setTimeout(async () => {
         try {
-          await saveTableRow(updatedRow);
+          await saveTableRow({
+            moduleKey: updatedRow.moduleKey,
+            tableId: updatedRow.tableId,
+            rowId: updatedRow.rowId,
+            data: updatedRow.data,
+          });
           savedRowsRef.current = savedRowsRef.current.map((r) =>
             r.rowId === rowId ? updatedRow : r,
           );
@@ -781,7 +791,12 @@ export default function DataTable({
         updatedAt: new Date().toISOString(),
       };
 
-      await saveTableRow(newRow);
+      await saveTableRow({
+        moduleKey: newRow.moduleKey,
+        tableId: newRow.tableId,
+        rowId: newRow.rowId,
+        data: newRow.data,
+      });
       savedRowsRef.current = [...savedRowsRef.current, newRow];
       setRows((prev) => [...prev, newRow]);
       setSaveState({ status: 'saved', at: new Date() });
@@ -874,7 +889,7 @@ export default function DataTable({
     const dataLines = rows.map((row) =>
       columns.map((c) => escapeCSVCell(row.data[c.key] || '')).join(','),
     );
-    const csv = [headerLine, ...dataLines].join('\n');
+    const csv = '\uFEFF' + [headerLine, ...dataLines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
