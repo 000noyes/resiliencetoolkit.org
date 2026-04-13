@@ -590,6 +590,29 @@ export default function DataTable({
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const addRowLockRef = useRef(false);
   const savedRowsRef = useRef<TableRow[]>([]);
+  const journalContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-resize textareas on data load (journal variant)
+  useEffect(() => {
+    if (effectiveVariant !== 'journal' || loading) return;
+    const container = journalContainerRef.current;
+    if (!container) return;
+    const textareas = container.querySelectorAll<HTMLTextAreaElement>('textarea');
+    textareas.forEach(autoResizeTextarea);
+  }, [effectiveVariant, loading, rows]);
+
+  // ResizeObserver for journal container — re-run auto-resize on width changes
+  useEffect(() => {
+    if (effectiveVariant !== 'journal') return;
+    const container = journalContainerRef.current;
+    if (!container) return;
+    const observer = new ResizeObserver(() => {
+      const textareas = container.querySelectorAll<HTMLTextAreaElement>('textarea');
+      textareas.forEach(autoResizeTextarea);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [effectiveVariant]);
 
   // Determine which columns are priority 1
   const priorityCols = columns.filter((c) => (c.priority ?? 1) === 1).slice(0, 3);
@@ -979,33 +1002,6 @@ export default function DataTable({
       </div>
     );
   }
-
-  // -----------------------------------------------------------------------
-  // Auto-resize textareas on data load (journal variant)
-  // -----------------------------------------------------------------------
-  const journalContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (effectiveVariant !== 'journal' || loading) return;
-    // Auto-resize all textareas after data loads from IndexedDB
-    const container = journalContainerRef.current;
-    if (!container) return;
-    const textareas = container.querySelectorAll<HTMLTextAreaElement>('textarea');
-    textareas.forEach(autoResizeTextarea);
-  }, [effectiveVariant, loading, rows]);
-
-  // ResizeObserver for journal container — re-run auto-resize on width changes
-  useEffect(() => {
-    if (effectiveVariant !== 'journal') return;
-    const container = journalContainerRef.current;
-    if (!container) return;
-    const observer = new ResizeObserver(() => {
-      const textareas = container.querySelectorAll<HTMLTextAreaElement>('textarea');
-      textareas.forEach(autoResizeTextarea);
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [effectiveVariant]);
 
   // -----------------------------------------------------------------------
   // Render

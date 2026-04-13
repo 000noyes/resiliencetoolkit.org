@@ -13,7 +13,7 @@ import { test, expect } from '@playwright/test';
 
 const SECTION_PAGES = [
   // Knowing Your Community
-  { url: '/modules/knowing-your-community/0-1', title: 'Knowing Your Community', interactive: 'editable-table' },
+  { url: '/modules/knowing-your-community', title: 'Knowing Your Community', interactive: 'editable-table' },
 
   // Emergency Preparedness
   { url: '/modules/emergency-preparedness/1-1', title: 'Emergency preparedness kits', interactive: 'todo' },
