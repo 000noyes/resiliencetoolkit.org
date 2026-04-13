@@ -6,11 +6,9 @@
 **Priority:** P2
 **Status:** Fixed in `cloudflare-minimal` (cherry-picked from `glass-box-expanded` Phase 7). Both `batchUpdateChecklistItems` and `clearCompletedItems` now use single IDB transactions.
 
-### Unsafe `as` type casts on metadata values
-**Priority:** P2 (upgraded from P3 — Step 1 template work adds 14+ DataTable instances, increasing surface area)
-**Description:** `storage.ts` uses `as number`, `as string[]` etc. on `getMetadata()` returns without runtime validation. If stored data has the wrong type (from a bug or version mismatch), arithmetic silently produces NaN. Consider adding runtime type guards.
-**Context:** Pre-existing. The `any` type was replaced with `MetadataValue` union, but casts bypass the union's safety guarantees at runtime.
-**Depends on:** None
+### ~~Unsafe `as` type casts on metadata values~~ RESOLVED
+**Priority:** P2
+**Status:** Fixed in v0.0.7 (2026-04-13). Runtime type guards added to `storage.ts` replacing all unsafe `as` casts.
 
 ## Service Worker
 
@@ -51,11 +49,9 @@
 
 ## Template Kit — Data Safety
 
-### KYC migration column-key test
-**Priority:** P1 (Phase 1 blocker)
-**Description:** EditableTable stores row data keyed by raw column header strings (`'Prompt'`, `'Your Response'`, `'Role'`, `'Name(s)'`, `'Question'`). DataTable must use these identical strings as storage keys for KYC migration. `data-preservation.test.ts` only checks moduleKey existence, not column-level keys. Without a dedicated test, a DataTable that normalizes column keys (e.g., `'prompt'` instead of `'Prompt'`) will pass all tests and silently drop user data.
-**Fix:** Write a migration-specific Vitest test that: (1) seeds IndexedDB with mock data using the exact column key strings EditableTable uses, (2) loads DataTable for each of the 6 KYC tables, (3) asserts all seeded data resolves correctly through DataTable's read path.
-**Depends on:** DataTable component exists (Phase 1)
+### ~~KYC migration column-key test~~ RESOLVED
+**Priority:** P1
+**Status:** Fixed in v0.0.7 (2026-04-13). `kyc-migration.test.ts` seeds IndexedDB with mock data using exact EditableTable column key strings, then verifies DataTable reads them correctly. 4 tests covering all 6 KYC tables.
 
 ### Expand data-preservation.test.ts per phase
 **Priority:** P2 (per-phase, starting Phase 1)
