@@ -592,6 +592,25 @@ export default function DataTable({
   const savedRowsRef = useRef<TableRow[]>([]);
   const journalContainerRef = useRef<HTMLDivElement>(null);
 
+  // Determine which columns are priority 1
+  const priorityCols = columns.filter((c) => (c.priority ?? 1) === 1).slice(0, 3);
+  const needsDisclosure = columns.length > 4;
+
+  // Journal variant: derive prompt (readonly) and response (editable) columns
+  const isJournal = variant === 'journal';
+  const readonlyCols = columns.filter((c) => c.readonly);
+  const editableCols = columns.filter((c) => !c.readonly);
+  const journalValid = readonlyCols.length === 1 && editableCols.length === 1;
+  if (isJournal && !journalValid) {
+    console.error(
+      `DataTable journal variant requires exactly 1 readonly + 1 editable column, got ${readonlyCols.length} readonly + ${editableCols.length} editable`,
+    );
+  }
+  const promptCol = readonlyCols[0];
+  const responseCol = editableCols[0];
+  // Effective variant: fall back to table if column structure is invalid
+  const effectiveVariant = isJournal && journalValid ? 'journal' : 'table';
+
   // Auto-resize textareas on data load (journal variant)
   useEffect(() => {
     if (effectiveVariant !== 'journal' || loading) return;
@@ -613,25 +632,6 @@ export default function DataTable({
     observer.observe(container);
     return () => observer.disconnect();
   }, [effectiveVariant]);
-
-  // Determine which columns are priority 1
-  const priorityCols = columns.filter((c) => (c.priority ?? 1) === 1).slice(0, 3);
-  const needsDisclosure = columns.length > 4;
-
-  // Journal variant: derive prompt (readonly) and response (editable) columns
-  const isJournal = variant === 'journal';
-  const readonlyCols = columns.filter((c) => c.readonly);
-  const editableCols = columns.filter((c) => !c.readonly);
-  const journalValid = readonlyCols.length === 1 && editableCols.length === 1;
-  if (isJournal && !journalValid) {
-    console.error(
-      `DataTable journal variant requires exactly 1 readonly + 1 editable column, got ${readonlyCols.length} readonly + ${editableCols.length} editable`,
-    );
-  }
-  const promptCol = readonlyCols[0];
-  const responseCol = editableCols[0];
-  // Effective variant: fall back to table if column structure is invalid
-  const effectiveVariant = isJournal && journalValid ? 'journal' : 'table';
 
   // -----------------------------------------------------------------------
   // Load data
