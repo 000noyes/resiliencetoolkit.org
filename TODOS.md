@@ -122,6 +122,17 @@
 **Fix:** Evaluate whether a "Save as PDF" button that triggers `window.print()` with print-to-PDF guidance is sufficient, or whether a library-based approach is needed.
 **Depends on:** Journal variant shipped, HTML export validated
 
+## E2E Test Maintenance
+
+### Fix stale E2E test selectors (26 failures across 3 specs)
+**Priority:** P2
+**Description:** 26 E2E tests fail on main due to selectors that haven't kept up with layout changes. Three root causes:
+1. **render-verification.spec.ts** (17 failures): `page.locator('h1, h2').first()` matches the TOC sidebar's "On this page" `<h2>` before the actual content heading. Fix: scope selector to main content area (e.g., `main h1, main h2` or `[data-content] h1`).
+2. **module-hydration.spec.ts** (6 failures): (a) 1.9 + 1.10 todo checkbox tests expect `input.todo-checkbox` but those pages may use DataTable instead of Todo. (b) ExternalLink modal tests use `[role="dialog"]` which matches the TOC mobile drawer. Fix: use a more specific selector like `[role="dialog"]:not(.toc-mobile-drawer)` or scope to ExternalLinkModal's container. (c) Cross-module nav tests expect `a[href*="baseline-resilience/2-1"]` footer link on 1-13 — verify the link exists on the page or remove the test.
+3. **indexeddb-verification.spec.ts** (3 failures): DB initialization tests for pages that may have changed interactive component types.
+**Fix:** Update selectors to match current DOM structure. Run `npx playwright test --workers=1` to verify all 47 tests pass.
+**Depends on:** None
+
 ## Search
 
 ### Homepage search hidden — add back or rethink approach
