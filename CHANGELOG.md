@@ -2,6 +2,16 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.8] - 2026-04-13
+
+### Added
+- Restored Pagefind search on homepage. The search widget was preserved during the cloudflare-minimal simplification but auto-hidden when the pagefind dependency was removed. Now re-enabled with content-scoped indexing (only module section pages are indexed, not nav/footer/homepage).
+- Build verification test for pagefind index output.
+- Error handling for search failures (try/catch prevents stuck "Searching..." state).
+
+### Removed
+- Dead SearchField.astro component from design-system/_deferred/ (homepage uses its own inline search).
+
 ## [0.0.7] - 2026-04-13
 
 ### Added

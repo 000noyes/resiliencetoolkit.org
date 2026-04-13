@@ -131,8 +131,24 @@
 
 ## Search
 
-### Homepage search hidden — add back or rethink approach
+### ~~Homepage search hidden — add back or rethink approach~~ RESOLVED
 **Priority:** P3
-**Description:** Pagefind was removed in `cloudflare-minimal` (simplification goal: remove build complexity). The homepage search widget now auto-hides itself via JS when `/pagefind/pagefind.js` is absent. Re-evaluate for July LAOB deployment: pagefind is lightweight and the search UX is good. Options: (a) restore pagefind to build script, (b) replace with a simpler client-side search over a static JSON manifest, (c) remove the search UI entirely.
-**Context:** Search hidden is better than search broken. The widget code is preserved — re-enabling pagefind in `package.json` + build script restores it immediately.
-**Depends on:** July deployment feedback
+**Status:** Fixed in v0.0.8 (2026-04-13). Pagefind restored as devDependency with build script step. Content-scoped indexing via `data-pagefind-body` on ModuleLayout article element (17 section pages indexed, nav/footer/homepage excluded). Try/catch error handling added. Dead SearchField.astro removed.
+
+### Offline search via SW pre-cache
+**Priority:** P3
+**Description:** Extend the SW precache generator (`scripts/generate-sw-precache.mjs`) to include pagefind index chunks so search works offline. The generator currently only scans for `index.html` files, so pagefind's `.pf` chunks and `pagefind.js` are not cached. Aligns with the site's local-first mission (pages work offline, search does not yet).
+**Fix:** Add a pagefind glob to the generator's asset collection, or add a separate pagefind precache step. Measure total chunk size first (may be 50-200KB for 17 pages). Test cache invalidation on reindex.
+**Depends on:** Pagefind restored (v0.0.8)
+
+### Search analytics via Umami events
+**Priority:** P3
+**Description:** Add custom Umami event tracking to the homepage search handler. Fire an event on search submission (after debounce) with the query text. Shows what users search for, helping identify content gaps or confusing terminology. Umami is already loaded on every page via BaseLayout.astro.
+**Fix:** Add ~5 lines to the search handler in `src/pages/index.astro`: `window.umami?.track('search', { query })` after the debounced search fires.
+**Depends on:** Pagefind restored (v0.0.8)
+
+### Automated search E2E test
+**Priority:** P2
+**Description:** Playwright E2E test that visits the homepage, types a known query (e.g., "mutual aid"), and verifies search results appear with correct links to module pages. Build verification test exists (Vitest), but no test exercises the actual search UX in a browser.
+**Fix:** Add a spec to `tests/e2e/` that runs against `pnpm preview` output.
+**Depends on:** 26 existing E2E failures fixed (render-verification, module-hydration, indexeddb specs)
