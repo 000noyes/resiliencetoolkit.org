@@ -889,7 +889,7 @@ export default function DataTable({
     const dataLines = rows.map((row) =>
       columns.map((c) => escapeCSVCell(row.data[c.key] || '')).join(','),
     );
-    const csv = [headerLine, ...dataLines].join('\n');
+    const csv = '\uFEFF' + [headerLine, ...dataLines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
