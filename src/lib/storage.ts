@@ -266,6 +266,44 @@ export async function deleteTableRow(
 }
 
 // ============================================================================
+// FORM OPERATIONS (PlanForm — single-record key-value forms)
+// ============================================================================
+// NOTE: Form rows use data: { value: string } while DataTable rows use
+// data: { col1: string, col2: string, ... }. Both share the tables store.
+// CSV export is per-DataTable; PlanForm uses HTML export. The JSON
+// export/import round-trip preserves both shapes because it serializes
+// raw IDB records. Do not add CSV export to PlanForm without handling
+// the encoding difference.
+
+/**
+ * Save or update a single form field.
+ * Wraps saveTableRow using the tables store with rowId=fieldKey, data={value}.
+ */
+export async function saveFormField(
+  moduleKey: string,
+  formId: string,
+  fieldKey: string,
+  value: string
+): Promise<void> {
+  await saveTableRow({ moduleKey, tableId: formId, rowId: fieldKey, data: { value } });
+}
+
+/**
+ * Load all form fields for a single form as a key-value Record.
+ */
+export async function getFormData(
+  moduleKey: string,
+  formId: string
+): Promise<Record<string, string>> {
+  const rows = await getTableRows(moduleKey, formId);
+  const data: Record<string, string> = {};
+  for (const row of rows) {
+    data[row.rowId] = row.data.value ?? '';
+  }
+  return data;
+}
+
+// ============================================================================
 // METADATA OPERATIONS
 // ============================================================================
 
