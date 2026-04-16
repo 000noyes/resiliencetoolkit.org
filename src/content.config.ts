@@ -1,16 +1,14 @@
 /**
  * Content Collections Configuration
  *
- * Defines schemas for CMS-managed content:
- * - modules: Module metadata (YAML files)
- *
- * Note: sections collection removed — all sections are hardcoded .astro pages.
- * MDX migration deferred to glass-box-expanded branch.
+ * - modules: Module metadata (YAML)
+ * - sourceSpecs: Per-template source specs (Markdown + YAML frontmatter)
  *
  * @see https://docs.astro.build/en/guides/content-collections/
  */
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { sourceSpecSchema } from './lib/verify/schemas';
 
 const modules = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/modules' }),
@@ -31,4 +29,9 @@ const modules = defineCollection({
   }),
 });
 
-export const collections = { modules };
+const sourceSpecs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './docs/source-specs' }),
+  schema: sourceSpecSchema,
+});
+
+export const collections = { modules, sourceSpecs };
