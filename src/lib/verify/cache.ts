@@ -40,10 +40,12 @@ export async function computeSourceHash(absolutePath: string): Promise<string> {
 }
 
 function canonicalJSON(value: unknown): string {
-  if (value === null || value === undefined) return JSON.stringify(value ?? null);
+  if (value === undefined || value === null) return 'null';
   if (typeof value !== 'object') return JSON.stringify(value);
   if (Array.isArray(value)) return '[' + value.map(canonicalJSON).join(',') + ']';
-  const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b));
+  const entries = Object.entries(value as Record<string, unknown>)
+    .filter(([, v]) => v !== undefined)
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
   return '{' + entries.map(([k, v]) => JSON.stringify(k) + ':' + canonicalJSON(v)).join(',') + '}';
 }
 
@@ -196,6 +198,7 @@ export function setSourceEntry(
 }
 
 export type SourceFreshness =
+  | { state: 'source_not_found' }
   | { state: 'unregistered'; currentSourceHash: string }
   | { state: 'fresh'; currentSourceHash: string; entry: SourceRegistryEntry }
   | { state: 'source_drift'; currentSourceHash: string; entry: SourceRegistryEntry };
@@ -205,6 +208,7 @@ export async function checkSourceFreshness(
   absolutePath: string,
   repoRelativePath: string,
 ): Promise<SourceFreshness> {
+  if (!existsSync(absolutePath)) return { state: 'source_not_found' };
   const currentSourceHash = await computeSourceHash(absolutePath);
   const entry = getSourceEntry(registry, repoRelativePath);
   if (!entry) return { state: 'unregistered', currentSourceHash };

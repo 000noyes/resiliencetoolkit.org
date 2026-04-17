@@ -46,6 +46,9 @@ export function parsePageRange(page: string | undefined): { first?: number; last
   if (!m) throw new ExtractionError(`invalid page range: ${page}`, 'extract_failed');
   const first = parseInt(m[1], 10);
   const last = m[2] ? parseInt(m[2], 10) : first;
+  if (first < 1) {
+    throw new ExtractionError(`invalid page range: ${page} (pages are 1-indexed)`, 'extract_failed');
+  }
   if (last < first) {
     throw new ExtractionError(`invalid page range: ${page} (last < first)`, 'extract_failed');
   }
@@ -64,14 +67,17 @@ export async function extractWithPdftotext(
   const exec = options.exec ?? (execFileAsync as unknown as ExecFn);
   const { first, last } = parsePageRange(page);
   const args: string[] = ['-layout'];
-  if (first) args.push('-f', String(first));
-  if (last) args.push('-l', String(last));
+  if (first !== undefined) args.push('-f', String(first));
+  if (last !== undefined) args.push('-l', String(last));
   args.push(absolutePath, '-');
   try {
     const { stdout } = await exec(bin, args, { maxBuffer: 10 * 1024 * 1024 });
-    return stdout;
+    return typeof stdout === 'string' ? stdout : String(stdout);
   } catch (e) {
-    const msg = (e as Error).message ?? 'unknown';
+    const err = e as Error & { stderr?: string | Buffer; code?: string | number };
+    const stderr = err.stderr ? String(err.stderr).trim() : '';
+    const base = err.message ?? 'unknown';
+    const msg = stderr ? `${base} — stderr: ${stderr}` : base;
     throw new ExtractionError(`pdftotext failed: ${msg}`, 'extract_failed');
   }
 }
@@ -117,16 +123,9 @@ export async function extract(ctx: ExtractContext): Promise<ExtractOutcome> {
   const text = await extractWithPdftotext(ctx.absolutePath, ctx.page, ctx.options);
   const content_hash = computeContentHash(text);
   const cached = getCachedExtraction(ctx.cache, content_hash, ctx.page);
-  if (cached && cached.method === 'vision') {
+  if (cached) {
     return {
-      result: { text: cached.text, method: 'vision', content_hash },
-      cache: ctx.cache,
-      fromCache: true,
-    };
-  }
-  if (cached && cached.method === 'pdftotext') {
-    return {
-      result: { text: cached.text, method: 'pdftotext', content_hash },
+      result: { text: cached.text, method: cached.method, content_hash },
       cache: ctx.cache,
       fromCache: true,
     };

@@ -113,6 +113,32 @@ describe('cache: source registry', () => {
     expect(loaded.meta_hash).toBeDefined();
   });
 
+  it('save + load tolerates explicit undefined optional field (no false quarantine)', async () => {
+    const entry = {
+      source_hash: 'a'.repeat(64),
+      content_hash: 'b'.repeat(64),
+      drive_file_id: undefined,
+      last_verified: '2026-04-16T00:00:00.000Z',
+    };
+    const reg = { sources: { 'x.pdf': entry } };
+    await saveSourceRegistry(reg, tmp);
+    await expect(loadSourceRegistry(tmp)).resolves.toBeDefined();
+  });
+
+  it('save → load → save → load meta_hash stable across cycles', async () => {
+    const entry = {
+      source_hash: 'a'.repeat(64),
+      content_hash: 'b'.repeat(64),
+      last_verified: '2026-04-16T00:00:00.000Z',
+    };
+    await saveSourceRegistry({ sources: { 'x.pdf': entry } }, tmp);
+    const first = await loadSourceRegistry(tmp);
+    await saveSourceRegistry(first, tmp);
+    const second = await loadSourceRegistry(tmp);
+    expect(second.meta_hash).toBe(first.meta_hash);
+    expect(second.sources).toEqual(first.sources);
+  });
+
   it('save writes meta_hash matching sources', async () => {
     const reg = { sources: {} };
     await saveSourceRegistry(reg, tmp);
@@ -230,12 +256,19 @@ describe('cache: checkSourceFreshness', () => {
   beforeEach(async () => { tmp = await mkdtemp(join(tmpdir(), 'verify-cache-')); });
   afterEach(async () => { await rm(tmp, { recursive: true, force: true }); });
 
+  it('source_not_found when file absent (no raw ENOENT)', async () => {
+    const result = await checkSourceFreshness({ sources: {} }, join(tmp, 'missing.pdf'), 'missing.pdf');
+    expect(result.state).toBe('source_not_found');
+  });
+
   it('unregistered when source not in registry', async () => {
     const path = join(tmp, 'a.pdf');
     await writeFile(path, 'hello');
     const result = await checkSourceFreshness({ sources: {} }, path, 'a.pdf');
     expect(result.state).toBe('unregistered');
-    expect(result.currentSourceHash).toBe(sha256('hello'));
+    if (result.state === 'unregistered') {
+      expect(result.currentSourceHash).toBe(sha256('hello'));
+    }
   });
 
   it('fresh when source_hash matches', async () => {

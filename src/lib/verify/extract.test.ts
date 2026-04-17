@@ -51,6 +51,18 @@ describe('extract: parsePageRange', () => {
   it('reversed range throws', () => {
     expect(() => parsePageRange('15-14')).toThrow(ExtractionError);
   });
+
+  it('"0" rejected — pdftotext pages are 1-indexed', () => {
+    expect(() => parsePageRange('0')).toThrow(ExtractionError);
+    try { parsePageRange('0'); } catch (e) {
+      expect((e as ExtractionError).status).toBe('extract_failed');
+      expect((e as Error).message).toMatch(/1-indexed/);
+    }
+  });
+
+  it('"0-5" rejected', () => {
+    expect(() => parsePageRange('0-5')).toThrow(ExtractionError);
+  });
 });
 
 describe('extract: extractWithPdftotext', () => {
@@ -106,6 +118,23 @@ describe('extract: extractWithPdftotext', () => {
     await expect(
       extractWithPdftotext(path, '1', { exec: failingExec('command not found') }),
     ).rejects.toMatchObject({ status: 'extract_failed' });
+  });
+
+  it('exec failure preserves stderr in error message', async () => {
+    const path = join(tmp, 'a.pdf');
+    await writeFile(path, 'fake pdf');
+    const execWithStderr: ExecFn = vi.fn(async () => {
+      const err = new Error('Command failed: pdftotext') as Error & { stderr: string };
+      err.stderr = 'Syntax Error: Couldn\'t find trailer dictionary';
+      throw err;
+    });
+    try {
+      await extractWithPdftotext(path, '1', { exec: execWithStderr });
+      expect.fail('should have thrown');
+    } catch (e) {
+      expect((e as Error).message).toContain('stderr');
+      expect((e as Error).message).toContain('trailer dictionary');
+    }
   });
 
   it('respects custom pdftotextBin', async () => {
