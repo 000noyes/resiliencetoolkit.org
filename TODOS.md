@@ -39,6 +39,44 @@
 **Fix:** Audit usage, understand original intent, decide: keep (document why) or replace (simpler `<a>`).
 **Depends on:** None
 
+## DataTable — UX Gaps
+
+### Undo toast is opaque after row deletion
+**Priority:** P2
+**Description:** The post-deletion toast reads only "Row deleted" with no indication of which row was removed or what data it contained. On a directory with dozens of rows, an accidental delete is effectively unrecoverable-by-inspection — the user has to undo blindly within the 5-second window and hope it was the right row. Matters most for long directories (volunteer signup, food access) where rows are visually similar.
+**Fix:** Include a short row descriptor in the toast (first non-empty column value, truncated to ~40 chars) — e.g., "Deleted: Maple St. Food Shelf". On pre-populated readonly rows, use the prompt text. Fall back to "Row deleted" only when all cells are empty.
+**Depends on:** None
+
+### No clipboard / bulk import into DataTable
+**Priority:** P2
+**Description:** A user migrating a directory from a Google Sheet or existing document must enter every cell by hand. No paste-from-clipboard support, no TSV/CSV bulk import, no multi-row paste. This is the single largest friction for first-time hub onboarding — the whole point of the directory templates is to capture existing community knowledge that already lives in spreadsheets elsewhere.
+**Fix:** (a) Cell-level paste that splits on tab/newline and fills adjacent cells (spreadsheet-parity). (b) A "Paste from clipboard" button on the table header that parses TSV/CSV and appends rows. (c) Later: file-picker CSV import mirroring the existing export format (RFC 4180 + BOM).
+**Depends on:** None
+
+### Fixed column widths truncate long text without horizontal scroll on desktop
+**Priority:** P2
+**Description:** On desktop, long cell values are clipped by fixed column widths with no horizontal scroll affordance and no cell-expand-on-hover. Users don't know content is hidden. On mobile the progressive-disclosure mode masks this; on desktop it silently loses visibility of data the user entered.
+**Fix:** Either (a) make columns user-resizable with persisted widths per table, or (b) add horizontal scroll when content overflows with a visible scroll affordance, or (c) expand rows to fit on focus/hover. Option (b) is the smallest change; option (a) is the most correct.
+**Depends on:** None
+
+### No virtualization — all rows render in memory
+**Priority:** P3
+**Description:** Every row in a DataTable is in the DOM on mount. Fine for the current 5–30 row templates. Will become a real performance problem once a hub lands a directory of a few hundred entries (realistic scale for food access, volunteer rosters, contact trees). Render cost and autosave churn both scale linearly with row count.
+**Fix:** Add windowed rendering (react-window or TanStack Virtual) once any table crosses ~100 rows in production use, or proactively before Phase 3 directory work. Gate on measured scroll/input latency — don't pre-optimize without evidence.
+**Depends on:** None (watch for the scale trigger)
+
+### Focus returns to table header after row deletion
+**Priority:** P3
+**Description:** After a row is deleted, keyboard focus jumps to the table header rather than to an adjacent row. Keyboard-only users lose their place mid-task and must re-navigate to continue. Compounds with the existing P2 DataTable keyboard-navigation gap.
+**Fix:** On deletion, move focus to the next row's first editable cell. If the deleted row was last, move to the previous row. If it was the only row, move to the "Add row" affordance.
+**Depends on:** Keyboard navigation for DataTable (P2)
+
+### Empty state only appears on initial load
+**Priority:** P3
+**Description:** The empty-state prompt is shown when a user first opens a DataTable with no rows. If the user adds rows and then manually deletes all of them, the empty state does not reappear — they see a blank table with no guidance on how to start over. Minor, but noticed by users who reset a practice table.
+**Fix:** Render the empty state whenever `rows.length === 0`, not only on initial mount. One-line change in the render condition.
+**Depends on:** None
+
 ## Accessibility
 
 ### Keyboard navigation for DataTable
