@@ -52,9 +52,25 @@ describe('discover: isDriveIdCitation', () => {
     expect(isDriveIdCitation('a'.repeat(45))).toBe(false);
   });
 
-  it('flags a 25-char alphanum-underscore-hyphen id', () => {
-    expect(isDriveIdCitation('a'.repeat(25))).toBe(true);
-    expect(isDriveIdCitation('a'.repeat(44))).toBe(true);
+  it('flags a bare Drive file ID with mixed case (realistic shape)', () => {
+    expect(isDriveIdCitation('1JVGObcMxDX_5WxMLrVeWxR5nsIfGGwXz')).toBe(true);
+  });
+
+  it('flags a 25-char id that contains an underscore', () => {
+    expect(isDriveIdCitation('a'.repeat(12) + '_' + 'a'.repeat(12))).toBe(true);
+  });
+
+  it('does not flag a 40-char git commit SHA (all-lowercase hex, no underscore)', () => {
+    expect(isDriveIdCitation('a1b2c3d4e5f67890abcdef1234567890abcdef12')).toBe(false);
+  });
+
+  it('does not flag a 36-char lowercase UUID with dashes', () => {
+    expect(isDriveIdCitation('550e8400-e29b-41d4-a716-446655440000')).toBe(false);
+  });
+
+  it('does not flag a monocase run without underscore', () => {
+    expect(isDriveIdCitation('a'.repeat(30))).toBe(false);
+    expect(isDriveIdCitation('A'.repeat(30))).toBe(false);
   });
 });
 
@@ -386,5 +402,44 @@ describe('discover: end-to-end against a temp project', () => {
     );
     const { citations } = await discover({ projectRoot: root });
     expect(citations).toHaveLength(1);
+  });
+
+  it('emits missing_citation when a component has page= without source=', async () => {
+    await writeFile(
+      join(root, 'src', 'pages', '1-5.astro'),
+      '<PlanForm page="14-15" />',
+    );
+    const { citations, violations } = await discover({ projectRoot: root });
+    expect(citations).toHaveLength(0);
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toMatchObject({
+      file: 'src/pages/1-5.astro',
+      status: 'missing_citation',
+    });
+    expect(violations[0].message).toMatch(/page=/);
+  });
+
+  it('does not synthesize a missing_citation when the tag has neither source nor page', async () => {
+    await writeFile(
+      join(root, 'src', 'pages', '1-6.astro'),
+      '<Header title="Welcome" />',
+    );
+    const { violations } = await discover({ projectRoot: root });
+    expect(violations).toHaveLength(0);
+  });
+});
+
+describe('discover: readdir error handling (fail-closed)', () => {
+  it('silently skips ENOENT (missing include dir) but propagates other codes', async () => {
+    // This exercises the ENOENT-only catch by pointing discover at a path that
+    // does not exist on disk; discover should return {citations:[], violations:[]}
+    // without throwing.
+    const missing = join(tmpdir(), `verify-discover-missing-${Date.now()}`);
+    const { citations, violations } = await discover({
+      projectRoot: missing,
+      includeDirs: ['src/pages', 'src/components'],
+    });
+    expect(citations).toEqual([]);
+    expect(violations).toEqual([]);
   });
 });

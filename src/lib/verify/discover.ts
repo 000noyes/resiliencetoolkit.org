@@ -56,6 +56,11 @@ export interface DiscoverResult {
  * OR looks like a bare Drive file/folder ID: 25-44 chars of `[A-Za-z0-9_-]` with no
  * PDF/YAML/MD extension. Inventory-style audit pointers may still reference these in
  * `docs/toolkit-inventory.yaml`, which this discover pass does not scan.
+ *
+ * The bare-ID pattern is additionally gated on mixed case OR a `_` codepoint so it
+ * does not collide with git commit SHAs (lowercase hex, no underscore) or canonical
+ * UUIDs (lowercase, dashes only). Real Drive IDs are base64url-encoded and reliably
+ * include at least one of these markers.
  */
 export function isDriveIdCitation(source: string): boolean {
   const trimmed = source.trim();
@@ -63,7 +68,11 @@ export function isDriveIdCitation(source: string): boolean {
   if (DRIVE_URL_RE.test(trimmed)) return true;
   if (LOCAL_EXT_RE.test(trimmed)) return false;
   if (trimmed.includes('/') || trimmed.includes('\\')) return false;
-  return DRIVE_ID_RE.test(trimmed);
+  if (!DRIVE_ID_RE.test(trimmed)) return false;
+  const hasUnderscore = trimmed.includes('_');
+  const hasUpper = /[A-Z]/.test(trimmed);
+  const hasLower = /[a-z]/.test(trimmed);
+  return hasUnderscore || (hasUpper && hasLower);
 }
 
 function shouldScanFile(path: string): boolean {
@@ -78,8 +87,14 @@ async function walk(dir: string, acc: string[]): Promise<void> {
   let entries;
   try {
     entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return; // directory missing — skip rather than throw
+  } catch (err) {
+    // Only swallow "directory does not exist" — a missing include dir is fine
+    // (e.g., a project with only src/pages/ but no src/components/). Permission
+    // errors and other I/O failures are infra problems that must surface to the
+    // CLI as non-zero exits per the fail-closed invariant.
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === 'ENOENT') return;
+    throw err;
   }
   for (const ent of entries) {
     const full = join(dir, ent.name);
@@ -131,11 +146,17 @@ function* openingTagsWithAttrs(
   }
 }
 
+interface CitationExtraction {
+  citations: DiscoveredCitation[];
+  violations: VerifyReportEntry[];
+}
+
 function extractCitationsFromContent(
   content: string,
   relFile: string,
-): DiscoveredCitation[] {
+): CitationExtraction {
   const found: DiscoveredCitation[] = [];
+  const extractViolations: VerifyReportEntry[] = [];
   const seen = new Set<string>();
 
   const pushIfNew = (cit: DiscoveredCitation) => {
@@ -148,8 +169,23 @@ function extractCitationsFromContent(
   for (const { tag, index } of openingTagsWithAttrs(content)) {
     const attrs = parseStringAttrs(tag);
     const src = attrs.source;
-    if (!src) continue;
     const line = lineAtIndex(content, index);
+    if (!src) {
+      // Orphan page= without source= is exactly the drift `missing_citation`
+      // exists to catch. Emit a violation so the CLI fails instead of silently
+      // dropping the component.
+      if (attrs.page) {
+        extractViolations.push({
+          file: relFile,
+          line,
+          status: 'missing_citation',
+          message:
+            'component has page= without a matching source= attribute — ' +
+            'add source="<path-to-spec-or-pdf>" or remove the orphan page=.',
+        });
+      }
+      continue;
+    }
     pushIfNew({
       file: relFile,
       line,
@@ -189,7 +225,7 @@ function extractCitationsFromContent(
     });
   }
 
-  return found;
+  return { citations: found, violations: extractViolations };
 }
 
 /** Parse a comment body: "some/path.pdf" or "some/path.pdf page: 14-15". */
@@ -318,7 +354,11 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
       continue;
     }
 
-    const fileCitations = extractCitationsFromContent(content, relFile);
+    const { citations: fileCitations, violations: extractViolations } =
+      extractCitationsFromContent(content, relFile);
+    for (const v of extractViolations) {
+      violations.push(v);
+    }
     for (const cit of fileCitations) {
       if (isDriveIdCitation(cit.source)) {
         violations.push(driveIdViolation(cit));
