@@ -52,6 +52,13 @@ export interface DataTableProps {
   showInfoCallout?: boolean;
   /** 'table' (default) = spreadsheet grid; 'journal' = stacked prompt+textarea for reflection */
   variant?: 'table' | 'journal';
+  /**
+   * Source-fidelity citation. Not rendered. Read by /verify-against-source to
+   * trace column headers to a spec in docs/source-specs/ or a PDF in
+   * public/toolkit/ or rt-templates/. See .claude/skills/verify-against-source/SKILL.md.
+   */
+  source?: string;
+  page?: string;
 }
 
 // ---------------------------------------------------------------------------
