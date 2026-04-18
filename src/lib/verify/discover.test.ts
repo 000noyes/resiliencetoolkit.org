@@ -306,6 +306,24 @@ describe('discover: end-to-end against a temp project', () => {
     expect(violations).toEqual([]);
   });
 
+  it('rejects includeDirs entries that resolve above projectRoot (path escape)', async () => {
+    // Relative-path escape.
+    await expect(
+      discover({ projectRoot: root, includeDirs: ['../escape'] }),
+    ).rejects.toThrow(/outside projectRoot/);
+    // Double-dot deep escape.
+    await expect(
+      discover({ projectRoot: root, includeDirs: ['../../escape'] }),
+    ).rejects.toThrow(/outside projectRoot/);
+  });
+
+  it('rejects includeDirs entries with absolute paths outside projectRoot', async () => {
+    // Absolute path that is not projectRoot.
+    await expect(
+      discover({ projectRoot: root, includeDirs: ['/etc'] }),
+    ).rejects.toThrow(/outside projectRoot/);
+  });
+
   it('returns deterministic, sorted file ordering for multiple hits', async () => {
     await writeFile(
       join(root, 'src', 'pages', 'b.astro'),

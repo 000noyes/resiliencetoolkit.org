@@ -56,9 +56,16 @@ export function collectSpecFields(spec: SourceSpec): Field[] {
   return [];
 }
 
-/** Lowercase, strip punctuation, collapse whitespace. Unicode-aware. */
+/**
+ * Lowercase, strip punctuation, collapse whitespace. Unicode-aware.
+ * NFC-normalizes first so NFD input (e.g. from pdftotext) matches NFC input
+ * (e.g. from a spec typed on a keyboard) — without this, combining marks
+ * like U+0303 are treated as standalone non-letter codepoints and split the
+ * word in two, producing a 0-score match against an identical NFC string.
+ */
 export function normalizeLabel(s: string): string {
   return s
+    .normalize('NFC')
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .replace(/\s+/g, ' ')
@@ -83,13 +90,21 @@ function jaccardSim(a: string[], b: string[]): number {
 
 /**
  * Best sliding-window match score of a normalized label against normalized text.
- * Returns 1.0 on exact substring match; otherwise max jaccard similarity
- * across token windows of width label-length.
+ * Returns 1.0 on a word-boundary-preserving substring match; otherwise max
+ * jaccard similarity across token windows of width label-length.
+ *
+ * The word-boundary guard prevents short labels from scoring 1.0 on unrelated
+ * substring hits (e.g. "age" inside "package"). Since normalizeLabel collapses
+ * all separators to a single space, a whole-phrase match is equivalent to the
+ * padded-with-spaces substring check below.
  */
 export function bestMatchScore(labelNorm: string, textNorm: string): number {
   if (!labelNorm) return 0;
   if (!textNorm) return 0;
-  if (textNorm.includes(labelNorm)) return 1;
+  if (labelNorm === textNorm) return 1;
+  const paddedText = ` ${textNorm} `;
+  const paddedLabel = ` ${labelNorm} `;
+  if (paddedText.includes(paddedLabel)) return 1;
   const labelTokens = tokenize(labelNorm);
   const textTokens = tokenize(textNorm);
   if (labelTokens.length === 0 || textTokens.length === 0) return 0;

@@ -104,6 +104,37 @@ describe('diff: bestMatchScore', () => {
   it('returns 0 when no tokens overlap', () => {
     expect(bestMatchScore('quixotic', 'apple banana cherry')).toBe(0);
   });
+
+  // Regression: word-boundary fix. Substring-inside-a-longer-word must not score 1.
+  it('does NOT score 1 when label is a substring of an unrelated word', () => {
+    expect(bestMatchScore('age', 'package manager')).toBeLessThan(1);
+    expect(bestMatchScore('name', 'username only')).toBeLessThan(1);
+    expect(bestMatchScore('the', 'theology papers')).toBeLessThan(1);
+  });
+
+  it('still scores 1 for a whole-phrase match with surrounding text', () => {
+    expect(bestMatchScore('full name', 'please enter full name here')).toBe(1);
+    expect(bestMatchScore('age', 'your age here')).toBe(1);
+  });
+
+  it('scores 1 when label equals text exactly', () => {
+    expect(bestMatchScore('age', 'age')).toBe(1);
+  });
+});
+
+describe('diff: unicode normalization (NFC/NFD regression)', () => {
+  it('normalizeLabel canonicalizes NFD to match NFC', () => {
+    const nfc = 'Señor'.normalize('NFC');
+    const nfd = 'Señor'.normalize('NFD');
+    expect(normalizeLabel(nfc)).toBe(normalizeLabel(nfd));
+    expect(normalizeLabel(nfd)).toBe('señor');
+  });
+
+  it('bestMatchScore treats NFC and NFD as equivalent after normalize', () => {
+    const nfc = normalizeLabel('Señor Nombre');
+    const nfd = normalizeLabel('Señor Nombre'.normalize('NFD'));
+    expect(bestMatchScore(nfc, nfd)).toBe(1);
+  });
 });
 
 describe('diff: extractCandidateLines', () => {

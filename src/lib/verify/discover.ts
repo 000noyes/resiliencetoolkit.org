@@ -1,5 +1,5 @@
 import { readFile, readdir } from 'node:fs/promises';
-import { join, relative, resolve } from 'node:path';
+import { isAbsolute, join, relative, resolve } from 'node:path';
 import type { VerifyReportEntry } from './schemas';
 
 const DRIVE_ID_RE = /^[A-Za-z0-9_-]{25,44}$/;
@@ -290,7 +290,17 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
 
   const files: string[] = [];
   for (const dir of includeDirs) {
-    await walk(join(projectRoot, dir), files);
+    const full = resolve(projectRoot, dir);
+    const rel = relative(projectRoot, full);
+    // Containment guard: reject absolute paths and any path that resolves
+    // outside projectRoot. Prevents confused-deputy escapes via e.g.
+    // `includeDirs: ['../../some-other-repo']` once the CLI exposes this flag.
+    if (rel.startsWith('..') || isAbsolute(rel)) {
+      throw new Error(
+        `discover: includeDirs entry "${dir}" resolves outside projectRoot`,
+      );
+    }
+    await walk(full, files);
   }
   files.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 
