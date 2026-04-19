@@ -14,6 +14,7 @@ import {
   loadExtractionCache,
   loadSourceRegistry,
   saveExtractionCache,
+  type SourceFreshness,
 } from './cache';
 import { discover, type DiscoveredCitation } from './discover';
 import { extract, ExtractionError, type ExtractOptions } from './extract';
@@ -54,19 +55,34 @@ const INFRA_STATUSES: ReadonlySet<VerifyStatus> = new Set(['cache_corrupted']);
 
 /**
  * Statuses that always fail the verify run (exit code 1). needs_human_review
- * is intentionally excluded — it becomes a failure only when
- * --fail-on-needs-review is passed.
+ * and source_drift are intentionally excluded — they are soft statuses that
+ * only fail the run under --fail-on-needs-review (see SOFT_FAIL_STATUSES).
+ *
+ * Why source_drift is soft: per the ResilienceToolkit constitution, raw-byte
+ * drift alone (same normalized text) is an advisory — the operator should
+ * re-scaffold or update the registry, but the rendered content is unchanged.
+ * Only content_drift (normalized text moved) is a hard fail.
  */
 const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
   'missing_citation',
   'source_not_found',
-  'source_drift',
+  'source_unregistered',
   'content_drift',
   'field_drift',
   'extract_failed',
   'vision_api_failed',
   'spec_parse_error',
   'drive_id_not_allowed',
+]);
+
+/**
+ * Statuses that are soft by default and fail only when the operator opts in
+ * via --fail-on-needs-review. source_drift sits alongside needs_human_review
+ * because both are "human should look at this, but the build is not broken".
+ */
+const SOFT_FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
+  'needs_human_review',
+  'source_drift',
 ]);
 
 /**
@@ -125,6 +141,47 @@ interface VerifyStepResult {
   nextCache: ExtractionCache;
 }
 
+/**
+ * Collapse the three terminal freshness states (source_not_found,
+ * unregistered, source_drift) into a single VerifyReportEntry, or return
+ * null if the source is fresh and the caller should continue to extract+diff.
+ * Messages include the remediation command so operators know what to do.
+ */
+function evaluateFreshness(
+  citation: DiscoveredCitation,
+  freshness: SourceFreshness,
+  pdfRel: string,
+): VerifyReportEntry | null {
+  if (freshness.state === 'source_not_found') {
+    return {
+      file: citation.file,
+      line: citation.line,
+      source: citation.source,
+      status: 'source_not_found',
+      message: `source file not found: ${pdfRel}`,
+    };
+  }
+  if (freshness.state === 'unregistered') {
+    return {
+      file: citation.file,
+      line: citation.line,
+      source: citation.source,
+      status: 'source_unregistered',
+      message: `${pdfRel}: not registered in docs/source-specs/_sources.yaml — run scaffold-spec to register`,
+    };
+  }
+  if (freshness.state === 'source_drift') {
+    return {
+      file: citation.file,
+      line: citation.line,
+      source: citation.source,
+      status: 'source_drift',
+      message: `${pdfRel}: source bytes changed since last registration — re-scaffold or update registry`,
+    };
+  }
+  return null;
+}
+
 async function verifySpecMd(
   citation: DiscoveredCitation,
   projectRoot: string,
@@ -155,20 +212,11 @@ async function verifySpecMd(
   const pdfAbsolute = resolve(projectRoot, pdfRel);
   const pageFromSpec = loaded.spec.citation.page;
 
-  if (!existsSync(pdfAbsolute)) {
-    return {
-      entry: {
-        file: citation.file,
-        line: citation.line,
-        source: citation.source,
-        status: 'source_not_found',
-        message: `spec ${citation.source} cites ${pdfRel} which does not exist`,
-      },
-      nextCache: cache,
-    };
-  }
-
   const freshness = await checkSourceFreshness(registry, pdfAbsolute, pdfRel);
+  const freshnessEntry = evaluateFreshness(citation, freshness, pdfRel);
+  if (freshnessEntry) {
+    return { entry: freshnessEntry, nextCache: cache };
+  }
 
   let outcome;
   try {
@@ -189,19 +237,6 @@ async function verifySpecMd(
         message: err.message,
       },
       nextCache: cache,
-    };
-  }
-
-  if (freshness.state === 'source_drift') {
-    return {
-      entry: {
-        file: citation.file,
-        line: citation.line,
-        source: citation.source,
-        status: 'source_drift',
-        message: `${pdfRel}: source hash differs from registered hash`,
-      },
-      nextCache: outcome.cache,
     };
   }
 
@@ -226,25 +261,9 @@ async function verifyRawSource(
   registry: SourceRegistry,
 ): Promise<VerifyReportEntry> {
   const absolute = resolve(projectRoot, citation.source);
-  if (!existsSync(absolute)) {
-    return {
-      file: citation.file,
-      line: citation.line,
-      source: citation.source,
-      status: 'source_not_found',
-      message: `source file not found: ${citation.source}`,
-    };
-  }
   const freshness = await checkSourceFreshness(registry, absolute, citation.source);
-  if (freshness.state === 'source_drift') {
-    return {
-      file: citation.file,
-      line: citation.line,
-      source: citation.source,
-      status: 'source_drift',
-      message: `${citation.source}: source hash differs from registered hash`,
-    };
-  }
+  const freshnessEntry = evaluateFreshness(citation, freshness, citation.source);
+  if (freshnessEntry) return freshnessEntry;
   return {
     file: citation.file,
     line: citation.line,
@@ -261,7 +280,7 @@ function computeExitCode(
   for (const e of entries) {
     if (INFRA_STATUSES.has(e.status)) return 2;
     if (FAIL_STATUSES.has(e.status)) code = 1;
-    else if (e.status === 'needs_human_review' && failOnNeedsReview) code = 1;
+    else if (SOFT_FAIL_STATUSES.has(e.status) && failOnNeedsReview) code = 1;
   }
   return code;
 }

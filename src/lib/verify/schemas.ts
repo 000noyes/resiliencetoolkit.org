@@ -105,6 +105,7 @@ export const verifyStatusSchema = z.enum([
   'pass',
   'missing_citation',
   'source_not_found',
+  'source_unregistered',
   'source_drift',
   'content_drift',
   'field_drift',

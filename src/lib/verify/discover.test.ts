@@ -370,6 +370,7 @@ describe('discover: end-to-end against a temp project', () => {
       'pass',
       'missing_citation',
       'source_not_found',
+      'source_unregistered',
       'source_drift',
       'content_drift',
       'field_drift',
