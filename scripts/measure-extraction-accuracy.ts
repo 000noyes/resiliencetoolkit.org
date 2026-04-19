@@ -93,7 +93,13 @@ export async function main(opts: AccuracyMainOptions = {}): Promise<number> {
   } catch (e) {
     if (e instanceof AccuracyError) {
       process.stderr.write(`measure-extraction-accuracy: ${e.status}: ${e.message}\n`);
-      return e.status === 'cache_corrupted' ? 2 : 1;
+      if (e.status === 'cache_corrupted') return 2;
+      // M5: pdftotext binary missing (ENOENT/ENOTFOUND) is an infra error,
+      // not a template-quality failure. Exit 2 so CI triage isn't misdirected.
+      if (e.status === 'extract_failed' && (e.code === 'ENOENT' || e.code === 'ENOTFOUND')) {
+        return 2;
+      }
+      return 1;
     }
     process.stderr.write(`measure-extraction-accuracy: ${(e as Error).message}\n`);
     return 2;

@@ -16,10 +16,12 @@ export type ExtractFailStatus = 'extract_failed' | 'vision_api_failed' | 'source
 
 export class ExtractionError extends Error {
   readonly status: ExtractFailStatus;
-  constructor(message: string, status: ExtractFailStatus) {
+  readonly code?: string;
+  constructor(message: string, status: ExtractFailStatus, code?: string) {
     super(message);
     this.name = 'ExtractionError';
     this.status = status;
+    if (code !== undefined) this.code = code;
   }
 }
 
@@ -80,7 +82,8 @@ export async function extractWithPdftotext(
     const stderr = err.stderr ? String(err.stderr).trim() : '';
     const base = err.message ?? 'unknown';
     const msg = stderr ? `${base} — stderr: ${stderr}` : base;
-    throw new ExtractionError(`pdftotext failed: ${msg}`, 'extract_failed');
+    const code = typeof err.code === 'string' ? err.code : undefined;
+    throw new ExtractionError(`pdftotext failed: ${msg}`, 'extract_failed', code);
   }
 }
 

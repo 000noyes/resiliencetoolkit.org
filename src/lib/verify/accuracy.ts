@@ -98,10 +98,12 @@ export class AccuracyError extends Error {
     | 'source_not_found'
     | 'extract_failed'
     | 'cache_corrupted';
-  constructor(message: string, status: AccuracyError['status']) {
+  readonly code?: string;
+  constructor(message: string, status: AccuracyError['status'], code?: string) {
     super(message);
     this.name = 'AccuracyError';
     this.status = status;
+    if (code !== undefined) this.code = code;
   }
 }
 
@@ -183,11 +185,10 @@ export async function runAccuracyMeasurement(
     try {
       loaded = await loadSpec(specAbsolute);
     } catch (e) {
-      const err = e as SpecParseError;
-      throw new AccuracyError(
-        `${input.specPath}: ${err.message}`,
-        err.status ?? 'spec_parse_error',
-      );
+      if (e instanceof SpecParseError) {
+        throw new AccuracyError(`${input.specPath}: ${e.message}`, e.status);
+      }
+      throw e;
     }
 
     const pdfRel = loaded.spec.citation.source;
@@ -208,11 +209,14 @@ export async function runAccuracyMeasurement(
         options: options.extractOptions,
       });
     } catch (e) {
-      const err = e as ExtractionError;
-      throw new AccuracyError(
-        `${input.specPath}: ${err.message}`,
-        err.status === 'source_not_found' ? 'source_not_found' : 'extract_failed',
-      );
+      if (e instanceof ExtractionError) {
+        throw new AccuracyError(
+          `${input.specPath}: ${e.message}`,
+          e.status === 'source_not_found' ? 'source_not_found' : 'extract_failed',
+          e.code,
+        );
+      }
+      throw e;
     }
     cache = outcome.cache;
 

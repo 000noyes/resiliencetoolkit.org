@@ -159,6 +159,28 @@ describe('measure-extraction-accuracy: main', () => {
     expect(code).toBe(2);
   });
 
+  it('M5: returns 2 on AccuracyError(extract_failed) with ENOENT (pdftotext missing)', async () => {
+    const err = new AccuracyError('pdftotext failed: ENOENT', 'extract_failed', 'ENOENT');
+    const runner = mockRunner(err);
+    const code = await main({
+      argv: ['--spec', 'a.md', '--template', 'x'],
+      cwd: '/abs',
+      runner,
+    });
+    expect(code).toBe(2);
+  });
+
+  it('M5: returns 1 on AccuracyError(extract_failed) without infra code', async () => {
+    const err = new AccuracyError('pdftotext exited nonzero on bad pdf', 'extract_failed');
+    const runner = mockRunner(err);
+    const code = await main({
+      argv: ['--spec', 'a.md', '--template', 'x'],
+      cwd: '/abs',
+      runner,
+    });
+    expect(code).toBe(1);
+  });
+
   it('passes --out through to the runner as outRelPath', async () => {
     const runner = mockRunner(okResult);
     await main({

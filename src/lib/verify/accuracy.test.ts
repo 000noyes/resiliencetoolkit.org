@@ -365,4 +365,59 @@ describe('AccuracyError', () => {
     expect(e.status).toBe('extract_failed');
     expect(e.name).toBe('AccuracyError');
   });
+
+  it('M5: carries an optional error code so infra errors can exit 2', () => {
+    const e = new AccuracyError('pdftotext missing', 'extract_failed', 'ENOENT');
+    expect(e.code).toBe('ENOENT');
+  });
+
+  it('M5: omits code when not provided (back-compat)', () => {
+    const e = new AccuracyError('bad spec', 'spec_parse_error');
+    expect(e.code).toBeUndefined();
+  });
+});
+
+describe('runAccuracyMeasurement M5 infra-vs-content error boundary', () => {
+  let tmp: string;
+  beforeEach(async () => { tmp = await mkdtemp(join(tmpdir(), 'verify-accuracy-m5-')); });
+  afterEach(async () => { await rm(tmp, { recursive: true, force: true }); });
+
+  it('M5: propagates pdftotext ENOENT code through AccuracyError for CLI exit-2 mapping', async () => {
+    const { mkdir } = await import('node:fs/promises');
+    await mkdir(join(tmp, 'docs/source-specs'), { recursive: true });
+    await mkdir(join(tmp, 'rt-templates'), { recursive: true });
+    const specRel = 'docs/source-specs/leader-directory-draft.md';
+    const { dump } = await import('js-yaml');
+    await writeFile(
+      join(tmp, specRel),
+      `---\n${dump({
+        module: '1-9',
+        template: 'leader-directory',
+        title: 'x',
+        citation: { source: 'rt-templates/leader-directory.pdf', page: '1' },
+        fields: [{ key: 'a', label: 'A', type: 'text' }],
+      })}---\n`,
+      'utf-8',
+    );
+    await writeFile(join(tmp, 'rt-templates/leader-directory.pdf'), 'FAKE PDF');
+    const enoentExec = async () => {
+      const err = new Error('spawn pdftotext ENOENT') as Error & { code?: string };
+      err.code = 'ENOENT';
+      throw err;
+    };
+    let thrown: unknown;
+    try {
+      await runAccuracyMeasurement({
+        projectRoot: tmp,
+        inputs: [{ template: 'leader-directory', specPath: specRel }],
+        extractOptions: { exec: enoentExec },
+        saveCache: false,
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).toBeInstanceOf(AccuracyError);
+    expect((thrown as AccuracyError).status).toBe('extract_failed');
+    expect((thrown as AccuracyError).code).toBe('ENOENT');
+  });
 });
