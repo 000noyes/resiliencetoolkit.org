@@ -240,6 +240,26 @@ async function verifySpecMd(
     };
   }
 
+  // M1: if registry records a content_hash and it no longer matches the
+  // normalized pdftotext output, the spec was written against a different
+  // text. Short-circuit — running diff against drifted text produces
+  // misleading field-level reports.
+  if (
+    freshness.state === 'fresh' &&
+    outcome.result.content_hash !== freshness.entry.content_hash
+  ) {
+    return {
+      entry: {
+        file: citation.file,
+        line: citation.line,
+        source: citation.source,
+        status: 'content_drift',
+        message: `${pdfRel}: extracted content hash differs from registered hash — PDF text has moved; re-scaffold after reviewing`,
+      },
+      nextCache: outcome.cache,
+    };
+  }
+
   const result = diff({ spec: loaded.spec, text: outcome.result.text });
   return {
     entry: {

@@ -11,24 +11,30 @@ import {
   type TargetSelector,
 } from './runner';
 import type { ExecFn } from './extract';
-import { computeMetaHash, computeSourceHash } from './cache';
+import { computeContentHash, computeMetaHash, computeSourceHash } from './cache';
 
 /**
  * Seed _sources.yaml so checkSourceFreshness returns "fresh" for the given
  * PDF. Computes the raw-byte source_hash of whatever was just written to
- * disk; content_hash is a deterministic stub (only matters for content_drift
- * tests, which seed their own).
+ * disk. If mockExtractedText is provided, content_hash is derived from it
+ * so the content_drift check will pass when pdftotext is mocked to return
+ * that same text. Otherwise falls back to a stub hash — useful when the
+ * test already expects content_drift (mismatch is the point).
  */
 async function seedRegistry(
   root: string,
   pdfRelPath: string,
-  contentHash = 'b'.repeat(64),
+  mockExtractedText?: string,
+  contentHashOverride?: string,
 ): Promise<void> {
   const source_hash = await computeSourceHash(join(root, pdfRelPath));
+  const content_hash =
+    contentHashOverride ??
+    (mockExtractedText ? computeContentHash(mockExtractedText) : 'b'.repeat(64));
   const sources = {
     [pdfRelPath]: {
       source_hash,
-      content_hash: contentHash,
+      content_hash,
       last_verified: new Date().toISOString(),
     },
   };
@@ -161,7 +167,8 @@ describe('runner: runVerify end-to-end', () => {
     );
     // Fake PDF bytes — extract's exec is mocked, bytes just need to exist.
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake-bytes');
-    await seedRegistry(root, 'rt-templates/leader-directory.pdf');
+    const mockText = 'LEADER DIRECTORY\nFull Name\nPhone';
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', mockText);
     // Wired component referencing the spec.
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
@@ -172,9 +179,7 @@ describe('runner: runVerify end-to-end', () => {
       projectRoot: root,
       selector: { kind: 'all' },
       saveCache: false,
-      extractOptions: {
-        exec: mockExec('LEADER DIRECTORY\nFull Name\nPhone'),
-      },
+      extractOptions: { exec: mockExec(mockText) },
     });
 
     expect(result.exitCode).toBe(0);
@@ -202,14 +207,13 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       buildSpecMd(spec20),
     );
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake-bytes');
-    await seedRegistry(root, 'rt-templates/leader-directory.pdf');
+    const allFields = Array.from({ length: 19 }, (_, i) => `Field ${i}`).join('\n');
+    const text = `LEADER DIRECTORY\n${allFields}\nemergency contact`; // last is drifted
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', text);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
       `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
     );
-
-    const allFields = Array.from({ length: 19 }, (_, i) => `Field ${i}`).join('\n');
-    const text = `LEADER DIRECTORY\n${allFields}\nemergency contact`; // last is drifted
 
     const result = await runVerify({
       projectRoot: root,
@@ -229,7 +233,8 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       buildSpecMd(LEADER_SPEC),
     );
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake-bytes');
-    await seedRegistry(root, 'rt-templates/leader-directory.pdf');
+    const mockText = 'irrelevant text with no matches';
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', mockText);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
       `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
@@ -239,7 +244,7 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       projectRoot: root,
       selector: { kind: 'all' },
       saveCache: false,
-      extractOptions: { exec: mockExec('irrelevant text with no matches') },
+      extractOptions: { exec: mockExec(mockText) },
     });
 
     expect(result.entries[0].status).toBe('needs_human_review');
@@ -252,7 +257,8 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       buildSpecMd(LEADER_SPEC),
     );
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake-bytes');
-    await seedRegistry(root, 'rt-templates/leader-directory.pdf');
+    const mockText = 'irrelevant';
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', mockText);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
       `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
@@ -263,7 +269,7 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       selector: { kind: 'all' },
       failOnNeedsReview: true,
       saveCache: false,
-      extractOptions: { exec: mockExec('irrelevant') },
+      extractOptions: { exec: mockExec(mockText) },
     });
 
     expect(result.exitCode).toBe(1);
@@ -469,6 +475,62 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
     expect(result.entries[0].message).toMatch(/run scaffold-spec to register/);
   });
 
+  it('content_drift when registered content_hash mismatches fresh extract', async () => {
+    await writeFile(
+      join(root, 'docs', 'source-specs', '1-9-leader-directory.md'),
+      buildSpecMd(LEADER_SPEC),
+    );
+    await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
+    // Seed with the correct source_hash but a deliberately wrong
+    // content_hash — freshness passes, but extract's content_hash won't
+    // match, forcing content_drift to fire.
+    await seedRegistry(
+      root,
+      'rt-templates/leader-directory.pdf',
+      undefined,
+      'c'.repeat(64),
+    );
+    await writeFile(
+      join(root, 'src', 'pages', '1-9.astro'),
+      `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
+    );
+
+    const result = await runVerify({
+      projectRoot: root,
+      selector: { kind: 'all' },
+      saveCache: false,
+      extractOptions: { exec: mockExec('Full Name\nPhone') },
+    });
+    expect(result.exitCode).toBe(1);
+    expect(result.entries[0].status).toBe('content_drift');
+    expect(result.entries[0].message).toMatch(/text has moved/);
+    // content_drift short-circuits — no drift payload from diff leaks through
+    expect(result.entries[0].drift).toBeUndefined();
+  });
+
+  it('content_hash match lets diff run and report pass', async () => {
+    await writeFile(
+      join(root, 'docs', 'source-specs', '1-9-leader-directory.md'),
+      buildSpecMd(LEADER_SPEC),
+    );
+    await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
+    const extractText = 'Full Name\nPhone';
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', extractText);
+    await writeFile(
+      join(root, 'src', 'pages', '1-9.astro'),
+      `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
+    );
+
+    const result = await runVerify({
+      projectRoot: root,
+      selector: { kind: 'all' },
+      saveCache: false,
+      extractOptions: { exec: mockExec(extractText) },
+    });
+    expect(result.exitCode).toBe(0);
+    expect(result.entries[0].status).toBe('pass');
+  });
+
   it('verifyRawSource emits source_unregistered for raw PDF not in registry', async () => {
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
     // No _sources.yaml — the raw-source path should also fail closed.
@@ -574,7 +636,8 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       buildSpecMd(LEADER_SPEC),
     );
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake');
-    await seedRegistry(root, 'rt-templates/leader-directory.pdf');
+    const mockText = 'Full Name\nPhone';
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', mockText);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
       `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
@@ -583,7 +646,7 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
     const result = await runVerify({
       projectRoot: root,
       selector: { kind: 'all' },
-      extractOptions: { exec: mockExec('Full Name\nPhone') },
+      extractOptions: { exec: mockExec(mockText) },
     });
 
     expect(result.cacheSaved).toBe(true);
