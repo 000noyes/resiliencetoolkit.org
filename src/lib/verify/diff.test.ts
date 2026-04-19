@@ -379,6 +379,31 @@ describe('diff: short-label cluster corroboration (Session D H3)', () => {
     expect(result.status).toBe('needs_human_review');
   });
 
+  it('REGRESSION: Session D H3 adversarial prose fails closed', () => {
+    // Pre-Stage 2 this text scored 5/5 against the leader-directory spec
+    // because every short label appeared as a whole word somewhere in the
+    // normalized text. Recall 1.0 → status pass. Post-H3 the short labels
+    // (Name, Phone, Email, Title/Role normalizes to "title role" = 2 tokens)
+    // require a cluster line, which this prose does not provide.
+    const spec = flatSpec([
+      'Title/Role',
+      'Name',
+      'Phone',
+      'Email',
+      'Link to local emergency plan',
+    ]);
+    const adversarial =
+      'Please fill in your name and contact details. ' +
+      'Phone: required. Email: required. ' +
+      'Title/Role of person. ' +
+      'This is a completely fabricated link to local emergency plan scenario.';
+    const result = diff({ spec, text: adversarial });
+    expect(result.status).toBe('needs_human_review');
+    // "Link to local emergency plan" (long label) still matches the prose,
+    // but the four short labels no longer get free credit.
+    expect(result.recall).toBeLessThan(0.95);
+  });
+
   it('custom matching.cluster_min_labels=2 loosens the gate', () => {
     const spec = flatSpec(['Phone', 'Email', 'Name']);
     (spec as { matching?: { cluster_min_labels: number } }).matching = {
