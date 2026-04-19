@@ -21,7 +21,14 @@ import { accuracyBaselineSchema, type SourceSpec } from './schemas';
 
 export const RECALL_THRESHOLD = 0.95;
 
-export const DEFAULT_MAX_CANDIDATE_LINES = 200;
+/**
+ * Accuracy measurement considers more candidate lines than the per-field
+ * diff path (diff.ts DEFAULT_MAX_CANDIDATE_LINES = 50) because precision
+ * needs the denominator to reflect the whole document's noise, not just
+ * the top-of-page labels. Name is distinct from diff's constant so a
+ * grep for either doesn't surface the other.
+ */
+export const ACCURACY_MAX_CANDIDATE_LINES = 200;
 
 export interface AccuracyMetrics {
   precision: number;
@@ -57,7 +64,7 @@ export function measureAccuracy(
   options: AccuracyOptions = {},
 ): AccuracyMetrics {
   const matchThreshold = options.matchThreshold ?? DEFAULT_MATCH_CONFIDENCE;
-  const maxCandidates = options.maxCandidateLines ?? DEFAULT_MAX_CANDIDATE_LINES;
+  const maxCandidates = options.maxCandidateLines ?? ACCURACY_MAX_CANDIDATE_LINES;
   const fields = collectSpecFields(spec);
   const textNorm = normalizeLabel(extractedText);
 
@@ -74,7 +81,18 @@ export function measureAccuracy(
   for (const cand of candidates) {
     const candNorm = normalizeLabel(cand);
     if (candNorm === '') continue;
-    if (expectedLabels.some((lbl) => bestMatchScore(lbl, candNorm) >= matchThreshold)) {
+    // L3 fix: symmetric match for precision. bestMatchScore is asymmetric —
+    // `Phone` trivially matches the candidate "Home Phone Fax — required"
+    // because the label is a substring of the candidate. Requiring the
+    // candidate to also score well against the label (reverse direction)
+    // forces the match to be "about the same thing," not "overlaps." This
+    // corrects the precision inflation flagged as L3 in the Session D review.
+    const symmetricMatch = expectedLabels.some(
+      (lbl) =>
+        bestMatchScore(lbl, candNorm) >= matchThreshold &&
+        bestMatchScore(candNorm, lbl) >= matchThreshold,
+    );
+    if (symmetricMatch) {
       candidateMatches++;
     }
   }
@@ -248,7 +266,7 @@ export async function runAccuracyMeasurement(
     '# Accuracy baseline for the /verify-against-source extraction pipeline.',
     '# Emitted by scripts/measure-extraction-accuracy.ts. Per-template precision/recall',
     `# vs. human-authored ground-truth specs. Recall threshold pinned at ${RECALL_THRESHOLD}`,
-    '# (see DEFAULT_RECALL_THRESHOLD in src/lib/verify/diff.ts). Re-run when templates change.',
+    '# (see RECALL_THRESHOLD in src/lib/verify/accuracy.ts). Re-run when templates change.',
     '',
   ].join('\n');
   const yaml = header + dump(payload, { sortKeys: true, noRefs: true, lineWidth: 1000 });

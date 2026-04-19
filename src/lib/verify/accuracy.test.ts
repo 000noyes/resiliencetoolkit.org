@@ -137,6 +137,24 @@ describe('measureAccuracy: precision', () => {
     expect(m.precision).toBe(0);
     expect(m.extracted_candidate_count).toBe(0);
   });
+
+  it('L3: candidate containing a label as substring does NOT count as a match (symmetric guard)', () => {
+    // Prior asymmetric logic: bestMatchScore('phone', 'home phone fax required') → 1.0
+    // Candidate counted as a match because the label was substring-inside-word-free.
+    // Symmetric fix: bestMatchScore('home phone fax required', 'phone') is low, so the
+    // candidate fails the reverse direction and is no longer a false positive.
+    const spec = specWithFields(['Phone']);
+    const m = measureAccuracy(spec, 'Home Phone Fax required');
+    expect(m.precision).toBe(0);
+    expect(m.false_positives).toBe(1);
+  });
+
+  it('L3: exact-label candidates still match symmetrically', () => {
+    const spec = specWithFields(['Phone']);
+    const m = measureAccuracy(spec, 'Phone');
+    expect(m.precision).toBe(1);
+    expect(m.false_positives).toBe(0);
+  });
 });
 
 describe('measureAccuracy: threshold semantics', () => {

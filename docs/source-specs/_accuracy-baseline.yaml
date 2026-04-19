@@ -1,0 +1,13 @@
+# Accuracy baseline for the /verify-against-source extraction pipeline.
+# Emitted by scripts/measure-extraction-accuracy.ts. Per-template
+# precision/recall vs. human-authored ground-truth specs. Recall threshold
+# pinned at 0.95 (see RECALL_THRESHOLD in src/lib/verify/accuracy.ts).
+#
+# Initial seed. Regenerate with e.g.
+#   pnpm measure-accuracy \
+#     --spec docs/source-specs/leader-directory-draft.md \
+#     --template leader-directory \
+#     --spec docs/source-specs/neighbor-directory-draft.md \
+#     --template neighbor-directory
+# once Neighbor + First Responder ground-truth drafts land.
+baselines: {}
