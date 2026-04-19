@@ -164,6 +164,7 @@ export function setCachedExtraction(
   page: string | undefined,
   text: string,
   method: ExtractionMethod,
+  source_hash?: string,
 ): ExtractionCache {
   return {
     cache: {
@@ -172,9 +173,32 @@ export function setCachedExtraction(
         text,
         extracted_at: new Date().toISOString(),
         method,
+        ...(source_hash ? { source_hash } : {}),
       },
     },
   };
+}
+
+/**
+ * Why: extract() shells out to pdftotext before consulting the cache; that
+ * breaks deploy environments (e.g. Cloudflare Pages) that don't have
+ * poppler-utils installed. Looking up by source_hash of raw PDF bytes lets
+ * us skip the binary entirely when the same PDF has been extracted before.
+ * Scan is linear but the cache has O(tens) of entries; acceptable.
+ */
+export function findCachedBySourceHash(
+  cache: ExtractionCache,
+  source_hash: string,
+  page: string | undefined,
+): { key: string; entry: ExtractionCacheEntry } | null {
+  const pageSuffix = page ? `:${page}` : '';
+  for (const [key, entry] of Object.entries(cache.cache)) {
+    if (entry.source_hash !== source_hash) continue;
+    const keyPageSuffix = key.slice(64);
+    if (keyPageSuffix !== pageSuffix) continue;
+    return { key, entry };
+  }
+  return null;
 }
 
 export function getSourceEntry(

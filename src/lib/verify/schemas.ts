@@ -79,6 +79,7 @@ export const extractionCacheEntrySchema = z.object({
   text: z.string(),
   extracted_at: z.string().datetime(),
   method: extractionMethodSchema,
+  source_hash: sha256Hex.optional(),
 });
 export type ExtractionCacheEntry = z.infer<typeof extractionCacheEntrySchema>;
 

@@ -1,6 +1,7 @@
 cache:
   632bf28a55bf1dccb6e9adc66621441d56e8cf17e635013ef5f581c290792ca2:1:
-    extracted_at: '2026-04-18T22:10:23.527Z'
+    extracted_at: '2026-04-19T02:45:25.401Z'
     method: pdftotext
+    source_hash: 7c8914b0df83c1895d2bef9dc02852a8b2ab2a64d8b36a0baa5f21afdbddd3df
     text: "Directory of local leaders for emergency management coordination in ____________________________________\nLink to local emergency plan:\nTITLE/ROLE                                  NAME                          PHONE                            EMAIL\nState Senator(s)\nState Representative(s)\nRegional planning commission staff\nLong Term Recovery Group\nFire chief\nRoad crew\nEmergency Management Director\nTown clerk\nSelectboard members\nMutual aid/neighbor-to-neighbor leader(s)\nFlood Survivor(s)\nCommunity point people\nSchool principal\nGeneral store owner\n\f"
-meta_hash: f6623680cdaf78a624f5455308be82bd777b85afc39eebfb5c5318d962efb494
+meta_hash: b956f70d2c9affd7049342433d8471eb6304918ffe0f09f617737930db8ae78b

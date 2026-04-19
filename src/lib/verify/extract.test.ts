@@ -283,4 +283,84 @@ describe('extract: extract (cache-aware)', () => {
     });
     expect(a.result.content_hash).toBe(b.result.content_hash);
   });
+
+  it('H4: source_hash cache hit bypasses pdftotext entirely', async () => {
+    const path = join(tmp, 'a.pdf');
+    await writeFile(path, 'fake pdf bytes');
+    const exec = vi.fn(async () => ({ stdout: 'never called', stderr: '' }));
+    const seedCache = await extract({
+      absolutePath: path,
+      page: '1',
+      cache: { cache: {} },
+      options: { exec: mockExec('Leader Directory fields') },
+    });
+    expect(Object.values(seedCache.cache.cache)[0].source_hash).toMatch(/^[a-f0-9]{64}$/);
+
+    const second = await extract({
+      absolutePath: path,
+      page: '1',
+      cache: seedCache.cache,
+      options: { exec },
+    });
+    expect(second.fromCache).toBe(true);
+    expect(second.result.text).toBe('Leader Directory fields');
+    expect(exec).not.toHaveBeenCalled();
+  });
+
+  it('H4: source_hash cache miss (different bytes) still runs pdftotext', async () => {
+    const path = join(tmp, 'a.pdf');
+    await writeFile(path, 'original bytes');
+    const first = await extract({
+      absolutePath: path,
+      page: '1',
+      cache: { cache: {} },
+      options: { exec: mockExec('original text') },
+    });
+    await writeFile(path, 'different bytes');
+    const exec = vi.fn(async () => ({ stdout: 'new text', stderr: '' }));
+    const second = await extract({
+      absolutePath: path,
+      page: '1',
+      cache: first.cache,
+      options: { exec },
+    });
+    expect(exec).toHaveBeenCalledOnce();
+    expect(second.result.text).toBe('new text');
+    expect(second.fromCache).toBe(false);
+  });
+
+  it('H4: source_not_found raised before source_hash computed (no readFile on missing)', async () => {
+    await expect(
+      extract({
+        absolutePath: join(tmp, 'never-existed.pdf'),
+        page: '1',
+        cache: { cache: {} },
+        options: { exec: failingExec('should never run') },
+      }),
+    ).rejects.toMatchObject({ status: 'source_not_found' });
+  });
+
+  it('H4: legacy entry without source_hash upgraded on next hit (back-compat)', async () => {
+    const path = join(tmp, 'a.pdf');
+    await writeFile(path, 'x');
+    const primed: ExtractionCache = {
+      cache: {
+        [`${'a'.repeat(64)}:1`]: {
+          text: 'stale-keyed content',
+          extracted_at: '2026-04-01T00:00:00.000Z',
+          method: 'pdftotext',
+        },
+      },
+    };
+    const result = await extract({
+      absolutePath: path,
+      page: '1',
+      cache: primed,
+      options: { exec: mockExec('fresh pdftotext output') },
+    });
+    expect(result.result.text).toBe('fresh pdftotext output');
+    expect(result.fromCache).toBe(false);
+    const added = Object.values(result.cache.cache).find((e) => e.text === 'fresh pdftotext output');
+    expect(added?.source_hash).toMatch(/^[a-f0-9]{64}$/);
+  });
 });

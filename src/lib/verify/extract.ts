@@ -3,6 +3,8 @@ import { promisify } from 'node:util';
 import { existsSync } from 'node:fs';
 import {
   computeContentHash,
+  computeSourceHash,
+  findCachedBySourceHash,
   getCachedExtraction,
   setCachedExtraction,
 } from './cache';
@@ -120,17 +122,40 @@ export interface ExtractOutcome {
 }
 
 export async function extract(ctx: ExtractContext): Promise<ExtractOutcome> {
-  const text = await extractWithPdftotext(ctx.absolutePath, ctx.page, ctx.options);
-  const content_hash = computeContentHash(text);
-  const cached = getCachedExtraction(ctx.cache, content_hash, ctx.page);
-  if (cached) {
+  if (!existsSync(ctx.absolutePath)) {
+    throw new ExtractionError(`source not found: ${ctx.absolutePath}`, 'source_not_found');
+  }
+  const source_hash = await computeSourceHash(ctx.absolutePath);
+  const bySource = findCachedBySourceHash(ctx.cache, source_hash, ctx.page);
+  if (bySource) {
+    const content_hash = computeContentHash(bySource.entry.text);
     return {
-      result: { text: cached.text, method: cached.method, content_hash },
+      result: { text: bySource.entry.text, method: bySource.entry.method, content_hash },
       cache: ctx.cache,
       fromCache: true,
     };
   }
-  const nextCache = setCachedExtraction(ctx.cache, content_hash, ctx.page, text, 'pdftotext');
+  const text = await extractWithPdftotext(ctx.absolutePath, ctx.page, ctx.options);
+  const content_hash = computeContentHash(text);
+  const cached = getCachedExtraction(ctx.cache, content_hash, ctx.page);
+  if (cached) {
+    const nextCache = cached.source_hash
+      ? ctx.cache
+      : setCachedExtraction(ctx.cache, content_hash, ctx.page, cached.text, cached.method, source_hash);
+    return {
+      result: { text: cached.text, method: cached.method, content_hash },
+      cache: nextCache,
+      fromCache: true,
+    };
+  }
+  const nextCache = setCachedExtraction(
+    ctx.cache,
+    content_hash,
+    ctx.page,
+    text,
+    'pdftotext',
+    source_hash,
+  );
   return {
     result: { text, method: 'pdftotext', content_hash },
     cache: nextCache,
