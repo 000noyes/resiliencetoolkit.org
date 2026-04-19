@@ -167,7 +167,9 @@ describe('runner: runVerify end-to-end', () => {
     );
     // Fake PDF bytes — extract's exec is mocked, bytes just need to exist.
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake-bytes');
-    const mockText = 'LEADER DIRECTORY\nFull Name\nPhone';
+    // Mock text mimics the real leader-directory column-header row so the
+    // short-label cluster check has something to corroborate against.
+    const mockText = 'LEADER DIRECTORY\nFull Name Phone\n';
     await seedRegistry(root, 'rt-templates/leader-directory.pdf', mockText);
     // Wired component referencing the spec.
     await writeFile(
@@ -573,7 +575,8 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       buildSpecMd(LEADER_SPEC),
     );
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
-    const extractText = 'Full Name\nPhone';
+    // Cluster-safe header-row text (short "Phone" co-occurs with "Full Name").
+    const extractText = 'Full Name Phone';
     await seedRegistry(root, 'rt-templates/leader-directory.pdf', extractText);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),

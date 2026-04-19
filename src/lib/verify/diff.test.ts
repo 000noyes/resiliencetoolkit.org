@@ -286,7 +286,10 @@ describe('diff: status decisions', () => {
 
   it('recall reflects clean matches, not drifted or missing', () => {
     const spec = flatSpec(['A', 'B', 'C', 'D']);
-    const text = 'A\nB\n'; // C, D missing
+    // A and B cluster on one header-like line (satisfies cluster_min_labels=2
+    // for 4 short labels); C and D are absent from the cluster so they
+    // demote to missing — recall = 2 clean / 4 total.
+    const text = 'A B\n';
     const result = diff({ spec, text });
     expect(result.recall).toBe(0.5);
     expect(result.status).toBe('needs_human_review');
@@ -295,5 +298,99 @@ describe('diff: status decisions', () => {
   it('uses DEFAULT_MATCH_CONFIDENCE as-is (regression lock)', () => {
     expect(DEFAULT_MATCH_CONFIDENCE).toBe(0.85);
     expect(DEFAULT_RECALL_THRESHOLD).toBe(0.95);
+  });
+});
+
+describe('diff: short-label cluster corroboration (Session D H3)', () => {
+  it('legitimate column-header cluster passes all short labels', () => {
+    // Real leader-directory header: 4 short labels on one line + a long one
+    // on another. cluster_min_labels for 5 fields = min(3, max(2, 2)) = 3.
+    const spec = flatSpec([
+      'Title/Role',
+      'Name',
+      'Phone',
+      'Email',
+      'Link to local emergency plan',
+    ]);
+    const text =
+      'Title/Role   Name   Phone   Email\n' +
+      'Link to local emergency plan:\n';
+    const result = diff({ spec, text });
+    expect(result.status).toBe('pass');
+    expect(result.recall).toBe(1);
+  });
+
+  it('opt-out via matching.require_cluster=false restores unguarded behavior', () => {
+    const spec = flatSpec(['Phone', 'Email']);
+    (spec as { matching?: { require_cluster: boolean } }).matching = {
+      require_cluster: false,
+    };
+    // 2-label spec where both short labels appear in unrelated prose, on
+    // different lines. Without cluster guard: pass. With guard: would fail.
+    const text = 'Please provide your phone for contact.\nLeave email blank.\n';
+    const result = diff({ spec, text });
+    expect(result.status).toBe('pass');
+  });
+
+  it('tiny 2-short-label spec with no cluster possible fails closed by default', () => {
+    const spec = flatSpec(['Name', 'Date']);
+    // Both short labels appear but on different lines — no cluster.
+    // cluster_min_labels = min(3, max(2, 1)) = 2, but no line has 2 hits.
+    const text = 'Please enter your name.\nEnter today\'s date.\n';
+    const result = diff({ spec, text });
+    expect(result.status).toBe('needs_human_review');
+    expect(result.recall).toBe(0);
+  });
+
+  it('long-label-only spec is unaffected by the cluster guard', () => {
+    const spec = flatSpec([
+      'Link to local emergency plan',
+      'Emergency contact procedure',
+    ]);
+    // Both labels are long (>1 token AND >4 chars). No clustering required.
+    const text =
+      'Please fill in the link to local emergency plan here.\n' +
+      'The emergency contact procedure must be documented.\n';
+    const result = diff({ spec, text });
+    expect(result.status).toBe('pass');
+  });
+
+  it('short-label classification: single-token OR <=4 chars', () => {
+    // Boundary: "Phone" = 1 token, 5 chars → short (by token rule).
+    //          "Date"  = 1 token, 4 chars → short (both rules).
+    //          "Title/Role" = 2 tokens after normalize, 10 chars → long.
+    //
+    // Spec with Title/Role (long) + Phone (short). Text clusters the long
+    // label alongside prose, but Phone appears only in disconnected prose.
+    // Phone should demote to 0 → needs_human_review.
+    const spec = flatSpec(['Title/Role', 'Phone']);
+    const text = 'Title/Role of contact person here.\nCall on the phone.\n';
+    const result = diff({ spec, text });
+    // Title/Role scores; Phone is demoted by cluster check.
+    expect(result.status).toBe('needs_human_review');
+  });
+
+  it('default config (no matching block) applies the guard', () => {
+    const spec = flatSpec(['Phone', 'Email', 'Name']);
+    // spec.matching is undefined → defaults engage.
+    const text = 'Please enter phone.\nAlso enter email.\nName here.\n';
+    const result = diff({ spec, text });
+    // 3 short labels, each on its own line → no cluster → all demoted.
+    expect(result.status).toBe('needs_human_review');
+  });
+
+  it('custom matching.cluster_min_labels=2 loosens the gate', () => {
+    const spec = flatSpec(['Phone', 'Email', 'Name']);
+    (spec as { matching?: { cluster_min_labels: number } }).matching = {
+      cluster_min_labels: 2,
+    };
+    // Two labels on one line = cluster with min=2.
+    const text = 'Phone  Email\nName:\n';
+    const result = diff({ spec, text });
+    // Phone + Email cluster on line 1 → pass for both. Name is alone on
+    // line 2, no cluster → demoted.
+    expect(result.status).toBe('needs_human_review');
+    // Phone + Email recall = 2/3 ≈ 0.67
+    expect(result.recall).toBeCloseTo(2 / 3);
   });
 });

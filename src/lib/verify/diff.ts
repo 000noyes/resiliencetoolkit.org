@@ -49,6 +49,14 @@ export const DEFAULT_MATCH_CONFIDENCE = 0.85;
 export const DEFAULT_DRIFT_THRESHOLD = 0.6;
 export const DEFAULT_MAX_CANDIDATE_LINES = 50;
 
+/**
+ * Short-label cluster corroboration defaults. See the cluster check below.
+ * Tuned for the leader-directory shape (4 short labels on one header row);
+ * per-spec overrides live on SourceSpec.matching.
+ */
+export const DEFAULT_SHORT_LABEL_MAX_TOKENS = 1;
+export const DEFAULT_SHORT_LABEL_MAX_CHARS = 4;
+
 /** Flatten a spec's fields whether they live directly on the spec or under sections. */
 export function collectSpecFields(spec: SourceSpec): Field[] {
   if (spec.fields?.length) return spec.fields;
@@ -120,6 +128,64 @@ export function bestMatchScore(labelNorm: string, textNorm: string): number {
   return best;
 }
 
+/**
+ * Classify a label as "short" — single-token OR at most short_label_max_chars
+ * characters after normalization. Short labels cannot stand alone in the
+ * match; they must be corroborated by a cluster of sibling labels on the
+ * same candidate line (see below). This guards against the Session D H3
+ * failure mode where "Phone", "Email", "Name" etc. get credit for appearing
+ * as a single word anywhere in the extracted text.
+ */
+export function isShortLabel(
+  normalizedLabel: string,
+  maxTokens = DEFAULT_SHORT_LABEL_MAX_TOKENS,
+  maxChars = DEFAULT_SHORT_LABEL_MAX_CHARS,
+): boolean {
+  if (!normalizedLabel) return false;
+  const tokens = tokenize(normalizedLabel);
+  if (tokens.length <= maxTokens) return true;
+  if (normalizedLabel.length <= maxChars) return true;
+  return false;
+}
+
+/**
+ * Detect "cluster lines" — candidate lines on which multiple spec labels
+ * co-occur. For each candidate line, count how many normalized spec labels
+ * score ≥ matchThreshold against the normalized line. Lines with
+ * >= clusterMinLabels hits are clusters.
+ *
+ * Tightly coupled to extractCandidateLines' line-level granularity: if
+ * extractCandidateLines ever starts emitting something other than physical
+ * lines (e.g., column cells from -layout output), this function's line
+ * iteration must be reworked in lockstep.
+ *
+ *    spec labels          candidate lines
+ *    ["Name",              "TITLE/ROLE  NAME  PHONE  EMAIL"  ← cluster (4 hits)
+ *     "Phone",             "State Senator(s)"                ← 0 hits
+ *     "Email",             "Town clerk"                      ← 0 hits
+ *     "Title/Role"]        ...
+ */
+export function computeClusterLines(
+  normalizedLabels: readonly string[],
+  candidateLines: readonly string[],
+  clusterMinLabels: number,
+  matchThreshold: number,
+): Set<string> {
+  const cluster = new Set<string>();
+  for (const line of candidateLines) {
+    const lineNorm = normalizeLabel(line);
+    let hits = 0;
+    for (const labelNorm of normalizedLabels) {
+      if (bestMatchScore(labelNorm, lineNorm) >= matchThreshold) hits++;
+      if (hits >= clusterMinLabels) {
+        cluster.add(line);
+        break;
+      }
+    }
+  }
+  return cluster;
+}
+
 /** Deduped list of trimmed non-empty lines that could plausibly be labels. */
 export function extractCandidateLines(text: string, max: number): string[] {
   const seen = new Set<string>();
@@ -172,6 +238,48 @@ export function diff(input: DiffInput, options: DiffOptions = {}): DiffResult {
     field,
     score: bestMatchScore(normalizeLabel(field.label), textNorm),
   }));
+
+  // Short-label cluster corroboration. A single-token label (e.g. "Phone")
+  // can score 1.0 against any document that merely mentions the word. To
+  // close Session D's H3 finding we require short labels to appear on a
+  // "cluster line" — a candidate line where multiple sibling spec labels
+  // co-occur. Real column-header rows cluster; unrelated prose does not.
+  //
+  // Opt out per-spec with matching.require_cluster: false (useful for
+  // small specs where clustering is structurally impossible).
+  const matching = input.spec.matching ?? {};
+  const requireCluster = matching.require_cluster !== false;
+  const shortMaxTokens = matching.short_label_max_tokens ?? DEFAULT_SHORT_LABEL_MAX_TOKENS;
+  const shortMaxChars = matching.short_label_max_chars ?? DEFAULT_SHORT_LABEL_MAX_CHARS;
+  // Scaled cluster size: small specs can't demand 3-label clusters.
+  // Default = min(3, max(2, floor(totalLabels / 2))).
+  const defaultClusterMin = Math.min(3, Math.max(2, Math.floor(fields.length / 2)));
+  const clusterMinLabels = matching.cluster_min_labels ?? defaultClusterMin;
+
+  if (requireCluster) {
+    const candidateLines = extractCandidateLines(input.text, maxCandidates);
+    const allLabelsNorm = fields.map((f) => normalizeLabel(f.label));
+    const clusterLines = computeClusterLines(
+      allLabelsNorm,
+      candidateLines,
+      clusterMinLabels,
+      matchThreshold,
+    );
+    for (const s of scored) {
+      const labelNorm = normalizeLabel(s.field.label);
+      if (!isShortLabel(labelNorm, shortMaxTokens, shortMaxChars)) continue;
+      // A short label is credited only if it matches a cluster line. Scan
+      // each cluster line; break on the first hit.
+      let onCluster = false;
+      for (const line of clusterLines) {
+        if (bestMatchScore(labelNorm, normalizeLabel(line)) >= matchThreshold) {
+          onCluster = true;
+          break;
+        }
+      }
+      if (!onCluster) s.score = 0;
+    }
+  }
 
   const clean: typeof scored = [];
   const drifted: typeof scored = [];

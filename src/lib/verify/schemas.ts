@@ -37,6 +37,14 @@ export const sectionSchema = z.object({
 });
 export type Section = z.infer<typeof sectionSchema>;
 
+export const matchingConfigSchema = z.object({
+  require_cluster: z.boolean().optional(),
+  cluster_min_labels: z.number().int().min(1).max(10).optional(),
+  short_label_max_tokens: z.number().int().min(1).max(5).optional(),
+  short_label_max_chars: z.number().int().min(1).max(20).optional(),
+});
+export type MatchingConfig = z.infer<typeof matchingConfigSchema>;
+
 export const sourceSpecSchema = z
   .object({
     module: z.string().regex(/^[0-9]+-[0-9]+$/, 'module must be like "1-9"'),
@@ -47,6 +55,7 @@ export const sourceSpecSchema = z
     fields: z.array(fieldSchema).optional(),
     notes: z.string().optional(),
     last_verified: z.string().datetime().optional(),
+    matching: matchingConfigSchema.optional(),
   })
   .refine((spec) => Boolean(spec.sections?.length || spec.fields?.length), {
     message: 'spec must define either sections or fields',
