@@ -142,10 +142,14 @@ interface VerifyStepResult {
 }
 
 /**
- * Collapse the three terminal freshness states (source_not_found,
- * unregistered, source_drift) into a single VerifyReportEntry, or return
- * null if the source is fresh and the caller should continue to extract+diff.
- * Messages include the remediation command so operators know what to do.
+ * Collapse the two terminal pre-extract freshness states (source_not_found
+ * and unregistered) into a single VerifyReportEntry, or return null if
+ * verifySpecMd should continue to extract — this includes both the 'fresh'
+ * state and 'source_drift'. Why source_drift passes through: the
+ * ResilienceToolkit constitution says raw-byte drift ALONE is a soft
+ * advisory, but drift accompanied by content change is a hard content_drift
+ * fail. Deciding that requires extracting the PDF and comparing hashes, so
+ * this helper punts source_drift to the caller.
  */
 function evaluateFreshness(
   citation: DiscoveredCitation,
@@ -168,15 +172,6 @@ function evaluateFreshness(
       source: citation.source,
       status: 'source_unregistered',
       message: `${pdfRel}: not registered in docs/source-specs/_sources.yaml — run scaffold-spec to register`,
-    };
-  }
-  if (freshness.state === 'source_drift') {
-    return {
-      file: citation.file,
-      line: citation.line,
-      source: citation.source,
-      status: 'source_drift',
-      message: `${pdfRel}: source bytes changed since last registration — re-scaffold or update registry`,
     };
   }
   return null;
@@ -240,24 +235,40 @@ async function verifySpecMd(
     };
   }
 
-  // M1: if registry records a content_hash and it no longer matches the
-  // normalized pdftotext output, the spec was written against a different
-  // text. Short-circuit — running diff against drifted text produces
-  // misleading field-level reports.
-  if (
-    freshness.state === 'fresh' &&
-    outcome.result.content_hash !== freshness.entry.content_hash
-  ) {
-    return {
-      entry: {
-        file: citation.file,
-        line: citation.line,
-        source: citation.source,
-        status: 'content_drift',
-        message: `${pdfRel}: extracted content hash differs from registered hash — PDF text has moved; re-scaffold after reviewing`,
-      },
-      nextCache: outcome.cache,
-    };
+  // Post-extract hash comparison, per the RT constitution:
+  //   content_hash drift = hard fail (text moved — diff would lie).
+  //   source_hash drift alone (content_hash unchanged) = soft advisory.
+  // Both 'fresh' and 'source_drift' reach here; they branch on the
+  // content_hash comparison. 'source_drift' + matching content_hash degrades
+  // to needs-review (the operator should re-register, but rendered content
+  // is unchanged). 'source_drift' + drifted content_hash escalates to
+  // content_drift — the source_drift alone rule does NOT apply.
+  if (freshness.state === 'fresh' || freshness.state === 'source_drift') {
+    const contentDrifted = outcome.result.content_hash !== freshness.entry.content_hash;
+    if (contentDrifted) {
+      return {
+        entry: {
+          file: citation.file,
+          line: citation.line,
+          source: citation.source,
+          status: 'content_drift',
+          message: `${pdfRel}: extracted content hash differs from registered hash — PDF text has moved; re-scaffold after reviewing`,
+        },
+        nextCache: outcome.cache,
+      };
+    }
+    if (freshness.state === 'source_drift') {
+      return {
+        entry: {
+          file: citation.file,
+          line: citation.line,
+          source: citation.source,
+          status: 'source_drift',
+          message: `${pdfRel}: source bytes changed since last registration but normalized text is unchanged — re-scaffold or update registry`,
+        },
+        nextCache: outcome.cache,
+      };
+    }
   }
 
   const result = diff({ spec: loaded.spec, text: outcome.result.text });

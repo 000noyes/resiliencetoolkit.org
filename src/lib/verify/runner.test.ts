@@ -382,17 +382,19 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
     expect(result.entries[0].status).toBe('source_not_found');
   });
 
-  it('source_drift is soft (exit 0) by default with a remediation hint', async () => {
-    await writeFile(
-      join(root, 'docs', 'source-specs', '1-9-leader-directory.md'),
-      buildSpecMd(LEADER_SPEC),
-    );
-    await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
+  /**
+   * Seed the registry with a deliberately wrong source_hash but the CORRECT
+   * content_hash for the mock extract text. This is "source_drift alone" —
+   * bytes changed but normalized text didn't — and should degrade to a soft
+   * advisory per the RT constitution.
+   */
+  async function seedDriftedSourceFreshContent(mockText: string): Promise<void> {
     const wrongHash = 'f'.repeat(64);
+    const { computeContentHash } = await import('./cache');
     const sources = {
       'rt-templates/leader-directory.pdf': {
         source_hash: wrongHash,
-        content_hash: 'a'.repeat(64),
+        content_hash: computeContentHash(mockText),
         last_verified: new Date().toISOString(),
       },
     };
@@ -401,6 +403,16 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       join(root, 'docs', 'source-specs', '_sources.yaml'),
       dump(payload, { sortKeys: true, noRefs: true }),
     );
+  }
+
+  it('source_drift alone (content_hash unchanged) is soft — exit 0 by default', async () => {
+    await writeFile(
+      join(root, 'docs', 'source-specs', '1-9-leader-directory.md'),
+      buildSpecMd(LEADER_SPEC),
+    );
+    await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
+    const mockText = 'Full Name\nPhone';
+    await seedDriftedSourceFreshContent(mockText);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
       `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
@@ -410,32 +422,21 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       projectRoot: root,
       selector: { kind: 'all' },
       saveCache: false,
-      extractOptions: { exec: mockExec('Full Name\nPhone') },
+      extractOptions: { exec: mockExec(mockText) },
     });
     expect(result.exitCode).toBe(0);
     expect(result.entries[0].status).toBe('source_drift');
-    expect(result.entries[0].message).toMatch(/re-scaffold or update registry/);
+    expect(result.entries[0].message).toMatch(/normalized text is unchanged/);
   });
 
-  it('source_drift escalates to exit 1 with --fail-on-needs-review', async () => {
+  it('source_drift alone escalates to exit 1 with --fail-on-needs-review', async () => {
     await writeFile(
       join(root, 'docs', 'source-specs', '1-9-leader-directory.md'),
       buildSpecMd(LEADER_SPEC),
     );
     await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'bytes-A');
-    const wrongHash = 'f'.repeat(64);
-    const sources = {
-      'rt-templates/leader-directory.pdf': {
-        source_hash: wrongHash,
-        content_hash: 'a'.repeat(64),
-        last_verified: new Date().toISOString(),
-      },
-    };
-    const payload = { sources, meta_hash: computeMetaHash(sources) };
-    await writeFile(
-      join(root, 'docs', 'source-specs', '_sources.yaml'),
-      dump(payload, { sortKeys: true, noRefs: true }),
-    );
+    const mockText = 'Full Name\nPhone';
+    await seedDriftedSourceFreshContent(mockText);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),
       `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
@@ -446,11 +447,69 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       selector: { kind: 'all' },
       saveCache: false,
       failOnNeedsReview: true,
-      extractOptions: { exec: mockExec('Full Name\nPhone') },
+      extractOptions: { exec: mockExec(mockText) },
     });
     expect(result.exitCode).toBe(1);
     expect(result.entries[0].status).toBe('source_drift');
   });
+
+  it(
+    'REGRESSION: source_drift + content_drift escalates to content_drift (Session D H2 repro)',
+    async () => {
+      // Session D's H2 scenario: swap the PDF with different bytes that happen
+      // to contain the 5 label tokens. Registry still has the old source_hash
+      // AND the old content_hash. Both drift — constitution says "source_drift
+      // ALONE is soft" → when content also drifts, the hard content_drift
+      // status must win, not source_drift. This test specifically guards
+      // against the pre-Stage-2 "golden fixture passes illusorily" bug.
+      await writeFile(
+        join(root, 'docs', 'source-specs', '1-9-leader-directory.md'),
+        buildSpecMd(LEADER_SPEC),
+      );
+      await writeFile(
+        join(root, 'rt-templates', 'leader-directory.pdf'),
+        'bytes-swapped',
+      );
+      // Registry encodes a different source_hash AND a different
+      // content_hash than what extract will produce.
+      const wrongSource = 'f'.repeat(64);
+      const wrongContent = 'a'.repeat(64);
+      const sources = {
+        'rt-templates/leader-directory.pdf': {
+          source_hash: wrongSource,
+          content_hash: wrongContent,
+          last_verified: new Date().toISOString(),
+        },
+      };
+      const payload = { sources, meta_hash: computeMetaHash(sources) };
+      await writeFile(
+        join(root, 'docs', 'source-specs', '_sources.yaml'),
+        dump(payload, { sortKeys: true, noRefs: true }),
+      );
+      await writeFile(
+        join(root, 'src', 'pages', '1-9.astro'),
+        `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
+      );
+
+      // The mock extract returns the H2 repro text — 5 label tokens in prose.
+      const h2ReproText =
+        'Please fill in your name and contact details. Phone: required. ' +
+        'Email: required. Title/Role of person. This is a completely fabricated ' +
+        'link to local emergency plan scenario.';
+      const result = await runVerify({
+        projectRoot: root,
+        selector: { kind: 'all' },
+        saveCache: false,
+        extractOptions: { exec: mockExec(h2ReproText) },
+      });
+
+      // Pre-Stage 2: this returned exit 0 / status: pass.
+      // Post-Stage 2: content_drift wins — hard fail, no opt-out.
+      expect(result.exitCode).toBe(1);
+      expect(result.entries[0].status).toBe('content_drift');
+      expect(result.entries[0].drift).toBeUndefined();
+    },
+  );
 
   it('source_unregistered when PDF exists but is missing from _sources.yaml', async () => {
     await writeFile(
