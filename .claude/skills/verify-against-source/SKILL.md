@@ -16,15 +16,15 @@ description: |
 pnpm verify
 ```
 
-Flags forward to the CLI via `--`:
+Flags are passed directly to the CLI (pnpm 10 forwards them without a `--` separator):
 
 | Scenario | Command |
 |---|---|
 | Full sweep (default) | `pnpm verify` |
-| Check changed files vs main | `pnpm verify -- --since main` |
-| Check one file / glob | `pnpm verify -- --target src/pages/modules/emergency-preparedness/1-9.astro` |
-| CI (diff vs prev commit) | `pnpm verify -- --since HEAD~1` |
-| Block merge on needs-review | `pnpm verify -- --fail-on-needs-review` |
+| Check changed files vs main | `pnpm verify --since main` |
+| Check one file / glob | `pnpm verify --target src/pages/modules/emergency-preparedness/1-9.astro` |
+| CI (diff vs prev commit) | `pnpm verify --since HEAD~1` |
+| Block merge on needs-review | `pnpm verify --fail-on-needs-review` |
 
 Exit codes: `0 pass | 1 fail | 2 infra-error`. A JSONL report is written to
 `~/.gstack/projects/resiliencetoolkit-org/verify-reports/<timestamp>.jsonl` (override
@@ -46,8 +46,8 @@ Look at the report's last `status` entry.
 ## How to scaffold a new spec
 
 ```bash
-pnpm scaffold-spec -- --pdf rt-templates/leader-directory.pdf \
-                      --page 1 --module 1-9 --template leader-directory
+pnpm scaffold-spec --pdf rt-templates/leader-directory.pdf \
+                   --page 1 --module 1-9 --template leader-directory
 ```
 
 Writes a stub to `docs/source-specs/1-9-leader-directory.md`. Replace the
