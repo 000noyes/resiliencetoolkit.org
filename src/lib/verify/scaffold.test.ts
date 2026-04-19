@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { scaffoldSpec, ScaffoldError } from './scaffold';
 import { parseSpecMarkdown } from './load-spec';
 import type { ExecFn } from './extract';
+import { computeContentHash, computeSourceHash, loadSourceRegistry } from './cache';
 
 function mockExec(stdout: string): ExecFn {
   return async () => ({ stdout, stderr: '' });
@@ -228,6 +229,75 @@ describe('scaffold: scaffoldSpec', () => {
       extractOptions: { exec: mockExec('extracted-b') },
     });
     expect(existsSync(join(root, 'docs', 'source-specs', '_extraction-cache.yaml'))).toBe(true);
+  });
+
+  it('writes a _sources.yaml registry entry on first scaffold', async () => {
+    await writeFile(join(root, 'rt-templates', 'x.pdf'), 'pdf-bytes');
+    const extractText = 'LEADER DIRECTORY\nFull Name\nPhone';
+    const result = await scaffoldSpec({
+      projectRoot: root,
+      pdf: 'rt-templates/x.pdf',
+      module: '1-9',
+      template: 'leader-directory',
+      saveCache: false,
+      extractOptions: { exec: mockExec(extractText) },
+    });
+    expect(result.registrySaved).toBe(true);
+
+    const registry = await loadSourceRegistry(root);
+    const entry = registry.sources['rt-templates/x.pdf'];
+    expect(entry).toBeDefined();
+    expect(entry.source_hash).toBe(await computeSourceHash(join(root, 'rt-templates', 'x.pdf')));
+    expect(entry.content_hash).toBe(computeContentHash(extractText));
+    expect(entry.last_verified).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it('saveRegistry=false skips the registry write', async () => {
+    await writeFile(join(root, 'rt-templates', 'x.pdf'), 'pdf-bytes');
+    const result = await scaffoldSpec({
+      projectRoot: root,
+      pdf: 'rt-templates/x.pdf',
+      module: '1-9',
+      template: 'leader-directory',
+      saveCache: false,
+      saveRegistry: false,
+      extractOptions: { exec: mockExec('x') },
+    });
+    expect(result.registrySaved).toBe(false);
+    const { existsSync } = await import('node:fs');
+    expect(existsSync(join(root, 'docs', 'source-specs', '_sources.yaml'))).toBe(false);
+  });
+
+  it('overwrites the registry entry on force scaffold with fresh hashes', async () => {
+    // First scaffold — seeds registry entry with one content_hash.
+    await writeFile(join(root, 'rt-templates', 'x.pdf'), 'pdf-bytes-v1');
+    await scaffoldSpec({
+      projectRoot: root,
+      pdf: 'rt-templates/x.pdf',
+      module: '1-9',
+      template: 'leader-directory',
+      saveCache: false,
+      extractOptions: { exec: mockExec('version-one-text') },
+    });
+    const before = (await loadSourceRegistry(root)).sources['rt-templates/x.pdf'];
+
+    // Rewrite the PDF bytes and re-scaffold with --force. Registry should
+    // reflect the new hashes, not the stale ones.
+    await writeFile(join(root, 'rt-templates', 'x.pdf'), 'pdf-bytes-v2');
+    await scaffoldSpec({
+      projectRoot: root,
+      pdf: 'rt-templates/x.pdf',
+      module: '1-9',
+      template: 'leader-directory',
+      force: true,
+      saveCache: false,
+      extractOptions: { exec: mockExec('version-two-text') },
+    });
+    const after = (await loadSourceRegistry(root)).sources['rt-templates/x.pdf'];
+
+    expect(after.source_hash).not.toBe(before.source_hash);
+    expect(after.content_hash).toBe(computeContentHash('version-two-text'));
+    expect(after.last_verified >= before.last_verified).toBe(true);
   });
 
   it('defaults title to Title-cased template', async () => {

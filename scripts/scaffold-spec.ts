@@ -73,7 +73,7 @@ export async function main(opts: ScaffoldMainOptions = {}): Promise<number> {
       force: Boolean(values.force),
     });
     process.stdout.write(
-      `scaffold-spec: wrote ${result.outRelPath} (cache saved: ${result.cacheSaved})\n`,
+      `scaffold-spec: wrote ${result.outRelPath} (cache saved: ${result.cacheSaved}, registry saved: ${result.registrySaved})\n`,
     );
     return 0;
   } catch (e) {

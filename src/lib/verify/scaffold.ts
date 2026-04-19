@@ -4,11 +4,15 @@ import { dirname, resolve } from 'node:path';
 import { dump } from 'js-yaml';
 import {
   CacheCorruptedError,
+  computeSourceHash,
   loadExtractionCache,
+  loadSourceRegistry,
   saveExtractionCache,
+  saveSourceRegistry,
+  setSourceEntry,
 } from './cache';
 import { extract, type ExtractOptions } from './extract';
-import type { SourceSpec } from './schemas';
+import type { SourceRegistryEntry, SourceSpec } from './schemas';
 
 export class ScaffoldError extends Error {
   readonly status: 'spec_parse_error' | 'extract_failed' | 'cache_corrupted' | 'exists';
@@ -41,6 +45,12 @@ export interface ScaffoldOptions {
   extractOptions?: ExtractOptions;
   /** Save the extraction cache to disk after running. Default true. */
   saveCache?: boolean;
+  /**
+   * Save/refresh the source registry entry (_sources.yaml) for this PDF.
+   * Default true — every scaffold implicitly registers the source so that
+   * subsequent `verify` runs have a baseline to drift-check against.
+   */
+  saveRegistry?: boolean;
 }
 
 export interface ScaffoldResult {
@@ -49,6 +59,7 @@ export interface ScaffoldResult {
   content: string;
   extractedText: string;
   cacheSaved: boolean;
+  registrySaved: boolean;
 }
 
 const MODULE_RE = /^[0-9]+-[0-9]+$/;
@@ -171,6 +182,26 @@ export async function scaffoldSpec(options: ScaffoldOptions): Promise<ScaffoldRe
     extractedText: outcome.result.text,
   });
 
+  // Registry-first atomicity: if the .md write below fails halfway, the
+  // orphan registry entry is inert — discover() only processes citations
+  // found in source files, so an entry pointing at a non-existent spec
+  // has no effect until a future scaffold re-writes both. If we wrote
+  // the .md first and then failed the registry write, the next verify
+  // would emit source_unregistered for a spec that looks valid. That is
+  // the failure mode we are avoiding.
+  const saveRegistry = options.saveRegistry !== false;
+  if (saveRegistry) {
+    const registry = await loadSourceRegistry(projectRoot);
+    const source_hash = await computeSourceHash(pdfAbsolute);
+    const entry: SourceRegistryEntry = {
+      source_hash,
+      content_hash: outcome.result.content_hash,
+      last_verified: new Date().toISOString(),
+    };
+    const nextRegistry = setSourceEntry(registry, options.pdf, entry);
+    await saveSourceRegistry(nextRegistry, projectRoot);
+  }
+
   await mkdir(dirname(outAbsolutePath), { recursive: true });
   await writeFile(outAbsolutePath, content, 'utf-8');
 
@@ -185,5 +216,6 @@ export async function scaffoldSpec(options: ScaffoldOptions): Promise<ScaffoldRe
     content,
     extractedText: outcome.result.text,
     cacheSaved: saveCache,
+    registrySaved: saveRegistry,
   };
 }
