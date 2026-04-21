@@ -129,12 +129,48 @@ modules:
         link destinations on prose phrases are structural (anchor text + URL
         together), flagged by user: linksMatch must validate both anchor
         text and URL, not URL alone.
+    paragraph_drift:                          # added on 1-1 re-walk with paragraph-diff methodology
+      - location: "Systems col, Household subsection (workbook p30)"
+        workbook: "…need to be refreshed on a regular basis"
+        site: "…refreshed on a regular basis."
+        drift_type: punctuation_add
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+      - location: "Systems col, Individual subsection (workbook p30)"
+        workbook: "prepare 'go bags,'"        # workbook uses curly single quotes
+        site: "prepare go bags,"
+        drift_type: quote_drop
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+      - location: "Household bullet #9 (workbook p30)"
+        workbook: "Personal sanitation supplies (incl. moist towelettes, garbage bags and plastic ties)"
+        site: "Personal sanitation supplies (incl. moist towelettes, garbage bags, and plastic ties)"
+        drift_type: oxford_comma_add
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+    section_order_check: ok                   # 2 subsections (Household/Individual) match workbook order
+    missing_sections_check:
+      - section: "Module intro paragraph"
+        status: correct_placement             # on category index, not 1-1 page
+      - section: "Folder header"
+        status: already_flagged_class_c       # see components_wired
+      - section: "Appendix templates p31-32"
+        status: already_flagged_deferred_step_2
+    class_c_count: 9                          # 6 from first pass + 3 from re-walk
     scope: 1a
     spec_required: true
     notes: >
-      First module walked (2026-04-21). InfoCallout classification as
-      site-UX exception (not a toolkit-content class-c) pending common
-      decision — same pattern likely recurs across modules.
+      First module walked (2026-04-21). Re-walked same day with
+      paragraph-diff methodology after KYC surfaced methodology gap.
+      Re-walk added 3 minor-severity punctuation drifts (period add,
+      quote drop, Oxford comma add). Meaning preserved; strict
+      SCOPE.md reading requires verbatim restore. InfoCallout
+      classification as site-UX exception (not a toolkit-content
+      class-c) pending common decision — same pattern likely recurs
+      across modules.
 
   knowing-your-community:
     title: "Organizing your community: who is here and what are they doing?"
