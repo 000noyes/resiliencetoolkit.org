@@ -2,6 +2,21 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.9] - 2026-04-21
+
+### Added
+- PlanForm component for single-record forms (title, fields, auto-save, HTML export). Scaffolding for upcoming Phase 2 wiring into the Community Assessment, Shelter Plan, and similar single-record module templates.
+- Source-fidelity verification: every user-facing field, label, column header, and option list on the site is now traceable to a page in the Resilience Hub Toolkit PDF or an official template. Drift between the site and the source workbook is caught before merge.
+- 1-9 Leader Directory source spec as the reference template for future module wiring.
+
+### Changed
+- DataTable internals refactored: save indicator and info callout banner extracted into standalone components (SaveIndicator, InfoCalloutBanner) for reuse by PlanForm and future form components.
+- `package.json` version aligned with the authoritative `VERSION` file (was stale at 0.0.5).
+
+### For contributors
+- 294 new tests covering verify-skill internals (extract, diff, cache, discover, scaffold, runner) plus PlanForm and storage helpers.
+- CI workflow runs verification on every push; broken source chains fail the build.
+
 ## [0.0.8] - 2026-04-13
 
 ### Added
