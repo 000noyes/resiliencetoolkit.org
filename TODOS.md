@@ -33,6 +33,12 @@
 **Completed:** v0.0.6 (2026-04-05)
 **Status:** 8 components deleted outright, 5 moved to `src/design-system/_deferred/`. Zero remaining imports verified via grep.
 
+### Remove orphaned modules content collection
+**Priority:** P3
+**Description:** `src/content/modules/{baseline-resilience,emergency-preparedness}.yaml`, the `modules` collection in `src/content.config.ts`, and `getModuleSections()` in `src/lib/navigation.ts` are zero-reference leftovers from the dynamic-routing era. All 16 section pages now carry their own inline `sectionData`, so the YAMLs are parsed and zod-validated at build time but never read. `navigation.ts` already documents this in a header comment ("getSectionNavigation removed — all sections are hardcoded"). Same metadata now lives in two places; only the inline copy is authoritative.
+**Fix:** In one commit, delete in this order to keep each intermediate state buildable: (1) `src/lib/navigation.ts` (only exports the unused helper), (2) the `modules` collection definition + its zod schema block in `src/content.config.ts` (leave `sourceSpecs`), (3) the two YAML files under `src/content/modules/`, (4) the `src/content/modules/` directory if empty. Run `pnpm astro check && pnpm build && pnpm vitest run` to confirm no regressions.
+**Depends on:** None
+
 ### Investigate ExternalLink abstraction
 **Priority:** P3
 **Description:** `ExternalLink.tsx` → `ExternalLinkModal.tsx` → `externalLinkPreferences.ts` — ~300 lines to show a "you're leaving this site" modal before opening external links. Used in 16 pages. Investigate why this abstraction was added before removing — there may be a deliberate reason (accessibility, community trust, hosted-in-contexts-without-internet). If no good reason, replace with plain `<a target="_blank" rel="noopener noreferrer">` and a CSS external-link icon.
