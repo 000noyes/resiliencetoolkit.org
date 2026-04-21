@@ -33,6 +33,7 @@ export type ExecFn = (
 
 export interface ExtractOptions {
   pdftotextBin?: string;
+  pdftohtmlBin?: string;
   exec?: ExecFn;
   allowVision?: boolean;
   visionExtract?: (absolutePath: string, page: string | undefined) => Promise<string>;
@@ -42,6 +43,12 @@ export interface ExtractResult {
   text: string;
   method: ExtractionMethod;
   content_hash: string;
+}
+
+export interface ExtractedLink {
+  url: string;
+  page: number;
+  anchor_text?: string;
 }
 
 export function parsePageRange(page: string | undefined): { first?: number; last?: number } {
@@ -85,6 +92,88 @@ export async function extractWithPdftotext(
     const code = typeof err.code === 'string' ? err.code : undefined;
     throw new ExtractionError(`pdftotext failed: ${msg}`, 'extract_failed', code);
   }
+}
+
+const HTML_ENTITY_MAP: Record<string, string> = {
+  '&#160;': ' ',
+  '&nbsp;': ' ',
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+  '&apos;': "'",
+};
+
+function decodeHtmlEntities(s: string): string {
+  return s
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&(?:nbsp|amp|lt|gt|quot|apos);/g, (m) => HTML_ENTITY_MAP[m] ?? m);
+}
+
+function stripTags(s: string): string {
+  return s.replace(/<[^>]*>/g, '');
+}
+
+export function parseLinksFromPdftohtml(html: string, pageNum: number): ExtractedLink[] {
+  const links: ExtractedLink[] = [];
+  const anchorRe = /<a\b[^>]*\bhref="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = anchorRe.exec(html)) !== null) {
+    const url = m[1];
+    if (!url) continue;
+    const inner = m[2];
+    const anchor_text = decodeHtmlEntities(stripTags(inner)).replace(/\s+/g, ' ').trim();
+    const link: ExtractedLink = { url, page: pageNum };
+    if (anchor_text.length > 0) link.anchor_text = anchor_text;
+    links.push(link);
+  }
+  return links;
+}
+
+export async function extractWithPdftohtml(
+  absolutePath: string,
+  pageNum: number,
+  options: ExtractOptions = {},
+): Promise<ExtractedLink[]> {
+  if (!existsSync(absolutePath)) {
+    throw new ExtractionError(`source not found: ${absolutePath}`, 'source_not_found');
+  }
+  if (!Number.isInteger(pageNum) || pageNum < 1) {
+    throw new ExtractionError(`invalid page number: ${pageNum} (pages are 1-indexed)`, 'extract_failed');
+  }
+  const bin = options.pdftohtmlBin ?? 'pdftohtml';
+  const exec = options.exec ?? (execFileAsync as unknown as ExecFn);
+  const args = ['-s', '-i', '-stdout', '-f', String(pageNum), '-l', String(pageNum), absolutePath, '-'];
+  try {
+    const { stdout } = await exec(bin, args, { maxBuffer: 10 * 1024 * 1024 });
+    const html = typeof stdout === 'string' ? stdout : String(stdout);
+    return parseLinksFromPdftohtml(html, pageNum);
+  } catch (e) {
+    const err = e as Error & { stderr?: string | Buffer; code?: string | number };
+    const stderr = err.stderr ? String(err.stderr).trim() : '';
+    const base = err.message ?? 'unknown';
+    const msg = stderr ? `${base} — stderr: ${stderr}` : base;
+    const code = typeof err.code === 'string' ? err.code : undefined;
+    throw new ExtractionError(`pdftohtml failed: ${msg}`, 'extract_failed', code);
+  }
+}
+
+export async function extractLinks(
+  absolutePath: string,
+  page: string | undefined,
+  options: ExtractOptions = {},
+): Promise<ExtractedLink[]> {
+  const { first, last } = parsePageRange(page);
+  if (first === undefined || last === undefined) {
+    throw new ExtractionError('extractLinks requires an explicit page or page range', 'extract_failed');
+  }
+  const all: ExtractedLink[] = [];
+  for (let p = first; p <= last; p++) {
+    const pageLinks = await extractWithPdftohtml(absolutePath, p, options);
+    all.push(...pageLinks);
+  }
+  return all;
 }
 
 export async function extractWithVision(
