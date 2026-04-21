@@ -134,8 +134,10 @@ src/stories/
 !.claude/skills/
 
 # In-repo scratch docs are ignored, EXCEPT the source-of-truth specs consumed by /verify-against-source
+# and the toolkit inventory (classifies every user-facing content piece against the workbook)
 docs/*
 !docs/source-specs/
+!docs/toolkit-inventory.yaml
 
 # Local notes (not for version control)
 TODOS.md

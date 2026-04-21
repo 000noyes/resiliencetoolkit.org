@@ -1,0 +1,428 @@
+# Toolkit Inventory — resiliencetoolkit.org
+#
+# Generated during Step 1a Days 2–4 Inventory Walk (started 2026-04-21).
+# Classifies every user-facing content piece across the 17 module pages
+# against the canonical workbook (public/toolkit/2025 Resilience Hub
+# Toolkit w Templates_V1 final.pdf, 97pp, 258 hrefs, 41 Drive IDs).
+#
+# Classification taxonomy:
+#   a  = workbook-cited (wireable in Step 1)
+#   b  = template-cited (rt-templates/ — scrapped on Day 7; any (b) must
+#        re-anchor to the workbook page range on promotion)
+#   c  = no source / site-invented (HARD FLAG — SCOPE.md class-(c) firewall:
+#        must be deleted or promoted via reviewed spec)
+#
+# Innovation flags per module: prose-content-could-be-interactive,
+# structural-fidelity risks, and missing UI affordances the workbook implies.
+# Each flag records its per-module decision (accepted/deferred/rejected + scope).
+#
+# Source-of-truth memory: project_rt_source_truth_pdfs.md
+# Plan artifact: vscode-feat-step1a-priority-ep-eng-review-test-plan-20260421.md §2a
+
+meta:
+  walk_started: "2026-04-21"
+  branch: "feat/step1a-priority-ep"
+  workbook: "public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf"
+  workbook_pages: 97
+  workbook_hrefs_total: 258
+  workbook_drive_ids_total: 41
+
+modules:
+  1-1:
+    title: "Emergency preparedness kits"
+    workbook_pages: "30"
+    workbook_pages_extended: "30-32"   # p31-32 are appendix templates linked from 1-1 Drive folder
+    section_pdf: "public/toolkit/sections/Section 1.1_2025 Resilience Hub Toolkit.pdf"
+    workbook_links_count: 5            # page 30 only; excludes intra-PDF ToC anchors
+    section_links_count: 5
+    site_links_count: 0                # 4 x href="#" dead anchors
+    link_delta: -5                     # worst case: complete external-link loss
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-1.astro"
+      module_key: "emergency-preparedness-kits"
+      storage_label: "Emergency Kits"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          note: >
+            "How this works: Fill out forms… offline… private." — site-invented
+            meta-instruction. NOT workbook content. Accepted as per-site UX
+            metadata exception? Pending: not addressed in 1-1 answer; defer to
+            common-pattern decision (applies across many modules).
+        - type: table.guide-table
+          source_cited: null
+          classification: a
+          note: >
+            Systems/Stuff two-column layout mirrors workbook p30 structure
+            directly. One PDF table → one HTML table. Structural fidelity ✓.
+        - type: anchor_href_hash
+          count: 4
+          source_cited: null
+          classification: c
+          note: >
+            4 dead href="#" anchors on "emergency plans", "emergency kits",
+            "storing backup food", "go bags". Workbook has real Drive links
+            behind these phrases. HARD FIDELITY VIOLATION.
+          promotion: "1a — restore via spec links[]"
+        - type: Todo
+          count: 25
+          source_cited: null
+          classification: a
+          note: >
+            11 Household + 14 Go Bag checkboxes. Bullet text is class-(a)
+            workbook-verbatim; checkbox affordance itself is innovation
+            (bullets→checkboxes, P2). Todo IDs are site-invented but safe;
+            moduleKey contract preserved.
+        - type: workbook_folder_header_missing
+          source_cited: null
+          classification: c
+          note: >
+            Workbook p30 opens with "Folder with resources and templates: 1.1
+            Emergency preparedness kits" linking to Drive folder 13eSjal…
+            NOT surfaced on site. Inventory gap.
+          promotion: "1a — restore via spec links[] (Drive folder)"
+      appendix_templates:
+        - workbook_page: 31
+          title: "Street Medic First Aid Kit"
+          on_site: false
+          note: "Full first-aid-kit breakdown; linked from 1-1 Drive folder."
+        - workbook_page: 32
+          title: "Go Bag Gear List"
+          on_site: false
+          note: "Expanded go-bag list; linked from 1-1 Drive folder."
+    innovations:
+      - flag: dead_link_regression
+        description: >
+          4 href="#" anchors drop 4 of the workbook's 5 page-30 external
+          Drive links. Every linked phrase in the workbook is inert prose on
+          site. Missing Drive-folder header = 5th lost link.
+        decision: accept_as_1a_fix
+        scope: 1a
+        action: >
+          Spec links[] includes all 5 workbook page-30 Drive URLs. 1a wiring
+          replaces href="#" with real URLs during module 1-1 scaffolding.
+          Verify via linksMatch check.
+        structural_fidelity_bearing: true
+      - flag: appendix_templates_not_surfaced
+        description: >
+          Workbook p31 (Street Medic First Aid Kit) + p32 (Go Bag Gear List)
+          are detailed appendix templates linked from 1-1's Drive folder but
+          not exposed on site. Workbook users see full gear lists; site
+          users see only top-level bullets.
+        decision: deferred_to_step_2
+        scope: step_2
+        action: >
+          Candidates for interactive DataTable/checklist expansion in Step 2.
+          Not just PDF-linked — actual interactive surface. Track in TODOS
+          when Step 2 opens.
+      - flag: bullets_to_checkboxes
+        description: >
+          Site converts 25 workbook bullets to Todo components. Known P2
+          innovation already logged. Flagged here for inventory completeness.
+        decision: deferred_to_step_2
+        scope: step_2
+    structural_fidelity:
+      verdict: "one_table_one_component"
+      detail: >
+        Workbook p30 Systems/Stuff table → site guide-table. No split. BUT
+        link destinations on prose phrases are structural (anchor text + URL
+        together), flagged by user: linksMatch must validate both anchor
+        text and URL, not URL alone.
+    scope: 1a
+    spec_required: true
+    notes: >
+      First module walked (2026-04-21). InfoCallout classification as
+      site-UX exception (not a toolkit-content class-c) pending common
+      decision — same pattern likely recurs across modules.
+
+  knowing-your-community:
+    title: "Organizing your community: who is here and what are they doing?"
+    short_title: "Knowing Your Community"
+    workbook_pages: "10-17"
+    workbook_pages_extended: "10-17, 19-22"   # p19-22 are Pods appendix (Mia Mingus/BATJC)
+    section_pdf: "public/toolkit/sections/Section 0_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 9
+    workbook_links_count: 7                   # p10-17 excluding resiliencetoolkit.org footer
+    workbook_links_detailed:
+      - url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+        page: 10
+        purpose: "Folder with resources here: 0. Organizing your community"
+        on_site: false
+      - url: "http://legislature.vermont.gov/people/"
+        page: 10
+        purpose: "*Find your legislators at…"
+        on_site: false                         # plain text, NO href
+      - url: "https://anrmaps.vermont.gov/websites/anra5/"
+        page: 12
+        purpose: "ANR atlas"
+        on_site: true
+      - url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+        page: 14
+        purpose: "Facilitation guides folder (same Drive folder, second reference)"
+        on_site: false                         # entire Facilitation guides section missing
+      - url: "https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view"
+        page: 16
+        purpose: "Check out this zine for more ideas"
+        on_site: false                         # plain text, NO href
+      - url: "https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view"
+        page: 16
+        purpose: "Check out this list for more ideas"
+        on_site: false                         # plain text, NO href
+      - url: "https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link"
+        page: 17
+        purpose: "Pod Mapping Worksheet"
+        on_site: true                          # via Pod Mapping callout component
+    site_added_links:                          # in site but not in workbook
+      - url: "https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0"
+        purpose: "Vermont Town Directory (site-added editorial callout)"
+        decision: promote_as_editorial_supplement
+      - url: "http://tinyurl.com/RHTmaterials"
+        purpose: "More in-depth facilitation guides (site-added)"
+        decision: promote_as_editorial_supplement
+      - url: "https://batjc.org/"
+        purpose: "BATJC homepage (site-added when citing Mia Mingus)"
+        decision: promote_as_editorial_supplement
+    link_delta_summary: "-4 workbook links dropped, +3 site-only links added (all 3 promoted as editorial supplements)"
+
+    current_site_state:
+      astro: "src/pages/modules/knowing-your-community.astro"
+      module_keys:
+        - "knowing-community"
+        - "bringing-people-together"
+      components_wired:
+        - type: Callout
+          label: "Vermont Town Directory"
+          source_cited: null
+          classification: c
+          promotion: 1a_editorial_supplement
+        - type: DataTable
+          tableName: "Place Characteristics"
+          invented_title: true
+          correct_title: "Mapping your community"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Community Roles"
+          invented_title: true
+          correct_title: "Who is in your community/place?"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Community Dynamics"
+          invented_title: true
+          correct_title: "What other dynamics are present in your place?"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Stuff and Systems"
+          invented_title: true
+          correct_title: "Stuff and systems in your community"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Knowing Your Ecosystem"
+          invented_title: partial        # close to workbook "Knowing your ecosystem" but capitalization changed
+          correct_title: "Knowing your ecosystem"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Going Deeper"
+          invented_title: partial
+          correct_title: "Going deeper: finding the community work you want to do"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: Callout
+          label: "Pod Mapping Worksheet"
+          source_cited: null
+          classification: c                 # site-invented callout surrounding BATJC pod mapping
+          promotion: retain_as_ux_chrome_but_embed_workbook_content_inline
+        - type: Todo
+          count: 6
+          moduleKey: "bringing-people-together"
+          classification: a_with_drift
+          note: "Workbook-sourced agenda items; 1 invented bullet + 5 dropped items"
+        - type: guide_table_roles
+          classification: a                 # matches workbook roles-to-modules table
+        - type: ul_lists
+          classification: a_with_drops
+          note: "Workbook-sourced ecosystem bullets + bringing-people-together bullets; 1 bullet dropped ('Who is missing?')"
+
+    paragraph_drift:
+      - location: "Lead paragraph (workbook p10)"
+        workbook: "…thinking about who is in in it, and the place where you live. You can do this activity alone, but best to do it with a few other people—friends, colleagues, neighbors."
+        site: "…thinking about who is in your community and the place where you live. You can do this activity alone, but it's best to do it with a few other people. They could be your friends, colleagues, neighbors, or someone else you just met who's excited about organizing your community to be more resilient."
+        drift_type: rephrase_plus_invention
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Bringing people together opener (workbook p13)"
+        workbook: "Once you have a few people - it can just be four or ten people! - you can meet. You'll need:"
+        site: "Once you have a few people - it can just be four or ten people! - you can get together and look at this toolkit. In order to have a meeting, you'll need"
+        drift_type: invention
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Bringing people together bullet #2 (workbook p13)"
+        workbook: "Where can you go to know them better or introduce yourself? Who is missing?"
+        site: "Where can you go to know them better or introduce yourself?"
+        drift_type: drop
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Dynamics question (workbook p11)"
+        workbook: "Who is the newest in your place?"
+        site: "Who is newest in your place?"
+        drift_type: drop_word
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Going Deeper Q2 (workbook p16)"
+        workbook: "…that other people find difficult"
+        site: "…that other people consider difficult"
+        drift_type: rephrase
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Pod mapping first sentence (workbook p17)"
+        workbook: "Use the diagram on the next page to do this activity. To start, write your name…"
+        site: "To start, write your name…"
+        drift_type: drop
+        classification: c
+        fix: 1a_restore_with_diagram_reference_pointing_to_embedded_worksheet
+
+    agenda_restructure:
+      location: "Bringing people together agenda (workbook p13)"
+      classification: c
+      site_drops:
+        - "Do one or more of the activities in the toolkit (with 2 sub-items: Organizing your community activities pages 9-11, Get to know the toolkit interactive activity)"
+        - "Reconvene and discuss one or more of these questions (with 3 sub-questions)"
+        - "Make a plan for who will find the space to meet..."
+        - "Consider posting about your next meeting publicly..."
+        - "It makes sense to start with a small group..."
+        - "Plan to conduct the community needs assessment activity..."
+      site_inventions:
+        - "Discuss what sections jump out as important or priorities in your community."
+      site_drops_links:
+        - "resiliencetoolkit.org/downloads (on 'Printed copies of the toolkit' item)"
+      fix: 1a_restore_full_agenda_with_all_nested_sub_items
+
+    missing_sections:
+      - section: "Facilitation guides"
+        workbook_page: 14
+        missing_content:
+          - "Get to know the toolkit: interactive activity (45 minutes to 1 hour, 5-step facilitator guide)"
+          - "Conduct a Community Needs Assessment (6-step guide with link to printable assessment)"
+        classification: c
+        scope: 1a
+        action: rebuild_full_content
+      - section: "'…and when to ask for more help?' block"
+        workbook_page: 15
+        missing_content:
+          - "Title correction: 'We started organizing. How do we know it's working, and when to ask for more help?' (site drops second half)"
+          - "Readiness checklist (5 bullets: met 2+ times, group of 2-5 excited, 10+ neighbors, used needs assessment, identified 3 sections)"
+          - "Kinds of assistance (5 bullets: fiscal sponsorship, fundraising, technical assistance with 3 sub-bullets, relationships with institutions, connection with officials)"
+          - "CROs contact paragraph + info@gocros.org (the RT-to-consultancy funnel)"
+        classification: c
+        scope: 1a
+        action: rebuild_full_content_verbatim
+        innovation_bearing: funnel_critical       # Fern Lickfield inbound confirms this funnel works
+      - section: "Pods appendix"
+        workbook_pages: "19-22"
+        missing_content:
+          - "Full narrative by Mia Mingus for BATJC, June 2016"
+          - "4 pages of pod-mapping rationale and worksheet prompts"
+          - "Pod diagram (visual)"
+        classification: c
+        scope: 1a
+        action: embed_worksheet_narrative_inline_plus_diagram_reference
+      - section: "Section 0 Drive folder header"
+        workbook_page: 10
+        missing_content: "Folder with resources here: 0. Organizing your community"
+        classification: c
+        scope: 1a
+        action: restore_via_spec_links
+
+    order_drift:
+      classification: c
+      workbook_order:
+        - "Organizing your community (intro)"
+        - "Mapping your community"
+        - "Who is in your community/place?"
+        - "What other dynamics"
+        - "Stuff and systems"
+        - "Knowing your ecosystem"
+        - "Bringing people together"
+        - "Facilitation guides"
+        - "We started organizing. How do we know it's working, and when to ask for more help?"
+        - "Going deeper"
+        - "Pod mapping"
+      site_order:
+        - "Vermont Town Directory (site-added, promoted as editorial)"
+        - "Organizing your community (intro)"
+        - "Mapping your community"
+        - "Who is in your community/place?"
+        - "What other dynamics"
+        - "Stuff and systems"
+        - "Knowing your ecosystem"
+        - "Pod mapping (⬆ moved from end)"
+        - "Going deeper"
+        - "Bringing people together"
+        - "We started organizing. How do we know it's working? (title truncated)"
+      scope: 1a
+      action: reorder_site_to_match_workbook
+
+    innovations:
+      - flag: cros_referral_funnel_dropped
+        description: >
+          Workbook p15 closes KYC with an explicit CROs contact block
+          (readiness checklist + kinds of assistance + info@gocros.org).
+          Site drops it entirely. Fern Lickfield inbound via RT contact
+          form demonstrates this funnel works — dropping the CTA
+          degrades the RT-to-consultancy pathway.
+        decision: restore_in_1a_verbatim
+        scope: 1a
+        funnel_critical: true
+      - flag: pods_appendix_content_loss
+        description: >
+          Workbook pages 19-22 contain Mia Mingus/BATJC pod-mapping
+          narrative + diagram. Site has a PDF download callout but no
+          in-page content. Users who can't/won't download miss the
+          entire rationale.
+        decision: restore_in_1a_with_inline_narrative
+        scope: 1a
+      - flag: invented_table_titles_pattern
+        description: >
+          4 tableName props invent titles that don't exist in the
+          workbook. Precedent directly regresses PR #18 "— town
+          context" class-(c) bug.
+        decision: rename_each_tableName_to_exact_workbook_heading_and_remove_h3_above
+        rationale: >
+          User preference: tables must be self-describing so they can be
+          rendered in other contexts (e.g., Drive-linked, exported,
+          standalone). Workbook heading becomes the table's owned title;
+          no duplicate h3 above.
+        scope: 1a
+        component_impact: "DataTable journal variant renders tableName as the primary heading (consumes the h3 slot above)"
+
+    structural_fidelity:
+      verdict: high_drift
+      concerns:
+        - "6 DataTables with invented/drifted tableName props (c_title_drift)"
+        - "Sub-section order reshuffled (class-c)"
+        - "3 workbook sections entirely missing (Facilitation guides, CROs block, Pods appendix)"
+        - "Agenda nested structure flattened"
+
+    scope: 1a
+    scope_escalation_note: >
+      KYC full restore is the largest 1a workload of any module. Will
+      likely slip 14-day plan by 2-3 days OR crowd out one of
+      1-2/1-3/1-4/1-5. Replan at end of inventory walk.
+    spec_required: true
+    spec_priority: highest     # funnel-critical + highest drift surface
+    notes: >
+      Walked 2026-04-21. User pivoted walk order to KYC (was module 17)
+      after catching paragraph drift in their own PDF read. Methodology
+      adjusted: paragraph-diff + section-order + missing-sections checks
+      now mandatory for all remaining 15 modules.
