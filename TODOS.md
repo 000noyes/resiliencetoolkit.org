@@ -4,6 +4,26 @@
 
 Discovered during live preview review of https://feat-phase2-planform.resiliencetoolkit-org.pages.dev on 2026-04-21. PlanForm wiring was reverted on this branch; the underlying fidelity gaps below need to be fixed before Phase 2 re-wires 1-9.
 
+### P0: Source-of-truth architecture — both PDF sources are lossy derivatives
+**Priority:** P0
+**Description:** The verify skill was designed against PDF artifacts that don't preserve hyperlinks or authenticity:
+- `rt-templates/leader-directory.pdf` is a Chrome "Print to PDF" snapshot of a Google Sheet (Producer: Skia/PDF m136, 2025-06-17). Zero URI annotations.
+- `public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf` is an Adobe Acrobat export (97 pages). Also zero URI annotations.
+- `src/pages/**` currently references 20 unique Drive file IDs that had to come from a source that retained them — the original Google Doc, not any PDF export.
+
+Measuring fidelity against lossy derivatives is structurally wrong. The site can faithfully reproduce the PDF's visible text yet still drop all the hyperlinks the PDF never contained to begin with.
+
+**Fix:** Step 1a must redefine the trust boundary. The correct source of truth is the live Google Drive document (workbook + per-template Docs/Sheets), accessed via Drive MCP (already in Step 1a scope, but the WHY upgrades from "programmatic access" to "fidelity measurement"). Concrete changes:
+1. Source specs (`docs/source-specs/*.md`) cite Drive file IDs, not local PDF paths. Verify skill resolves the Drive ID to pull the live export.
+2. Drive export format: use Drive's own export endpoints (text + HTML + PDF variants as needed) instead of flattened PDF. Drive's HTML export preserves hyperlinks natively.
+3. Extract link annotations from the Drive export (HTML `<a href>` is lossless vs PDF `/URI` which is also fine when the export retains them).
+4. `rt-templates/` directory likely gets scrapped entirely. The master workbook PDF stays as a VISUAL reference (page layout + page numbers) but is no longer the trust boundary for link or content fidelity.
+5. The current 1-9 Leader Directory golden fixture needs to be re-measured against the actual Drive-sourced template, not the Print-to-PDF derivative. Accuracy baseline (recall 1.000, precision 0.800) is currently measured against the wrong source — still a valid unit test of the diff matcher, but not a valid proof-of-fidelity against the toolkit.
+
+**Depends on:** Drive MCP install (already Days 1-3 of Step 1a). Schema extension for Drive-ID citations. Verify-skill refactor of extract.ts to prefer Drive HTML export over local pdftotext when a Drive ID is present in the citation.
+
+### Verify skill: extend coverage beyond field labels
+
 ### Verify skill: extend coverage beyond field labels
 **Priority:** P1
 **Description:** `/verify-against-source` currently checks field labels against normalized PDF text via fuzzy cluster matching. It does NOT check: (a) component titles (e.g. `title="Leader Directory — town context"` passed for the 1-9 golden fixture despite being invented content — a class-(c) firewall violation per SCOPE.md clause 10), (b) structural fidelity (a single PDF table rendered as two components with two exports still passes), (c) body-text fidelity around interactive elements, (d) key-to-spec alignment (spec declares `key: title-role`, code uses `key: 'role'` — diverging IndexedDB keys pass verify silently), (e) PDF link annotations (Drive URLs in source PDFs aren't preserved or checked on site).
