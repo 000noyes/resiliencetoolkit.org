@@ -45,6 +45,13 @@ export const matchingConfigSchema = z.object({
 });
 export type MatchingConfig = z.infer<typeof matchingConfigSchema>;
 
+export const specLinkSchema = z.object({
+  url: z.string().min(1),
+  label: z.string().optional(),
+  page: z.string().optional(),
+});
+export type SpecLink = z.infer<typeof specLinkSchema>;
+
 export const sourceSpecSchema = z
   .object({
     module: z.string().regex(/^[0-9]+-[0-9]+$/, 'module must be like "1-9"'),
@@ -53,6 +60,7 @@ export const sourceSpecSchema = z
     citation: citationSchema,
     sections: z.array(sectionSchema).optional(),
     fields: z.array(fieldSchema).optional(),
+    links: z.array(specLinkSchema).optional(),
     notes: z.string().optional(),
     last_verified: z.string().datetime().optional(),
     matching: matchingConfigSchema.optional(),
