@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 import DataTable from '@/components/DataTable';
-import PlanForm from '@/components/PlanForm';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -38,18 +37,6 @@ const sectionData: SectionData = {
 
       <h3 class="text-heading font-semibold mb-4 mt-8" id="leader-directory">Directory of Local Leaders</h3>
       <p class="mb-4 text-body text-text-secondary">Create a directory of emergency managers, municipal leaders, heads of neighbor-to-neighbor groups, etc. that will be used to coordinate and communicate at the town-wide level.</p>
-
-      <PlanForm
-        client:idle
-        moduleKey="community-emergency-response"
-        formId="leader-directory-header"
-        title="Leader Directory — town context"
-        source="docs/source-specs/1-9-leader-directory.md"
-        page="1"
-        fields={[
-          { key: 'local-emergency-plan', label: 'Link to local emergency plan', type: 'text', placeholder: 'https://…' }
-        ]}
-      />
 
       <DataTable
         moduleKey="community-emergency-response"

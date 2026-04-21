@@ -1,5 +1,65 @@
 # TODOS
 
+## Source Fidelity (1-9 QA findings — Step 1a scope)
+
+Discovered during live preview review of https://feat-phase2-planform.resiliencetoolkit-org.pages.dev on 2026-04-21. PlanForm wiring was reverted on this branch; the underlying fidelity gaps below need to be fixed before Phase 2 re-wires 1-9.
+
+### Verify skill: extend coverage beyond field labels
+**Priority:** P1
+**Description:** `/verify-against-source` currently checks field labels against normalized PDF text via fuzzy cluster matching. It does NOT check: (a) component titles (e.g. `title="Leader Directory — town context"` passed for the 1-9 golden fixture despite being invented content — a class-(c) firewall violation per SCOPE.md clause 10), (b) structural fidelity (a single PDF table rendered as two components with two exports still passes), (c) body-text fidelity around interactive elements, (d) key-to-spec alignment (spec declares `key: title-role`, code uses `key: 'role'` — diverging IndexedDB keys pass verify silently), (e) PDF link annotations (Drive URLs in source PDFs aren't preserved or checked on site).
+**Fix:** Extend `sourceSpecSchema` in `src/lib/verify/schemas.ts` with `title` and `links[]` fields. Add a `titleMatches` check to `runner.ts` that normalizes the component's `title` prop against the spec's `title`. Add a `linksMatch` check that extracts `/URI` annotations from the PDF (see `pdfinfo` or raw regex on uncompressed streams — confirmed working) and requires every annotation's destination to appear somewhere in the cited component's rendered HTML. Add a key-alignment test in CI.
+**Depends on:** Step 1a sub-branch scope.
+
+### Structural fidelity: one PDF table must not split into multiple components
+**Priority:** P1
+**Description:** The leader-directory.pdf has one logical table (town-name blank + link row + column headers + data). The initial Phase 2 wiring split this into a `PlanForm` (the link row) plus a `DataTable` (the grid). Two export buttons, two HTML files, two IndexedDB stores for one logical record. The PDF is one artifact; the web should be one artifact.
+**Fix:** Design a unified component (or a composition pattern) that renders a single logical PDF table as a single export, single save boundary. Likely a `DataTable` variant with a `headerFields` prop for pre-data rows, OR a generalized `SourceBackedForm` that subsumes both. Decide in Step 1a engineering review.
+**Depends on:** Step 1a `/plan-eng-review`.
+
+### Title drift: component titles must trace to PDF (or Drive file name) verbatim
+**Priority:** P1
+**Description:** Stripped on this branch. The invented suffix `" — town context"` on the Leader Directory PlanForm was class-(c) content wired into `src/pages/**`. The canonical title per the source Drive file is "Local leaders for emergency management template"; the PDF's extracted title is "Directory of local leaders for emergency management coordination in __________". Neither was used.
+**Fix:** When the verify skill gains title coverage (see above), every component title prop must match the spec's `title` field, which must trace to the source Drive file name or the PDF's literal title text. No simplification or branding without explicit scaffold-time approval.
+**Depends on:** Verify skill title coverage (above).
+
+### PDF hyperlink preservation as a fidelity axis
+**Priority:** P1
+**Description:** The workbook PDF (primary source of truth) contains Drive-hosted links throughout — section pages link to template PDFs, reference docs, external resources. The site currently renders the same visible text but doesn't consistently preserve the linked destination. Where the PDF says "[phone tree systems](drive link)", the site should render a link to the same destination. Currently no enforcement.
+**Fix:** Extract PDF link annotations at scaffold time (`pdfinfo`, `mutool`, or raw `/URI` regex — all confirmed working on this toolchain). Store in `sourceSpec.links[]`. Verify at build time that every annotation's destination URL appears in the rendered HTML of the cited component or page. Class-(c) firewall should also cover missing links, not just invented text.
+**Depends on:** Verify skill schema extension.
+
+### Town-name blank field not captured anywhere
+**Priority:** P2
+**Description:** The leader-directory.pdf header reads "Directory of local leaders for emergency management coordination in __________". The blank expects the user's town name. The current 1-9.astro section heading is "Directory of Local Leaders" with no town field. When Phase 2 re-wires this, the town name needs a dedicated field (either at the module level to scope all sections, or per-form).
+**Fix:** Add a single `moduleContext` storage helper that captures town name once per hub, read by all citation-backed components. Spec-tag with a new `context` field tied to the PDF's `in __` blank.
+**Depends on:** Step 1a architecture.
+
+### Visual affordance drift: bullets should be checkboxes where the PDF uses checkmarks
+**Priority:** P2
+**Description:** The toolkit PDF renders actionable items with checkmark glyphs (the workbook is a fillable checklist). The site renders them with `list-disc` bullets. Semantic mismatch — users should be able to check items off and have that state persist per module.
+**Fix:** Extend existing todos storage (already keyed `${moduleKey}-${todoId}`) with a ChecklistList component that renders `<input type="checkbox">` + label, persists state in IDB, and matches the PDF's visual affordance. Roll out section-by-section as Phase 2 lands.
+**Depends on:** None (can start independently).
+
+### Field key drift: IndexedDB keys must match spec keys
+**Priority:** P2
+**Description:** Leader Directory spec declares `key: title-role`. The DataTable uses `{ key: 'role' }` for the same column. User IDB data persists under column `role`, spec registry expects `title-role`. Currently harmless (single source of truth is the DataTable), but a future rename or a cross-spec rollup would break.
+**Fix:** When verify skill gains key-alignment checking, migrate either the spec or the DataTable to a single canonical key. If the DataTable changes, use the moduleKey contract (data-preservation test) to guarantee no data loss for existing users.
+**Depends on:** Verify skill key-alignment check.
+
+### Neighbor Directory and First Responder Directory are uncited
+**Priority:** P2
+**Description:** Lines 95-106 and 111-123 of `src/pages/modules/emergency-preparedness/1-9.astro` render `DataTable` components with no `source=` / `page=` props. Either these are class-(c) invented content (hard fail per SCOPE.md clause 10) or they need source specs. Pre-existing from PR #13 / v0.0.7, not introduced by this branch, but `/verify-against-source` discover step should have flagged them.
+**Fix:** During Step 1a audit of modules 1-2, 1-3, 1-4, 1-5, also revisit 1-9's two uncited DataTables. Either promote them via scaffolded source specs OR reclassify and remove from `src/pages/**`.
+**Depends on:** Step 1a audit methodology.
+
+## Tooling
+
+### Playwright Chromium system libs in devcontainer
+**Priority:** P2
+**Description:** `~/.cache/ms-playwright/chromium-*/chrome-linux/chrome` was missing runtime system libs (libpango, libnss3, libgbm1, libatk1.0-0t64, and more) until 2026-04-21. Without them, every browser-daemon skill (`/qa`, `/qa-only`, `/browse`, `/canary`, `/design-review`, `/make-pdf`) failed silently or refused to launch. This blocks the entire live-QA workflow.
+**Fix:** Added the apt packages to `.devcontainer/devcontainer.json` postCreateCommand so rebuilds stay functional. Verified by launching headless Chromium against the preview URL successfully.
+**Status:** Fixed 2026-04-21 in feat/phase2-planform branch (this PR).
+
 ## Storage & Data Safety
 
 ### ~~Non-atomic batch operations in storage.ts~~ RESOLVED
