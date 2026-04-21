@@ -4,23 +4,28 @@
 
 Discovered during live preview review of https://feat-phase2-planform.resiliencetoolkit-org.pages.dev on 2026-04-21. PlanForm wiring was reverted on this branch; the underlying fidelity gaps below need to be fixed before Phase 2 re-wires 1-9.
 
-### P0: Source-of-truth architecture — both PDF sources are lossy derivatives
+### P0: Source-of-truth architecture — scrap rt-templates/, upgrade extractor to see link annotations
 **Priority:** P0
-**Description:** The verify skill was designed against PDF artifacts that don't preserve hyperlinks or authenticity:
-- `rt-templates/leader-directory.pdf` is a Chrome "Print to PDF" snapshot of a Google Sheet (Producer: Skia/PDF m136, 2025-06-17). Zero URI annotations.
-- `public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf` is an Adobe Acrobat export (97 pages). Also zero URI annotations.
-- `src/pages/**` currently references 20 unique Drive file IDs that had to come from a source that retained them — the original Google Doc, not any PDF export.
+**Description:** Earlier analysis claimed the master workbook PDF was also lossy (zero URI annotations). That was wrong — the detection used raw-bytes regex which can't decompress Adobe's FlateDecode streams. `pdftohtml -s` decompresses properly: the workbook has **258 hyperlinks, 41 unique Drive file IDs**. Corrected source hierarchy:
 
-Measuring fidelity against lossy derivatives is structurally wrong. The site can faithfully reproduce the PDF's visible text yet still drop all the hyperlinks the PDF never contained to begin with.
+| Source | Status | Hyperlinks |
+|---|---|---|
+| `rt-templates/leader-directory.pdf` | Chrome Print-to-PDF of a Google Sheet. Lossy derivative. | 0 (the Sheet had none) |
+| `public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf` | Adobe Acrobat, 97 pages. **Usable source of truth.** | 258 hrefs, 41 Drive IDs |
 
-**Fix:** Step 1a must redefine the trust boundary. The correct source of truth is the live Google Drive document (workbook + per-template Docs/Sheets), accessed via Drive MCP (already in Step 1a scope, but the WHY upgrades from "programmatic access" to "fidelity measurement"). Concrete changes:
-1. Source specs (`docs/source-specs/*.md`) cite Drive file IDs, not local PDF paths. Verify skill resolves the Drive ID to pull the live export.
-2. Drive export format: use Drive's own export endpoints (text + HTML + PDF variants as needed) instead of flattened PDF. Drive's HTML export preserves hyperlinks natively.
-3. Extract link annotations from the Drive export (HTML `<a href>` is lossless vs PDF `/URI` which is also fine when the export retains them).
-4. `rt-templates/` directory likely gets scrapped entirely. The master workbook PDF stays as a VISUAL reference (page layout + page numbers) but is no longer the trust boundary for link or content fidelity.
-5. The current 1-9 Leader Directory golden fixture needs to be re-measured against the actual Drive-sourced template, not the Print-to-PDF derivative. Accuracy baseline (recall 1.000, precision 0.800) is currently measured against the wrong source — still a valid unit test of the diff matcher, but not a valid proof-of-fidelity against the toolkit.
+Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 of those 24 are present in the workbook.** Two site IDs aren't in the workbook (audit them — either drift or intentional additions). Nineteen workbook IDs aren't yet wired on the site (un-rendered toolkit content).
 
-**Depends on:** Drive MCP install (already Days 1-3 of Step 1a). Schema extension for Drive-ID citations. Verify-skill refactor of extract.ts to prefer Drive HTML export over local pdftotext when a Drive ID is present in the citation.
+**The real gap is the extractor, not the source.** `src/lib/verify/extract.ts` uses `pdftotext -layout`, which extracts visible text but not link annotations. So the verify skill currently CAN'T see the workbook's 258 hyperlinks even though they're authentically there.
+
+**Fix (Step 1a scope):**
+1. **Scrap `rt-templates/`.** It's a redundant Print-to-PDF derivative. Source specs cite page ranges of the master workbook directly (e.g. `citation: { source: public/toolkit/2025..., page: "37-38" }`).
+2. **Re-measure the 1-9 Leader Directory golden fixture against the workbook** at whatever page range the Leader Directory template lives. Current accuracy baseline (recall 1.000, precision 0.800 against `rt-templates/leader-directory.pdf`) stays as a valid unit test of the diff matcher but is not a valid proof of toolkit fidelity — the source was a different artifact.
+3. **Extend `extract.ts` with link-annotation extraction.** Use `pdftohtml -s` (already installed via poppler-utils) to get decompressed HTML per page, parse `<a href>` tags, and include them in the extract output. Alternative: bundle `pypdf` or `pdf-lib` for annotation-only extraction. Store extracted links in the cache alongside text.
+4. **Extend `sourceSpecSchema`** with a `links[]` field. Checker: every href in the spec's page range must appear as a rendered link target somewhere in the cited component or page.
+5. **Drive MCP stays in Step 1a scope** for: fetching updated workbook versions, accessing the per-template Drive files for richer extraction (live editable content, not a flattened page), and resolving Drive IDs to current titles for citation.
+6. **Audit the 2 site-only Drive IDs** that aren't in the workbook — either drift to remove or additions to promote via scaffolded source specs.
+
+**Depends on:** Drive MCP install (Days 1-3 of Step 1a) for (5) and (6). Extractor upgrade for (3) and (4) is independent — can start immediately.
 
 ### Verify skill: extend coverage beyond field labels
 
