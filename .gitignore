@@ -126,10 +126,16 @@ legacy_modules/
 
 # Temp ignore
 .storybook/
-docs/
 src/stories/
 .gstack/
-.claude/
+
+# User-specific Claude Code state is ignored, EXCEPT skill wrappers that ship with the repo
+.claude/*
+!.claude/skills/
+
+# In-repo scratch docs are ignored, EXCEPT the source-of-truth specs consumed by /verify-against-source
+docs/*
+!docs/source-specs/
 
 # Local notes (not for version control)
 TODOS.md

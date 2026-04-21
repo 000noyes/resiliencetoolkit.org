@@ -21,6 +21,8 @@ import {
   getTableRows,
   saveTableRow,
   deleteTableRow,
+  saveFormField,
+  getFormData,
   getMetadata,
   setMetadata,
   verifyStorage,
@@ -480,5 +482,51 @@ describe('importAllData', () => {
     const survivor = await getTodo('import-rollback', 'survivor');
     expect(survivor).not.toBeNull();
     expect(survivor!.completed).toBe(true);
+  });
+});
+
+describe('Form Operations (PlanForm)', () => {
+  it('should save and retrieve a single field via getFormData', async () => {
+    await saveFormField('form-mod-1', 'my-form', 'name', 'Alice');
+    const data = await getFormData('form-mod-1', 'my-form');
+    expect(data).toEqual({ name: 'Alice' });
+  });
+
+  it('should return empty Record for a non-existent form', async () => {
+    const data = await getFormData('form-mod-missing', 'nope');
+    expect(data).toEqual({});
+  });
+
+  it('should overwrite existing field value', async () => {
+    await saveFormField('form-mod-2', 'my-form', 'name', 'Alice');
+    await saveFormField('form-mod-2', 'my-form', 'name', 'Bob');
+    const data = await getFormData('form-mod-2', 'my-form');
+    expect(data).toEqual({ name: 'Bob' });
+  });
+
+  it('should preserve empty string values (not coerce to undefined)', async () => {
+    await saveFormField('form-mod-3', 'my-form', 'cleared', '');
+    const data = await getFormData('form-mod-3', 'my-form');
+    expect(data).toEqual({ cleared: '' });
+  });
+
+  it('should return all fields for a form', async () => {
+    await saveFormField('form-mod-4', 'my-form', 'name', 'Alice');
+    await saveFormField('form-mod-4', 'my-form', 'address', '123 Main');
+    await saveFormField('form-mod-4', 'my-form', 'phone', '555-1212');
+    const data = await getFormData('form-mod-4', 'my-form');
+    expect(data).toEqual({ name: 'Alice', address: '123 Main', phone: '555-1212' });
+  });
+
+  it('should preserve form data through export/import round-trip', async () => {
+    await saveFormField('form-mod-5', 'roundtrip', 'name', 'Alice');
+    await saveFormField('form-mod-5', 'roundtrip', 'notes', 'hello');
+
+    const exported = await exportAllData();
+    const result = await importAllData(exported);
+    expect(result.tablesImported).toBeGreaterThanOrEqual(2);
+
+    const restored = await getFormData('form-mod-5', 'roundtrip');
+    expect(restored).toEqual({ name: 'Alice', notes: 'hello' });
   });
 });

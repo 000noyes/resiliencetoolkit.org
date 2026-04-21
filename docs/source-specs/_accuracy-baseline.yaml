@@ -1,0 +1,9 @@
+# Accuracy baseline for the /verify-against-source extraction pipeline.
+# Emitted by scripts/measure-extraction-accuracy.ts. Per-template precision/recall
+# vs. human-authored ground-truth specs. Recall threshold pinned at 0.95
+# (see RECALL_THRESHOLD in src/lib/verify/accuracy.ts). Re-run when templates change.
+baselines:
+  leader-directory:
+    measured_at: '2026-04-19T04:09:31.945Z'
+    precision: 0.0588
+    recall: 1

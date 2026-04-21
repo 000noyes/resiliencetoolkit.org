@@ -105,8 +105,9 @@ describe('Data Preservation', () => {
       const hasTodo = content.includes('<Todo');
       const hasEditableTable = content.includes('<EditableTable');
       const hasDataTable = content.includes('<DataTable');
+      const hasPlanForm = content.includes('<PlanForm');
 
-      if ((hasTodo || hasEditableTable || hasDataTable) && extractModuleKeys(content).length === 0) {
+      if ((hasTodo || hasEditableTable || hasDataTable || hasPlanForm) && extractModuleKeys(content).length === 0) {
         filesWithoutModuleKey.push(path.relative(srcDir, fullPath));
       }
     }

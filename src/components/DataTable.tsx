@@ -21,6 +21,8 @@
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, type TableRow } from '@/lib/storage';
+import { SaveIndicator, type SaveState } from './SaveIndicator';
+import { InfoCalloutBanner } from './InfoCalloutBanner';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,6 +52,13 @@ export interface DataTableProps {
   showInfoCallout?: boolean;
   /** 'table' (default) = spreadsheet grid; 'journal' = stacked prompt+textarea for reflection */
   variant?: 'table' | 'journal';
+  /**
+   * Source-fidelity citation. Not rendered. Read by /verify-against-source to
+   * trace column headers to a spec in docs/source-specs/ or a PDF in
+   * public/toolkit/ or rt-templates/. See .claude/skills/verify-against-source/SKILL.md.
+   */
+  source?: string;
+  page?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +67,6 @@ export interface DataTableProps {
 
 const SAVE_DEBOUNCE_MS = 300;
 const UNDO_WINDOW_MS = 5000;
-const SAVE_RECENT_THRESHOLD_MS = 30000;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -74,11 +82,6 @@ function isInitialRow(rowId: string): boolean {
 /** Generate a unique row ID using timestamp */
 function generateRowId(): string {
   return `row-${Date.now()}`;
-}
-
-/** Format time for save indicator */
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 /** Escape CSV cell value */
@@ -161,66 +164,6 @@ function CheckmarkIcon() {
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
-
-type SaveState =
-  | { status: 'idle' }
-  | { status: 'saving' }
-  | { status: 'saved'; at: Date }
-  | { status: 'error'; message: string };
-
-function SaveIndicator({ state }: { state: SaveState }) {
-  const [, setTick] = useState(0);
-
-  // Tick every 10s to update "Saved just now" -> "Saved at HH:MM"
-  useEffect(() => {
-    if (state.status !== 'saved') return;
-    const interval = setInterval(() => setTick((t) => t + 1), 10000);
-    return () => clearInterval(interval);
-  }, [state]);
-
-  if (state.status === 'idle') return null;
-
-  if (state.status === 'saving') {
-    return (
-      <span
-        role="status"
-        aria-live="polite"
-        className="text-body-small animate-pulse"
-        style={{ color: 'var(--muted-foreground)' }}
-      >
-        Saving...
-      </span>
-    );
-  }
-
-  if (state.status === 'error') {
-    return (
-      <span
-        role="status"
-        aria-live="polite"
-        className="text-body-small"
-        style={{ color: 'var(--destructive)' }}
-      >
-        {state.message}
-      </span>
-    );
-  }
-
-  // status === 'saved'
-  const elapsed = Date.now() - state.at.getTime();
-  const isRecent = elapsed < SAVE_RECENT_THRESHOLD_MS;
-
-  return (
-    <span
-      role="status"
-      aria-live="polite"
-      className="text-body-small"
-      style={{ color: isRecent ? 'var(--ring)' : 'var(--muted-foreground)' }}
-    >
-      {isRecent ? 'Saved just now' : `Saved at ${formatTime(state.at)}`}
-    </span>
-  );
-}
 
 function ErrorBanner({
   message,
@@ -330,55 +273,6 @@ function UndoToast({
       >
         Undo
       </button>
-    </div>
-  );
-}
-
-function InfoCalloutBanner() {
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem('rt-trust-acknowledged') === 'true') {
-        setDismissed(true);
-      }
-    } catch {
-      // localStorage unavailable
-    }
-  }, []);
-
-  if (dismissed) return null;
-
-  return (
-    <div
-      style={{
-        backgroundColor: 'color-mix(in srgb, var(--primary) 5%, transparent)',
-        border: '1px solid color-mix(in srgb, var(--primary) 20%, transparent)',
-        borderRadius: 'var(--radius-md)',
-        padding: 'var(--spacing-md)',
-        marginBottom: 'var(--spacing-lg)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 'var(--spacing-sm)',
-      }}
-    >
-      <svg
-        style={{ width: 20, height: 20, color: 'var(--primary)', flexShrink: 0, marginTop: 2 }}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-        />
-      </svg>
-      <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.5, color: 'var(--foreground)' }}>
-        <strong>Your data saves automatically to your device.</strong> Everything you enter stays
-        in your browser and works offline. Your information never leaves your device.
-      </p>
     </div>
   );
 }

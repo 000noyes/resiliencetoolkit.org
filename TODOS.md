@@ -1,5 +1,90 @@
 # TODOS
 
+## Source Fidelity (1-9 QA findings — Step 1a scope)
+
+Discovered during live preview review of https://feat-phase2-planform.resiliencetoolkit-org.pages.dev on 2026-04-21. PlanForm wiring was reverted on this branch; the underlying fidelity gaps below need to be fixed before Phase 2 re-wires 1-9.
+
+### P0: Source-of-truth architecture — scrap rt-templates/, upgrade extractor to see link annotations
+**Priority:** P0
+**Description:** Earlier analysis claimed the master workbook PDF was also lossy (zero URI annotations). That was wrong — the detection used raw-bytes regex which can't decompress Adobe's FlateDecode streams. `pdftohtml -s` decompresses properly: the workbook has **258 hyperlinks, 41 unique Drive file IDs**. Corrected source hierarchy:
+
+| Source | Status | Hyperlinks |
+|---|---|---|
+| `rt-templates/leader-directory.pdf` | Chrome Print-to-PDF of a Google Sheet. Lossy derivative. | 0 (the Sheet had none) |
+| `public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf` | Adobe Acrobat, 97 pages. **Usable source of truth.** | 258 hrefs, 41 Drive IDs |
+
+Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 of those 24 are present in the workbook.** Two site IDs aren't in the workbook (audit them — either drift or intentional additions). Nineteen workbook IDs aren't yet wired on the site (un-rendered toolkit content).
+
+**The real gap is the extractor, not the source.** `src/lib/verify/extract.ts` uses `pdftotext -layout`, which extracts visible text but not link annotations. So the verify skill currently CAN'T see the workbook's 258 hyperlinks even though they're authentically there.
+
+**Fix (Step 1a scope):**
+1. **Scrap `rt-templates/`.** It's a redundant Print-to-PDF derivative. Source specs cite page ranges of the master workbook directly (e.g. `citation: { source: public/toolkit/2025..., page: "37-38" }`).
+2. **Re-measure the 1-9 Leader Directory golden fixture against the workbook** at whatever page range the Leader Directory template lives. Current accuracy baseline (recall 1.000, precision 0.800 against `rt-templates/leader-directory.pdf`) stays as a valid unit test of the diff matcher but is not a valid proof of toolkit fidelity — the source was a different artifact.
+3. **Extend `extract.ts` with link-annotation extraction.** Use `pdftohtml -s` (already installed via poppler-utils) to get decompressed HTML per page, parse `<a href>` tags, and include them in the extract output. Alternative: bundle `pypdf` or `pdf-lib` for annotation-only extraction. Store extracted links in the cache alongside text.
+4. **Extend `sourceSpecSchema`** with a `links[]` field. Checker: every href in the spec's page range must appear as a rendered link target somewhere in the cited component or page.
+5. **Drive MCP stays in Step 1a scope** for: fetching updated workbook versions, accessing the per-template Drive files for richer extraction (live editable content, not a flattened page), and resolving Drive IDs to current titles for citation.
+6. **Audit the 2 site-only Drive IDs** that aren't in the workbook — either drift to remove or additions to promote via scaffolded source specs.
+
+**Depends on:** Drive MCP install (Days 1-3 of Step 1a) for (5) and (6). Extractor upgrade for (3) and (4) is independent — can start immediately.
+
+### Verify skill: extend coverage beyond field labels
+
+### Verify skill: extend coverage beyond field labels
+**Priority:** P1
+**Description:** `/verify-against-source` currently checks field labels against normalized PDF text via fuzzy cluster matching. It does NOT check: (a) component titles (e.g. `title="Leader Directory — town context"` passed for the 1-9 golden fixture despite being invented content — a class-(c) firewall violation per SCOPE.md clause 10), (b) structural fidelity (a single PDF table rendered as two components with two exports still passes), (c) body-text fidelity around interactive elements, (d) key-to-spec alignment (spec declares `key: title-role`, code uses `key: 'role'` — diverging IndexedDB keys pass verify silently), (e) PDF link annotations (Drive URLs in source PDFs aren't preserved or checked on site).
+**Fix:** Extend `sourceSpecSchema` in `src/lib/verify/schemas.ts` with `title` and `links[]` fields. Add a `titleMatches` check to `runner.ts` that normalizes the component's `title` prop against the spec's `title`. Add a `linksMatch` check that extracts `/URI` annotations from the PDF (see `pdfinfo` or raw regex on uncompressed streams — confirmed working) and requires every annotation's destination to appear somewhere in the cited component's rendered HTML. Add a key-alignment test in CI.
+**Depends on:** Step 1a sub-branch scope.
+
+### Structural fidelity: one PDF table must not split into multiple components
+**Priority:** P1
+**Description:** The leader-directory.pdf has one logical table (town-name blank + link row + column headers + data). The initial Phase 2 wiring split this into a `PlanForm` (the link row) plus a `DataTable` (the grid). Two export buttons, two HTML files, two IndexedDB stores for one logical record. The PDF is one artifact; the web should be one artifact.
+**Fix:** Design a unified component (or a composition pattern) that renders a single logical PDF table as a single export, single save boundary. Likely a `DataTable` variant with a `headerFields` prop for pre-data rows, OR a generalized `SourceBackedForm` that subsumes both. Decide in Step 1a engineering review.
+**Depends on:** Step 1a `/plan-eng-review`.
+
+### Title drift: component titles must trace to PDF (or Drive file name) verbatim
+**Priority:** P1
+**Description:** Stripped on this branch. The invented suffix `" — town context"` on the Leader Directory PlanForm was class-(c) content wired into `src/pages/**`. The canonical title per the source Drive file is "Local leaders for emergency management template"; the PDF's extracted title is "Directory of local leaders for emergency management coordination in __________". Neither was used.
+**Fix:** When the verify skill gains title coverage (see above), every component title prop must match the spec's `title` field, which must trace to the source Drive file name or the PDF's literal title text. No simplification or branding without explicit scaffold-time approval.
+**Depends on:** Verify skill title coverage (above).
+
+### PDF hyperlink preservation as a fidelity axis
+**Priority:** P1
+**Description:** The workbook PDF (primary source of truth) contains Drive-hosted links throughout — section pages link to template PDFs, reference docs, external resources. The site currently renders the same visible text but doesn't consistently preserve the linked destination. Where the PDF says "[phone tree systems](drive link)", the site should render a link to the same destination. Currently no enforcement.
+**Fix:** Extract PDF link annotations at scaffold time (`pdfinfo`, `mutool`, or raw `/URI` regex — all confirmed working on this toolchain). Store in `sourceSpec.links[]`. Verify at build time that every annotation's destination URL appears in the rendered HTML of the cited component or page. Class-(c) firewall should also cover missing links, not just invented text.
+**Depends on:** Verify skill schema extension.
+
+### Town-name blank field not captured anywhere
+**Priority:** P2
+**Description:** The leader-directory.pdf header reads "Directory of local leaders for emergency management coordination in __________". The blank expects the user's town name. The current 1-9.astro section heading is "Directory of Local Leaders" with no town field. When Phase 2 re-wires this, the town name needs a dedicated field (either at the module level to scope all sections, or per-form).
+**Fix:** Add a single `moduleContext` storage helper that captures town name once per hub, read by all citation-backed components. Spec-tag with a new `context` field tied to the PDF's `in __` blank.
+**Depends on:** Step 1a architecture.
+
+### Visual affordance drift: bullets should be checkboxes where the PDF uses checkmarks
+**Priority:** P2
+**Description:** The toolkit PDF renders actionable items with checkmark glyphs (the workbook is a fillable checklist). The site renders them with `list-disc` bullets. Semantic mismatch — users should be able to check items off and have that state persist per module.
+**Fix:** Extend existing todos storage (already keyed `${moduleKey}-${todoId}`) with a ChecklistList component that renders `<input type="checkbox">` + label, persists state in IDB, and matches the PDF's visual affordance. Roll out section-by-section as Phase 2 lands.
+**Depends on:** None (can start independently).
+
+### Field key drift: IndexedDB keys must match spec keys
+**Priority:** P2
+**Description:** Leader Directory spec declares `key: title-role`. The DataTable uses `{ key: 'role' }` for the same column. User IDB data persists under column `role`, spec registry expects `title-role`. Currently harmless (single source of truth is the DataTable), but a future rename or a cross-spec rollup would break.
+**Fix:** When verify skill gains key-alignment checking, migrate either the spec or the DataTable to a single canonical key. If the DataTable changes, use the moduleKey contract (data-preservation test) to guarantee no data loss for existing users.
+**Depends on:** Verify skill key-alignment check.
+
+### Neighbor Directory and First Responder Directory are uncited
+**Priority:** P2
+**Description:** Lines 95-106 and 111-123 of `src/pages/modules/emergency-preparedness/1-9.astro` render `DataTable` components with no `source=` / `page=` props. Either these are class-(c) invented content (hard fail per SCOPE.md clause 10) or they need source specs. Pre-existing from PR #13 / v0.0.7, not introduced by this branch, but `/verify-against-source` discover step should have flagged them.
+**Fix:** During Step 1a audit of modules 1-2, 1-3, 1-4, 1-5, also revisit 1-9's two uncited DataTables. Either promote them via scaffolded source specs OR reclassify and remove from `src/pages/**`.
+**Depends on:** Step 1a audit methodology.
+
+## Tooling
+
+### Playwright Chromium system libs in devcontainer
+**Priority:** P2
+**Description:** `~/.cache/ms-playwright/chromium-*/chrome-linux/chrome` was missing runtime system libs (libpango, libnss3, libgbm1, libatk1.0-0t64, and more) until 2026-04-21. Without them, every browser-daemon skill (`/qa`, `/qa-only`, `/browse`, `/canary`, `/design-review`, `/make-pdf`) failed silently or refused to launch. This blocks the entire live-QA workflow.
+**Fix:** Added the apt packages to `.devcontainer/devcontainer.json` postCreateCommand so rebuilds stay functional. Verified by launching headless Chromium against the preview URL successfully.
+**Status:** Fixed 2026-04-21 in feat/phase2-planform branch (this PR).
+
 ## Storage & Data Safety
 
 ### ~~Non-atomic batch operations in storage.ts~~ RESOLVED
@@ -33,10 +118,54 @@
 **Completed:** v0.0.6 (2026-04-05)
 **Status:** 8 components deleted outright, 5 moved to `src/design-system/_deferred/`. Zero remaining imports verified via grep.
 
+### Remove orphaned modules content collection
+**Priority:** P3
+**Description:** `src/content/modules/{baseline-resilience,emergency-preparedness}.yaml`, the `modules` collection in `src/content.config.ts`, and `getModuleSections()` in `src/lib/navigation.ts` are zero-reference leftovers from the dynamic-routing era. All 16 section pages now carry their own inline `sectionData`, so the YAMLs are parsed and zod-validated at build time but never read. `navigation.ts` already documents this in a header comment ("getSectionNavigation removed — all sections are hardcoded"). Same metadata now lives in two places; only the inline copy is authoritative.
+**Fix:** In one commit, delete in this order to keep each intermediate state buildable: (1) `src/lib/navigation.ts` (only exports the unused helper), (2) the `modules` collection definition + its zod schema block in `src/content.config.ts` (leave `sourceSpecs`), (3) the two YAML files under `src/content/modules/`, (4) the `src/content/modules/` directory if empty. Run `pnpm astro check && pnpm build && pnpm vitest run` to confirm no regressions.
+**Depends on:** None
+
 ### Investigate ExternalLink abstraction
 **Priority:** P3
 **Description:** `ExternalLink.tsx` → `ExternalLinkModal.tsx` → `externalLinkPreferences.ts` — ~300 lines to show a "you're leaving this site" modal before opening external links. Used in 16 pages. Investigate why this abstraction was added before removing — there may be a deliberate reason (accessibility, community trust, hosted-in-contexts-without-internet). If no good reason, replace with plain `<a target="_blank" rel="noopener noreferrer">` and a CSS external-link icon.
 **Fix:** Audit usage, understand original intent, decide: keep (document why) or replace (simpler `<a>`).
+**Depends on:** None
+
+## DataTable — UX Gaps
+
+### Undo toast is opaque after row deletion
+**Priority:** P2
+**Description:** The post-deletion toast reads only "Row deleted" with no indication of which row was removed or what data it contained. On a directory with dozens of rows, an accidental delete is effectively unrecoverable-by-inspection — the user has to undo blindly within the 5-second window and hope it was the right row. Matters most for long directories (volunteer signup, food access) where rows are visually similar.
+**Fix:** Include a short row descriptor in the toast (first non-empty column value, truncated to ~40 chars) — e.g., "Deleted: Maple St. Food Shelf". On pre-populated readonly rows, use the prompt text. Fall back to "Row deleted" only when all cells are empty.
+**Depends on:** None
+
+### No clipboard / bulk import into DataTable
+**Priority:** P2
+**Description:** A user migrating a directory from a Google Sheet or existing document must enter every cell by hand. No paste-from-clipboard support, no TSV/CSV bulk import, no multi-row paste. This is the single largest friction for first-time hub onboarding — the whole point of the directory templates is to capture existing community knowledge that already lives in spreadsheets elsewhere.
+**Fix:** (a) Cell-level paste that splits on tab/newline and fills adjacent cells (spreadsheet-parity). (b) A "Paste from clipboard" button on the table header that parses TSV/CSV and appends rows. (c) Later: file-picker CSV import mirroring the existing export format (RFC 4180 + BOM).
+**Depends on:** None
+
+### Fixed column widths truncate long text without horizontal scroll on desktop
+**Priority:** P2
+**Description:** On desktop, long cell values are clipped by fixed column widths with no horizontal scroll affordance and no cell-expand-on-hover. Users don't know content is hidden. On mobile the progressive-disclosure mode masks this; on desktop it silently loses visibility of data the user entered.
+**Fix:** Either (a) make columns user-resizable with persisted widths per table, or (b) add horizontal scroll when content overflows with a visible scroll affordance, or (c) expand rows to fit on focus/hover. Option (b) is the smallest change; option (a) is the most correct.
+**Depends on:** None
+
+### No virtualization — all rows render in memory
+**Priority:** P3
+**Description:** Every row in a DataTable is in the DOM on mount. Fine for the current 5–30 row templates. Will become a real performance problem once a hub lands a directory of a few hundred entries (realistic scale for food access, volunteer rosters, contact trees). Render cost and autosave churn both scale linearly with row count.
+**Fix:** Add windowed rendering (react-window or TanStack Virtual) once any table crosses ~100 rows in production use, or proactively before Phase 3 directory work. Gate on measured scroll/input latency — don't pre-optimize without evidence.
+**Depends on:** None (watch for the scale trigger)
+
+### Focus returns to table header after row deletion
+**Priority:** P3
+**Description:** After a row is deleted, keyboard focus jumps to the table header rather than to an adjacent row. Keyboard-only users lose their place mid-task and must re-navigate to continue. Compounds with the existing P2 DataTable keyboard-navigation gap.
+**Fix:** On deletion, move focus to the next row's first editable cell. If the deleted row was last, move to the previous row. If it was the only row, move to the "Add row" affordance.
+**Depends on:** Keyboard navigation for DataTable (P2)
+
+### Empty state only appears on initial load
+**Priority:** P3
+**Description:** The empty-state prompt is shown when a user first opens a DataTable with no rows. If the user adds rows and then manually deletes all of them, the empty state does not reappear — they see a blank table with no guidance on how to start over. Minor, but noticed by users who reset a practice table.
+**Fix:** Render the empty state whenever `rows.length === 0`, not only on initial mount. One-line change in the render condition.
 **Depends on:** None
 
 ## Accessibility
