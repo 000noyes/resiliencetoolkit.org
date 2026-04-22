@@ -33,10 +33,31 @@ modules:
     workbook_pages: "30"
     workbook_pages_extended: "30-32"   # p31-32 are appendix templates linked from 1-1 Drive folder
     section_pdf: "public/toolkit/sections/Section 1.1_2025 Resilience Hub Toolkit.pdf"
-    workbook_links_count: 5            # page 30 only; excludes intra-PDF ToC anchors
-    section_links_count: 5
-    site_links_count: 0                # 4 x href="#" dead anchors
-    link_delta: -5                     # worst case: complete external-link loss
+    workbook_anchor_urls:              # corrected 2026-04-22 with anchor-pair extraction
+      - anchor: "1.1 Emergency preparedness kits"
+        url: "https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F"
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: false
+      - anchor: "emergency plans"
+        url: "https://docs.google.com/document/d/154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto/edit?tab=t.0"
+        purpose: "Emergency plans doc linked from Systems col prose"
+        on_site: false                 # site has href="#"
+      - anchor: "emergency kits"
+        url: "https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F"
+        purpose: "Folder reused (same URL as folder header)"
+        on_site: false                 # site has href="#"
+      - anchor: "storing backup food"
+        url: "https://docs.google.com/spreadsheets/d/1RaYyavdAbn43b3EH9zMzQir6G6gxnQE0XxMBxMH5iTQ/edit?usp=drive_link"
+        purpose: "Backup food storage spreadsheet"
+        on_site: false                 # site has href="#"
+      - anchor: "go bags"
+        url: "https://drive.google.com/file/d/1Ea1zc8wSbvVoMqcLqNz19sNJTsuThQIM/view?usp=drive_link"
+        purpose: "Go Bags resource file"
+        on_site: false                 # site has href="#"
+    workbook_anchor_count: 5           # 5 distinct anchor occurrences pointing to 4 unique URLs
+    workbook_unique_urls: 4
+    site_anchor_count: 0               # all 4 inline anchors are dead href="#"; folder header not surfaced
+    link_delta: "-5 anchor occurrences / -4 unique URLs (13eSjal folder, 154qilah doc, 1RaYyavd sheet, 1Ea1zc8w file)"
     current_site_state:
       astro: "src/pages/modules/emergency-preparedness/1-1.astro"
       module_key: "emergency-preparedness-kits"
@@ -179,47 +200,61 @@ modules:
     workbook_pages_extended: "10-17, 19-22"   # p19-22 are Pods appendix (Mia Mingus/BATJC)
     section_pdf: "public/toolkit/sections/Section 0_2025 Resilience Hub Toolkit.pdf"
     section_pdf_pages: 9
-    workbook_links_count: 7                   # p10-17 excluding resiliencetoolkit.org footer
-    workbook_links_detailed:
-      - url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+    workbook_anchor_urls:                      # corrected 2026-04-22 with anchor-pair extraction
+      - anchor: "0. Organizing your community"
+        url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link"
         page: 10
-        purpose: "Folder with resources here: 0. Organizing your community"
+        purpose: "Folder with resources here (folder header)"
         on_site: false
-      - url: "http://legislature.vermont.gov/people/"
+      - anchor: "legislature.vermont.gov/people/"
+        url: "http://legislature.vermont.gov/people/"
         page: 10
-        purpose: "*Find your legislators at…"
+        purpose: "Find your legislators (anchor IS the URL text)"
         on_site: false                         # plain text, NO href
-      - url: "https://anrmaps.vermont.gov/websites/anra5/"
+      - anchor: "https://anrmaps.vermont.gov/websites/anra5/"
+        url: "https://anrmaps.vermont.gov/websites/anra5/"
         page: 12
-        purpose: "ANR atlas"
+        purpose: "ANR atlas (anchor IS the URL text)"
         on_site: true
-      - url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+      - anchor: "page of prompts"
+        url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
         page: 14
-        purpose: "Facilitation guides folder (same Drive folder, second reference)"
+        purpose: "Interactive toolkit activity prompts (inside Facilitation guides section)"
         on_site: false                         # entire Facilitation guides section missing
-      - url: "https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view"
+      - anchor: "Community Needs Assessment"
+        url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+        page: 14
+        purpose: "Community Needs Assessment printable (inside Facilitation guides section)"
+        on_site: false                         # entire Facilitation guides section missing
+      - anchor: "Check out this zine for more ideas"
+        url: "https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view"
         page: 16
-        purpose: "Check out this zine for more ideas"
+        purpose: "Zine for more ideas (Going deeper intro)"
         on_site: false                         # plain text, NO href
-      - url: "https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view"
+      - anchor: "Check out this list"
+        url: "https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view"
         page: 16
-        purpose: "Check out this list for more ideas"
+        purpose: "Roles-to-modules list (Going deeper table intro)"
         on_site: false                         # plain text, NO href
-      - url: "https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link"
+      - anchor: "Bay Area Transformative Justice Center"
+        url: "https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link"
         page: 17
-        purpose: "Pod Mapping Worksheet"
-        on_site: true                          # via Pod Mapping callout component
+        purpose: "Pod Mapping Worksheet file (anchored via BATJC phrase, not via worksheet title)"
+        on_site: substituted                   # site links BATJC phrase to batjc.org homepage instead
+        decision: 1a_restore_workbook_link     # drop batjc.org; BATJC anchor → 1H6acuvhgEZG… Worksheet file; keep callout button (redundant but OK)
+    workbook_anchor_count: 8                   # 8 distinct anchor occurrences
+    workbook_unique_urls: 6                    # 161QG8b folder linked from 3 anchors; rest 1:1
     site_added_links:                          # in site but not in workbook
       - url: "https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0"
         purpose: "Vermont Town Directory (site-added editorial callout)"
         decision: promote_as_editorial_supplement
       - url: "http://tinyurl.com/RHTmaterials"
-        purpose: "More in-depth facilitation guides (site-added)"
+        purpose: "More in-depth facilitation guides (site-added in agenda Todo)"
         decision: promote_as_editorial_supplement
       - url: "https://batjc.org/"
-        purpose: "BATJC homepage (site-added when citing Mia Mingus)"
-        decision: promote_as_editorial_supplement
-    link_delta_summary: "-4 workbook links dropped, +3 site-only links added (all 3 promoted as editorial supplements)"
+        purpose: "BATJC homepage (SITE-SUBSTITUTES workbook's BATJC-phrase→Pod Mapping Worksheet link)"
+        decision: 1a_remove                    # restore workbook link on BATJC anchor (→ Pod Mapping Worksheet file)
+    link_delta_summary: "-5 workbook anchor occurrences dropped (folder header + legislators + 'page of prompts' + 'Community Needs Assessment' + 'zine' + 'list'), +1 substitution (BATJC anchor: workbook → Pod Mapping Worksheet file; site → batjc.org homepage), +2 site-only (VT Town Directory, tinyurl.com/RHTmaterials)"
 
     current_site_state:
       astro: "src/pages/modules/knowing-your-community.astro"
@@ -462,3 +497,182 @@ modules:
       after catching paragraph drift in their own PDF read. Methodology
       adjusted: paragraph-diff + section-order + missing-sections checks
       now mandatory for all remaining 15 modules.
+      2026-04-22 amendment: anchor-pair extraction surfaced BATJC link
+      substitution (workbook BATJC→Pod Mapping Worksheet vs site
+      BATJC→batjc.org homepage) and that "page of prompts" + "Community
+      Needs Assessment" anchors inside Facilitation guides both link to
+      the 161QG8b folder (not counted previously since the whole section
+      is missing from site).
+
+  1-2:
+    title: "Food and water"
+    workbook_pages: "35-36"
+    section_pdf: "public/toolkit/sections/Section 1.2_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    workbook_anchor_urls:                      # extracted 2026-04-22 with anchor-pair extraction
+      - anchor: "1.2 Food and water"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: false
+      - anchor: "community backup stores"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder linked from Systems col prose (Backup food supply)"
+        on_site: false                         # plain text Todo, no link wrapper
+      - anchor: "community-scale equipment and infrastructure"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder linked from Systems col prose (Community food infrastructure)"
+        on_site: false                         # plain text, no link wrapper
+      - anchor: "Create a directory"
+        url: "https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view?usp=drive_link"
+        page: 35
+        purpose: "Kitchen directory template"
+        on_site: true
+      - anchor: "set up kitchens"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder linked from Community meals bullet"
+        on_site: true
+      - anchor: "Create a directory of cooks"
+        url: "https://drive.google.com/file/d/1at2VF06qMMKi3olVD4uNecniZZFnjKz0/view?usp=drive_link"
+        page: 35
+        purpose: "Cooks directory template"
+        on_site: true
+      - anchor: "Ensure safe food handling"
+        url: "https://drive.google.com/file/d/1C5a0Sf1NWRU0XnMkHayw_vjwpuzqVZzJ/view"
+        page: 35
+        purpose: "Safe food handling Drive file"
+        on_site: substituted                   # site links same anchor to cdc.gov/foodsafety
+        decision: 1a_restore_workbook_link     # drop cdc.gov; anchor → 1C5a0Sf1 Drive file (strict workbook fidelity)
+      - anchor: "Create a directory of food access points"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder (food access directory use case)"
+        on_site: true
+      - anchor: "google map"
+        url: "http://tinyurl.com/freefoodbtv"
+        page: 35
+        purpose: "freefoodbtv google map"
+        on_site: true
+      - anchor: "other format"
+        url: "https://cdn.flowcode.com/prodassets/NEKCA_FoodAccess_Summer.24.2.pdf?"
+        page: 35
+        purpose: "NEKCA Food Access summer PDF example"
+        on_site: true
+      - anchor: "supplies"
+        url: "https://www.albertahealthservices.ca/assets/info/nutrition/if-nfs-collective-kitchen-sample-kitchen-equipment-list.pdf"
+        page: 36
+        purpose: "Alberta Health Services collective kitchen equipment list (Stuff col header link)"
+        on_site: true
+    workbook_anchor_count: 11                  # 11 distinct anchor occurrences
+    workbook_unique_urls: 7                    # 1HZSXmTaX folder linked from 5 anchors; rest 1:1
+    site_added_links:
+      - url: "https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html"
+        purpose: "cdc.gov food safety tips (SUBSTITUTES workbook 1C5a0Sf1 Drive file)"
+        decision: 1a_remove                    # restore workbook link on 'safe food handling' anchor (→ 1C5a0Sf1)
+    link_delta_summary: "-4 workbook anchor occurrences dropped (folder header + 'community backup stores' + 'community-scale equipment and infrastructure' + a duplicate), +1 substitution (safe food handling: workbook 1C5a0Sf1 → site cdc.gov)"
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-2.astro"
+      module_key: "food-and-water"
+      storage_label: "Food & Water"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          note: "Same 'How this works' pattern as 1-1/KYC"
+        - type: table.guide-table
+          source_cited: null
+          classification: a                    # mirrors workbook 4-subsection structure
+        - type: Todo
+          count: 68
+          source_cited: null
+          classification: a                    # all 68 bullets verbatim-match workbook
+          note: "11 Backup food + 5 Community infrastructure + 10 Water + 42 Community meals (9 Systems + 33 Stuff)"
+        - type: ExternalLink
+          count: 7
+          classification: mixed
+          note: "5 verbatim from workbook (1VO1V7xk, 1HZSXmTaX×2, 1at2VF06, tinyurl, cdn.flowcode, albertahealth), 1 missing+substituted (1C5a0Sf1 → cdc.gov)"
+        - type: plain_text_prose_link_drops
+          count: 2
+          classification: c                    # workbook has inline folder links on Systems col phrases; site is plain text
+          note: "'community backup stores' and 'community-scale equipment and infrastructure' each drop a 1HZSXmTaX folder link"
+        - type: workbook_folder_header_missing
+          source_cited: null
+          classification: c
+          promotion: "1a — restore via spec links[] (Drive folder 1HZSXmTaX)"
+
+    paragraph_drift:
+      - location: "Backup food supply, Systems col bullet #3 (workbook p35)"
+        workbook: "Use critter and humidity safe containers."
+        site: "Use critter and humidity safe containers"
+        drift_type: punctuation_drop
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+
+    section_order_check: ok                    # 4 subsections match workbook order
+    missing_sections_check: ok                 # no missing sub-sections; no appendix
+    table_titles_check: na                     # uses raw table, not DataTable
+
+    class_c_count: 5                           # InfoCallout + period drop + 2 missing anchor links + link substitution; does NOT double-count folder header (same class-c as the "community backup stores" drop since same URL)
+
+    innovations:
+      - flag: link_substitution_pattern
+        description: >
+          "Ensure safe food handling" anchor text preserved; URL swapped
+          from workbook's 1C5a0Sf1 Drive file to cdc.gov external. First
+          occurrence of pure URL-substitution drift in walk. Implications
+          for linksMatch check: substitution is harder to detect than
+          missing (anchor text matches, only URL differs). Spec links[]
+          must bind (anchor, URL) pairs, not URLs alone.
+        decision: pending_user_resolution      # user aborted question set before answering
+        scope: 1a
+      - flag: dropped_inline_prose_links
+        description: >
+          2 Systems col prose phrases ("community backup stores",
+          "community-scale equipment and infrastructure") in workbook
+          link to the 1HZSXmTaX Drive folder; site renders them as
+          plain Todo text with no link wrapper. Same systematic drift
+          as 1-1's 4 href="#" anchors.
+        decision: restore_via_todo_plus_externallink_pattern
+        scope: 1a
+      - flag: folder_header_missing_recurs
+        description: >
+          Same pattern as 1-1 and KYC: workbook "Folder with resources
+          and templates" header with Drive folder link is absent on
+          site. Systematic omission across modules.
+        decision: restore_via_spec_links
+        scope: 1a
+
+    structural_fidelity:
+      verdict: clean_with_link_drift
+      detail: >
+        One workbook table → one site table. 4 sub-sections mirror
+        workbook. Todo+ExternalLink composition preserves most links.
+        But: Systems col has 2 plain-text Todos where workbook has
+        linked phrases — same shape as 1-1 dead-anchor bug.
+      composition_pattern_for_1a: >
+        Adopt the 1-2 Todo+ExternalLink pattern as the reference for
+        all dead-link restorations in 1a. E.g., 1-1's href="#" phrases
+        and 1-2's own plain-text drops ("community backup stores",
+        "community-scale equipment…") become:
+        <Todo id="..."><ExternalLink href="...">phrase</ExternalLink> rest of bullet text...</Todo>
+      composition_risk_to_spike: >
+        Before mass rollout, verify that clicking the ExternalLink
+        inside a Todo does NOT toggle the checkbox state (both
+        accessibility and UX concern — a link click should navigate,
+        a checkbox click should toggle, and they shouldn't interfere).
+        Small spike on a single restoration (e.g., 1-1 "emergency
+        plans") before the full 1a sweep. Per user 2026-04-22.
+
+    scope: 1a
+    spec_required: true
+    notes: >
+      Walked 2026-04-22 with full paragraph-diff + anchor-pair
+      methodology. User caught two missed Systems col anchor drops
+      during walk — triggered anchor-pair extraction memory. 1-1 +
+      KYC entries amended in same commit with re-extracted anchor
+      maps.
