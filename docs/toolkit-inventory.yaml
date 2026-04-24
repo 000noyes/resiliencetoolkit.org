@@ -1537,3 +1537,690 @@ modules:
       on recurring VT resource links preserved for future topic-
       branch innovation. Full strict 1a restoration plan documented.
       Running total 79 across 9 modules.
+
+  1-9:
+    title: "Community Emergency Response Plans"
+    workbook_pages: "32-33"
+    section_pdf: "public/toolkit/sections/Section 1.9_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    phase_1_shipped: true                                  # PR #13 shipped DataTable journal variant + 3 directories on 1-9
+    site_structure: "Rich prose (ul/li nested) + 3 DataTable components. No top-level InfoCallout (DataTable has built-in privacy notice via showInfoCallout prop)."
+    workbook_anchor_urls:
+      - anchor: "1.9 Community emergency response plans"
+        url: "https://drive.google.com/drive/folders/1ZP8p1LZ9F5tOJ3Yo-sLllSWd22ydXzNQ"
+        page: 32
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "LEMPs"
+        url: "https://drive.google.com/file/d/1ds67bbFqr4C5ZsaBgJFVusylEhogWepo/view?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory"                       # leader directory
+        url: "https://drive.google.com/file/d/1T53T9L9naTi0IibuIFdXohQXkCHitwZ3/view?usp=drive_link"
+        page: 32
+        purpose: "Leader directory template — absorbed into DataTable"
+        on_site: datatable_source                          # captured in docs/source-specs/1-9-leader-directory.md
+      - anchor: "phone tree systems"
+        url: "https://drive.google.com/file/d/1k7SXv4md2Kjh0t-nGx5xIKVPpg0bSPmn/view?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory of neighbors"
+        url: "https://drive.google.com/file/d/1volnFb9p7K24iROikMt_zOg9_RT9WRVR/view?usp=drive_link"
+        page: 32
+        purpose: "Neighbor directory template — absorbed into DataTable"
+        on_site: datatable_source_needs_spec               # Neighbor Directory DataTable exists but no source spec yet
+        decision: 1a_create_source_spec_cite_this_url
+      - anchor: "Create a directory of local first responders"
+        url: "https://drive.google.com/file/d/1_s3dzOMkIUT5BGBFjfFlEDeHfHcc5m-N/view?usp=drive_link"
+        page: 32
+        purpose: "First responder directory template — absorbed into DataTable"
+        on_site: datatable_source_needs_spec               # First Responder Directory DataTable exists but no source spec yet
+        decision: 1a_create_source_spec_cite_this_url
+      - anchor: "information about preparedness"
+        url: "https://drive.google.com/file/d/1kFn8Lmia51X-Y5ZCzu2VlsWJd7JEq1dy/view?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "GoogleTranslate"
+        url: "https://translate.google.com/"
+        page: 32
+        purpose: "Referenced in language-access sentence — DROPPED on site along with surrounding sentence rewrite"
+        on_site: false_due_to_sentence_compression
+        decision: 1a_restore_sentence_and_link
+      - anchor: "VT Language Justice Project"
+        url: "https://www.vtlanguagejustice.org/ify?"
+        page: 32
+        on_site: true                                      # ExternalLink ✓ but sentence rewritten (see paragraph_drift)
+      - anchor: "Section 1.8"                              # internal PDF anchor → #26
+        url: "2025 Resilience Hub Toolkit_V1 final.html#26"
+        target_type: internal_pdf_page_anchor
+        page: 32
+        purpose: "Cross-reference to 1.8 Populations with specific needs"
+        on_site: false_due_to_sentence_compression
+        decision: 1a_restore_as_site_internal_link_to_modules_emergency-preparedness_1-8
+      - anchor: "situation reports"
+        url: "https://docs.google.com/document/d/1p7EPPThPDA--5NxEKXIi6MZDzHthwg8VGi5XX1tq9Ek/edit?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "waterdata.usgs.gov/vt/nwis/rt"
+        url: "https://waterdata.usgs.gov/vt/nwis/rt"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "River Aware"
+        url: "https://www.riveraware.app/"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "vem.vermont.gov/vtalert"
+        url: "https://vem.vermont.gov/vtalert"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Wildfire smoke"
+        url: "https://drive.google.com/file/d/1W8BnUVz9kKa5PFywiWXJgacrnKS93ssK/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "AirNow.gov"
+        url: "https://www.airnow.gov/"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "(1.3)"                                    # N95s/respirators reference — workbook has #22 internal anchor
+        url: "2025 Resilience Hub Toolkit_V1 final.html#22"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site_text_drift: "(1.4)"                        # site shows wrong section number; numeric drift
+        on_site: false_with_numeric_drift
+        decision: 1a_restore_as_site_internal_link_to_1-3_and_fix_numeric_drift
+      - anchor: "(1.5)"                                    # warming/cooling shelters ref in wildfire smoke section
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false                                     # site has "(1.5)" plain text, no link
+        decision: 1a_restore_as_site_internal_link_to_1-5
+      - anchor: "Wet bulb temperatures & High Heat Index"
+        url: "https://drive.google.com/file/d/10X2ipgJTjW1SdCaNbJZfEOI4ukD8UVYz/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "(1.9)"                                    # heat section cross-ref
+        url: "2025 Resilience Hub Toolkit_V1 final.html#32"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-9
+      - anchor: "(1.2)"                                    # heat/hydration cross-ref
+        url: "2025 Resilience Hub Toolkit_V1 final.html#20"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-2
+      - anchor: "(1.5)"                                    # heat cooling shelters cross-ref
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-5
+      - anchor: "Drought"
+        url: "https://drive.google.com/file/d/1glq_jPse9R4geIkeaCUr7rnAgNG5JOyW/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger"
+        url: "https://fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Ice & Wind storms"
+        url: "https://drive.google.com/file/d/10xdbWN2CSxa_C-__rtC2H4iSBzgDVO-s/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "(1.2)"                                    # ice/wind cross-ref to food
+        url: "2025 Resilience Hub Toolkit_V1 final.html#20"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-2
+      - anchor: "(1.4)"                                    # ice/wind cross-ref to power
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"   # NB: workbook #23 = 1.5 page; upstream workbook anchor typo
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-4  # follow the visible number, not the broken workbook anchor
+        note: "Workbook anchor points to #23 (=1.5 page) but text says '1.4' — upstream workbook link typo. Restore site link by visible number."
+      - anchor: "(1.5)"                                    # ice/wind cross-ref to shelters
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-5
+      - anchor: "(1.9;2.2)"                                # ice/wind cross-refs to CERP + comms
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_two_site_internal_links
+      - anchor: "pandemics"
+        url: "https://drive.google.com/drive/folders/1TmJ4hbHtf9gQUctlilz046B3fpmS1_yK"  # folder
+        page: 33
+        on_site_url_substitution: "https://drive.google.com/file/d/1_e3AA4pD7dJCAcfMHLVJ3dqJgK5_5Wrc/view?usp=drive_link"  # file, different id
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+      - anchor: "Section 2.1"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#40"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_2-1
+      - anchor: "(1.9)"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#32"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-9
+      - anchor: "1.8"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#26"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-8
+      - anchor: "(1.12)"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#39"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-12
+    workbook_anchor_count: 30                              # 1 folder + 16 external URLs + ~13 internal PDF anchors
+    workbook_unique_urls: 14                               # unique external URLs (folder + 13 prose); internal anchors not counted
+    site_link_count: 14                                    # <ExternalLink> count
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-9.astro"
+      module_key: "community-emergency-response"
+      components_wired:
+        - type: h3_before_disaster
+          classification: a                                # matches workbook structure
+        - type: nested_ul_li_rich_prose
+          location: "Before disaster intro"
+          classification: a                                # verbatim workbook list
+        - type: DataTable
+          name: "Leader Directory"
+          source: "docs/source-specs/1-9-leader-directory.md"
+          classification: a                                # spec cited ✓
+          note: "14 initialRows including roles beyond workbook list (State Senator, LTRG, etc.) — check spec for citation"
+        - type: DataTable
+          name: "Neighbor Directory"
+          source: null
+          classification: c                                # needs spec
+          decision: 1a_create_source_spec
+          note: "DataTable shipped in PR #13 with no source spec. Must spec to be class-a. Cite 1volnFb9p7K2…"
+        - type: DataTable
+          name: "First Responder Directory"
+          source: null
+          classification: c                                # needs spec
+          decision: 1a_create_source_spec
+          note: "DataTable shipped in PR #13 with no source spec. Must spec to be class-a. Cite 1_s3dzOMkIUT5…"
+        - type: h3_during_disaster
+          classification: a
+        - type: h3_planning_for_other_kinds
+          classification: a                                # "Planning for other kinds of climate disaster" — matches workbook heading
+        - type: ExternalLink
+          count: 14
+          classification: mostly_a
+          url_substitution_pandemics: "site uses file 1_e3AA4pD7dJ vs workbook folder 1TmJ4hbHtf"
+        - type: internal_pdf_anchor_drops
+          count: 13                                        # (1.3), (1.5)×2, (1.9)×3, (1.2)×2, (1.4), (1.5), (2.1), (1.8), (1.12)
+          classification: c
+          decision: 1a_restore_as_site_internal_links
+          note: "Largest occurrence of internal-anchor substitutions in the walk. Systematic conversion to /modules/... routes required."
+
+    paragraph_drift:
+      - location: "Language access sentence (Before disaster)"
+        workbook: "Identify language access needs and utilize tools like the GoogleTranslate to support communication during emergencies. The VT Language Justice Project app can also be used to share informational videos in individuals' language. See Section 1.8 for info on populations with specific needs."
+        site: "Identify language access needs and utilize tools like the VT Language Justice Project app to support communication during emergencies."
+        drift_type: sentence_compression_with_drops
+        classification: c
+        decision: 1a_restore_full_workbook_sentence_with_both_links_and_Section_1.8_cross_ref
+      - location: "Drought monitoring sentence"
+        workbook: "Monitor fire danger to protect people, buildings, and ecosystems from preventable fire damage during drought conditions: fpr.vermont.gov/..."
+        site: "Keep an eye on fire danger to protect people, buildings, and ecosystems from preventable fire damage during drought conditions. Fire forecasts here: fpr.vermont.gov/..."
+        drift_type: wording_rewrite
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Drought watering sentence"
+        workbook: "Cut back on watering lawns and non-food plants; turn off taps; reduce toilet flushing."
+        site: "During drought, cut back on watering lawns and non-food plants. Conserve water by turning off taps and reducing toilet flushing."
+        drift_type: wording_rewrite
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Ice & Wind — leave home sentence"
+        workbook: "If staying home is not safe, leave home before travel conditions worsen. Identify local warming and cooling shelters (1.5) ahead of the storm"
+        site: "[bullet 1] If staying home is not safe, leave home before travel conditions worsen [bullet 2] Identify local warming and cooling shelters (1.5) ahead of the storm"
+        drift_type: single_sentence_split_into_two_bullets
+        classification: c
+        decision: 1a_restore_combined_sentence
+      - location: "Pandemics — emergent-threats sentence"
+        workbook: "Emergent public health threats can be difficult to plan for, but keeping people healthy can protect communities from the worst impacts…"
+        site: "Emergent public health threats can be difficult to plan for, but keeping people healthy as a baseline can protect communities from the worst impacts…"
+        drift_type: added_words
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Pandemics — creating-plans sentence"
+        workbook: "Creating community emergency response plans (1.9) beforehand, plans to support populations with specific needs (1.8), and setting up mutual aid networks (1.12) can increase community resilience amid public health crises."
+        site: "Creating community emergency response plans (1.9) before disaster strikes, plans to support populations with specific needs (1.8), and setting up mutual aid/neighbor to neighbor networks (1.12) can increase community resilience amid public health crises."
+        drift_type: multiple_wording_rewrites
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Pandemics — stay-updated sentence"
+        workbook: "Stay updated with new information coming from local, state, or federal government sources…"
+        site: "Stay up to date with new information coming from local, state, or federal government sources…"
+        drift_type: wording_rewrite
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "N95s bullet numeric reference"
+        workbook: "(1.3)"
+        site: "(1.4)"
+        drift_type: numeric_drift
+        classification: c
+        decision: 1a_restore_numeric_and_link_to_1-3
+      - location: "Closing sentence at end of 1.9"
+        workbook: "Also consider planning for disasters that include increased military presence or heightened risk of violence."
+        site: "[MISSING — site omits this closing line entirely]"
+        drift_type: entire_sentence_drop
+        classification: c
+        decision: 1a_restore_full_workbook_sentence
+
+    section_order_check: ok                                # Before disaster / During disaster / Planning for other kinds — matches workbook
+    missing_sections_check: partial                        # "Planning for other kinds" section structurally present but closing military-presence sentence dropped
+    table_titles_check: na                                 # DataTable tableName props match Phase 1 spec
+
+    class_c_count: 23                                      # 2 DataTables-pending-spec + 1 military-presence drop + 8 paragraph drifts + 13 internal-anchor drops + 1 pandemics URL sub (some internal anchors overlap with paragraph drifts; conservative count)
+    scope: 1a
+    spec_required: true                                    # 2 new specs: Neighbor Directory + First Responder Directory
+    innovations:
+      - flag: datatable_conversion_of_directory_instructions
+        description: >
+          Site converted 3 workbook "Create a directory of ___"
+          items from Todo+ExternalLink patterns into interactive
+          DataTable components (Leader / Neighbor / First Responder).
+          First (Leader) has source spec; other two do not. Phase 1
+          shipped work (PR #13). Preserves user data via IndexedDB
+          tableId scope. Not a fidelity regression — an architectural
+          upgrade that needs backing specs.
+        scope: 1a
+        decision: create_specs_for_2_remaining_datatables
+      - flag: massive_internal_anchor_density
+        description: >
+          1-9 has 13 internal PDF anchor cross-references (the most
+          in any single module). All need conversion to site-internal
+          /modules/... routes per locked pattern. Includes one
+          numeric-drift case: (1.3) on workbook became (1.4) on site
+          for N95s/respirators bullet — both the number and the link
+          need restoration.
+        scope: 1a
+
+    notes: >
+      Walked 2026-04-24. Phase 1 module; first with DataTables. 23
+      class-c: 2 DataTables needing specs + 8 paragraph drifts + 13
+      internal-anchor drops + 1 pandemics URL sub + 1 dropped closing
+      sentence. Rich prose rewrites (Drought, Ice&Wind, Pandemics)
+      suggest this module had more editorial polish than others —
+      strict 1a restoration needs careful per-sentence comparison.
+      Running total 102 across 10 modules (first module to push
+      total past 100).
+
+  1-10:
+    title: "Volunteer Management"
+    workbook_pages: "34-35"
+    section_pdf: "public/toolkit/sections/Section 1.10_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    site_structure: "4 h3 sections with <ul><li> content (matching workbook structure). No InfoCallout."
+    workbook_anchor_urls:
+      - anchor: "1.10 Volunteer Management"
+        url: "https://drive.google.com/drive/folders/1QGrMJ_mv5LSGZ4ECDOuuOs9OJtcOfZY3"
+        page: 34
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "AHS / VDH regional field Directors can be a conduit to local organizations"
+        url: "https://humanservices.vermont.gov/about-us/field-services"
+        page: 34
+        purpose: "VT Agency of Human Services / VDH field services directory"
+        on_site_url_substitution: "https://www.healthvermont.gov/about-us/contact-us"
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+        topic_branch_candidate: true                       # same pattern as 1-8 CHW/CHC/Free Clinic
+      - anchor: "SignUp Genius"
+        url: "https://www.signupgenius.com/nonprofit-volunteer-management"
+        page: 34
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "shareable spreadsheet"
+        url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9"
+        page: 34
+        purpose: "Templates Directory master sheet — volunteer shifts row (cell-level link)"
+        on_site: true                                      # ExternalLink ✓
+        note: "Cell-level link with gid+range preserved on site. Consistent with 1-4 decision to keep sheet-level URL; this one has the range retained."
+      - anchor: "Youth engagement in flood recovery"
+        url: "https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open"
+        page: 35
+        purpose: "Youth engagement template — referenced in Managing volunteers children sentence"
+        on_site: dropped_with_containing_sentence
+        decision: 1a_restore_full_workbook_sentence_with_link
+      - anchor: "Crisis Cleanup"
+        url: "http://crisiscleanup.org/"
+        page: 35
+        on_site: true                                      # ExternalLink ✓ (site has no trailing slash; functionally equivalent)
+      - anchor: "sign a waiver"
+        url: "https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true"
+        page: 35
+        on_site: true                                      # ExternalLink ✓
+    workbook_anchor_count: 7                               # 1 folder + 6 in-prose
+    workbook_unique_urls: 7
+    site_link_count: 5                                     # 5 ExternalLinks (AHS/VDH substituted, 4 matching)
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-10.astro"
+      module_key: "volunteer-management"
+      no_info_callout: true                                # 1-10 has no InfoCallout (similar to 1-9; both rely on other mechanisms)
+      components_wired:
+        - type: h3_recruiting_volunteers
+          classification: a
+        - type: h3_setting_up_volunteer_shifts
+          classification: a
+        - type: h3_potential_volunteer_tasks
+          classification: a
+        - type: h3_managing_volunteers
+          classification: a
+        - type: dropped_workbook_items
+          count: 3
+          items:
+            - location: "Recruiting volunteers sub-list"
+              dropped_text: "Youth organizations"
+              classification: c
+              decision: 1a_restore_as_list_item
+            - location: "Managing volunteers — first bullet tail"
+              dropped_text: "See Youth engagement in flood recovery for more information about involving young people in helpful, safe ways."
+              dropped_link: "https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open"
+              classification: c
+              decision: 1a_restore_sentence_with_ExternalLink
+            - location: "Managing volunteers — bullet between work-crews and feed-volunteers"
+              dropped_text: "Count volunteer hours, even if a rough estimate. This can be tracked through collecting work sheets from volunteer crews or through SignUp Genius. Municipalities will apply for grants that require volunteer hours as part of the application. Rough estimates are okay!"
+              classification: c
+              decision: 1a_restore_bullet
+        - type: ExternalLink
+          count: 5
+          classification: mostly_a
+          url_substitution_ahs_vdh:
+            workbook_url: "https://humanservices.vermont.gov/about-us/field-services"
+            site_url: "https://www.healthvermont.gov/about-us/contact-us"
+
+    paragraph_drift: []                                    # no sentence-level drift on kept content; all drift is missing-item structural
+
+    section_order_check: ok
+    missing_sections_check: partial                        # 3 items dropped (see components_wired)
+    table_titles_check: na
+
+    class_c_count: 4                                       # AHS/VDH URL sub + 3 dropped items; folder-header pinned
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: topic_branch_vt_resource_another_instance
+        description: >
+          AHS/VDH URL substitution on 1-10 (humanservices.vermont.gov
+          → healthvermont.gov) joins the 1-8 cluster (CHW/CHC/Free
+          Clinic) as another candidate for the "topic branch
+          alt-URL" innovation. Site appears to have a pattern of
+          picking healthvermont.gov destinations where workbook used
+          other VT gov sub-domains. Worth a walk-summary note that
+          multiple VT-resource links have this pattern — product
+          innovation could either (a) standardize on healthvermont.gov
+          as a topic alias, or (b) keep both as topic-branch alts.
+        scope: deferred_product_innovation
+        preserved_alt_urls:
+          ahs_vdh_field_directors:
+            workbook: "https://humanservices.vermont.gov/about-us/field-services"
+            site_selected: "https://www.healthvermont.gov/about-us/contact-us"
+
+    notes: >
+      Walked 2026-04-24. 1 URL substitution (AHS/VDH → healthvermont.gov;
+      joins 1-8 topic-branch cluster). 3 dropped workbook items
+      (Youth organizations sub-item; See-Youth-engagement sentence +
+      link; Count-volunteer-hours bullet). No paragraph-level rewrites
+      on kept content. 5 ExternalLinks wired (4 match; 1 substituted).
+      Running total 106 across 11 modules.
+
+  1-11:
+    title: "Flood Recovery Supplies and Work"
+    workbook_pages: "36-38"
+    section_pdf: "public/toolkit/sections/Section 1.11_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 3
+    workbook_anchor_urls:
+      - anchor: "1.11 Flood recovery supplies and work"
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 36
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "flood survivor/site sheet or tracking system"
+        url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=825618087#gid=825618087&range=A14:D14"
+        page: 36
+        purpose: "Templates Directory master sheet — flood-site row (cell-level)"
+        on_site: true                                      # ExternalLink ✓ with range preserved
+      - anchor: "Pumping"                                  # subsection header linked in workbook
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 36
+        purpose: "Subsection header re-links to 1.11 folder"
+        on_site: false
+        decision: pin_with_folder_header                   # same group as folder header pinned-for-design-review
+      - anchor: "healthvermont.gov/lab/forms"
+        url: "https://www.healthvermont.gov/lab/forms"
+        page: 36
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Mucking"                                  # subsection header linked in workbook
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 36
+        purpose: "Subsection header re-links to 1.11 folder"
+        on_site: false
+        decision: pin_with_folder_header
+      - anchor: "House Gutting"                            # subsection header linked to SPECIFIC file (not folder)
+        url: "https://drive.google.com/file/d/1EYIHSzBZjEisON-7tjwueVQ1OS1EcCqs/view?usp=drive_link"
+        page: 37
+        purpose: "House Gutting specific template file — NOT same as folder"
+        on_site: false                                     # dropped — distinct file link
+        decision: 1a_restore_as_inline_ExternalLink_on_subsection_label
+      - anchor: "Mold remediation"                         # subsection header linked to folder in workbook
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 38
+        purpose: "Subsection header re-links to 1.11 folder"
+        on_site: false
+        decision: pin_with_folder_header
+    workbook_anchor_count: 7                               # 1 folder + 1 flood-sheet + 1 healthvermont + 4 subsection re-links (3 folder, 1 file)
+    workbook_unique_urls: 4                                # folder (cited 4x as subsection anchors), flood-sheet, healthvermont, gutting-file
+    site_link_count: 2
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-11.astro"
+      module_key: "flood-recovery"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: intro_paragraph
+          text: "This section is focused on flood recovery for homes and other buildings, but can be useful for other disasters. These instructions were compiled by NEK Organizing, which has mucked and gutted hundreds of homes in the Kingdom."
+          classification: a                                # verbatim
+        - type: h3_managing_flood_site_and_survivor_information
+          classification: a
+        - type: h3_managing_flood_recovery_supplies
+          classification: a
+        - type: table.guide-table
+          classification: a
+          note: "4 sub-sections as <tr colspan=2> row headers: Pumping / Mucking / Gutting / Mold remediation — all match workbook structure"
+        - type: table_row_subsection_headers
+          count: 4
+          list: ["Pumping", "Mucking", "Gutting", "Mold remediation"]
+          classification: a                                # all match workbook exactly
+        - type: stuff_column_subheadings
+          list: ["Sump Pump Kit", "Other helpful pumps to have on hand", "Work Tote", "Work Tote pack list", "Other Muck Tools (not stored in tote)", "Gut Kit", "Gut Kit pack list", "Other Gut Tools (not stored in tote)", "Mold Remediation Tools"]
+          classification: a                                # all match workbook
+        - type: Todo
+          count: 72
+          classification: a                                # all 72 verbatim-match
+          note: "Pumping: 1+5 | Mucking Systems: 6 | Mucking Stuff (Work Tote pack): 15 | Mucking Stuff (Other Muck): 14 | Gutting Systems: 4 | Gutting Stuff (Gut Kit): 11 | Gutting Stuff (Other Gut): 6 | Mold Systems: 2 | Mold Stuff: 8 = 72"
+        - type: ExternalLink
+          count: 2
+          classification: a                                # both match workbook URLs exactly
+          details:
+            - anchor: "flood survivor/site sheet or tracking system"
+              href_matches_workbook: true
+            - anchor: "healthvermont.gov/lab/forms"
+              href_matches_workbook: true
+
+    paragraph_drift: []                                    # no drift detected; all prose + Todos verbatim
+
+    section_order_check: ok
+    missing_sections_check: ok                             # subsection headers all present; only link drops
+    table_titles_check: ok
+
+    class_c_count: 2                                       # InfoCallout + House-Gutting file link drop; 3 folder re-links pinned separately
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: workbook_subsection_headers_as_folder_re_links
+        description: >
+          1-11 workbook has subsection labels (Pumping, Mucking,
+          Mold remediation) re-linked back to the 1.11 top-level
+          folder. This is essentially 3 additional instances of the
+          folder-header pattern within a single module. Pinned for
+          design review under the existing folder-header group. One
+          subsection label (House Gutting) has a distinct file
+          target that IS class-c and must be restored in 1a.
+        scope: pinned_for_design_review_except_file_link
+
+    notes: >
+      Walked 2026-04-24. SECOND-CLEANEST module after 1-6. Only 2
+      class-c items: recurring InfoCallout + 1 House-Gutting file
+      link drop. 72 Todos verbatim-match. 4 row-headers + 9 Stuff
+      sub-headings all match workbook. 2 of 2 wired ExternalLinks
+      match workbook URLs. Structurally faithful. Running total 108
+      across 12 modules.
+
+  1-12:
+    title: "Mutual Aid/Neighbor to Neighbor (N2N)"
+    workbook_pages: "39"                                   # 1.13 also bleeds onto p39
+    section_pdf: "public/toolkit/sections/Section 1.12_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "1.12 Mutual Aid"
+        url: "https://drive.google.com/drive/folders/1lgAo_M6Jq3i4AR9xbtpxDpFLv5MAAVyg"
+        page: 39
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+    workbook_anchor_count: 1                               # ONLY folder header; no in-prose workbook URLs on page 39 for 1.12 content
+    workbook_unique_urls: 1
+    site_link_count: 2                                     # BOTH site-invented (not in workbook)
+
+    catastrophic_content_divergence: true                  # largest fidelity issue in the walk
+
+    workbook_content:
+      intro_paragraph: "Mutual Aid/N2N groups spring up after disasters like COVID lockdown and flooding… (verbatim on site ✓)"
+      tenets:                                              # WORKBOOK TENETS (5 items, narrative)
+        - "Get people together in your community to provide material support to each other"
+        - "Build relationships with your neighbors based on trust and common interests"
+        - "Make decisions based on consensus vs hierarchy"
+        - "Share things rather than hoard"
+        - "Recognize the value in all kinds of support: emotional, food, childcare, translation etc."
+      checklist:                                           # WORKBOOK CHECKLIST (10 items)
+        - "Find a buddy to work with."
+        - "Build a pod map (see Organizing your community section)"
+        - "Who could help me?"
+        - "Connect with those folks. Ask if they can help!"
+        - "Identify who and where you can get and give support"
+        - "My building, my block, my co-workers?"
+        - "Start small, with 15-20 people"
+        - "Establish communication channels"
+        - "Get the conversation started. What needs, goals, other ideas come up for people?"
+        - "Offer help: Grocery and medicine pickup, cleaning, company, etc."
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-12.astro"
+      module_key: "mutual-aid"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: intro_paragraph
+          classification: a                                # verbatim match with workbook
+        - type: invented_table_row_subsection_header
+          text: "Mutual Aid Tenets & Checklist"
+          source_cited: null
+          classification: c
+          decision: 1a_remove                              # same pattern as 1-5 invented row-header
+        - type: CONTENT_WHOLESALE_REPLACEMENT
+          location: "Mutual Aid Tenets column (Systems)"
+          site_items:                                      # 6 SITE-INVENTED tenets (canonical Dean-Spade MA movement principles)
+            - "Solidarity, not charity"
+            - "Cooperation, not competition"
+            - "Urgency, not waiting for the state or other officials to save us"
+            - "Direct action and community self-determination, not passivity and paternalism"
+            - "Voluntary, mutual, and reciprocal"
+            - "Our liberation is tied together"
+          source_inferred: "Dean Spade, 'Mutual Aid: Building Solidarity During This Crisis (And the Next)' (2020) — canonical MA movement principles"
+          classification: c_bulk
+          decision: 1a_strict_restore_workbook_AND_archive_site_content
+          archive_destination: "docs/site-inventions-archive.yaml → 1-12.invented_tenets"
+        - type: CONTENT_WHOLESALE_REPLACEMENT
+          location: "Mutual Aid Checklist column (Stuff)"
+          site_items:                                      # 8 SITE-INVENTED checklist items
+            - "Identify existing mutual aid and N2N groups to connect with (ask around at a General Store, Town Hall, community centers, etc.)"
+            - "Create a contact list of names, phone numbers, and addresses of households in your community (physical or social)"
+            - "Identify who in your network has specific needs or abilities to offer. Reach out and check in. Hold a gathering or forum to talk about this as a group."
+            - "Choose a communications plan (e.g. FrontPorchForum, phone tree, text chain, paper fliers and mail) so that you can let your network know when something is happening"
+            - "Practice! Engage in low-stakes mutual aid activities during calm times (e.g. a meal share, a tool share, a community fridge)"
+            - "Decide what kind of mutual aid or N2N work you want to do and what roles you want to fill. You might decide to collect donations, move donations, or track needs and resources. Check out the 'Knowing Your Community' section to think about your interests and capacity."
+            - "Coordinate with existing Long-Term Recovery Groups and coalitions of organizations active in disaster (Vermont Community Foundation, GOCROS, etc.)"
+            - "Check out Mutual Aid Disaster Relief's resources and the Big Door Brigade Mutual Aid Toolkit."
+          classification: c_bulk
+          decision: 1a_strict_restore_workbook_AND_archive_site_content
+          archive_destination: "docs/site-inventions-archive.yaml → 1-12.invented_checklist_items"
+        - type: site_invented_ExternalLinks
+          count: 2
+          details:
+            - anchor: "Mutual Aid Disaster Relief's resources"
+              url: "https://mutualaiddisasterrelief.org/collective-care/"
+              classification: c
+              decision: 1a_remove_AND_archive
+            - anchor: "Big Door Brigade Mutual Aid Toolkit"
+              url: "https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit"
+              classification: c
+              decision: 1a_remove_AND_archive
+
+    paragraph_drift:
+      - location: "Entire tenets + checklist table content"
+        drift: wholesale_content_replacement
+        classification: c_bulk
+        decision: 1a_strict_restore_with_archive
+
+    section_order_check: partial                           # structural tables match; CONTENT inside is entirely different
+    missing_sections_check: c_major                        # all 15 workbook items (5 tenets + 10 checklist) absent from site
+    table_titles_check: c                                  # invented "Mutual Aid Tenets & Checklist" row-header
+
+    class_c_count: 7                                       # InfoCallout + invented row-header + 2 bulk content replacements (tenets + checklist) + 2 invented ExternalLinks + 15 missing workbook items treated as 1 bulk entry
+    class_c_per_item_count: 33                             # if counted per-item: 1 (InfoCallout) + 1 (row-header) + 6 (tenets) + 8 (checklist) + 2 (links) + 15 (missing) = 33
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: site_movement_canon_content_replacement
+        description: >
+          Site authors replaced the workbook's 5-tenet/10-item
+          narrative with 6 canonical MA movement principles (from
+          Dean Spade's book) + 8 different checklist items +
+          references to MADR and Big Door Brigade Mutual Aid Toolkit.
+          Arguably better-sourced than the workbook content.
+          Restored in 1a per strict SCOPE.md; preserved in
+          docs/site-inventions-archive.yaml for future "toolkit
+          growth" features per user meta-decision 2026-04-24.
+          Pattern name: "movement-canon content replacement" —
+          distinct from URL substitution and invented h2 patterns.
+          Likely to recur in 2-x modules (baseline resilience) —
+          watch for it.
+        scope: 1a_strict_restore_with_archive
+        user_directive: "restore fidelity, develop growth habits and safeguards to grow the toolkit from its foundation"
+        archive_destination: "docs/site-inventions-archive.yaml → 1-12"
+
+    notes: >
+      Walked 2026-04-24. LARGEST content fidelity issue in the walk
+      — not just drift, but wholesale replacement of tenets +
+      checklist content with movement-canon material. User directive:
+      restore to workbook strict, but ARCHIVE all deleted site content
+      into docs/site-inventions-archive.yaml as foundation for future
+      toolkit growth mechanisms. Memory saved:
+      feedback_site_inventions_archive.md. This decision generalizes
+      to ALL previously-flagged class-c site inventions (1-5 row
+      header, 1-8 URL subs, 1-8 service animals item, 1-8 meta-note,
+      1-10 AHS/VDH URL, etc.) — all should be archived not deleted.
+      Class-c count 7 (bulk) / 33 (per-item). Running total 115
+      (bulk) / 141 (per-item) across 13 modules.
