@@ -11,6 +11,7 @@
 # "have I appended archived content to docs/site-inventions-archive.yaml?"
 #
 # Entry schema (one entry per archived unit):
+#   id: "archive-1-12-mutual-aid-tenet-01"  # STABLE IMMUTABLE SLUG — see §forward-compat below
 #   module: "1-9"                # kebab section slug from src/pages/modules/...
 #   location: "h2 above Neighbor Directory"  # where in the module page
 #   type: invented_h2_headers    # category key (see below)
@@ -20,6 +21,31 @@
 #   date_removed: "2026-04-24"
 #   removed_in_commit: <sha>     # git SHA of the 1a removal commit
 #   rationale: ...               # 1-2 lines: editorial intent + candidate future feature
+#   proposed_canonical_field: null  # Step 2 fills in — see §forward-compat below
+#
+# §forward-compat (Day-5b addition, 2026-04-24):
+#   Step 2 will introduce a canonical-field registry with multiple views
+#   ("workbook canonical" + "site-preserved alt"). To let the registry seed
+#   from this archive without re-sorting entries by hand, every entry carries
+#   two forward-compat fields:
+#
+#     - `id`: a stable immutable slug (e.g. "archive-1-12-mutual-aid-tenet-01",
+#       "archive-1-8-chw-url-substitution"). NEVER a human label — if Step 2
+#       promotes the entry to a canonical field with multiple views, this id
+#       becomes the registry key. Once assigned, never renamed.
+#
+#     - `proposed_canonical_field`: null during 1a. Step 2 fills in a
+#       dotted field path on the canonical-field registry, e.g.
+#         "resource.community_health_worker.alt_urls"
+#             — for the 1-8 CHW workbook→healthvermont.gov substitution.
+#         "module.1-12.mutual_aid_tenets"
+#             — for the Dean Spade replacement.
+#       A null value means the entry has not yet been triaged for Step 2.
+#
+#   Rationale: the "canonical fields + multiple views" proposal was evaluated
+#   on 2026-04-24 and deferred to Step 2. Adding these two fields is the
+#   single Day-5 concession that lets the Step 2 registry inherit this
+#   archive as usable seed data without a re-sort migration.
 #
 # Category index (populated during 1a bulk archive pass — day 8):
 
