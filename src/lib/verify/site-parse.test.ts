@@ -4,6 +4,8 @@ import {
   extractHeadings,
   extractDataTables,
   extractColumnsProp,
+  extractPlanForms,
+  extractParagraphs,
 } from './site-parse';
 
 describe('site-parse: extractLinks', () => {
@@ -163,6 +165,85 @@ describe('site-parse: extractColumnsProp boundary cases', () => {
     const tag = `<DataTable columns={[ { "key": "full-name", "label": "Full Name" } ]} />`;
     expect(extractColumnsProp(tag)).toEqual([
       { key: 'full-name', label: 'Full Name' },
+    ]);
+  });
+});
+
+describe('site-parse: extractPlanForms', () => {
+  it('extracts moduleKey/formId from a self-closed PlanForm', () => {
+    const src = `<PlanForm moduleKey="1-9" formId="emergency-plan" fields={planFields} title="Plan" />`;
+    const out = extractPlanForms(src);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({ moduleKey: '1-9', formId: 'emergency-plan' });
+    expect(out[0].line).toBe(1);
+  });
+
+  it('handles multiple PlanForms in one file', () => {
+    const src = `<PlanForm moduleKey="a" formId="f1" fields={x} title="A" />
+<PlanForm moduleKey="b" formId="f2" fields={y} title="B" />`;
+    const out = extractPlanForms(src);
+    expect(out).toHaveLength(2);
+    expect(out.map((f) => f.formId)).toEqual(['f1', 'f2']);
+  });
+
+  it('tolerates PlanForm with no string-literal props', () => {
+    const src = `<PlanForm {...spread} />`;
+    const out = extractPlanForms(src);
+    expect(out).toHaveLength(1);
+    expect(out[0].moduleKey).toBeUndefined();
+    expect(out[0].formId).toBeUndefined();
+  });
+});
+
+describe('site-parse: extractParagraphs', () => {
+  it('extracts <p> text', () => {
+    const src = `<p>Hello world.</p>`;
+    const out = extractParagraphs(src);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({ tag: 'p', text: 'Hello world.', line: 1 });
+  });
+
+  it('extracts <li> text', () => {
+    const src = `<ul><li>One</li><li>Two</li></ul>`;
+    const out = extractParagraphs(src);
+    expect(out.map((o) => [o.tag, o.text])).toEqual([
+      ['li', 'One'],
+      ['li', 'Two'],
+    ]);
+  });
+
+  it('strips nested inline tags (ExternalLink, strong, em)', () => {
+    const src = `<p>See <ExternalLink href="https://x.example">the link</ExternalLink> for <strong>details</strong>.</p>`;
+    expect(extractParagraphs(src)[0].text).toBe('See the link for details.');
+  });
+
+  it('collapses whitespace', () => {
+    const src = `<p>  lots\n  of   whitespace  </p>`;
+    expect(extractParagraphs(src)[0].text).toBe('lots of whitespace');
+  });
+
+  it('skips empty paragraphs', () => {
+    const src = `<p></p><p>real text here</p><p>   </p>`;
+    const out = extractParagraphs(src);
+    expect(out).toHaveLength(1);
+    expect(out[0].text).toBe('real text here');
+  });
+
+  it('nested <ul> inside <li>: outer li text does not double-count inner items', () => {
+    const src = `<ul><li>Outer text only.<ul><li>Inner item A</li><li>Inner item B</li></ul></li></ul>`;
+    const out = extractParagraphs(src);
+    // 1 outer li + 2 inner li = 3 entries; outer li text excludes inner items.
+    expect(out).toHaveLength(3);
+    expect(out[0].text).toBe('Outer text only.');
+    expect(out.slice(1).map((p) => p.text)).toEqual(['Inner item A', 'Inner item B']);
+  });
+
+  it('preserves document order across <p> and <li>', () => {
+    const src = `<p>First</p><ul><li>Second</li></ul><p>Third</p>`;
+    expect(extractParagraphs(src).map((p) => p.text)).toEqual([
+      'First',
+      'Second',
+      'Third',
     ]);
   });
 });
