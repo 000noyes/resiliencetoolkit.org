@@ -720,6 +720,117 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
     expect(cacheContent).toContain('meta_hash');
   });
 
+  // -------------------------------------------------------------------------
+  // Day-5a integration tests — walk-observed failure modes through runVerify.
+  // Pure check-level tests live in runner-checks.test.ts; these assert that
+  // runVerify actually surfaces the new statuses end-to-end (exit code,
+  // ordering alongside the diff-level entry).
+  // -------------------------------------------------------------------------
+
+  it('links/titles/keys checks run only when load-spec succeeds', async () => {
+    // spec_parse_error path: load-spec throws, no day-5 checks should fire.
+    await writeFile(join(root, 'docs', 'source-specs', 'bad.md'), '---\n---');
+    await writeFile(
+      join(root, 'src', 'pages', '1-9.astro'),
+      `<PlanForm source="docs/source-specs/bad.md" />\n` +
+        `<h1>Anything</h1>\n<h2>Invented</h2>`,
+    );
+    const result = await runVerify({
+      projectRoot: root,
+      selector: { kind: 'all' },
+      saveCache: false,
+    });
+    expect(result.entries.every((e) => e.status !== 'title_drift')).toBe(true);
+  });
+
+  it('runVerify surfaces title_drift + link_missing alongside pass', async () => {
+    const spec = `
+module: "1-9"
+template: "leader-directory"
+title: "Leader Directory"
+citation:
+  source: "rt-templates/leader-directory.pdf"
+  page: "1"
+fields:
+  - key: "full-name"
+    label: "Full Name"
+    type: "text"
+  - key: "phone"
+    label: "Phone"
+    type: "tel"
+links:
+  - url: "https://example.org/leader-guide"
+    label: "Leader Guide"
+`;
+    await writeFile(join(root, 'docs', 'source-specs', '1-9-leader-directory.md'), buildSpecMd(spec));
+    await writeFile(join(root, 'rt-templates', 'leader-directory.pdf'), 'fake-bytes');
+    const mockText = 'LEADER DIRECTORY\nFull Name Phone\n';
+    await seedRegistry(root, 'rt-templates/leader-directory.pdf', mockText);
+    // Site emits an invented h2 AND does not include the spec's link.
+    await writeFile(
+      join(root, 'src', 'pages', '1-9.astro'),
+      [
+        `<PlanForm source="docs/source-specs/1-9-leader-directory.md" />`,
+        `<h1>Leader Directory</h1>`,
+        `<h2>Completely Invented Heading</h2>`,
+      ].join('\n'),
+    );
+
+    const result = await runVerify({
+      projectRoot: root,
+      selector: { kind: 'all' },
+      saveCache: false,
+      extractOptions: { exec: mockExec(mockText) },
+    });
+
+    // Primary diff entry passes; day-5 checks surface the two fidelity breaks.
+    const statuses = result.entries.map((e) => e.status).sort();
+    expect(statuses).toContain('pass');
+    expect(statuses).toContain('title_drift');
+    expect(statuses).toContain('link_missing');
+    expect(result.exitCode).toBe(1);
+  });
+
+  it('link_type_mismatch escalates to exit 1', async () => {
+    const spec = `
+module: "1-5"
+template: "deployment"
+title: "Deployment"
+citation:
+  source: "rt-templates/deployment.pdf"
+  page: "1"
+fields:
+  - key: "phase"
+    label: "Phase"
+    type: "text"
+links:
+  - url: "/modules/emergency-preparedness/1-5"
+    kind: "internal_route"
+    label: "Module 1-5"
+`;
+    await writeFile(join(root, 'docs', 'source-specs', '1-5.md'), buildSpecMd(spec));
+    await writeFile(join(root, 'rt-templates', 'deployment.pdf'), 'fake');
+    const mockText = 'DEPLOYMENT\nPhase\n';
+    await seedRegistry(root, 'rt-templates/deployment.pdf', mockText);
+    await writeFile(
+      join(root, 'src', 'pages', '1-5.astro'),
+      [
+        `<PlanForm source="docs/source-specs/1-5.md" />`,
+        `<h1>Deployment</h1>`,
+        `<p><a href="https://drive.google.com/file/d/14BP-QH2d.html#5">1.5</a></p>`,
+      ].join('\n'),
+    );
+
+    const result = await runVerify({
+      projectRoot: root,
+      selector: { kind: 'all' },
+      saveCache: false,
+      extractOptions: { exec: mockExec(mockText) },
+    });
+    expect(result.entries.some((e) => e.status === 'link_type_mismatch')).toBe(true);
+    expect(result.exitCode).toBe(1);
+  });
+
   it('report entries only carry taxonomy statuses', async () => {
     const allowed = new Set([
       'pass',
@@ -735,6 +846,14 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       'spec_parse_error',
       'cache_corrupted',
       'drive_id_not_allowed',
+      // Day-5 taxonomy additions.
+      'link_drift',
+      'link_missing',
+      'link_type_mismatch',
+      'title_drift',
+      'structural_fidelity_failed',
+      'key_drift',
+      'prose_drift',
     ]);
     await writeFile(
       join(root, 'src', 'pages', '1-9.astro'),

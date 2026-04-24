@@ -1,13 +1,16 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type {
   ExtractionCache,
   SourceRegistry,
+  SourceSpec,
   VerifyReportEntry,
   VerifyStatus,
 } from './schemas';
+import { runDay5aChecks } from './runner-checks';
 import {
   CacheCorruptedError,
   checkSourceFreshness,
@@ -73,6 +76,16 @@ const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
   'vision_api_failed',
   'spec_parse_error',
   'drive_id_not_allowed',
+  // Day-5 additions — all hard fails (no --fail-on-needs-review opt-in).
+  // Walk evidence shows these represent real fidelity breaks that block
+  // 1a class-a status, so they must count toward exit code 1.
+  'link_drift',
+  'link_missing',
+  'link_type_mismatch',
+  'title_drift',
+  'structural_fidelity_failed',
+  'key_drift',
+  'prose_drift',
 ]);
 
 /**
@@ -139,6 +152,12 @@ async function defaultGitSince(ref: string, projectRoot: string): Promise<string
 interface VerifyStepResult {
   entry: VerifyReportEntry;
   nextCache: ExtractionCache;
+  /**
+   * The parsed spec when load-spec succeeded. Absent when the early
+   * parse/freshness path emitted the entry — in that case the day-5 checks
+   * are skipped (we don't have a spec to compare against).
+   */
+  spec?: SourceSpec;
 }
 
 /**
@@ -255,6 +274,7 @@ async function verifySpecMd(
           message: `${pdfRel}: extracted content hash differs from registered hash — PDF text has moved; re-scaffold after reviewing`,
         },
         nextCache: outcome.cache,
+        spec: loaded.spec,
       };
     }
     if (freshness.state === 'source_drift') {
@@ -267,6 +287,7 @@ async function verifySpecMd(
           message: `${pdfRel}: source bytes changed since last registration but normalized text is unchanged — re-scaffold or update registry`,
         },
         nextCache: outcome.cache,
+        spec: loaded.spec,
       };
     }
   }
@@ -283,6 +304,7 @@ async function verifySpecMd(
       drift: result.drift,
     },
     nextCache: outcome.cache,
+    spec: loaded.spec,
   };
 }
 
@@ -368,9 +390,24 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
 
   const entries: VerifyReportEntry[] = [...selectedViolations];
 
+  // Memoize wired-file reads so multiple citations in one file don't re-open
+  // the source on disk. Keyed by relative file path (citation.file).
+  const siteContentCache = new Map<string, string | null>();
+  async function readSiteContent(relFile: string): Promise<string | null> {
+    if (siteContentCache.has(relFile)) return siteContentCache.get(relFile) ?? null;
+    try {
+      const text = await readFile(resolve(projectRoot, relFile), 'utf-8');
+      siteContentCache.set(relFile, text);
+      return text;
+    } catch {
+      siteContentCache.set(relFile, null);
+      return null;
+    }
+  }
+
   for (const cit of selectedCitations) {
     if (cit.source.toLowerCase().endsWith('.md')) {
-      const { entry, nextCache } = await verifySpecMd(
+      const { entry, nextCache, spec } = await verifySpecMd(
         cit,
         projectRoot,
         cache,
@@ -379,6 +416,22 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
       );
       entries.push(entry);
       cache = nextCache;
+      // Day-5 site-side checks run whenever load-spec succeeded, independent
+      // of the diff result — an invented heading is an invented heading even
+      // if the fields diff passes. See runner-checks.ts for per-check rationale.
+      if (spec) {
+        const siteContent = await readSiteContent(cit.file);
+        if (siteContent !== null) {
+          const checkEntries = runDay5aChecks({
+            spec,
+            file: cit.file,
+            citationLine: cit.line,
+            siteContent,
+            source: cit.source,
+          });
+          entries.push(...checkEntries);
+        }
+      }
     } else {
       entries.push(await verifyRawSource(cit, projectRoot, registry));
     }

@@ -1,0 +1,63 @@
+# docs/site-inventions-archive.yaml
+#
+# Archive of site-invented (class-c) content removed during Step 1a strict
+# workbook-fidelity restoration. Per feedback_site_inventions_archive.md —
+# class-c content is NOT deleted; it is preserved here as the substrate for
+# future "toolkit growth" features (topic-branch alt-URLs, movement-canon
+# supplements, community-submitted additions).
+#
+# Every 1a PR that removes class-c content from src/pages/** or
+# src/components/** must append an entry below. Pre-PR checklist:
+# "have I appended archived content to docs/site-inventions-archive.yaml?"
+#
+# Entry schema (one entry per archived unit):
+#   module: "1-9"                # kebab section slug from src/pages/modules/...
+#   location: "h2 above Neighbor Directory"  # where in the module page
+#   type: invented_h2_headers    # category key (see below)
+#   content: |                   # verbatim content as authored on site
+#     ...
+#   inferred_source: null        # null if purely invented, URL/citation otherwise
+#   date_removed: "2026-04-24"
+#   removed_in_commit: <sha>     # git SHA of the 1a removal commit
+#   rationale: ...               # 1-2 lines: editorial intent + candidate future feature
+#
+# Category index (populated during 1a bulk archive pass — day 8):
+
+categories:
+
+  # 1-12 Mutual Aid canonical Dean-Spade-style movement tenets that replaced
+  # the workbook's narrative tenets. Candidate future feature: movement-canon
+  # supplement alongside workbook-fidelity primary content.
+  invented_tenets: []
+
+  # 1-12 + others — checklist bullets the site authored that do not trace
+  # to any workbook/template PDF. Candidate future feature: community-contributed
+  # checklist additions with review workflow.
+  invented_checklist_items: []
+
+  # 1-5 "Activate, staff...", 1-12 "Mutual Aid Tenets & Checklist",
+  # 1-13, 2-1 — site-invented h2/h3/row-header strings with no workbook anchor.
+  invented_h2_headers: []
+
+  # 1-8 CHW/CHC/Free Clinic topic-branches (healthvermont.gov endpoints
+  # vs workbook humanservices.vermont.gov); 1-10 AHS/VDH substitutions;
+  # 2-1 SAMHSA → VTSOS. Candidate future feature: topic-branch alt-URLs with
+  # workbook canonical + site-preserved alts per topic node.
+  alt_urls: []
+
+  # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
+  # site-authored paragraphs/sentences not in the workbook.
+  invented_prose: []
+
+  # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
+  # extend or substitute workbook items.
+  invented_items: []
+
+  # Workbook items dropped from site (opposite direction — workbook-authored
+  # content that the site chose to omit). Tracked so restoration work can
+  # confirm we pick them back up in days 9-13.
+  dropped_workbook_items_flagged_for_restore: []
+
+  # Bulk link drops — workbook had a link that the site dropped without
+  # substitution. 6 in 1-7, more in 1-8, etc.
+  dropped_workbook_links: []

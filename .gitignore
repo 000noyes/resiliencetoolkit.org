@@ -133,11 +133,13 @@ src/stories/
 .claude/*
 !.claude/skills/
 
-# In-repo scratch docs are ignored, EXCEPT the source-of-truth specs consumed by /verify-against-source
-# and the toolkit inventory (classifies every user-facing content piece against the workbook)
+# In-repo scratch docs are ignored, EXCEPT the source-of-truth specs consumed by /verify-against-source,
+# the toolkit inventory (classifies every user-facing content piece against the workbook),
+# and the site-inventions archive (preserves class-c content removed during 1a restoration).
 docs/*
 !docs/source-specs/
 !docs/toolkit-inventory.yaml
+!docs/site-inventions-archive.yaml
 
 # Local notes (not for version control)
 TODOS.md

@@ -45,12 +45,65 @@ export const matchingConfigSchema = z.object({
 });
 export type MatchingConfig = z.infer<typeof matchingConfigSchema>;
 
+/**
+ * A single workbook-authoritative link discovered during 1a inventory.
+ *
+ * `kind` captures the Step 1a finding that the workbook sometimes uses an
+ * internal PDF anchor (`*.html#N`) which MUST be rendered as a site-internal
+ * route (e.g. `/modules/emergency-preparedness/1-5`), not as an external
+ * link back to the Drive-hosted PDF. Violating that mapping is a
+ * `link_type_mismatch`. See memory `feedback_internal_anchor_to_site_route.md`.
+ */
 export const specLinkSchema = z.object({
   url: z.string().min(1),
   label: z.string().optional(),
   page: z.string().optional(),
+  /**
+   * `external_url` — expected to appear in site output as an absolute URL;
+   *                  compared via normalizeUrl.
+   * `internal_route` — expected to appear as a site-internal `/modules/...`
+   *                    path; compared as a prefix match on the href.
+   * Defaults to `external_url` when absent (preserves day-1.5 behavior).
+   */
+  kind: z.enum(['external_url', 'internal_route']).optional(),
 });
 export type SpecLink = z.infer<typeof specLinkSchema>;
+
+/**
+ * Expected headings the workbook authors at this location — section title(s)
+ * and any h2/h3 sub-headings rendered on the site. Compared against h1/h2/h3
+ * tag contents in the wired .astro/.tsx component by `titleMatches`.
+ *
+ * The top-level `title` field remains the primary (h1/section heading).
+ * `subheadings` holds workbook h2/h3 in document order; `titleMatches` fails
+ * as `title_drift` when the site emits an invented heading that is not in
+ * either list (walk-observed: 1-5, 1-12, 1-13, 2-1).
+ */
+export const specSubheadingSchema = z.object({
+  text: z.string().min(1),
+  level: z.number().int().min(2).max(4).optional(),
+});
+export type SpecSubheading = z.infer<typeof specSubheadingSchema>;
+
+/**
+ * Structural-fidelity assertion: the workbook authors N tables/forms at this
+ * location; the site MUST render exactly N matching components. Violating
+ * this is `structural_fidelity_failed` (walk-observed: 1-8 Seniors+Disabilities
+ * section split — 1 workbook table rendered as 2 site sections).
+ */
+export const structuralFidelitySchema = z.object({
+  /**
+   * Expected count of primary data-bearing components (DataTable, PlanForm,
+   * directory tables) that descend from the cited workbook location. The
+   * runner checks this as a hard-equality: count(site components) === table_count.
+   */
+  table_count: z.number().int().min(1),
+  /**
+   * Human-readable note on what the tables correspond to (optional audit trail).
+   */
+  description: z.string().optional(),
+});
+export type StructuralFidelity = z.infer<typeof structuralFidelitySchema>;
 
 export const sourceSpecSchema = z
   .object({
@@ -61,6 +114,8 @@ export const sourceSpecSchema = z
     sections: z.array(sectionSchema).optional(),
     fields: z.array(fieldSchema).optional(),
     links: z.array(specLinkSchema).optional(),
+    subheadings: z.array(specSubheadingSchema).optional(),
+    structural_fidelity: structuralFidelitySchema.optional(),
     notes: z.string().optional(),
     last_verified: z.string().datetime().optional(),
     matching: matchingConfigSchema.optional(),
@@ -132,6 +187,16 @@ export const verifyStatusSchema = z.enum([
   'spec_parse_error',
   'cache_corrupted',
   'drive_id_not_allowed',
+  // Day-5 additions — Step 1a walk-observed failure modes.
+  // See ~/.gstack/projects/000noyes-resiliencetoolkit.org/checkpoints/
+  //     step1a-inventory-walk-complete-20260424.md for the evidence set.
+  'link_drift',              // workbook URL normalizes differently than site URL (same intent)
+  'link_missing',            // workbook link absent on site (no substitution)
+  'link_type_mismatch',      // workbook internal_route rendered as external (or vice versa)
+  'title_drift',             // site h1/h2/h3 diverges from workbook title/subheading
+  'structural_fidelity_failed', // N workbook tables rendered as ≠ N site components
+  'key_drift',               // DataTable column key diverges from spec field key
+  'prose_drift',             // verbatim <p>/<li> text diverges from pdftotext extraction
 ]);
 export type VerifyStatus = z.infer<typeof verifyStatusSchema>;
 
