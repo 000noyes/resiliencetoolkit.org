@@ -2224,3 +2224,493 @@ modules:
       1-10 AHS/VDH URL, etc.) — all should be archived not deleted.
       Class-c count 7 (bulk) / 33 (per-item). Running total 115
       (bulk) / 141 (per-item) across 13 modules.
+
+  1-13:
+    title: "Financial Resources"
+    workbook_pages: "39"                                   # shared page with 1.12
+    section_pdf: "public/toolkit/sections/Section 1.13_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "1.13 Financial resources"
+        url: "https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N"
+        page: 39
+        purpose: "Folder header + same URL used by 'Create a directory' anchor"
+        on_site: consolidated_into_bullet_1_ExternalLink
+      - anchor: "Create a directory"                       # same URL as folder header
+        url: "https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N"
+        page: 39
+        on_site: true                                      # ExternalLink ✓
+    workbook_anchor_count: 2                               # 2 anchors, same URL
+    workbook_unique_urls: 1
+    site_link_count: 1
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-13.astro"
+      module_key: "financial-resources"
+      no_info_callout: true                                # like 1-9, 1-10 directory-focused modules
+      components_wired:
+        - type: invented_h2
+          text: "Financial support directory"
+          workbook_title: "1.13 Financial resources"
+          classification: c
+          decision: 1a_remove_AND_archive
+          archive_destination: "docs/site-inventions-archive.yaml → 1-13.invented_h2"
+        - type: ul_li_bullets
+          count: 4
+          classification: a                                # all 4 bullets verbatim-match workbook
+        - type: ExternalLink
+          anchor: "Create a directory"
+          href: "https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N"
+          classification: a
+
+    paragraph_drift: []                                    # all 4 bullets verbatim
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: na                                 # no tables
+
+    class_c_count: 1                                       # just the invented h2
+    scope: 1a
+    spec_required: true
+    innovations: []
+
+    notes: >
+      Walked 2026-04-24. Short, clean module. Only 1 class-c: invented
+      h2 "Financial support directory" (workbook title is "1.13
+      Financial resources"). Archive + restore per user directive.
+      Running total 116 / 142 across 14 modules.
+
+  2-1:
+    title: "Basic Needs"
+    workbook_pages: "40-41"
+    section_pdf: "public/toolkit/sections/Section 2.1_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    chapter_intro_missing: true                            # Baseline Community Resilience chapter-level intro paragraph on workbook p40 is missing; site /modules/baseline-resilience/index.astro has invented summary instead
+    workbook_anchor_urls:
+      - anchor: "2.1 Basic needs"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        page: 40
+        purpose: "Folder header — same URL reused as source for 4 different 'Create a directory' anchors"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "Create a directory (local producers)"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "local producers"
+        url: "https://www.vtfarmtoplate.com/food-system-map"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "gleaning networks"
+        url: "https://www.vermontgleaningcollective.org/"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory (community meals)"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "community meals"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory of public showers"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "https://capstonevt.org/find-a-ride"
+        url: "https://capstonevt.org/find-a-ride"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Drift Dusters in Derby, VT"
+        url: "https://www.driftdusters.com/"
+        on_site_url_substitution: "https://driftdusters.org/"   # TLD .com → .org
+        on_site: url_substituted
+        decision: 1a_verify_live_and_restore_correct_url
+        note: "URL may have changed host over time; verify current state before 1a fix"
+      - anchor: "Create a directory (mental health)"
+        url: "https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "KURRVE mental health"
+        url: "https://nekprosper.org/get-involved/flood-recovery-resources/"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Vermont Care Partners"
+        url: "https://vermontcarepartners.org/intake-and-crisis-lines/"
+        on_site_url_substitution: "https://vermontcarepartners.org/"  # path dropped
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+      - anchor: "SAMHSA Disaster Distress Helpline"
+        url: "https://mentalhealth.vermont.gov/flood"
+        on_site_url_substitution: "https://mentalhealth.vermont.gov/sosvt"
+        on_site_anchor_substitution: "VTSOS - VT Starting over Strong"
+        on_site: url_and_anchor_substituted
+        decision: 1a_restore_workbook_url_strict_AND_archive
+        topic_branch_candidate: true
+      - anchor: "Community Health Worker"
+        url: "https://www.vtassociationofcommunityhealthworkers.com/"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Free Clinics"
+        url: "https://vtfreeclinics.org/find-a-clinic/"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Community Health Centers"
+        url: "https://bistatepca.org/centers/"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Vermont Health Connect Assister"
+        url: "https://info.healthconnect.vermont.gov/find-local-help/find"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Create a directory of local herbalists"
+        url: "https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Rose Core Collective"
+        url: "https://www.rosecorecollective.org/"
+        on_site: true                                      # ExternalLink ✓
+    workbook_anchor_count: 19
+    workbook_unique_urls: 14
+    site_link_count: 10
+
+    current_site_state:
+      astro: "src/pages/modules/baseline-resilience/2-1.astro"
+      module_key: "basic-needs"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: section_title_drift
+          workbook: "Network of community physical and mental health workers"
+          site: "Network of mental health workers"
+          classification: c
+          decision: 1a_restore_workbook_title
+        - type: dropped_workbook_items
+          location: "Mental Health section"
+          count: 4
+          items:
+            - "If individuals have a primary care provider, it is important to connect them to that same provider for continuity of care. Add community health centers and other similar resources/sites to your directory."
+            - "For those still needing assistance accessing in clinic healthcare services, connect individuals with a Community Health Worker"
+            - "Free Clinics and Community Health Centers are great resources for those who need sliding scale and financial assistance options"
+            - "If individuals need help applying to health insurance, adjusting information due to disaster (i.e. income) they can connect with a Vermont Health Connect Assister, who is trained to help community members navigate the Vermont health insurance marketplace"
+          classification: c_bulk
+          decision: 1a_restore_as_Todos_with_workbook_ExternalLinks
+          archive_destination: "docs/site-inventions-archive.yaml → 2-1.dropped_mental_health_items (workbook items that should be restored)"
+        - type: partial_sentence_drop
+          location: "community-clinic Todo"
+          workbook: "Consider setting up a recurring community health clinic day with local practitioners and partner with your local Department of Health office"
+          site: "Consider setting up a recurring community health clinic day with local practitioners."
+          classification: c
+          decision: 1a_restore_verbatim
+        - type: minor_prefix_drift
+          location: "affordable-sessions + disaster-site-support Todos"
+          workbook_parent: "Take note if they can:"
+          workbook_children: ["Offer free, low-cost or sliding scale sessions...", "Offer group sessions", "Show up near disaster sites..."]
+          site_children: ["Can offer free, low-cost or sliding scale sessions...", "Offer group sessions", "Can show up near disaster sites..."]
+          drift_type: "can_prefixing_on_2_of_3_items"
+          classification: c
+          decision: 1a_restore_workbook_structure
+        - type: Todo
+          count: 29
+          classification: a_mostly
+        - type: ExternalLink
+          count: 10
+          classification: mixed
+          details:
+            - anchor: "Drift Dusters"
+              classification: c_url_drift
+            - anchor: "Vermont Care Partners"
+              classification: c_url_sub
+            - anchor: "SAMHSA / VTSOS"
+              classification: c_url_and_anchor_sub
+              topic_branch: true
+
+    paragraph_drift:
+      - location: "community-clinic Todo"
+        drift: "Partial sentence drop"
+        classification: c
+      - location: "affordable-sessions + disaster-site-support"
+        drift: "Minor 'Can' prefixing"
+        classification: c
+
+    chapter_level_drift:
+      - location: "/modules/baseline-resilience/index.astro summary"
+        workbook: "The material in this section builds on systems and stuff outlined in the Emergency Preparedness and Response section to deepen resilience in the day-to-day. Many people in our communities are in crisis all the time, and working towards a reality in which everyone is safe and has their needs met as a baseline means we can all be more resilient when acute disaster strikes."
+        site: "Build everyday resilience through shared resources, community care, and organizing practices that keep people safe before disaster strikes."
+        drift_type: invented_summary_instead_of_workbook_intro
+        classification: c
+        decision: 1a_restore_workbook_intro_AND_archive_site_summary
+        archive_destination: "docs/site-inventions-archive.yaml → baseline-resilience-chapter.invented_summary"
+
+    section_order_check: ok                                # 7 sections match workbook order
+    missing_sections_check: partial                        # 4 Mental Health items dropped
+    table_titles_check: c                                  # 1 section-title drift
+
+    class_c_count: 12                                      # InfoCallout + section-title-drift + 3 URL subs + 4 dropped MH items + partial-sentence-drop + 2 "Can" prefixes + chapter-level summary drift
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: topic_branch_samhsa_to_vtsos
+        description: >
+          Site replaced SAMHSA Disaster Distress Helpline with
+          VTSOS (VT Starting over Strong) — both URL and anchor
+          text. VTSOS is VT-specific; SAMHSA is federal. Third
+          candidate for topic-branch alt-URL pattern (after 1-8 VT
+          resources and 1-10 AHS/VDH).
+        scope: deferred_product_innovation
+        archive_destination: "docs/site-inventions-archive.yaml → 2-1.topic_branch_samhsa_vtsos"
+      - flag: chapter_level_intro_missing
+        description: >
+          Baseline Resilience chapter intro paragraph (~60 words)
+          on workbook p40 is missing from site; replaced with an
+          invented 1-line summary on /modules/baseline-resilience/
+          index.astro. Precedent for checking other chapter-level
+          intro pages (emergency-preparedness/index.astro, potentially
+          modules/index.astro) for similar drifts.
+        scope: 1a
+        retro_audit_required: true
+
+    notes: >
+      Walked 2026-04-24. 12 class-c: InfoCallout + section-title
+      drift + 3 URL subs (1 topic-branch candidate) + 4 dropped
+      Mental Health items + partial sentence drop + 2 minor "Can"
+      prefixes + chapter-level intro drift. Chapter-level drift
+      signals need for retro-audit of baseline-resilience/index.astro
+      and emergency-preparedness/index.astro. Running total 128/154
+      across 15 modules.
+
+  2-2:
+    title: "Shared Tools"
+    workbook_pages: "42"
+    section_pdf: "public/toolkit/sections/Section 2.2_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "2.2 Shared tools"
+        url: "https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C"
+        page: 42
+        on_site: surface_via_module_layout_button          # pinned (also reused as tech-directory URL)
+      - anchor: "Library of Things toolkit from Shareable"
+        url: "https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes"
+        on_site: true
+      - anchor: "myTurn"
+        url: "https://myturn.com/"
+        on_site: true
+      - anchor: "Tool Library Alliance"
+        url: "https://www.toollibraryalliance.org/"
+        on_site: true
+      - anchor: "Create a directory of available items"
+        url: "https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C"
+        on_site: true                                      # same URL as folder header
+      - anchor: "libraries"
+        url: "https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf"
+        on_site: true
+      - anchor: "Mesh Networks"
+        url: "https://docs.engnroom.org/digital-resilience-hub/meaningful-connectivity/alternative-tech-tools-for-knowledge-sharing/mesh-and-community-networks"
+        on_site: true
+      - anchor: "Fognet"
+        url: "https://fognet.me/"
+        on_site: true
+      - anchor: "Meshtastic - Low-power data sharing & communications network"
+        url: "https://meshtastic.org/docs/introduction/"
+        on_site: true
+      - anchor: "DIY Cellular Signal Booster - No Electricity Required"
+        url: "https://www.youtube.com/watch?v=BpSkjRKGxyc"
+        on_site: true
+      - anchor: "Information on digital resilience"
+        url: "https://docs.engnroom.org/digital-resilience-hub"
+        on_site: true
+    workbook_anchor_count: 11
+    workbook_unique_urls: 10
+    site_link_count: 10
+
+    current_site_state:
+      astro: "src/pages/modules/baseline-resilience/2-2.astro"
+      module_key: "shared-tools"
+      components_wired:
+        - type: InfoCallout
+          classification: c
+          recurring: true
+        - type: tool_library_research_bullet_flattening
+          workbook_structure: "Parent 'Read up on best practices and existing ways of doing this' with 4 sub-bullets: New Suns/Cooperation VT, Library of Things toolkit, myTurn, Tool Library Alliance"
+          site_structure: "Single tool-library-research Todo flattening all 4 into one prose paragraph with editorial glue 'See also:' and 'for lots of resources'"
+          classification: c
+          decision: 1a_restore_4_sub_bullets
+          archive_destination: "docs/site-inventions-archive.yaml → 2-2.editorial_additions"
+        - type: h2_sections
+          list: ["Tool lending library", "Tech lending library", "Internet and phone access"]
+          classification: a
+        - type: Todo
+          count: 20
+          classification: a                                # all verbatim-match workbook
+        - type: ExternalLink
+          count: 10
+          classification: a                                # all 10 URLs match workbook
+
+    paragraph_drift:
+      - location: "tool-library-research Todo"
+        drift: "4 sub-bullets flattened into 1 Todo + editorial additions"
+        classification: c
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: ok                                 # Tech lending library Systems/Stuff table matches
+
+    class_c_count: 3                                       # InfoCallout + tool-library-research flatten + editorial additions (combined)
+    scope: 1a
+    spec_required: true
+    innovations: []
+
+    notes: >
+      Walked 2026-04-24. Only 3 class-c. Perfect 10/10 URL match
+      on ExternalLinks. One structural drift: workbook's Tool
+      lending library "Read up on best practices" with 4 sub-
+      bullets is merged into 1 site Todo with editorial glue.
+      Running total 131 across 16 modules.
+
+  2-3:
+    title: "Community Building"
+    workbook_pages: "43-45"
+    section_pdf: "public/toolkit/sections/Section 2.3_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 3
+    workbook_anchor_urls:
+      - anchor: "2.3 Community building"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        page: 43
+        purpose: "Folder — same URL reused 5× (folder header + Institutional allies + Community spokespeople + de-escalation-training-how-to-intervene)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "Regional Planning Commissions"
+        url: "https://www.vapda.org/"
+        on_site: true
+      - anchor: "natural resource conservation districts"
+        url: "https://www.vacd.org/conservation-districts/"
+        on_site: true
+      - anchor: "Create a directory (Institutional allies)"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: true                                      # same folder
+      - anchor: "Create a directory (Business directory)"
+        url: "https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link"
+        on_site_url_substitution: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+        note: "Workbook cites specific Business directory template file; site uses parent folder instead"
+      - anchor: "Create a directory (Tradesfolk directory)"
+        url: "https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link"
+        on_site: false                                     # link dropped — plain text on site
+        decision: 1a_restore_as_ExternalLink
+      - anchor: "Create a directory (Community spokespeople)"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: true
+      - anchor: "Develop a media list"
+        url: "https://drive.google.com/file/d/1a8iZejQbOW4QDwxzgJtWeyEqztupJgkY/view?usp=drive_link"
+        on_site: true
+      - anchor: "Rural VT Activist Toolkit"
+        url: "https://www.ruralvermont.org/activist-toolkit-1"
+        on_site: true
+      - anchor: "Vermont League of Cities and Towns"
+        url: "https://www.vlct.org/resource/effective-testimony-guide-municipal-officials"
+        on_site: true
+      - anchor: "how to intervene in escalating situations"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: true
+      - anchor: "practice conflict management and transformation"
+        url: "https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link"
+        on_site: true
+      - anchor: "libraries"
+        url: "https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf"
+        on_site: true
+      - anchor: "grange halls"
+        url: "http://www.vtstategrange.org/vermont-granges.html"
+        on_site: true
+      - anchor: "Flood Preparation"
+        url: "https://www.floodsmart.gov/prepare/minimize-damage"
+        on_site: true
+      - anchor: "General First Aid and Basic Life Support"
+        url: "https://www.redcross.org/take-a-class/train-my-employees"
+        on_site: true
+      - anchor: "Basic Rescue"
+        url: "https://mutualaiddisasterreliefsite.wordpress.com/wp-content/uploads/2017/04/basic_rescue_skills_2003.pdf"
+        on_site: true
+      - anchor: "Examples from Mutual Aid Disaster Relief"
+        url: "https://mutualaiddisasterrelief.org/safety-diy-cleanup/"
+        on_site: true
+      - anchor: "Safe Food Prep"
+        url: "https://www.vtchamber.com/servsafe/"
+        on_site: true
+      - anchor: "Train NEK"
+        url: "https://trainnek.com/about-us/"
+        on_site: true
+      - anchor: "NOLS courses"
+        url: "https://www.nols.edu/en/courses/"
+        on_site: true
+      - anchor: "Stop the bleed"
+        url: "https://cms.bleedingcontrol.org/Class/Search"
+        on_site: true
+      - anchor: "Narcan"
+        url: "https://vtcares.org/how-to-use-narcan/"
+        on_site: true
+      - anchor: "Mental health first aid"
+        url: "https://www.are.na/local-directory/radical-mental-health-first-aid"
+        on_site: true
+      - anchor: "Radical Mental Health First Aide (RMHFA) Action Plan"
+        url: "https://attachments.are.na/27186484/03bcff689a69c106cd91a68bebc381df.pdf?1711408036"
+        on_site: true
+      - anchor: "Open Street Maps"
+        url: "https://openstreetmap.us/get-involved/start-mapping/"
+        on_site: true
+      - anchor: "Conflict de-escalation"
+        url: "https://drive.google.com/file/d/1jvwkbqaxuct6_xQxSgT1p-WfNcod2d5I/view?usp=drive_link"
+        on_site: true
+      - anchor: "Conflict management"
+        url: "https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link"
+        on_site: true
+      - anchor: "how to host a public assembly"
+        url: "https://drive.google.com/file/d/1nUkRdNmMf4eisAdmVFbGJKiCiEiea6Cv/view"
+        on_site: true
+      - anchor: "Civic Standard"
+        url: "https://www.thecivicstandard.org/"
+        on_site: true
+      - anchor: "NEK Organizing"
+        url: "https://nekorganizing.org/"
+        on_site: true
+      - anchor: "Hartland Community Breakfasts"
+        url: "https://hartland.govoffice.com/index.asp?SEC=F4B6B828-2DC9-4153-9BAF-212AAF3965D5&DE=E3079F17-2186-4D40-A9F5-82F8DE844030"
+        on_site: true
+    workbook_anchor_count: 33                              # most in any single module
+    workbook_unique_urls: 32                               # folder cited 5x counts as 1
+    site_link_count: 26
+
+    current_site_state:
+      astro: "src/pages/modules/baseline-resilience/2-3.astro"
+      module_key: "community-building"
+      components_wired:
+        - type: InfoCallout
+          classification: c
+          recurring: true
+        - type: h2_sections
+          count: 9
+          list: ["Local and regional governance and coordination", "Institutional allies", "Business directory", "Tradesfolk directory", "Community spokespeople", "De-escalators and conflict facilitators", "Third spaces", "Skill building workshops", "Fun activities that build community"]
+          classification: a                                # all match workbook
+        - type: skill_building_table
+          structure: "2-col (Flood and disaster response / Recovery and Coordination) + Other row colspan=2"
+          classification: a                                # matches workbook
+        - type: Todo
+          count: 62
+          classification: a                                # all verbatim-match
+        - type: ExternalLink
+          count: 26                                        # 26 of 32 workbook unique URLs wired correctly
+          classification: mostly_a
+        - type: business_directory_url_substitution
+          workbook_url: "https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link"
+          site_url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+          classification: c
+          decision: 1a_restore_workbook_specific_file_url
+        - type: tradesfolk_directory_link_drop
+          missing_url: "https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link"
+          classification: c
+          decision: 1a_restore_as_Todo_plus_ExternalLink
+
+    paragraph_drift: []                                    # no narrative drift detected
+
+    section_order_check: ok                                # all 9 sections match workbook order
+    missing_sections_check: ok
+    table_titles_check: ok                                 # "Flood and disaster response" / "Recovery and Coordination" headers match
+
+    class_c_count: 3                                       # InfoCallout + business-dir URL sub + tradesfolk-dir link drop
+    scope: 1a
+    spec_required: true
+    innovations: []
+
+    notes: >
+      Walked 2026-04-24. LARGEST module by workbook URL count (32
+      unique) — yet very clean fidelity. Only 2 non-InfoCallout
+      class-c issues: business-directory URL substitution (specific
+      file → folder) + tradesfolk-directory link drop. All 62 Todos
+      + 9 h2 sections + skill-building 2x2+Other table match workbook
+      verbatim. Running total 134 across 17 modules.
