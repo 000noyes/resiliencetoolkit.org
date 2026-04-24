@@ -1,5 +1,9 @@
-meta_hash: 679943e233c8cbba7b9212ba07cb2d0f6aee61caafde85d812f0b2099935217c
+meta_hash: e393ea7b00f1336212d456b52ba7c7d5396f3724c303e3f978b8f55d6f993826
 sources:
+  public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf:
+    content_hash: 632bf28a55bf1dccb6e9adc66621441d56e8cf17e635013ef5f581c290792ca2
+    last_verified: '2026-04-24T21:58:32.066Z'
+    source_hash: 36cc2d0fae32f6d67b8cb47e68c1d904759c81356c0a33cd735f368550754a0d
   rt-templates/leader-directory.pdf:
     content_hash: 632bf28a55bf1dccb6e9adc66621441d56e8cf17e635013ef5f581c290792ca2
     last_verified: '2026-04-19T02:45:25.401Z'

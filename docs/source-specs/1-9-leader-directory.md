@@ -3,8 +3,8 @@ module: 1-9
 template: leader-directory
 title: Leader Directory
 citation:
-  source: rt-templates/leader-directory.pdf
-  page: '1'
+  source: public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf
+  page: '66'
 fields:
   - key: title-role
     label: Title/Role
