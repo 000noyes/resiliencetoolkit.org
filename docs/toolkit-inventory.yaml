@@ -676,3 +676,209 @@ modules:
       during walk — triggered anchor-pair extraction memory. 1-1 +
       KYC entries amended in same commit with re-extracted anchor
       maps.
+
+  1-3:
+    title: "First aid and medical"
+    workbook_pages: "42"
+    section_pdf: "public/toolkit/sections/Section 1.3_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_typo_note: >
+      Workbook folder-header anchor text reads "1.4 First aid and
+      medical" but the section is 1.3. Upstream workbook error
+      (not a site drift).
+    workbook_anchor_urls:
+      - anchor: "1.4 First aid and medical"                # typo in workbook; actually 1.3
+        url: "https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH"
+        page: 42
+        purpose: "Folder with resources and templates (folder header, workbook typo)"
+        on_site: surface_via_module_layout_button         # site has "See Additional Resources" affordance via ModuleLayout — pinned for design review
+      - anchor: "Create (and circulate!) a list"
+        url: "https://drive.google.com/file/d/1xVIJEWpkQT6K5mp-9DUn-mR3T5GWQ2bt/view?usp=drive_link"
+        page: 42
+        purpose: "Local emergency response numbers list template"
+        on_site: true
+      - anchor: "https://www.aedgrant.com/"
+        url: "https://www.aedgrant.com/"
+        page: 42
+        purpose: "AED grant application"
+        on_site: true
+    workbook_anchor_count: 4                               # 4 anchor occurrences (folder linked from 2)
+    workbook_unique_urls: 3
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-3.astro"
+      module_key: "first-aid-medical"
+      components_wired:
+        - type: invented_h2
+          label: "First aid preparedness"
+          source_cited: null
+          classification: c
+          decision: 1a_remove                              # h2 not in workbook; ModuleLayout already renders section title
+          note: "Site-invented h2 above InfoCallout. Second occurrence of invented-heading pattern (first was KYC's 4 tableName props)."
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          note: "Same 'How this works' pattern as 1-1/1-2/KYC"
+        - type: table.guide-table
+          source_cited: null
+          classification: a
+        - type: Todo
+          count: 37
+          classification: a
+          note: "6 Systems + 31 Stuff (14 First Aid Supplies + 8 Medications + 9 Equipment)"
+        - type: ExternalLink
+          count: 2
+          classification: a
+          note: "1xVIJEWpk (emergency response list) + aedgrant.com — both verbatim workbook matches"
+
+    paragraph_drift:
+      - location: "Systems col bullet #1 (workbook p42)"
+        workbook: "First Responders and/or rescue squads that serve your area."
+        site: "First Responders and/or rescue squad that serve your area."
+        drift_type: plural_drop
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim                           # restore plural
+
+    section_order_check: ok                                # single table
+    missing_sections_check: ok                             # no missing sub-sections
+    table_titles_check: na                                 # raw table, not DataTable
+
+    folder_header_pattern:
+      observed_modules: ["1-1", "1-2", "1-3", "knowing-your-community"]
+      site_affordance: >
+        ModuleLayout already renders a "See Additional Resources" button
+        in the action bar (src/layouts/ModuleLayout.astro:181-192) driven
+        by getResourcesUrlForSection() → src/data/downloads.ts
+        moduleDownloads[].resourcesUrl. This IS the site's answer to
+        the workbook's "Folder with resources and templates" header —
+        just expressed as page chrome rather than inline prose.
+      decision: pinned_for_design_review
+      open_questions:
+        - "Are all section Drive folder URLs wired in downloads.ts? (verify coverage)"
+        - "Should folder link also appear inline (as workbook does) OR is the ModuleLayout button sufficient?"
+        - "Does 'See Additional Resources' button visually communicate equivalence to the workbook's inline folder header?"
+
+    class_c_count: 4                                       # InfoCallout, invented h2, folder header affordance (pinned), plural drop
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: invented_h2_heading_pattern
+        description: >
+          Site adds <h2>First aid preparedness</h2> above InfoCallout;
+          workbook has no such sub-heading. Second occurrence of the
+          invented-heading class-(c) pattern (first was KYC tableName
+          props). Likely shared across other modules — check 1-4+
+          aggressively.
+        decision: 1a_remove_all_invented_h2
+        scope: 1a
+      - flag: folder_header_pattern_pinned_for_design_review
+        description: >
+          4 modules so far (1-1, 1-2, 1-3, KYC) have the workbook's
+          inline "Folder with resources and templates" header omitted
+          on site. But site has a ModuleLayout action-bar button ("See
+          Additional Resources") that points to the same Drive folder
+          via downloads.ts. The fidelity concern reduces to:
+          (a) verify the button's URL matches the workbook folder URL
+              per section (coverage audit)
+          (b) design review: is page-chrome affordance sufficient or
+              should inline rendering also exist?
+        decision: pinned_for_design_review
+        scope: to_be_decided_post_design_review
+    notes: >
+      Walked 2026-04-24. Invented h2 pattern flagged as second
+      occurrence of class-(c) invented-heading type. Folder-header
+      question reframed as affordance-shape question (ModuleLayout
+      already has "See Additional Resources" button) — pinned for
+      design review rather than solved per-module.
+
+  1-4:
+    title: "Power supply"
+    workbook_pages: "45"                                   # 1.5 content bleeds onto same page
+    section_pdf: "public/toolkit/sections/Section 1.4_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1                                   # includes 1.5 content at bottom
+    workbook_typo_note: >
+      Workbook folder-header anchor text reads "1.3 Power supply"
+      (should be "1.4"). Same off-by-one pattern as 1-3's
+      "1.4 First aid and medical" typo. Upstream workbook error.
+    workbook_anchor_urls:
+      - anchor: "1.3 Power supply"                         # typo in workbook; actually 1.4
+        url: "https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU"
+        page: 45
+        purpose: "Folder with resources and templates (folder header, workbook typo)"
+        on_site: surface_via_module_layout_button          # see 1-3 pinned-for-design-review discussion
+      - anchor: "Power Supply inventory"
+        url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1882137661#gid=1882137661&range=A1:C1"
+        page: 45
+        purpose: "Power Supply inventory row in Templates Directory master sheet (cell-level range)"
+        on_site: false                                     # plain text on site, no link
+        decision: 1a_restore_sheet_level_url               # drop cell-range specificity; link to sheet only
+        sheet_level_url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit"
+    workbook_anchor_count: 3                               # 3 anchor occurrences for 1.4 (folder linked from 2)
+    workbook_unique_urls: 2
+    site_link_count: 0                                     # no ExternalLinks on 1-4.astro; no hrefs at all
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-4.astro"
+      module_key: "power-supply"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+        - type: table.guide-table
+          classification: a
+          note: "2 sub-sections (Emergency/backup power, Solar emergency response trailer) match workbook"
+        - type: Todo
+          count: 10
+          classification: a                                # all 10 bullets verbatim-match workbook
+          note: "2 Systems + 5 Stuff (Emergency/backup power) + 2 Systems + 1 Stuff (Solar trailer) = 10"
+        - type: plain_text_dropped_link
+          phrase: "Power Supply inventory"
+          classification: c
+          decision: 1a_restore_as_ExternalLink_sheet_level
+          note: "Workbook links this phrase to Templates Directory sheet with cell-level gid+range; site renders as plain text. Fix: wrap in ExternalLink pointing to sheet-level URL (drop range specificity per user decision)."
+
+    paragraph_drift:
+      - location: "Systemic apostrophe encoding"
+        workbook: "you're / they're (curly apostrophe ’)"
+        site: "you're / they're (straight apostrophe ')"
+        drift_type: encoding_style
+        classification: not_a_fidelity_issue               # per user decision 2026-04-24: encoding convenience
+        decision: accept_site_wide                         # no per-module fix; walk-summary note only
+        scope_note: "Likely site-wide. First flagged on 1-4; not re-flagging per-module."
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: na
+
+    class_c_count: 3                                       # InfoCallout, missing folder header (pinned), "Power Supply inventory" link drop (apostrophe no longer class-c per user)
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: cell_level_spreadsheet_link
+        description: >
+          Workbook "Power Supply inventory" anchor targets a specific
+          row in the Templates Directory master sheet via
+          ?gid=1882137661&range=A1:C1. First occurrence of cell-level
+          targeting in the walk. normalizeUrl (shipped day 1) retains
+          'gid' but 'range' param may need handling too.
+        decision: drop_range_use_sheet_level_url           # user decision: sheet-level simpler, visually equivalent in browser
+        scope: 1a
+        implication_for_linksmatch: >
+          Spec links[] should store sheet-level URL. normalizeUrl
+          should keep gid but can optionally strip range. Verify with
+          test case when runner.ts linksMatch ships on day 5.
+      - flag: apostrophe_encoding_site_wide
+        description: >
+          Straight ' on site vs curly ’ on workbook. Likely site-
+          wide encoding difference. User accepts as encoding
+          convenience, not a fidelity concern. Walk-summary note
+          only; no per-module tracking or fix.
+        decision: accept_site_wide
+        scope: walk_summary_observation
+
+    notes: >
+      Walked 2026-04-24. No invented h2 (clean unlike 1-3). ZERO
+      hrefs on site — all 2 workbook unique URLs dropped. Apostrophe
+      encoding divergence accepted as site-wide convention (not a
+      fidelity issue per user).
