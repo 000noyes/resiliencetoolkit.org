@@ -248,7 +248,7 @@ describe('scaffold: scaffoldSpec', () => {
     const entry = registry.sources['rt-templates/x.pdf'];
     expect(entry).toBeDefined();
     expect(entry.source_hash).toBe(await computeSourceHash(join(root, 'rt-templates', 'x.pdf')));
-    expect(entry.content_hash).toBe(computeContentHash(extractText));
+    expect(Object.values(entry.content_hashes)).toContain(computeContentHash(extractText));
     expect(entry.last_verified).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   });
 
@@ -268,7 +268,7 @@ describe('scaffold: scaffoldSpec', () => {
     expect(existsSync(join(root, 'docs', 'source-specs', '_sources.yaml'))).toBe(false);
   });
 
-  it('overwrites the registry entry on force scaffold with fresh hashes', async () => {
+  it('refreshes the registry entry on force scaffold when source bytes change', async () => {
     // First scaffold — seeds registry entry with one content_hash.
     await writeFile(join(root, 'rt-templates', 'x.pdf'), 'pdf-bytes-v1');
     await scaffoldSpec({
@@ -282,7 +282,8 @@ describe('scaffold: scaffoldSpec', () => {
     const before = (await loadSourceRegistry(root)).sources['rt-templates/x.pdf'];
 
     // Rewrite the PDF bytes and re-scaffold with --force. Registry should
-    // reflect the new hashes, not the stale ones.
+    // reflect the new hashes, not the stale ones — the per-page record
+    // also resets because source_hash changed.
     await writeFile(join(root, 'rt-templates', 'x.pdf'), 'pdf-bytes-v2');
     await scaffoldSpec({
       projectRoot: root,
@@ -296,8 +297,43 @@ describe('scaffold: scaffoldSpec', () => {
     const after = (await loadSourceRegistry(root)).sources['rt-templates/x.pdf'];
 
     expect(after.source_hash).not.toBe(before.source_hash);
-    expect(after.content_hash).toBe(computeContentHash('version-two-text'));
+    expect(Object.values(after.content_hashes)).toContain(
+      computeContentHash('version-two-text'),
+    );
+    expect(Object.values(after.content_hashes)).not.toContain(
+      computeContentHash('version-one-text'),
+    );
     expect(after.last_verified >= before.last_verified).toBe(true);
+  });
+
+  it('merges content hashes for multiple pages of the same PDF', async () => {
+    await writeFile(join(root, 'rt-templates', 'multi.pdf'), 'pdf-bytes');
+
+    // First scaffold — page 14
+    await scaffoldSpec({
+      projectRoot: root,
+      pdf: 'rt-templates/multi.pdf',
+      page: '14',
+      module: '1-9',
+      template: 'leader-directory',
+      saveCache: false,
+      extractOptions: { exec: mockExec('page-14-text') },
+    });
+    // Second scaffold — page 27, separate spec file. Per-page hashes should COEXIST.
+    await scaffoldSpec({
+      projectRoot: root,
+      pdf: 'rt-templates/multi.pdf',
+      page: '27',
+      module: '1-2',
+      template: 'food-and-water',
+      saveCache: false,
+      extractOptions: { exec: mockExec('page-27-text') },
+    });
+
+    const entry = (await loadSourceRegistry(root)).sources['rt-templates/multi.pdf'];
+    expect(entry.content_hashes['14']).toBe(computeContentHash('page-14-text'));
+    expect(entry.content_hashes['27']).toBe(computeContentHash('page-27-text'));
+    expect(Object.keys(entry.content_hashes)).toHaveLength(2);
   });
 
   it('defaults title to Title-cased template', async () => {

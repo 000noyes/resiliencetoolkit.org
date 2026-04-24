@@ -9,10 +9,10 @@ import {
   loadSourceRegistry,
   saveExtractionCache,
   saveSourceRegistry,
-  setSourceEntry,
+  setSourceContentHash,
 } from './cache';
 import { extract, type ExtractOptions } from './extract';
-import type { SourceRegistryEntry, SourceSpec } from './schemas';
+import type { SourceSpec } from './schemas';
 
 export class ScaffoldError extends Error {
   readonly status: 'spec_parse_error' | 'extract_failed' | 'cache_corrupted' | 'exists';
@@ -193,12 +193,20 @@ export async function scaffoldSpec(options: ScaffoldOptions): Promise<ScaffoldRe
   if (saveRegistry) {
     const registry = await loadSourceRegistry(projectRoot);
     const source_hash = await computeSourceHash(pdfAbsolute);
-    const entry: SourceRegistryEntry = {
+    // setSourceContentHash merges this page's content_hash into the existing
+    // entry's content_hashes record (if source_hash is unchanged), preserving
+    // hashes for other pages already registered for the same PDF. Multiple
+    // specs citing different pages of the same workbook must coexist —
+    // overwriting on each scaffold (the previous behavior) made all but the
+    // most-recent spec's freshness check fail.
+    const nextRegistry = setSourceContentHash(
+      registry,
+      options.pdf,
+      options.page,
       source_hash,
-      content_hash: outcome.result.content_hash,
-      last_verified: new Date().toISOString(),
-    };
-    const nextRegistry = setSourceEntry(registry, options.pdf, entry);
+      outcome.result.content_hash,
+      new Date().toISOString(),
+    );
     await saveSourceRegistry(nextRegistry, projectRoot);
   }
 

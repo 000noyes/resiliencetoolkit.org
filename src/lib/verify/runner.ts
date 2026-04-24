@@ -10,6 +10,7 @@ import type {
   VerifyReportEntry,
   VerifyStatus,
 } from './schemas';
+import { registryPageKey } from './schemas';
 import { runDay5aChecks } from './runner-checks';
 import {
   CacheCorruptedError,
@@ -234,7 +235,7 @@ async function verifySpecMd(
   const pdfAbsolute = resolve(projectRoot, pdfRel);
   const pageFromSpec = loaded.spec.citation.page;
 
-  const freshness = await checkSourceFreshness(registry, pdfAbsolute, pdfRel);
+  const freshness = await checkSourceFreshness(registry, pdfAbsolute, pdfRel, pageFromSpec);
   const freshnessEntry = evaluateFreshness(citation, freshness, pdfRel);
   if (freshnessEntry) {
     return { entry: freshnessEntry, nextCache: cache };
@@ -271,7 +272,18 @@ async function verifySpecMd(
   // is unchanged). 'source_drift' + drifted content_hash escalates to
   // content_drift — the source_drift alone rule does NOT apply.
   if (freshness.state === 'fresh' || freshness.state === 'source_drift') {
-    const contentDrifted = outcome.result.content_hash !== freshness.entry.content_hash;
+    // Resolve the registered hash for this page. For 'fresh' the lookup
+    // already happened. For 'source_drift' (raw bytes moved) we still
+    // consult entry.content_hashes so a content move that LANDS on
+    // top of a source-bytes change escalates to content_drift (the
+    // hard fail), not the soft source_drift advisory.
+    const registeredPageHash =
+      freshness.state === 'fresh'
+        ? freshness.pageContentHash
+        : freshness.entry.content_hashes[registryPageKey(pageFromSpec)];
+    const contentDrifted =
+      registeredPageHash !== undefined &&
+      outcome.result.content_hash !== registeredPageHash;
     if (contentDrifted) {
       return {
         entry: {

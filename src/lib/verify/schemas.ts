@@ -130,13 +130,32 @@ export type SourceSpec = z.infer<typeof sourceSpecSchema>;
 
 const sha256Hex = z.string().regex(/^[a-f0-9]{64}$/, 'sha256 hex string required');
 
+/**
+ * Per-PDF registry entry. `content_hashes` is a record keyed by page string
+ * (as it appears in spec.citation.page, e.g. "66" or "35-36") to the
+ * normalized content hash for that page extraction. Whole-PDF extractions
+ * (no spec page) use the sentinel key `__all__`.
+ *
+ * Why a record instead of a single `content_hash`: multiple specs commonly
+ * cite different pages of the same workbook PDF (e.g. 1-2 page 35-36 and
+ * 1-9 page 66). A single content_hash field forces the most-recently-
+ * scaffolded spec to overwrite all others' content hashes, which makes the
+ * post-extract content_drift check fire spuriously on every spec but the
+ * latest. Per-page hashes let each spec own its own freshness state.
+ */
+export const SOURCE_REGISTRY_ALL_PAGES_KEY = '__all__';
 export const sourceRegistryEntrySchema = z.object({
   source_hash: sha256Hex,
-  content_hash: sha256Hex,
+  content_hashes: z.record(z.string().min(1), sha256Hex),
   drive_file_id: z.string().optional(),
   last_verified: z.string().datetime(),
 });
 export type SourceRegistryEntry = z.infer<typeof sourceRegistryEntrySchema>;
+
+/** Normalize a citation.page (possibly undefined) to a registry pageKey. */
+export function registryPageKey(page: string | undefined): string {
+  return page && page.length > 0 ? page : SOURCE_REGISTRY_ALL_PAGES_KEY;
+}
 
 export const sourceRegistrySchema = z.object({
   sources: z.record(z.string(), sourceRegistryEntrySchema),

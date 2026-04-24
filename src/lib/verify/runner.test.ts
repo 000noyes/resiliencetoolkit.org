@@ -15,17 +15,23 @@ import { computeContentHash, computeMetaHash, computeSourceHash } from './cache'
 
 /**
  * Seed _sources.yaml so checkSourceFreshness returns "fresh" for the given
- * PDF. Computes the raw-byte source_hash of whatever was just written to
- * disk. If mockExtractedText is provided, content_hash is derived from it
- * so the content_drift check will pass when pdftotext is mocked to return
- * that same text. Otherwise falls back to a stub hash — useful when the
- * test already expects content_drift (mismatch is the point).
+ * (PDF, page) pair. Computes the raw-byte source_hash of whatever was just
+ * written to disk. If mockExtractedText is provided, content_hash is
+ * derived from it so the content_drift check will pass when pdftotext is
+ * mocked to return that same text. Otherwise falls back to a stub hash —
+ * useful when the test already expects content_drift (mismatch is the
+ * point).
+ *
+ * Page defaults to '1' to match the leader-directory spec fixtures used
+ * throughout this file. Pass an explicit page when seeding for a spec
+ * that cites a different page range.
  */
 async function seedRegistry(
   root: string,
   pdfRelPath: string,
   mockExtractedText?: string,
   contentHashOverride?: string,
+  page = '1',
 ): Promise<void> {
   const source_hash = await computeSourceHash(join(root, pdfRelPath));
   const content_hash =
@@ -34,7 +40,7 @@ async function seedRegistry(
   const sources = {
     [pdfRelPath]: {
       source_hash,
-      content_hash,
+      content_hashes: { [page]: content_hash },
       last_verified: new Date().toISOString(),
     },
   };
@@ -396,7 +402,7 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
     const sources = {
       'rt-templates/leader-directory.pdf': {
         source_hash: wrongHash,
-        content_hash: computeContentHash(mockText),
+        content_hashes: { '1': computeContentHash(mockText) },
         last_verified: new Date().toISOString(),
       },
     };
@@ -479,7 +485,7 @@ ${Array.from({ length: 19 }, (_, i) => `  - key: "f-${i}"\n    label: "Field ${i
       const sources = {
         'rt-templates/leader-directory.pdf': {
           source_hash: wrongSource,
-          content_hash: wrongContent,
+          content_hashes: { '1': wrongContent },
           last_verified: new Date().toISOString(),
         },
       };

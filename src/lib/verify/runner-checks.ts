@@ -420,6 +420,36 @@ export function structuralFidelityMatches(ctx: CheckContext): VerifyReportEntry[
  */
 const PROSE_GROUNDED_THRESHOLD = 0.6;
 const PROSE_MIN_TOKENS = 6;
+/**
+ * Token-recall fallback to handle pdftotext column-split typography
+ * (e.g. workbook drop-cap "P" emitted on its own line, splitting "Provide"
+ * into separate "p" and "rovide" tokens). bestMatchScore's sliding-window
+ * jaccard penalizes the fragmentation; tokenRecall instead asks "what
+ * fraction of the paragraph's tokens appear anywhere in the workbook
+ * text". When recall is high AND there's a non-trivial windowed match
+ * (so we don't admit random common-word fluff), the paragraph is treated
+ * as grounded.
+ *
+ * Walk evidence: 1-2 page 35-36 "Provide meals for communities during
+ * disaster…" scores 0.55 < 0.6 by bestMatchScore but tokenRecall ≈ 0.94
+ * (every token present in workbook except "provide", which exists as
+ * fragmented "p"+"rovide"). Class-c invented prose has lower recall —
+ * 1-9's "Mutual Aid and/or Neighbor-to-Neighbor Network leader(s)" has
+ * tokenRecall ≈ 0.67 because "and"/"or"/"network" are genuinely absent
+ * from the workbook, so it stays as prose_drift.
+ */
+const PROSE_FRAGMENT_MIN_SCORE = 0.4;
+const PROSE_FRAGMENT_RECALL_THRESHOLD = 0.9;
+
+function tokenRecall(labelTokens: readonly string[], textTokens: readonly string[]): number {
+  if (labelTokens.length === 0) return 0;
+  const textSet = new Set(textTokens);
+  let hits = 0;
+  for (const t of labelTokens) {
+    if (textSet.has(t)) hits++;
+  }
+  return hits / labelTokens.length;
+}
 
 export function proseMatches(ctx: CheckContext): VerifyReportEntry[] {
   if (!ctx.extractedText) return [];
@@ -428,6 +458,7 @@ export function proseMatches(ctx: CheckContext): VerifyReportEntry[] {
 
   const textNorm = normalizeLabel(ctx.extractedText);
   if (!textNorm) return [];
+  const textTokens = textNorm.split(/\s+/).filter(Boolean);
 
   const out: VerifyReportEntry[] = [];
   for (const p of paras) {
@@ -437,6 +468,12 @@ export function proseMatches(ctx: CheckContext): VerifyReportEntry[] {
     if (tokens.length < PROSE_MIN_TOKENS) continue;
     const score = bestMatchScore(pNorm, textNorm);
     if (score >= PROSE_GROUNDED_THRESHOLD) continue;
+    if (
+      score >= PROSE_FRAGMENT_MIN_SCORE &&
+      tokenRecall(tokens, textTokens) >= PROSE_FRAGMENT_RECALL_THRESHOLD
+    ) {
+      continue;
+    }
     out.push(
       entry(
         ctx,

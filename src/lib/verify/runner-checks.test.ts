@@ -467,4 +467,33 @@ Children under 5`;
     expect(out[0].status).toBe('prose_drift');
     expect(out[0].message).toMatch(/nested bullet/);
   });
+
+  it('column-fragmented PDF typography passes via token-recall fallback', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    // Site paragraph: every token grounded in workbook.
+    const site = `<p>Provide meals for communities during disaster and recovery. Feeding people is key to sustaining response and relief efforts.</p>`;
+    // Workbook: pdftotext column extraction has split "Provide" into a
+    // standalone "P" line and a "rovide…" line, with interleaved column
+    // text from another column ("Kitchen and meal distribution supplies",
+    // "Chest freezer"). bestMatchScore drops below 0.6, but every token
+    // of the site paragraph is present somewhere in the workbook text —
+    // the fallback recognizes this as column fragmentation, not invention.
+    const extracted = `P\nrovide meals for communities during disaster\nKitchen and meal distribution supplies\nand recovery. Feeding people is key to\nChest freezer\nsustaining response and relief efforts.`;
+    expect(proseMatches(ctx(spec, site, extracted))).toEqual([]);
+  });
+
+  it('invented tokens fail the token-recall fallback (precision-first)', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    // Site adds "Network" which is genuinely not in the workbook —
+    // token-recall stays below 0.9 so this remains a drift.
+    const site = `<li>Mutual Aid and/or Neighbor-to-Neighbor Network leader(s) coordinate community recovery</li>`;
+    const extracted = `Mutual aid neighbor to neighbor leader(s)`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('prose_drift');
+  });
 });
