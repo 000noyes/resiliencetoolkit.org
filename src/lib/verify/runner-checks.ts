@@ -17,9 +17,13 @@
  *   - `keysMatch`    — DataTable column key/label alignment with spec fields.
  *                      Emits key_drift.
  *
- * Deferred to day-5b:
- *   - `structuralFidelityMatches` — 1 workbook table → 1 site component.
- *   - `proseMatches`              — verbatim <p>/<li> vs pdftotext via Myers.
+ * Added in day-5b:
+ *   - `structuralFidelityMatches` — N workbook tables → N site components
+ *                                   (DataTable + PlanForm sum).
+ *                                   Emits structural_fidelity_failed.
+ *   - `proseMatches`              — site <p>/<li> text must be grounded in
+ *                                   pdftotext extraction (precision-first).
+ *                                   Emits prose_drift.
  */
 
 import type {
@@ -28,12 +32,14 @@ import type {
   VerifyReportEntry,
   VerifyStatus,
 } from './schemas';
-import { collectSpecFields } from './diff';
+import { bestMatchScore, collectSpecFields, normalizeLabel } from './diff';
 import { normalizeUrl } from './normalize-url';
 import {
+  extractDataTables,
   extractHeadings,
   extractLinks,
-  extractDataTables,
+  extractParagraphs,
+  extractPlanForms,
   type SiteColumn,
   type SiteLink,
 } from './site-parse';
@@ -48,6 +54,12 @@ export interface CheckContext {
   siteContent: string;
   /** Source path (e.g. docs/source-specs/foo.md) — passed through to report entries. */
   source: string;
+  /**
+   * pdftotext extraction of the cited workbook page(s), if already resolved
+   * by the runner. `proseMatches` needs this; every other check ignores it.
+   * Absent → `proseMatches` no-ops (can't compare against nothing).
+   */
+  extractedText?: string;
 }
 
 function entry(
@@ -326,19 +338,141 @@ export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
 }
 
 // ---------------------------------------------------------------------------
+// structuralFidelityMatches
+// ---------------------------------------------------------------------------
+
+/**
+ * Assert that the number of primary data-bearing components rendered on the
+ * site equals `spec.structural_fidelity.table_count`. Counts both
+ * `<DataTable>` and `<PlanForm>` (the two authored data-bearing components on
+ * this site; directory-tables historically used raw `<table>` but are now
+ * DataTable-backed so are already covered).
+ *
+ * Walk case: 1-8 Populations with Specific Needs — the workbook authors ONE
+ * Seniors+Disabilities planning table; the site splits it into TWO
+ * DataTables. The spec asserts `table_count: 1`; the check observes 2;
+ * result: `structural_fidelity_failed` blocking class-a status for 1-8.
+ *
+ * Silent when `spec.structural_fidelity` is absent — this is a cite-on-demand
+ * assertion, not a universal requirement. A future spec that cares about
+ * component count must opt in.
+ *
+ * Non-goal: this check does not verify WHICH tables correspond to which
+ * workbook section — `keysMatch` (single-table) and day-9 (multi-table
+ * tableId mapping) handle that.
+ */
+export function structuralFidelityMatches(ctx: CheckContext): VerifyReportEntry[] {
+  const sf = ctx.spec.structural_fidelity;
+  if (!sf) return [];
+
+  const tables = extractDataTables(ctx.siteContent);
+  const forms = extractPlanForms(ctx.siteContent);
+  const observed = tables.length + forms.length;
+  if (observed === sf.table_count) return [];
+
+  const desc = sf.description ? ` — ${sf.description}` : '';
+  return [
+    entry(
+      ctx,
+      'structural_fidelity_failed',
+      `spec.structural_fidelity.table_count=${sf.table_count} but ${ctx.file} renders ${observed} data-bearing component(s) (${tables.length} DataTable + ${forms.length} PlanForm)${desc}`,
+    ),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// proseMatches
+// ---------------------------------------------------------------------------
+
+/**
+ * Assert that every prose paragraph / bullet on the site is grounded in the
+ * cited workbook page's pdftotext extraction. Site prose that cannot be
+ * located in the workbook text — with tolerance for stylistic variation —
+ * is class-c invented content and emits `prose_drift`.
+ *
+ * Why this check is precision-first (not recall-first):
+ *   - The inverse direction (workbook prose → site) is recall-first and
+ *     requires the spec to enumerate expected paragraphs; that's a larger
+ *     authoring story and is deferred to day-9+.
+ *   - False positives (site prose rewrapped by whitespace, minor word
+ *     differences) annoy authors and erode trust.
+ *   - False negatives (invented content slipping through) silently violate
+ *     the class-c firewall — the one direction we cannot tolerate.
+ *   - See memory `feedback_inventory_walk_paragraph_diff.md` — paragraph
+ *     drift is the walk-exposed failure mode the original plan under-weighted.
+ *
+ * Walk cases (all direction: site-only, no workbook analogue):
+ *   - 1-8 invented "Note: Much of the guidance for seniors..." meta-note.
+ *   - 1-12 catastrophic intro replacement (site paragraph replaces workbook
+ *     paragraph, so the site's paragraph fails the check).
+ *   - 2-1 Mental Health drops — the DROPPED direction is out of scope here;
+ *     but any site paragraph that substituted for a dropped workbook
+ *     paragraph is caught.
+ *
+ * Algorithm: for each site paragraph, score it against the normalized
+ * pdftotext text with `bestMatchScore`. Pass when the score ≥ GROUNDED
+ * threshold. Short paragraphs (below MIN_TOKENS) are skipped — a 2-word
+ * line ("See more") cannot be validated reliably without false-positive
+ * hits; deferring to manual review is safer.
+ *
+ * Silent when `extractedText` is absent (freshness short-circuited the
+ * runner before extraction) or when the site has no authored prose.
+ */
+const PROSE_GROUNDED_THRESHOLD = 0.6;
+const PROSE_MIN_TOKENS = 6;
+
+export function proseMatches(ctx: CheckContext): VerifyReportEntry[] {
+  if (!ctx.extractedText) return [];
+  const paras = extractParagraphs(ctx.siteContent);
+  if (paras.length === 0) return [];
+
+  const textNorm = normalizeLabel(ctx.extractedText);
+  if (!textNorm) return [];
+
+  const out: VerifyReportEntry[] = [];
+  for (const p of paras) {
+    const pNorm = normalizeLabel(p.text);
+    if (!pNorm) continue;
+    const tokens = pNorm.split(/\s+/).filter(Boolean);
+    if (tokens.length < PROSE_MIN_TOKENS) continue;
+    const score = bestMatchScore(pNorm, textNorm);
+    if (score >= PROSE_GROUNDED_THRESHOLD) continue;
+    out.push(
+      entry(
+        ctx,
+        'prose_drift',
+        `site <${p.tag}> "${truncate(p.text, 120)}" not grounded in cited workbook text (score ${score.toFixed(2)} < ${PROSE_GROUNDED_THRESHOLD})`,
+        p.line,
+      ),
+    );
+  }
+  return out;
+}
+
+function truncate(s: string, max: number): string {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1) + '…';
+}
+
+// ---------------------------------------------------------------------------
 // Ordering helper — wired into runner.ts
 // ---------------------------------------------------------------------------
 
 /**
- * Run every day-5a check in order and return a flat entry list. Runner uses
+ * Run every day-5 check in order and return a flat entry list. Runner uses
  * this to append to the post-extract report; callers who want to cherry-pick
  * one check can still import them individually.
+ *
+ * Name retained as `runDay5aChecks` for import stability; composer now runs
+ * the full day-5 set (5a + 5b) in authored order.
  */
 export function runDay5aChecks(ctx: CheckContext): VerifyReportEntry[] {
   return [
     ...linksMatch(ctx),
     ...titleMatches(ctx),
     ...keysMatch(ctx),
+    ...structuralFidelityMatches(ctx),
+    ...proseMatches(ctx),
   ];
 }
 

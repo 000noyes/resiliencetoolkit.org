@@ -158,6 +158,14 @@ interface VerifyStepResult {
    * are skipped (we don't have a spec to compare against).
    */
   spec?: SourceSpec;
+  /**
+   * pdftotext extraction of the cited page(s). Populated only on the clean
+   * diff path — source_not_found, unregistered, content_drift, source_drift,
+   * and extract_failed all return BEFORE this is filled. `proseMatches`
+   * consumes this when present; absent means prose check silently skips,
+   * which is the correct behavior (no ground truth to compare against).
+   */
+  extractedText?: string;
 }
 
 /**
@@ -305,6 +313,7 @@ async function verifySpecMd(
     },
     nextCache: outcome.cache,
     spec: loaded.spec,
+    extractedText: outcome.result.text,
   };
 }
 
@@ -407,7 +416,7 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
 
   for (const cit of selectedCitations) {
     if (cit.source.toLowerCase().endsWith('.md')) {
-      const { entry, nextCache, spec } = await verifySpecMd(
+      const { entry, nextCache, spec, extractedText } = await verifySpecMd(
         cit,
         projectRoot,
         cache,
@@ -419,6 +428,8 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
       // Day-5 site-side checks run whenever load-spec succeeded, independent
       // of the diff result — an invented heading is an invented heading even
       // if the fields diff passes. See runner-checks.ts for per-check rationale.
+      // proseMatches additionally requires extractedText (populated on the
+      // clean diff path only); absent → the check silently no-ops.
       if (spec) {
         const siteContent = await readSiteContent(cit.file);
         if (siteContent !== null) {
@@ -428,6 +439,7 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
             citationLine: cit.line,
             siteContent,
             source: cit.source,
+            extractedText,
           });
           entries.push(...checkEntries);
         }

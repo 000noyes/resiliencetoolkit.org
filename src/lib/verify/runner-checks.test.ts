@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import type { SourceSpec } from './schemas';
-import { linksMatch, titleMatches, keysMatch, type CheckContext } from './runner-checks';
+import {
+  linksMatch,
+  titleMatches,
+  keysMatch,
+  structuralFidelityMatches,
+  proseMatches,
+  type CheckContext,
+} from './runner-checks';
 
 const BASE_CITATION = {
   source: 'docs/source-specs/test.md',
@@ -19,14 +26,20 @@ function baseSpec(overrides: Partial<SourceSpec> = {}): SourceSpec {
   } as SourceSpec;
 }
 
-function ctx(spec: SourceSpec, siteContent: string): CheckContext {
-  return {
+function ctx(
+  spec: SourceSpec,
+  siteContent: string,
+  extractedText?: string,
+): CheckContext {
+  const c: CheckContext = {
     spec,
     file: 'src/pages/modules/test.astro',
     citationLine: 1,
     siteContent,
     source: 'docs/source-specs/test.md',
   };
+  if (extractedText !== undefined) c.extractedText = extractedText;
+  return c;
 }
 
 // ---------------------------------------------------------------------------
@@ -287,5 +300,171 @@ describe('runner-checks: keysMatch', () => {
     const site = `<DataTable columns={[{ key: 'WRONG', label: 'WRONG' }]} />`;
     // Even though the label is wrong, section-grouped spec is skipped.
     expect(keysMatch(ctx(spec, site))).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// structuralFidelityMatches — table_count walk cases
+// ---------------------------------------------------------------------------
+
+describe('runner-checks: structuralFidelityMatches', () => {
+  it('silent when spec.structural_fidelity is absent', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<DataTable columns={[{ key: 'X', label: 'X' }]} />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('pass when DataTable count matches spec table_count', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: { table_count: 1 },
+    });
+    const site = `<DataTable columns={[{ key: 'X', label: 'X' }]} />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('1-8 Seniors+Disabilities split: 1 workbook table rendered as 2 site DataTables → structural_fidelity_failed', () => {
+    const spec = baseSpec({
+      module: '1-8',
+      template: 'populations-specific-needs',
+      title: 'Populations with Specific Needs',
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: {
+        table_count: 1,
+        description: 'Workbook has a single Seniors+Disabilities planning table',
+      },
+    });
+    const site = `
+<DataTable moduleKey="1-8" tableId="seniors" columns={[{ key: 'A', label: 'A' }]} />
+<DataTable moduleKey="1-8" tableId="disabilities" columns={[{ key: 'B', label: 'B' }]} />`;
+    const out = structuralFidelityMatches(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('structural_fidelity_failed');
+    expect(out[0].message).toMatch(/table_count=1/);
+    expect(out[0].message).toMatch(/2 data-bearing/);
+    expect(out[0].message).toMatch(/Seniors\+Disabilities/);
+  });
+
+  it('PlanForm counts toward structural fidelity (DataTable + PlanForm sum)', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: { table_count: 2 },
+    });
+    const site = `
+<DataTable columns={[{ key: 'X', label: 'X' }]} />
+<PlanForm moduleKey="m" formId="f" fields={planFields} title="T" />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('zero components when spec expects N → structural_fidelity_failed', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: { table_count: 1 },
+    });
+    const site = `<p>No tables here.</p>`;
+    const out = structuralFidelityMatches(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('structural_fidelity_failed');
+    expect(out[0].message).toMatch(/0 data-bearing/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// proseMatches — paragraph grounding (precision-first)
+// ---------------------------------------------------------------------------
+
+describe('runner-checks: proseMatches', () => {
+  it('silent when extractedText is absent', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<p>This is a site paragraph that has no source text to check against.</p>`;
+    expect(proseMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('silent when the site has no prose', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<h1>Title</h1>`;
+    expect(proseMatches(ctx(spec, site, 'workbook text here'))).toEqual([]);
+  });
+
+  it('pass when a site paragraph is present verbatim in the extracted text', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<p>Create a directory of local first responders, paid and volunteer.</p>`;
+    const extracted = `Directory of Local Leaders
+Create a directory of local first responders, paid and volunteer.
+Emergency Service Name/Person   Function/Skill`;
+    expect(proseMatches(ctx(spec, site, extracted))).toEqual([]);
+  });
+
+  it('tolerates whitespace / case / punctuation variation via normalizeLabel', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<p>  Create a DIRECTORY, of local first responders!  </p>`;
+    const extracted = `Create a directory of local first responders paid and volunteer.`;
+    expect(proseMatches(ctx(spec, site, extracted))).toEqual([]);
+  });
+
+  it('1-8 invented meta-note → prose_drift (site prose with no workbook analogue)', () => {
+    const spec = baseSpec({
+      module: '1-8',
+      template: 'populations-specific-needs',
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<p>Note: Much of the guidance for seniors applies equally to other populations with specific needs.</p>`;
+    // Workbook text mentions populations but NOT this meta-note.
+    const extracted = `Populations with Specific Needs
+Seniors
+People with disabilities
+Children under 5`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('prose_drift');
+    expect(out[0].message).toMatch(/Note: Much of the guidance/);
+  });
+
+  it('bullet items (<li>) are also checked', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<ul><li>A wholly invented bullet item with no workbook source at all here.</li></ul>`;
+    const extracted = `Completely unrelated workbook content about planning and preparedness strategies.`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('prose_drift');
+    expect(out[0].message).toMatch(/<li>/);
+  });
+
+  it('short paragraphs (<6 tokens) are skipped to avoid false positives', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    // "See more" is only 2 tokens — too short to validate reliably.
+    const site = `<p>See more</p>`;
+    const extracted = `Completely unrelated content.`;
+    expect(proseMatches(ctx(spec, site, extracted))).toEqual([]);
+  });
+
+  it('nested <ul> inside <li>: outer li text is checked, inner items are NOT double-counted', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    // Outer li text ("Identify people trained in HAM radio") is in extract;
+    // inner li ("invented nested item") is invented — must fail on its own.
+    const site = `<ul><li>Identify people trained in HAM radio before emergencies occur.
+  <ul><li>This nested bullet is wholly invented prose that cannot be verified.</li></ul>
+</li></ul>`;
+    const extracted = `Identify people trained in HAM radio before emergencies occur. Other preparedness guidance goes here.`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('prose_drift');
+    expect(out[0].message).toMatch(/nested bullet/);
   });
 });
