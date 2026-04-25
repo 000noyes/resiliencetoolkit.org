@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,11 +14,9 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-3-first-aid-and-medical.md page: 42 -->
 <ModuleLayout sectionData={sectionData}>
-      <h2 class="text-title font-semibold mb-4">First aid preparedness</h2>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
+      <p>Folder with resources and templates: <ExternalLink href="https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH">1.4 First aid and medical</ExternalLink></p>
 
       <table class="guide-table">
         <thead>
@@ -37,7 +34,7 @@ const sectionData: SectionData = {
             <td>
               <div class="guide-table__checklist">
                 <Todo id="connect-first-responders" moduleKey="first-aid-medical" client:load>
-                  Connect with First Responders and/or rescue squad that serve your area. Types of
+                  Connect with First Responders and/or rescue squads that serve your area. Types of
                   services: fire departments, first responders (EMTs, back country rescue, etc), ambulance
                   transport
                 </Todo>
