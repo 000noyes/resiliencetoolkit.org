@@ -1,7 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
-import InfoCallout from '@/components/InfoCallout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -14,10 +14,9 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-4-power-supply.md page: 45 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
+      <p>Folder with resources and templates: <ExternalLink href="https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU">1.3 Power supply</ExternalLink></p>
 
       <table class="guide-table">
         <thead>
@@ -44,7 +43,7 @@ const sectionData: SectionData = {
                   and towards areas of need.
                 </Todo>
                 <Todo id="power-inventory" moduleKey="power-supply" client:load>
-                  Keep track of your power sources with the Power Supply inventory template.
+                  Keep track of your power sources with the <ExternalLink href="https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit">Power Supply inventory</ExternalLink> template.
                 </Todo>
               </div>
             </td>
