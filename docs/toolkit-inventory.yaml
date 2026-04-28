@@ -180,7 +180,7 @@ modules:
         status: already_flagged_class_c       # see components_wired
       - section: "Appendix templates p31-32"
         status: already_flagged_deferred_step_2
-    class_c_count: 9                          # 6 from first pass + 3 from re-walk
+    class_c_count: 0                          # day 16 (2026-04-28): 6+3 closed via spec wiring + restore + archive
     scope: 1a
     spec_required: true
     notes: >
@@ -190,8 +190,20 @@ modules:
       quote drop, Oxford comma add). Meaning preserved; strict
       SCOPE.md reading requires verbatim restore. InfoCallout
       classification as site-UX exception (not a toolkit-content
-      class-c) pending common decision — same pattern likely recurs
-      across modules.
+      class-c) resolved per decision o (closeout doc §1) — folded
+      into the 1-1 module day, not a separate sweep.
+
+      Day 16 (2026-04-28) — closeout commit shipped:
+      docs/source-specs/1-1-emergency-preparedness-kits.md scaffolded;
+      page=30 citation comment wired on src/pages/modules/emergency-preparedness/1-1.astro;
+      4 dead href="#" anchors restored as ExternalLink to workbook URLs;
+      folder header surfaced as leading <p>...</p> line; 3 paragraph
+      drifts restored verbatim (period drop, curly-quote add, Oxford
+      comma drop); InfoCallout removed. 9 archive entries appended to
+      docs/site-inventions-archive.yaml (4 invented_prose + 5
+      dropped_workbook_links) — archive-then-remove honored per FQ4.
+      Appendix templates p31 (Street Medic First Aid Kit) + p32
+      (Go Bag Gear List) remain deferred to Step 2.
 
   knowing-your-community:
     title: "Organizing your community: who is here and what are they doing?"

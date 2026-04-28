@@ -73,7 +73,71 @@ categories:
 
   # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
   # site-authored paragraphs/sentences not in the workbook.
-  invented_prose: []
+  invented_prose:
+    - id: archive-1-1-info-callout
+      module: 1-1
+      location: top of <ModuleLayout> (above guide-table, lines 18-20)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into the 1-1 module day. Same InfoCallout
+        pattern was removed from 1-2/1-3/1-4/1-5 in days 8-11.
+      proposed_canonical_field: null
+    - id: archive-1-1-paragraph-drift-period-add
+      module: 1-1
+      location: Systems col, Household subsection (1-1.astro line 43, inside <p>)
+      type: invented_prose
+      content: |
+        Food and water will need to be refreshed on a regular basis.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site form ends with a period; workbook p30 does not. Drift type
+        punctuation_add per inventory paragraph_drift. Restored verbatim to
+        workbook ("on a regular basis" — no terminal period). Archived to
+        document the site form for forward-compat tracking.
+      proposed_canonical_field: null
+    - id: archive-1-1-paragraph-drift-quote-drop
+      module: 1-1
+      location: Systems col, Individual subsection (1-1.astro line 91, inside <td>)
+      type: invented_prose
+      content: |
+        Individuals in a household can prepare go bags, which are easy to grab
+        in case you need to leave quickly.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site dropped curly single quotes around "go bags," that workbook p30
+        uses ("prepare ‘go bags,’"). Drift type quote_drop per inventory.
+        Restored verbatim with U+2018/U+2019. Archived to document the
+        unquoted site form.
+      proposed_canonical_field: null
+    - id: archive-1-1-paragraph-drift-oxford-comma-add
+      module: 1-1
+      location: Household checkbox "Personal sanitation supplies" (1-1.astro Todo id="kit-sanitation")
+      type: invented_prose
+      content: |
+        Personal sanitation supplies (incl. moist towelettes, garbage bags,
+        and plastic ties)
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site adds an Oxford comma before "and plastic ties"; workbook p30
+        omits it. Drift type oxford_comma_add per inventory. Restored verbatim
+        ("garbage bags and plastic ties"). Archived to document the
+        Oxford-comma site form.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
@@ -86,4 +150,88 @@ categories:
 
   # Bulk link drops — workbook had a link that the site dropped without
   # substitution. 6 in 1-7, more in 1-8, etc.
-  dropped_workbook_links: []
+  dropped_workbook_links:
+    - id: archive-1-1-folder-header-link
+      module: 1-1
+      location: top of page (above guide-table); was missing pre-day-16
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.1 Emergency preparedness kits"
+        URL:    https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F
+        Workbook context: "Folder with resources and templates: 1.1 Emergency
+        preparedness kits" — workbook p30 folder header.
+      inferred_source: workbook p30 folder header
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Workbook p30 opens with a "Folder with resources and templates:" line
+        linking the 13eSjal Drive folder. Site never surfaced this header.
+        Restored on day 16 as a leading <p>Folder with resources and templates:
+        <ExternalLink ...>1.1 Emergency preparedness kits</ExternalLink></p>
+        line — same shape as 1-2's day-8 wiring.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-emergency-plans
+      module: 1-1
+      location: Systems col, Household subsection prose (1-1.astro line 41)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "emergency plans"
+        Site state pre-day-16: <a href="#">emergency plans</a> (dead anchor)
+        Workbook URL: https://docs.google.com/document/d/154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto/edit?tab=t.0
+      inferred_source: workbook p30 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "emergency plans" inline anchor; workbook
+        page 30 links it to a Google Doc on emergency plans. Restored on day 16
+        via <ExternalLink href="...154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto...">.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-emergency-kits
+      module: 1-1
+      location: Systems col, Household subsection prose (1-1.astro line 41)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "emergency kits"
+        Site state pre-day-16: <a href="#">emergency kits</a> (dead anchor)
+        Workbook URL: https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F
+      inferred_source: workbook p30 inline anchor (reuses folder URL)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "emergency kits" inline anchor; workbook
+        page 30 links it back to the 13eSjal Drive folder (same as the folder
+        header). Restored on day 16 via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-storing-backup-food
+      module: 1-1
+      location: Systems col, Household subsection prose (1-1.astro line 42)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "storing backup food"
+        Site state pre-day-16: <a href="#">storing backup food</a> (dead anchor)
+        Workbook URL: https://docs.google.com/spreadsheets/d/1RaYyavdAbn43b3EH9zMzQir6G6gxnQE0XxMBxMH5iTQ/edit?usp=drive_link
+      inferred_source: workbook p30 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "storing backup food" inline anchor;
+        workbook page 30 links it to a Google Sheet. Restored on day 16 via
+        <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-go-bags
+      module: 1-1
+      location: Systems col, Individual subsection prose (1-1.astro line 91)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "go bags"
+        Site state pre-day-16: <a href="#">go bags</a> (dead anchor)
+        Workbook URL: https://drive.google.com/file/d/1Ea1zc8wSbvVoMqcLqNz19sNJTsuThQIM/view?usp=drive_link
+      inferred_source: workbook p30 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "go bags" inline anchor; workbook page
+        30 links it to a Drive file. Restored on day 16 via <ExternalLink>
+        with the curly-single-quoted "‘go bags,’" verbatim restoration around
+        the anchor (paragraph drift quote_drop fix).
+      proposed_canonical_field: null
