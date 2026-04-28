@@ -30,7 +30,13 @@ const modules = defineCollection({
 });
 
 const sourceSpecs = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './docs/source-specs' }),
+  // Exclude README.md — it's the spec-author's guide, not a spec entry.
+  // Day-15-k added it as the canonical reference for require_cluster /
+  // tableId / prose_scope opt-out patterns.
+  loader: glob({
+    pattern: ['**/*.md', '!README.md'],
+    base: './docs/source-specs',
+  }),
   schema: sourceSpecSchema,
 });
 

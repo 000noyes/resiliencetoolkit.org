@@ -37,6 +37,27 @@ export const sectionSchema = z.object({
 });
 export type Section = z.infer<typeof sectionSchema>;
 
+/**
+ * Per-spec opt-out hooks for the runner's content-extraction matchers.
+ * Defaults are tuned for single-page citations whose template column
+ * headers cluster within the first 50 extracted lines of the cited page.
+ * See `docs/source-specs/README.md` for the spec-author guide on when
+ * each field needs to be set.
+ *
+ * `require_cluster` (day-15-k LOCKED documentation):
+ *   When `false`, the runner skips the short-label cluster heuristic for
+ *   this spec. Set it ONLY when the citation covers a page range that
+ *   includes BOTH prose pages and a template page — short column labels
+ *   ("Name", "Phone", "Email") then fall past the 50-line
+ *   `extractCandidateLines` cap and would false-fail. The spec's `notes`
+ *   block MUST include a one-liner explaining why the cluster check is
+ *   bypassed for that spec (e.g. "page range covers Section 1.9 prose
+ *   pp. 62-63 + Leader template p. 66").
+ *
+ *   Do NOT raise `extractCandidateLines` globally as a workaround — it
+ *   inflates verify runtime and masks real bugs in other specs. Per-spec
+ *   opt-out is the surgical fix.
+ */
 export const matchingConfigSchema = z.object({
   require_cluster: z.boolean().optional(),
   cluster_min_labels: z.number().int().min(1).max(10).optional(),
