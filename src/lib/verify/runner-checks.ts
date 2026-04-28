@@ -503,7 +503,23 @@ function tokenRecall(labelTokens: readonly string[], textTokens: readonly string
 
 export function proseMatches(ctx: CheckContext): VerifyReportEntry[] {
   if (!ctx.extractedText) return [];
-  const paras = extractParagraphs(ctx.siteContent);
+  const allParas = extractParagraphs(ctx.siteContent);
+  if (allParas.length === 0) return [];
+
+  // Day-15-j: spec-local scoping. When `prose_scope` is set, narrow to
+  // paragraphs whose opening-tag line falls inside the [start_line,
+  // end_line] window (either bound is independently optional). This stops
+  // multi-citation files from triple-counting the same drifted paragraph
+  // — file-global behavior is preserved when `prose_scope` is absent so
+  // single-citation specs (1-2/1-3/1-4/1-5) keep their semantics.
+  const scope = ctx.spec.prose_scope;
+  const paras = scope
+    ? allParas.filter((p) => {
+        if (scope.start_line !== undefined && p.line < scope.start_line) return false;
+        if (scope.end_line !== undefined && p.line > scope.end_line) return false;
+        return true;
+      })
+    : allParas;
   if (paras.length === 0) return [];
 
   const textNorm = normalizeLabel(ctx.extractedText);

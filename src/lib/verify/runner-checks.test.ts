@@ -647,4 +647,129 @@ Children under 5`;
     expect(out).toHaveLength(1);
     expect(out[0].status).toBe('prose_drift');
   });
+
+  // ---------------------------------------------------------------------------
+  // proseMatches — prose_scope spec-local windowing (day-15-j, decision j)
+  // ---------------------------------------------------------------------------
+
+  it('prose_scope: invented paragraph OUTSIDE window is skipped (silent)', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { start_line: 10, end_line: 20 },
+    });
+    // Drift on line 1 is outside the [10..20] window — must NOT report.
+    const site = `<p>This invented paragraph at line 1 is wholly invented and unrelated to the cited workbook content here.</p>
+<h2>some heading at line 2</h2>`;
+    const extracted = `Completely unrelated workbook prose about emergency preparedness planning.`;
+    expect(proseMatches(ctx(spec, site, extracted))).toEqual([]);
+  });
+
+  it('prose_scope: invented paragraph INSIDE window emits prose_drift', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { start_line: 1, end_line: 5 },
+    });
+    const site = `<p>This invented paragraph at line 1 is wholly invented and unrelated to the cited workbook content here.</p>`;
+    const extracted = `Completely unrelated workbook prose about emergency preparedness planning.`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('prose_drift');
+  });
+
+  it('prose_scope: open-ended start_line only', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { start_line: 3 },
+    });
+    // Drift on line 1 is BEFORE start_line=3 → silent. Drift on line 5 → reported.
+    const site = `<p>This invented paragraph at line 1 is wholly invented and unrelated to the cited workbook.</p>
+<h1>line 2</h1>
+<h2>line 3</h2>
+<h3>line 4</h3>
+<p>Another wholly invented paragraph at line 5 with no workbook grounding whatsoever here.</p>`;
+    const extracted = `Completely unrelated workbook prose about emergency preparedness planning.`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].line).toBeGreaterThanOrEqual(3);
+    expect(out[0].message).toMatch(/Another wholly invented/);
+  });
+
+  it('prose_scope: open-ended end_line only', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { end_line: 3 },
+    });
+    // Drift on line 1 is BEFORE end_line=3 → reported. Drift on line 5 → silent.
+    const site = `<p>This invented paragraph at line 1 is wholly invented and unrelated to the cited workbook.</p>
+<h1>line 2</h1>
+<h2>line 3</h2>
+<h3>line 4</h3>
+<p>Another wholly invented paragraph at line 5 with no workbook grounding whatsoever here.</p>`;
+    const extracted = `Completely unrelated workbook prose about emergency preparedness planning.`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].line).toBeLessThanOrEqual(3);
+    expect(out[0].message).toMatch(/This invented paragraph/);
+  });
+
+  it('multi-spec scoping: 3 specs with disjoint windows + 1 drifted paragraph → 1 entry not 3', () => {
+    // Closeout doc decision-j acceptance: "drift count equals 1 not 3 for a
+    // single drifted paragraph" across a multi-citation file.
+    const site = `<p>Section 1.9 Leader prose at line 1 is invented and not grounded.</p>
+<h2>line 2</h2>
+<p>Section 1.9 Neighbor prose at line 3 is grounded in the workbook content.</p>
+<h2>line 4</h2>
+<p>Section 1.9 First Responder prose at line 5 is also grounded fully here.</p>`;
+    // Workbook grounds the lines-3 + lines-5 paragraphs, NOT line-1.
+    const extracted = `Section 1.9 Neighbor prose at line 3 is grounded in the workbook content.
+Section 1.9 First Responder prose at line 5 is also grounded fully here.`;
+    const leaderSpec = baseSpec({
+      template: 'leader-directory',
+      tableId: 'leader-directory',
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { start_line: 1, end_line: 1 },
+    });
+    const neighborSpec = baseSpec({
+      template: 'neighbor-directory',
+      tableId: 'neighbor-directory',
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { start_line: 3, end_line: 3 },
+    });
+    const firstResponderSpec = baseSpec({
+      template: 'first-responder-directory',
+      tableId: 'first-responder-directory',
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      prose_scope: { start_line: 5, end_line: 5 },
+    });
+    const leaderOut = proseMatches(ctx(leaderSpec, site, extracted));
+    const neighborOut = proseMatches(ctx(neighborSpec, site, extracted));
+    const firstResponderOut = proseMatches(ctx(firstResponderSpec, site, extracted));
+    // Only the leader spec covers the drifted line-1 paragraph.
+    expect(leaderOut).toHaveLength(1);
+    expect(leaderOut[0].status).toBe('prose_drift');
+    expect(leaderOut[0].message).toMatch(/Leader prose at line 1/);
+    expect(neighborOut).toEqual([]);
+    expect(firstResponderOut).toEqual([]);
+    // Total drift entries across the three specs = 1, not 3.
+    expect(leaderOut.length + neighborOut.length + firstResponderOut.length).toBe(1);
+  });
+
+  it('back-compat: no prose_scope preserves file-global behavior', () => {
+    // Same fixture as the multi-spec test above but without prose_scope —
+    // the leader spec, run file-global, sees the drifted line-1 paragraph
+    // AND grounds the line-3 / line-5 paragraphs in the extracted text,
+    // so 1 drift entry. Confirms the absence of prose_scope reverts to
+    // pre-15-j behavior with no extra entries created.
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<p>Section 1.9 Leader prose at line 1 is invented and not grounded.</p>
+<p>Section 1.9 Neighbor prose at line 3 is grounded in the workbook content.</p>
+<p>Section 1.9 First Responder prose at line 5 is also grounded fully here.</p>`;
+    const extracted = `Section 1.9 Neighbor prose at line 3 is grounded in the workbook content.
+Section 1.9 First Responder prose at line 5 is also grounded fully here.`;
+    const out = proseMatches(ctx(spec, site, extracted));
+    expect(out).toHaveLength(1);
+    expect(out[0].message).toMatch(/Leader prose at line 1/);
+  });
 });

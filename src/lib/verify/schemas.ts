@@ -105,6 +105,33 @@ export const structuralFidelitySchema = z.object({
 });
 export type StructuralFidelity = z.infer<typeof structuralFidelitySchema>;
 
+/**
+ * Day-15-j: spec-local scoping window for `proseMatches`.
+ *
+ * Multi-citation files (e.g. 1-9.astro carries Leader + Neighbor + First
+ * Responder specs, each citing a slightly different page range) used to
+ * triple-count the same drifted paragraph because `proseMatches` ran
+ * against every paragraph in the file for every spec. `prose_scope`
+ * narrows the check to a 1-indexed line range in the wired component
+ * file — paragraphs outside the window are skipped for that spec.
+ *
+ * When absent (the day-1.5 default for 1-2/1-3/1-4/1-5/single-citation
+ * files), `proseMatches` runs file-global as before.
+ */
+export const proseScopeSchema = z
+  .object({
+    start_line: z.number().int().min(1).optional(),
+    end_line: z.number().int().min(1).optional(),
+  })
+  .refine(
+    (s) =>
+      s.start_line === undefined ||
+      s.end_line === undefined ||
+      s.end_line >= s.start_line,
+    { message: 'prose_scope.end_line must be >= start_line when both set' },
+  );
+export type ProseScope = z.infer<typeof proseScopeSchema>;
+
 export const sourceSpecSchema = z
   .object({
     module: z.string().regex(/^[0-9]+-[0-9]+$/, 'module must be like "1-9"'),
@@ -122,6 +149,14 @@ export const sourceSpecSchema = z
      * that don't carry a tableId field).
      */
     tableId: z.string().min(1).optional(),
+    /**
+     * 1-indexed line-range window in the wired component file. When set,
+     * `proseMatches` only checks paragraphs whose opening tag falls inside
+     * the window. Multi-citation files (e.g. 1-9.astro) declare a different
+     * window per spec so a single drifted paragraph counts once, not N
+     * times. When absent (default), proseMatches runs file-global.
+     */
+    prose_scope: proseScopeSchema.optional(),
     sections: z.array(sectionSchema).optional(),
     fields: z.array(fieldSchema).optional(),
     links: z.array(specLinkSchema).optional(),
