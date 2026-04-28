@@ -490,22 +490,24 @@ modules:
         component_impact: "DataTable journal variant renders tableName as the primary heading (consumes the h3 slot above)"
 
     structural_fidelity:
-      verdict: high_drift
+      verdict: low_drift                      # day 18 (2026-04-28): all 6 c_title_drift DataTables resolved
       concerns:
-        - "6 DataTables with invented/drifted tableName props (c_title_drift) — DAY 18 TARGET"
+        - "6 DataTables with invented/drifted tableName props (c_title_drift) — RESOLVED day 18"
         - "Sub-section order reshuffled (class-c) — RESOLVED day 17"
         - "3 workbook sections entirely missing (Facilitation guides, CROs block, Pods appendix) — RESOLVED day 17"
         - "Agenda nested structure flattened — RESOLVED day 17"
 
-    class_c_count: 6                          # day 17 (2026-04-28): half-1 closed (3 missing sections rebuilt, 6 paragraph drifts restored, agenda restructured, InfoCallout removed, 7 link restorations, section reorder applied). Remaining 6 = 6 DataTable tableName drifts (Mapping your community, Who is in your community/place?, What other dynamics, Stuff and systems, Knowing your ecosystem, Going deeper) — DAY 18 TARGET
+    class_c_count: 0                          # day 18 (2026-04-28): all 6 DataTable tableName drifts renamed to workbook-verbatim headings (Mapping your community, Who is in your community/place?, What other dynamics, Stuff and systems, Knowing your ecosystem, Going deeper); 6 archive entries appended to site-inventions-archive.yaml first per R2/FQ4. KYC class-c remediation COMPLETE.
 
     scope: 1a
     scope_escalation_note: >
       KYC full restore is the largest 1a workload of any module. Will
       likely slip 14-day plan by 2-3 days OR crowd out one of
       1-2/1-3/1-4/1-5. Replan at end of inventory walk.
-      2026-04-28: Day-17 closed half-1; day-18 closes the remaining 6
-      tableName drifts. KYC stays on the 17/18 split per closeout doc.
+      2026-04-28: Day-17 closed half-1; day-18 closed half-2 (the 6
+      tableName renames + 6 net-new DataTable specs). KYC class-c
+      remediation now COMPLETE (class_c_count: 0). The 17/18 split
+      held; no further KYC work scheduled in Step 1.
     spec_required: true
     spec_priority: highest     # funnel-critical + highest drift surface
     notes: >

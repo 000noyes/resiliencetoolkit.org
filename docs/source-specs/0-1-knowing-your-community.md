@@ -11,6 +11,9 @@ fields:
     type: text
 matching:
   require_cluster: false
+prose_scope:
+  start_line: 1
+  end_line: 486
 subheadings:
   - text: Mapping your community
   - text: Who is in your community/place?
@@ -96,14 +99,17 @@ notes: |
   https://batjc.org/ (site substitution) to the workbook Pod Mapping
   Worksheet file URL per inventory `decision: 1a_restore_workbook_link`.
 
-  prose_scope is intentionally OMITTED on this spec so proseMatches runs
-  file-global. This is fine for a single-spec file; day 18 will add 6
-  DataTable specs covering pp10-12 + p16 (one per DataTable), and EACH
-  day-18 spec MUST declare a narrow prose_scope to avoid duplicate
-  proseMatches counts on every drifted paragraph (decision j / day-15-j
-  pattern, used on 1-9.astro). Day-18 work item: when adding the 6
-  DataTable specs, also add a prose_scope to THIS spec covering the
-  out-of-DataTable line ranges, to make scoping symmetric.
+  prose_scope is set file-wide (start_line: 1, end_line: 486) per
+  decision j symmetric-scoping retrofit on day 18. The day-18 commit
+  added 6 sibling DataTable specs (place-characteristics,
+  community-roles, community-dynamics, systems, ecosystem,
+  going-deeper) each with a narrow prose_scope window covering only
+  its DataTable JSX line range (no <p>/<li> inside, so proseMatches
+  no-ops on the day-18 specs). The day-17 (this) spec keeps the
+  file-global window so proseMatches still runs across all the
+  surrounding workbook prose. Symmetric in the sense that every spec
+  on this file now declares an explicit prose_scope, making the
+  scoping pattern self-documenting.
 
   Day-17 commit folds the InfoCallout removal (decision o, half 2) on the
   Mapping your community DataTable's `showInfoCallout={true}` prop. Pairs

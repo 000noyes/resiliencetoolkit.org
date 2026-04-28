@@ -380,6 +380,110 @@ categories:
         is interested in meeting again, and set a meeting time." Restored
         verbatim.
       proposed_canonical_field: null
+    - id: archive-kyc-tablename-place-characteristics
+      module: knowing-your-community
+      location: Mapping your community DataTable tableName prop (knowing-your-community.astro line 51)
+      type: invented_prose
+      content: |
+        DataTable tableName="Place Characteristics"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Place Characteristics" — wholly
+        site-invented label that does not exist in the workbook. The workbook
+        section heading is "Mapping your community" (p10). Renamed on day 18
+        to the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision: tables are self-describing
+        for export contexts (Drive-linked, exported, standalone), so the
+        owned title MUST be the workbook heading. Spec
+        docs/source-specs/0-1-place-characteristics.md cites workbook p10.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-community-roles
+      module: knowing-your-community
+      location: Who is in your community/place? DataTable tableName prop (knowing-your-community.astro line 73)
+      type: invented_prose
+      content: |
+        DataTable tableName="Community Roles"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Community Roles" — site-invented
+        shorthand that does not match the workbook section heading
+        "Who is in your community/place?" (p10). Renamed on day 18 to the
+        workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-community-roles.md cites workbook p10-11.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-community-dynamics
+      module: knowing-your-community
+      location: What other dynamics DataTable tableName prop (knowing-your-community.astro line 105)
+      type: invented_prose
+      content: |
+        DataTable tableName="Community Dynamics"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Community Dynamics" — site-invented
+        shorthand that does not match the workbook section heading
+        "What other dynamics are present in your place?" (p11). Renamed on
+        day 18 to the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-community-dynamics.md cites workbook p11.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-stuff-and-systems
+      module: knowing-your-community
+      location: Stuff and systems DataTable tableName prop (knowing-your-community.astro line 131)
+      type: invented_prose
+      content: |
+        DataTable tableName="Stuff and Systems"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Stuff and Systems" — site-truncated
+        and capitalized shorthand of the workbook section heading
+        "Stuff and systems in your community" (p11). Renamed on day 18 to
+        the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-systems.md cites workbook p11-12.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-knowing-your-ecosystem
+      module: knowing-your-community
+      location: Knowing your ecosystem DataTable tableName prop (knowing-your-community.astro line 164)
+      type: invented_prose
+      content: |
+        DataTable tableName="Knowing Your Ecosystem"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Knowing Your Ecosystem" — site-
+        capitalized variant of the workbook section heading
+        "Knowing your ecosystem" (p12). Renamed on day 18 to the workbook-
+        verbatim heading (lowercase 'your ecosystem') per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-ecosystem.md cites workbook p12.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-going-deeper
+      module: knowing-your-community
+      location: Going deeper DataTable tableName prop (knowing-your-community.astro line 342)
+      type: invented_prose
+      content: |
+        DataTable tableName="Going Deeper"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Going Deeper" — site-truncated and
+        capitalized shorthand of the workbook section heading
+        "Going deeper: finding the community work you want to do" (p16).
+        Renamed on day 18 to the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-going-deeper.md cites workbook p16.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
