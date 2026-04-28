@@ -287,6 +287,125 @@ describe('runner-checks: keysMatch', () => {
     expect(out[0].message).toMatch(/ambiguous/);
   });
 
+  // ---------------------------------------------------------------------------
+  // keysMatch — tableId disambiguation (day-15-i, decision i)
+  // ---------------------------------------------------------------------------
+
+  it('tableId disambiguation: two same-column tables, two specs with distinct tableId → both pass', () => {
+    const site = `
+<DataTable moduleKey="1-9" tableId="leader-directory" columns={[
+  { key: 'title-role', label: 'Title/Role' },
+  { key: 'name', label: 'Name' },
+  { key: 'phone', label: 'Phone' },
+  { key: 'email', label: 'Email' }
+]} />
+<DataTable moduleKey="1-9" tableId="neighbor-directory" columns={[
+  { key: 'name', label: 'Name' },
+  { key: 'phone', label: 'Phone' },
+  { key: 'email', label: 'Email' },
+  { key: 'address', label: 'Address' }
+]} />`;
+    const leaderSpec = baseSpec({
+      template: 'leader-directory',
+      tableId: 'leader-directory',
+      fields: [
+        { key: 'title-role', label: 'Title/Role', type: 'text' },
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'phone', label: 'Phone', type: 'tel' },
+        { key: 'email', label: 'Email', type: 'email' },
+      ],
+    });
+    const neighborSpec = baseSpec({
+      template: 'neighbor-directory',
+      title: 'Neighbor Directory',
+      tableId: 'neighbor-directory',
+      fields: [
+        { key: 'name', label: 'Name', type: 'text' },
+        { key: 'phone', label: 'Phone', type: 'tel' },
+        { key: 'email', label: 'Email', type: 'email' },
+        { key: 'address', label: 'Address', type: 'text' },
+      ],
+    });
+    expect(keysMatch(ctx(leaderSpec, site))).toEqual([]);
+    expect(keysMatch(ctx(neighborSpec, site))).toEqual([]);
+  });
+
+  it('tableId disambiguation: spec.tableId has no matching DataTable → key_drift', () => {
+    const spec = baseSpec({
+      tableId: 'renamed-or-removed',
+      fields: [{ key: 'a', label: 'A', type: 'text' }],
+    });
+    const site = `<DataTable tableId="something-else" columns={[{ key: 'A', label: 'A' }]} />`;
+    const out = keysMatch(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('key_drift');
+    expect(out[0].message).toMatch(/tableId.*renamed-or-removed/);
+    expect(out[0].message).toMatch(/no matching DataTable/);
+  });
+
+  it('tableId disambiguation: column count mismatch on the matched table → key_drift', () => {
+    const spec = baseSpec({
+      tableId: 'leader-directory',
+      fields: [
+        { key: 'a', label: 'A', type: 'text' },
+        { key: 'b', label: 'B', type: 'text' },
+      ],
+    });
+    const site = `
+<DataTable tableId="leader-directory" columns={[
+  { key: 'A', label: 'A' },
+  { key: 'B', label: 'B' },
+  { key: 'C', label: 'C' }
+]} />`;
+    const out = keysMatch(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('key_drift');
+    expect(out[0].message).toMatch(/3 columns/);
+    expect(out[0].message).toMatch(/2 fields/);
+  });
+
+  it('tableId disambiguation: column labels validated against the matched table only', () => {
+    const spec = baseSpec({
+      tableId: 'leader-directory',
+      fields: [
+        { key: 'title-role', label: 'Title/Role', type: 'text' },
+        { key: 'name', label: 'Name', type: 'text' },
+      ],
+    });
+    // Two 2-column tables; without tableId they would emit ambiguous key_drift.
+    // With tableId, only the matched table's labels are checked — the
+    // mismatched neighbor table is ignored entirely.
+    const site = `
+<DataTable tableId="leader-directory" columns={[
+  { key: 'title-role', label: 'Title/Role' },
+  { key: 'name', label: 'Name' }
+]} />
+<DataTable tableId="neighbor-directory" columns={[
+  { key: 'WRONG-A', label: 'WRONG-A' },
+  { key: 'WRONG-B', label: 'WRONG-B' }
+]} />`;
+    expect(keysMatch(ctx(spec, site))).toEqual([]);
+  });
+
+  it('back-compat: spec without tableId falls back to column-count-only matching', () => {
+    // Same fixture as the original keysMatch pass test — confirms 5 shipped
+    // specs (1-2 / 1-3 / 1-4 / 1-5 / 1-9 first-responder by 5-col uniqueness)
+    // continue to verify against site DataTables that may carry tableId
+    // props without the spec needing to declare one.
+    const spec = baseSpec({
+      fields: [
+        { key: 'full-name', label: 'Full Name', type: 'text' },
+        { key: 'phone', label: 'Phone', type: 'tel' },
+      ],
+    });
+    const site = `
+<DataTable moduleKey="1-9" tableId="leaders" columns={[
+  { key: 'Full Name', label: 'Full Name' },
+  { key: 'Phone', label: 'Phone' }
+]} />`;
+    expect(keysMatch(ctx(spec, site))).toEqual([]);
+  });
+
   it('section-grouped spec → skip (deferred to day 5b)', () => {
     const spec = baseSpec({
       sections: [

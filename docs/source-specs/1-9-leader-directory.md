@@ -2,6 +2,7 @@
 module: 1-9
 template: leader-directory
 title: Directory of Local Leaders
+tableId: leader-directory
 citation:
   source: public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf
   page: '62-66'

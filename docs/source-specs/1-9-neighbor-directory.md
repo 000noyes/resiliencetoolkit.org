@@ -2,6 +2,7 @@
 module: 1-9
 template: neighbor-directory
 title: Neighbor Directory
+tableId: neighbor-directory
 citation:
   source: public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf
   page: '62-64'

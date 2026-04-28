@@ -2,6 +2,7 @@
 module: 1-9
 template: first-responder-directory
 title: Emergency/First Responder Directory
+tableId: first-responder-directory
 citation:
   source: public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf
   page: '62-65'

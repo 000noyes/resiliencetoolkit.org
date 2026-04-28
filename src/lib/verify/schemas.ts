@@ -111,6 +111,17 @@ export const sourceSpecSchema = z
     template: z.string().regex(/^[a-z0-9-]+$/, 'template must be kebab-case'),
     title: z.string().min(1),
     citation: citationSchema,
+    /**
+     * Disambiguator for files that render multiple DataTables with the same
+     * column count (e.g. 1-9.astro renders 4-col Leader + 4-col Neighbor
+     * directories). When set, `keysMatch` filters site DataTables to the one
+     * whose authored `tableId` prop equals this value — the existing IDB
+     * scope key already authored on every shipped DataTable, no new
+     * authoring cost. When absent, `keysMatch` falls back to column-count-
+     * only matching (preserves day-1.5 behavior for the 5 shipped specs
+     * that don't carry a tableId field).
+     */
+    tableId: z.string().min(1).optional(),
     sections: z.array(sectionSchema).optional(),
     fields: z.array(fieldSchema).optional(),
     links: z.array(specLinkSchema).optional(),

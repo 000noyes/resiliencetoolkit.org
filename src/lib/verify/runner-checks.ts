@@ -280,15 +280,24 @@ function normalizeHeading(s: string): string {
  * Day-5a policy (keeps the check focused and committable):
  *   - Only runs when the spec has fields (not section-grouped fields — those
  *     need a tableId mapping story that is 5b/day-9 work).
- *   - Matches any DataTable in the file whose column count equals the spec
- *     field count. If multiple candidates match, emits key_drift with a
- *     disambiguation message (ambiguous mapping = reviewer signal).
+ *   - When `spec.tableId` is set (day-15-i): filter site DataTables to those
+ *     whose authored `tableId` prop equals the spec's value. Resolves the
+ *     ambiguous case where two same-column-count tables share a file
+ *     (1-9 Leader + Neighbor are both 4-col). When absent: fall back to
+ *     column-count-only matching, preserving day-1.5 behavior for the 5
+ *     shipped specs that ship without a tableId field.
+ *   - If the tableId narrows to zero candidates, emit `key_drift` so the
+ *     reviewer sees the rename/removal explicitly (silent failure here
+ *     would let class-c table renames through the firewall).
+ *   - If multiple candidates STILL match after tableId filtering (two site
+ *     DataTables with identical tableId — a site authoring bug), emit
+ *     `key_drift` with the ambiguous-mapping message.
  *   - Compares column.label (or .key when label is absent) against
  *     field.label, case-insensitively and whitespace-collapsed. Order-strict.
  *
- * A non-matching column emits `key_drift`; a missing DataTable is silent
- * (may be a spec that feeds a PlanForm rather than a DataTable — handled
- * by other checks).
+ * A non-matching column emits `key_drift`; a missing DataTable (column-count
+ * fallback path with zero matches) is silent — may be a spec that feeds a
+ * PlanForm rather than a DataTable, handled by other checks.
  */
 export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
   const fields = collectSpecFields(ctx.spec);
@@ -299,21 +308,55 @@ export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
   const tables = extractDataTables(ctx.siteContent);
   if (tables.length === 0) return [];
 
-  const matches = tables.filter((t) => t.columns.length === fields.length);
-  if (matches.length === 0) {
-    // No table with matching column count — could be a PlanForm or a
-    // layout mismatch. `structuralFidelityMatches` (5b) catches this
-    // direction; here we stay silent to avoid double-reporting.
-    return [];
-  }
-  if (matches.length > 1) {
-    return [
-      entry(
-        ctx,
-        'key_drift',
-        `ambiguous DataTable mapping: ${matches.length} tables in ${ctx.file} have ${fields.length} columns; add tableId disambiguation to the spec`,
-      ),
-    ];
+  const specTableId = ctx.spec.tableId;
+  let matches: ReturnType<typeof extractDataTables>;
+  if (specTableId !== undefined) {
+    matches = tables.filter((t) => t.tableId === specTableId);
+    if (matches.length === 0) {
+      return [
+        entry(
+          ctx,
+          'key_drift',
+          `spec.tableId "${specTableId}" has no matching DataTable in ${ctx.file}`,
+        ),
+      ];
+    }
+    if (matches.length > 1) {
+      return [
+        entry(
+          ctx,
+          'key_drift',
+          `ambiguous DataTable mapping: ${matches.length} tables in ${ctx.file} share tableId "${specTableId}"`,
+        ),
+      ];
+    }
+    if (matches[0].columns.length !== fields.length) {
+      return [
+        entry(
+          ctx,
+          'key_drift',
+          `DataTable tableId="${specTableId}" has ${matches[0].columns.length} columns but spec defines ${fields.length} fields`,
+          matches[0].line,
+        ),
+      ];
+    }
+  } else {
+    matches = tables.filter((t) => t.columns.length === fields.length);
+    if (matches.length === 0) {
+      // No table with matching column count — could be a PlanForm or a
+      // layout mismatch. `structuralFidelityMatches` (5b) catches this
+      // direction; here we stay silent to avoid double-reporting.
+      return [];
+    }
+    if (matches.length > 1) {
+      return [
+        entry(
+          ctx,
+          'key_drift',
+          `ambiguous DataTable mapping: ${matches.length} tables in ${ctx.file} have ${fields.length} columns; add tableId disambiguation to the spec`,
+        ),
+      ];
+    }
   }
   const table = matches[0];
   const out: VerifyReportEntry[] = [];
@@ -520,6 +563,10 @@ export function collectSiteColumnsForSpec(
   const fields = collectSpecFields(spec);
   if (fields.length === 0) return [];
   const tables = extractDataTables(siteContent);
+  if (spec.tableId !== undefined) {
+    const match = tables.find((t) => t.tableId === spec.tableId);
+    return match?.columns ?? [];
+  }
   const match = tables.find((t) => t.columns.length === fields.length);
   return match?.columns ?? [];
 }
