@@ -343,6 +343,38 @@ describe('runner-checks: keysMatch', () => {
     expect(out[0].message).toMatch(/no matching DataTable/);
   });
 
+  it('tableId firewall: spec.tableId set + zero DataTables in file → key_drift (codex P2 fix)', () => {
+    // Codex review on day-15-i flagged that the `tables.length === 0`
+    // short-circuit silently passed when a tableId-bearing spec's file had
+    // every DataTable removed — undermining the rename/removal guard the
+    // schema contract is supposed to provide. This test pins the fix:
+    // when spec.tableId is set, an empty file MUST emit key_drift.
+    const spec = baseSpec({
+      tableId: 'leader-directory',
+      fields: [
+        { key: 'title-role', label: 'Title/Role', type: 'text' },
+        { key: 'name', label: 'Name', type: 'text' },
+      ],
+    });
+    const site = `<p>This page has no DataTable at all.</p>`;
+    const out = keysMatch(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('key_drift');
+    expect(out[0].message).toMatch(/tableId.*leader-directory/);
+    expect(out[0].message).toMatch(/no matching DataTable/);
+  });
+
+  it('column-count fallback (no tableId) preserves silent behavior on empty files', () => {
+    // Back-compat: the 5 shipped specs without tableId may target PlanForm-
+    // bearing files, where keysMatch should stay silent rather than fire
+    // false positives. The fix above only changes the tableId-set branch.
+    const spec = baseSpec({
+      fields: [{ key: 'a', label: 'A', type: 'text' }],
+    });
+    const site = `<p>No DataTable here either, but spec has no tableId.</p>`;
+    expect(keysMatch(ctx(spec, site))).toEqual([]);
+  });
+
   it('tableId disambiguation: column count mismatch on the matched table → key_drift', () => {
     const spec = baseSpec({
       tableId: 'leader-directory',

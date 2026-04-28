@@ -297,7 +297,11 @@ function normalizeHeading(s: string): string {
  *
  * A non-matching column emits `key_drift`; a missing DataTable (column-count
  * fallback path with zero matches) is silent — may be a spec that feeds a
- * PlanForm rather than a DataTable, handled by other checks.
+ * PlanForm rather than a DataTable, handled by other checks. The tableId
+ * path does NOT short-circuit on `tables.length === 0` — a spec that names a
+ * tableId is asserting "this file must render a DataTable with this id";
+ * deleting every DataTable from the file must surface as `key_drift`, not
+ * silently pass (codex-review finding on day-15-i, fixed in follow-up).
  */
 export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
   const fields = collectSpecFields(ctx.spec);
@@ -306,7 +310,10 @@ export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
   if (ctx.spec.sections?.length) return [];
 
   const tables = extractDataTables(ctx.siteContent);
-  if (tables.length === 0) return [];
+  // No `tables.length === 0` short-circuit here — the downstream
+  // `matches.length === 0` branches handle the empty case correctly: the
+  // tableId path emits `key_drift` (intended firewall), the column-count
+  // fallback returns silent (preserves day-1.5 PlanForm-friendly behavior).
 
   const specTableId = ctx.spec.tableId;
   let matches: ReturnType<typeof extractDataTables>;
