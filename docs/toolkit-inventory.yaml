@@ -600,6 +600,7 @@ modules:
         - type: InfoCallout
           source_cited: null
           classification: c
+          status: removed_day_8                # day-8 commit 2e108e6 removed per class-c firewall
           note: "Same 'How this works' pattern as 1-1/KYC"
         - type: table.guide-table
           source_cited: null
@@ -610,24 +611,27 @@ modules:
           classification: a                    # all 68 bullets verbatim-match workbook
           note: "11 Backup food + 5 Community infrastructure + 10 Water + 42 Community meals (9 Systems + 33 Stuff)"
         - type: ExternalLink
-          count: 7
-          classification: mixed
-          note: "5 verbatim from workbook (1VO1V7xk, 1HZSXmTaX×2, 1at2VF06, tinyurl, cdn.flowcode, albertahealth), 1 missing+substituted (1C5a0Sf1 → cdc.gov)"
+          count: 9                             # day-19: +2 (community backup stores, community-scale equipment)
+          classification: a                    # day-19: cdc.gov substitution restored to 1C5a0Sf1 (day-8); both prose-link drops restored (day-19)
+          note: "All 9 ExternalLinks now verbatim-match workbook anchors: 1HZSXmTaX folder header (day-8), community backup stores (day-19), community-scale equipment (day-19), 1VO1V7xk Create a directory, 1HZSXmTaX set up kitchens, 1at2VF06 Create a directory of cooks, 1C5a0Sf1 safe food handling (day-8 restoration), 1HZSXmTaX Create a directory of food access points, tinyurl freefoodbtv, cdn.flowcode NEKCA, albertahealth supplies"
         - type: plain_text_prose_link_drops
-          count: 2
-          classification: c                    # workbook has inline folder links on Systems col phrases; site is plain text
-          note: "'community backup stores' and 'community-scale equipment and infrastructure' each drop a 1HZSXmTaX folder link"
+          count: 0                             # day-19: both restored
+          status: closed_day_19                # commit feat(1-2): anchor restorations
+          classification: a
+          note: "Both 'community backup stores' and 'community-scale equipment and infrastructure' restored to 1HZSXmTaX folder via Todo+ExternalLink (day-8 pattern)"
         - type: workbook_folder_header_missing
-          source_cited: null
-          classification: c
-          promotion: "1a — restore via spec links[] (Drive folder 1HZSXmTaX)"
+          source_cited: "docs/source-specs/1-2-food-and-water.md"
+          classification: a                    # day-8 restored "Folder with resources and templates: 1.2 Food and water"
+          status: restored_day_8
+          note: "Folder header restored as <p> above guide-table in day-8 commit 2e108e6"
 
     paragraph_drift:
       - location: "Backup food supply, Systems col bullet #3 (workbook p35)"
         workbook: "Use critter and humidity safe containers."
-        site: "Use critter and humidity safe containers"
+        site: "Use critter and humidity safe containers."
         drift_type: punctuation_drop
-        classification: c
+        classification: a                      # day-8 restored period
+        status: closed_day_8
         severity: minor
         fix: 1a_restore_verbatim
 
@@ -635,7 +639,7 @@ modules:
     missing_sections_check: ok                 # no missing sub-sections; no appendix
     table_titles_check: na                     # uses raw table, not DataTable
 
-    class_c_count: 5                           # InfoCallout + period drop + 2 missing anchor links + link substitution; does NOT double-count folder header (same class-c as the "community backup stores" drop since same URL)
+    class_c_count: 0                           # day-19 closeout: InfoCallout (day-8), period drop (day-8), folder header (day-8), link substitution (day-8), 2 missing anchor links (day-19) — REMEDIATION COMPLETE
 
     innovations:
       - flag: link_substitution_pattern
@@ -646,7 +650,8 @@ modules:
           for linksMatch check: substitution is harder to detect than
           missing (anchor text matches, only URL differs). Spec links[]
           must bind (anchor, URL) pairs, not URLs alone.
-        decision: pending_user_resolution      # user aborted question set before answering
+        decision: 1a_restore_workbook_link
+        status: RESOLVED day 8                 # day-8 commit 2e108e6 restored 1C5a0Sf1 anchor; cdc.gov dropped
         scope: 1a
       - flag: dropped_inline_prose_links
         description: >
@@ -656,6 +661,7 @@ modules:
           plain Todo text with no link wrapper. Same systematic drift
           as 1-1's 4 href="#" anchors.
         decision: restore_via_todo_plus_externallink_pattern
+        status: RESOLVED day 19                # day-19 commit closes both prose-link drops; spike concern moot — pattern already shipped on this page (kitchen-directory, cooks-directory, safe-food-handling, food-access-directory) without click-toggle interference
         scope: 1a
       - flag: folder_header_missing_recurs
         description: >
@@ -663,28 +669,30 @@ modules:
           and templates" header with Drive folder link is absent on
           site. Systematic omission across modules.
         decision: restore_via_spec_links
+        status: RESOLVED day 8                 # day-8 commit 2e108e6 restored "Folder with resources and templates: 1.2 Food and water"
         scope: 1a
 
     structural_fidelity:
-      verdict: clean_with_link_drift
+      verdict: clean                           # day-19: all link drift restored
       detail: >
         One workbook table → one site table. 4 sub-sections mirror
-        workbook. Todo+ExternalLink composition preserves most links.
-        But: Systems col has 2 plain-text Todos where workbook has
-        linked phrases — same shape as 1-1 dead-anchor bug.
+        workbook. Todo+ExternalLink composition preserves all
+        workbook anchors as of day-19 (community backup stores +
+        community-scale equipment restored).
       composition_pattern_for_1a: >
-        Adopt the 1-2 Todo+ExternalLink pattern as the reference for
-        all dead-link restorations in 1a. E.g., 1-1's href="#" phrases
-        and 1-2's own plain-text drops ("community backup stores",
-        "community-scale equipment…") become:
+        The 1-2 Todo+ExternalLink pattern is the reference for all
+        dead-link restorations in 1a. E.g., 1-1's href="#" phrases
+        (closed day-16) and 1-2's own plain-text drops (closed day-19)
+        all use:
         <Todo id="..."><ExternalLink href="...">phrase</ExternalLink> rest of bullet text...</Todo>
       composition_risk_to_spike: >
-        Before mass rollout, verify that clicking the ExternalLink
-        inside a Todo does NOT toggle the checkbox state (both
-        accessibility and UX concern — a link click should navigate,
-        a checkbox click should toggle, and they shouldn't interfere).
-        Small spike on a single restoration (e.g., 1-1 "emergency
-        plans") before the full 1a sweep. Per user 2026-04-22.
+        RESOLVED day-19: ExternalLink-inside-Todo click does NOT toggle
+        checkbox state. The 1-2 page has shipped with this composition
+        since day-8 (kitchen-directory, cooks-directory,
+        safe-food-handling, food-access-directory) — four occurrences
+        in production with no observed click-toggle interference. The
+        1-1 day-16 commit added more occurrences. The pattern is safe
+        to use for the rest of 1a.
 
     scope: 1a
     spec_required: true

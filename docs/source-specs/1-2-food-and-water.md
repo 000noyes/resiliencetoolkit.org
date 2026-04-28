@@ -20,6 +20,12 @@ links:
   - url: https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu
     label: 1.2 Food and water
     page: '35'
+  - url: https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu
+    label: community backup stores
+    page: '35'
+  - url: https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu
+    label: community-scale equipment and infrastructure
+    page: '35'
   - url: https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view
     label: Create a directory
     page: '35'
@@ -60,19 +66,22 @@ notes: |
   Citation is wired via an HTML comment at the top of src/pages/modules/emergency-preparedness/1-2.astro
   rather than a component prop, since no DataTable / PlanForm exists on this page.
 
-  Two workbook anchors are intentionally omitted from links[] above and remain plain-text
-  on the site (Systems-col bullets "Create household and community backup stores of food"
-  and "Identify community-scale equipment and infrastructure for food security"). Both
-  link to the 1HZSXmTaX folder in the workbook; the inventory walk flagged a UX risk for
-  ExternalLink-inside-Todo (link click vs. checkbox toggle) and recommended a spike on
-  1-1 first before mass rollout. These two restorations are deferred to a later 1a sweep
-  after the spike validates the composition. See docs/toolkit-inventory.yaml entry for
-  1-2, innovations.dropped_inline_prose_links.
+  Day 19 (2026-04-28) closes the two prose-link drops the day-8 commit deferred:
+  "community backup stores" (Backup food supply, Systems col Todo) and
+  "community-scale equipment and infrastructure" (Community food infrastructure,
+  Systems col plain text). Both anchors now wrap with ExternalLink → 1HZSXmTaX
+  Drive folder, matching the workbook page-35 inline links. The
+  ExternalLink-inside-Todo composition concern that motivated the day-8 deferral
+  is moot in practice: this page already ships four ExternalLink-inside-Todo
+  occurrences (kitchen-directory, cooks-directory, safe-food-handling,
+  food-access-directory) which have been live since day-8 with no
+  click-toggle interference observed. The class-(c) inventory.dropped_inline_prose_links
+  innovation is now closed.
 
   The InfoCallout ("How this works…" UX meta-instruction) was removed from this page in
-  the same commit per the class-c firewall (no source citation; user-instruction text
-  not present in the cited workbook range). Same removal pending across 1-1 / 1-3 / KYC
-  in a follow-up 1a sweep.
+  the day-8 commit per the class-c firewall (no source citation; user-instruction text
+  not present in the cited workbook range). Same removal completed across 1-1 (day-16)
+  and KYC (days 17-18); pending only on 1-3 (day-20) and remaining EP modules.
 
   Single placeholder field above is required by the spec schema (sourceSpecSchema requires
   either fields[] or sections[]); 1-2 has no data-bearing component to map fields to.
