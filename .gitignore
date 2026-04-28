@@ -131,7 +131,10 @@ src/stories/
 
 .claude/
 
-.github/
+.github/*
+!.github/workflows/
+.github/workflows/*
+!.github/workflows/verify.yml
 .tmp/
 rt-templates/
 
