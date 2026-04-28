@@ -129,15 +129,14 @@ legacy_modules/
 src/stories/
 .gstack/
 
-# User-specific Claude Code state is ignored, EXCEPT skill wrappers that ship with the repo
-.claude/*
-!.claude/skills/
+.claude/
 
-# In-repo scratch docs are ignored, EXCEPT the source-of-truth specs consumed by /verify-against-source,
-# the toolkit inventory (classifies every user-facing content piece against the workbook),
-# and the site-inventions archive (preserves class-c content removed during 1a restoration).
+.github/
+.tmp/
+rt-templates/
+
+# Workspace docs ignored except for tracked metadata files.
 docs/*
-!docs/source-specs/
 !docs/toolkit-inventory.yaml
 !docs/site-inventions-archive.yaml
 
