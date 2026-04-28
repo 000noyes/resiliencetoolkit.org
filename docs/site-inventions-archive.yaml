@@ -69,7 +69,29 @@ categories:
   # vs workbook humanservices.vermont.gov); 1-10 AHS/VDH substitutions;
   # 2-1 SAMHSA → VTSOS. Candidate future feature: topic-branch alt-URLs with
   # workbook canonical + site-preserved alts per topic node.
-  alt_urls: []
+  alt_urls:
+    - id: archive-kyc-batjc-url-substitution
+      module: knowing-your-community
+      location: Pod mapping section (knowing-your-community.astro line 196, "Bay Area Transformative Justice Center" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Bay Area Transformative Justice Center"
+        Site URL pre-day-17: https://batjc.org/
+        Workbook URL (page 17): https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link
+        Workbook context: anchor wraps "Bay Area Transformative Justice Center"
+        and links to the BATJC Pod Mapping Worksheet PDF (the very file the
+        site already exposes via the "Download Pod Mapping Worksheet" callout).
+      inferred_source: workbook p17 BATJC anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Pure URL substitution: site preserves workbook anchor text but swaps
+        the Drive-hosted Pod Mapping Worksheet file for the BATJC organizational
+        homepage. Per inventory `decision: 1a_restore_workbook_link` —
+        restored to the worksheet file. Archived as alt_url so a future
+        topic-branch view can re-expose batjc.org as a "movement-canon"
+        supplement alongside the workbook canonical link.
+      proposed_canonical_field: null
 
   # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
   # site-authored paragraphs/sentences not in the workbook.
@@ -138,15 +160,558 @@ categories:
         ("garbage bags and plastic ties"). Archived to document the
         Oxford-comma site form.
       proposed_canonical_field: null
+    - id: archive-kyc-info-callout-flag
+      module: knowing-your-community
+      location: Mapping your community DataTable showInfoCallout prop (knowing-your-community.astro line 50)
+      type: invented_prose
+      content: |
+        showInfoCallout={true}
+        (DataTable prop renders the same site-authored "How this works…" UX
+        meta-instruction as 1-1/1-2/1-3/1-4/1-5: "Fill out the forms and
+        checklists below online—your answers save automatically to your
+        device and work offline. Your information never leaves your browser
+        and stays completely private.")
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into KYC's module day. Pairs with day-16's
+        1-1 InfoCallout removal. The DataTable component is preserved;
+        only the showInfoCallout boolean prop is dropped.
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-lead
+      module: knowing-your-community
+      location: Lead paragraph under "Organizing your community" (knowing-your-community.astro line 41)
+      type: invented_prose
+      content: |
+        The first step of organizing your community is thinking about who is
+        in your community and the place where you live. You can do this
+        activity alone, but it's best to do it with a few other people. They
+        could be your friends, colleagues, neighbors, or someone else you
+        just met who's excited about organizing your community to be more
+        resilient.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        rephrase_plus_invention drift per inventory. Workbook p10 reads
+        "thinking about who is in in it, and the place where you live. You
+        can do this activity alone, but best to do it with a few other
+        people—friends, colleagues, neighbors." Site rewrites + adds an
+        invented "or someone else you just met who's excited about organizing
+        your community to be more resilient" tail. Restored verbatim to
+        workbook (typo "in in it" preserved per master-PDF source-of-truth).
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-bringing-people-together-opener
+      module: knowing-your-community
+      location: Bringing people together opener (knowing-your-community.astro line 307)
+      type: invented_prose
+      content: |
+        Once you have a few people - it can just be four or ten people! - you
+        can get together and look at this toolkit. In order to have a meeting,
+        you'll need
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        invention drift per inventory. Workbook p13 reads "Once you have a
+        few people - it can just be four or ten people! - you can meet.
+        You'll need:" Site adds "get together and look at this toolkit. In
+        order to have a meeting," tail. Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-dynamics-newest
+      module: knowing-your-community
+      location: Community Dynamics DataTable initialRow row-4 (knowing-your-community.astro line 114)
+      type: invented_prose
+      content: |
+        Who is newest in your place?
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        drop_word drift per inventory. Workbook p11 reads "Who is the newest
+        in your place?" Site drops "the". Restored verbatim. (Sits inside
+        DataTable initialRows[] not <p>/<li>; proseMatches won't catch it
+        but Source Fidelity HARD INVARIANT requires verbatim restoration.)
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-going-deeper-q2
+      module: knowing-your-community
+      location: Going Deeper DataTable initialRow row-1 (knowing-your-community.astro line 221)
+      type: invented_prose
+      content: |
+        What activities/work do you find rewarding? Think about things you do
+        that other people consider difficult, but that you enjoy.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        rephrase drift per inventory. Workbook p16 reads "Think about things
+        you do that other people find difficult, but that you enjoy." Site
+        substitutes "consider" for "find". Restored verbatim. (DataTable
+        initialRow — same proseMatches caveat as dynamics-newest above.)
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-pod-mapping-first
+      module: knowing-your-community
+      location: Pod mapping first paragraph (knowing-your-community.astro line 198)
+      type: invented_prose
+      content: |
+        To start, write your name in the middle grey circle. The surrounding
+        bold-outlined circles are your pod. Write the names of the people who
+        are in your pod. We encourage people to write the names of actual
+        individuals, instead of things such as "my church group" or "my
+        neighbors."
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        drop drift per inventory. Workbook p17 opens with "Use the diagram on
+        the next page to do this activity. To start, write your name in the
+        middle grey circle…" Site drops the diagram-reference sentence.
+        Restored verbatim — the workbook reference to "next page" survives in
+        the digital rendering since the Pods appendix is now adjacent to the
+        Pod mapping section after the day-17 reorder, and the Pod Mapping
+        Worksheet callout (with the diagram in the linked PDF) sits directly
+        above this paragraph.
+      proposed_canonical_field: null
+    - id: archive-kyc-going-deeper-roles-list-takeaway-link-drop
+      module: knowing-your-community
+      location: Going deeper roles-list intro (knowing-your-community.astro line 230)
+      type: invented_prose
+      content: |
+        Look at this (incomplete!) list of roles to play in a community, and
+        check out the corresponding toolkit sections to see if any of this
+        work appeals to you. Check out this list for more ideas.
+      inferred_source: workbook p16 prose intro (text matches; "this list" was a link)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Prose itself matches workbook verbatim, but workbook p16 wraps "this
+        list" in an anchor pointing to a Drive-hosted roles-to-modules PDF
+        (1RevfSVj…). Site renders it as plain text. Archived as the no-link
+        site form alongside the corresponding `dropped_workbook_links` entry
+        (archive-kyc-link-drop-roles-list).
+      proposed_canonical_field: null
+    - id: archive-kyc-going-deeper-zine-link-drop
+      module: knowing-your-community
+      location: Going deeper intro paragraph (knowing-your-community.astro line 208)
+      type: invented_prose
+      content: |
+        There are so many ways to support community resilience, and each
+        person has a unique set of skills and interests to contribute. It can
+        feel and be isolating to find yourself in a moment of disaster, not
+        knowing who to turn to or how to help. The activities below can guide
+        some of your personal preparedness for difficult times. Respond to
+        the reflection questions below to spur your thinking. Check out this
+        zine for more ideas.
+      inferred_source: workbook p16 prose intro (text matches; "this zine" was a link)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Prose itself matches workbook verbatim, but workbook p16 wraps "this
+        zine" in an anchor pointing to a Drive-hosted zine PDF
+        (1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV). Site renders it as plain text.
+        Archived as the no-link site form alongside the corresponding
+        `dropped_workbook_links` entry (archive-kyc-link-drop-zine).
+      proposed_canonical_field: null
+    - id: archive-kyc-legislators-link-drop-prose
+      module: knowing-your-community
+      location: Community Roles legislators footnote (knowing-your-community.astro line 94)
+      type: invented_prose
+      content: |
+        *Find your legislators at legislature.vermont.gov/people/
+      inferred_source: workbook p10 footnote (text matches; URL is plain text)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p10 footnote presents the URL as a clickable hyperlink (the
+        anchor IS the URL text). Site renders as plain text inside an italic
+        footnote. Archived as the no-link site form alongside the
+        corresponding `dropped_workbook_links` entry
+        (archive-kyc-link-drop-legislators).
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-take-a-look-toolkit-drift
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 4 (knowing-your-community.astro line 332)
+      type: invented_prose
+      content: |
+        Take a look at the toolkit - share printed copies. Give people some
+        time to read the introductory section and look through the toolkit.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Rephrase drift on workbook agenda item. Workbook p13 reads "Share
+        printed copies of the toolkit. Invite people to read the introduction
+        and look through the sections. If you like, have people take turns
+        reading parts of the introduction aloud." Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-revisit-mapping-drift
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 6 (knowing-your-community.astro line 334)
+      type: invented_prose
+      content: |
+        Revisit the 'mapping your community' exercise, or have a conversation
+        about who is doing this work already in your community.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Conflated rephrase: workbook p13 has TWO separate items here — a
+        "Reconvene and discuss…" block with three sub-questions, and the
+        "Do one or more of the activities in the toolkit" block. Site
+        collapses them into a single invented bullet. Restored verbatim with
+        full nesting.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-determine-meeting-drift
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 7 (knowing-your-community.astro line 335)
+      type: invented_prose
+      content: |
+        Determine if the group is interested in meeting again, and set a
+        meeting time. Think about who else you want to invite.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Site appends "Think about who else you want to invite." to a
+        workbook-verbatim sentence. Workbook p13 ends "Determine if the group
+        is interested in meeting again, and set a meeting time." Restored
+        verbatim.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
-  invented_items: []
+  invented_items:
+    - id: archive-kyc-agenda-invented-bullet-discuss-sections
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 5 (knowing-your-community.astro line 333)
+      type: invented_items
+      content: |
+        Discuss what sections jump out as important or priorities in your
+        community.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Wholly site-invented agenda bullet. No workbook anchor. Removed under
+        Source Fidelity HARD INVARIANT class-c firewall. Archived as movement-
+        flavored editorial supplement candidate for Step 2 community-canon
+        view.
+      proposed_canonical_field: null
 
   # Workbook items dropped from site (opposite direction — workbook-authored
   # content that the site chose to omit). Tracked so restoration work can
   # confirm we pick them back up in days 9-13.
-  dropped_workbook_items_flagged_for_restore: []
+  dropped_workbook_items_flagged_for_restore:
+    - id: archive-kyc-bringing-people-together-bullet-2-drop
+      module: knowing-your-community
+      location: Bringing people together "things to consider" bullet 2 (knowing-your-community.astro line 301)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 bullet 2: "Of the people you mapped, how many do you
+        know? Where can you go to know them better or introduce yourself?
+        Who is missing?"
+        Site form pre-day-17: "Of the people you mapped, how many do you
+        know? Where can you go to know them better or introduce yourself?"
+        (drops "Who is missing?")
+      inferred_source: workbook p13 bullet 2
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Drop drift per inventory paragraph_drift item 3. "Who is missing?"
+        is the explicit prompt the workbook uses to surface who has been
+        excluded from the organizing group. Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-do-activities
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda nested item:
+          - Do one or more of the activities in the toolkit:
+              - Organizing your community activities (pages 9-11)
+              - Get to know the toolkit interactive activity (facilitation
+                guide below)
+        Site dropped both the parent bullet and its 2 sub-items.
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim with nested sub-items. The "facilitation guide
+        below" reference is honored by the day-17 Facilitation guides
+        section restoration (workbook p14).
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-reconvene-discuss
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda nested item:
+          - Reconvene and discuss one or more of these questions:
+              - Who is doing related work already in your community? Are they
+                in this conversation?
+              - Who is missing from this group? Are they people you know, or
+                need to meet for the first time?
+              - Is there more information you need before continuing your
+                organizing? How can you get it?
+        Site dropped both the parent bullet and its 3 sub-questions.
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim with nested sub-questions.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-make-plan
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "Make a plan for who will find the space to
+        meet, if someone is able to bring food, who will invite the new
+        people you've identified to your group, and any other planning."
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim under the "Determine if the group is interested in
+        meeting again" parent.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-consider-posting
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "Consider posting about your next meeting
+        publicly on local social media, and/or putting up flyers at the
+        grocery store or school."
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-small-group
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "It makes sense to start with a small group
+        of people, but the more buy-in you have in your community about this
+        project, the more possible it will be."
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-needs-assessment
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "Plan to conduct the community needs
+        assessment activity (facilitation guide below) at your next meeting!"
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim. The "facilitation guide below" reference is
+        honored by the day-17 Facilitation guides section restoration
+        (workbook p14, "Conduct a Community Needs Assessment" block).
+      proposed_canonical_field: null
+    - id: archive-kyc-missing-section-facilitation-guides
+      module: knowing-your-community
+      location: NEW section between "Bringing people together" and "We started organizing" per workbook order (knowing-your-community.astro post-day-17)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p14 — entire "Facilitation guides" section. Two activity
+        blocks:
+
+        (1) Get to know the toolkit: interactive activity (45 minutes to
+            1 hour) — 5-step facilitator guide:
+              1. Print out the interactive toolkit activity *page of prompts*,
+                 or edit the prompts to best fit the non-flooding disaster
+                 you want people to think about. Cut the prompts up along
+                 the dotted line.
+              2. Set the scene… (a/b/c sub-bullets)
+              3. Split your group into smaller groups of 2-5 people each…
+              4. Instruct groups to spend about 20 minutes discussing…
+              5. Reconvene as a group and hear from people about what they
+                 learned…
+
+        (2) Conduct a Community Needs Assessment — 6-step guide:
+              1. Print out copies of the *Community Needs Assessment*…
+              2. Give people 15-20 minutes to complete the assessment.
+              3. Break into small groups or pairs to discuss…
+              4. Make some notes about which questions… (a/b sub-bullets)
+              5. Make a plan to connect with people who can help…
+              6. Make a plan to share results of the assessment…
+
+        Both *page of prompts* and *Community Needs Assessment* anchors link
+        to the Section 0 Drive folder
+        (https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8).
+
+        Pre-day-17 site state: section did not exist.
+      inferred_source: workbook p14
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Entire workbook section was missing pre-day-17. Rebuilt verbatim per
+        inventory `missing_sections[0].action: rebuild_full_content`. Two
+        embedded link anchors (page of prompts, Community Needs Assessment)
+        each gain ExternalLink wrappers.
+      proposed_canonical_field: null
+    - id: archive-kyc-missing-section-readiness-and-cros-block
+      module: knowing-your-community
+      location: '"We started organizing" section — readiness checklist + kinds of assistance + CROs contact paragraph (post-day-17)'
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p15 — content following the "How do we know it's working"
+        signs-of-effectiveness list:
+
+        - Title (corrected): "We started organizing. How do we know it's
+          working, and when to ask for more help?" (site dropped second half)
+
+        - Readiness-checklist intro: "Here are some signs you might be ready
+          to ask for more help and move ahead with plans to launch a
+          resilience hub."
+
+        - Readiness checklist (5 bullets):
+            • Have you met two or more times?
+            • Do you have a group of 2-5 people excited about launching a
+              resilience hub?
+            • Have you talked to 10+ neighbors to see if they think this is
+              a good idea?
+            • Have you used the community needs assessment (above) and begun
+              to identify what your priorities are as a community?
+            • Can you identify three sections of the toolkit where you would
+              like support?
+
+        - Kinds-of-assistance intro: "Here are some different kinds of
+          assistance to seek out:"
+
+        - Kinds of assistance (5 bullets, 3 sub-bullets under "Technical
+          assistance using the toolkit"):
+            • Fiscal sponsorship: access to nonprofit status so you can
+              raise funds and pay stipends without creating a new
+              organization
+            • Fundraising to support your work
+            • Technical assistance using the toolkit
+                ◦ Help facilitating group meetings
+                ◦ Visioning for how to best use the toolkit in your community
+                ◦ Subject matter expertise on sections you want to work on
+            • Relationships with existing institutions like libraries and
+              schools, places of worship, food pantries, community spaces
+              to see if they are interested in participating in your work
+              to launch a resilience hub.
+            • Connection with elected officials or local committees to
+              advocate for and share about your work
+
+        - CROs contact paragraph (FUNNEL CRITICAL): "Think about if you can
+          get this kind of help in your community, from people you already
+          know. If not, *reach out to Community Resilience Organizations
+          (CROs)* — *resiliencetoolkit@gocros.org* — and we'll do our best
+          to connect you with people and organizations who can assist."
+
+        Pre-day-17 site state: section title was truncated to "We started
+        organizing. How do we know it's working?" and all of the above
+        readiness/assistance/CROs content was dropped.
+      inferred_source: workbook p15
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Funnel-critical restoration per inventory innovations.cros_referral_funnel_dropped:
+        Fern Lickfield inbound via the RT contact form demonstrates this
+        pathway works; dropping the CTA degrades the RT-to-CROs
+        consultancy referral funnel. Title truncation also restored.
+      proposed_canonical_field: null
+    - id: archive-kyc-missing-section-pods-appendix
+      module: knowing-your-community
+      location: Pod mapping section — full Mia Mingus / BATJC narrative + diagram reference (post-day-17)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook pp19-22 (Pods appendix) — "Pods and Pod Mapping Worksheet,
+        Written by Mia Mingus for the BATJC, June 2016". Full narrative
+        across 4 pages explaining:
+          - Origin of the term "pod" within transformative justice work
+          - Why "community" was insufficient terminology
+          - Definition: POD — "Your pod is made up of the people that you
+            would call on if violence, harm or abuse happened to you; or
+            the people that you would call on if you wanted support in
+            taking accountability for violence, harm or abuse that you've
+            done; or if you witnessed violence or if someone you care about
+            was being violent or being abused."
+          - 7-bullet observations on what mapping pods reveals
+          - Caveats around relational versus political-analysis criteria
+          - Note that many people do not have any pod people
+
+        Pre-day-17 site state: a "Pod Mapping Worksheet" callout (file
+        download) and 4 short paragraphs. Full Mia Mingus narrative was
+        absent — users who can't or won't download the PDF saw none of the
+        rationale.
+      inferred_source: workbook pp19-22 (Pods appendix)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim per inventory innovations.pods_appendix_content_loss
+        and missing_sections[2]. The Pods appendix is the conceptual ground
+        of the Pod mapping activity; without it, the activity reads as
+        decontextualized worksheet chrome. Section moved to end of module
+        per inventory order_drift workbook order.
+      proposed_canonical_field: null
+
+  # Workbook section orderings the site reshuffled away from. Tracked so
+  # the restored ordering can be verified post-day-17.
+  reordered_sections_flagged_for_restore:
+    - id: archive-kyc-section-order-drift
+      module: knowing-your-community
+      location: knowing-your-community.astro section order (pre-day-17)
+      type: reordered_sections_flagged_for_restore
+      content: |
+        Pre-day-17 site order:
+          1. Vermont Town Directory (site-added editorial)
+          2. Organizing your community (intro) + Mapping your community
+          3. Who is in your community/place?
+          4. What other dynamics
+          5. Stuff and systems
+          6. Knowing your ecosystem
+          7. Pod mapping (⬆ moved from end)
+          8. Going deeper
+          9. Bringing people together
+          10. We started organizing. How do we know it's working? (title truncated)
+
+        Workbook order (pp10-17 + 19-22):
+          1. Organizing your community (intro)
+          2. Mapping your community
+          3. Who is in your community/place?
+          4. What other dynamics
+          5. Stuff and systems
+          6. Knowing your ecosystem
+          7. Bringing people together
+          8. Facilitation guides (workbook p14)
+          9. We started organizing. How do we know it's working, and when
+             to ask for more help? (workbook p15, full title)
+          10. Going deeper (workbook p16)
+          11. Pod mapping (workbook p17 + Pods appendix pp19-22)
+
+        Day-17 restored order matches workbook with one exception: the
+        site-added Vermont Town Directory callout is preserved at the top
+        as an editorial supplement (per inventory site_added_links decision
+        `promote_as_editorial_supplement`).
+      inferred_source: workbook order pp10-22
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Section order is class-c structural drift per inventory. The four
+        out-of-order sections (Pod mapping, Going deeper, Bringing people
+        together, We started organizing) were reshuffled apparently to
+        front-load the more activity-heavy material. Day-17 restoration
+        matches workbook reading order; Pods appendix narrative now
+        immediately follows Pod mapping activity (workbook p17 + pp19-22
+        contiguity preserved).
+      proposed_canonical_field: null
 
   # Bulk link drops — workbook had a link that the site dropped without
   # substitution. 6 in 1-7, more in 1-8, etc.
@@ -234,4 +799,71 @@ categories:
         30 links it to a Drive file. Restored on day 16 via <ExternalLink>
         with the curly-single-quoted "‘go bags,’" verbatim restoration around
         the anchor (paragraph drift quote_drop fix).
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-folder-header
+      module: knowing-your-community
+      location: top of page (above first section); was missing pre-day-17
+      type: dropped_workbook_links
+      content: |
+        Anchor: "0. Organizing your community"
+        URL:    https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link
+        Workbook context: "Folder with resources here: 0. Organizing your
+        community" — workbook p10 folder header.
+      inferred_source: workbook p10 folder header
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p10 opens with a "Folder with resources here:" line linking
+        the 161QG8b Drive folder. Site never surfaced this header. Restored
+        on day 17 as a leading <p>Folder with resources here:
+        <ExternalLink ...>0. Organizing your community</ExternalLink></p>
+        line — same shape as 1-1's day-16 wiring.
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-legislators
+      module: knowing-your-community
+      location: Community Roles legislators footnote (knowing-your-community.astro line 94)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "legislature.vermont.gov/people/" (the URL text IS the anchor)
+        URL:    http://legislature.vermont.gov/people/
+        Site state pre-day-17: plain italic text "*Find your legislators at
+        legislature.vermont.gov/people/" — no <a> wrapper.
+      inferred_source: workbook p10 footnote
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p10 renders the URL as a clickable hyperlink (anchor IS
+        URL text). Site renders as plain text. Restored on day 17 via
+        <ExternalLink href="http://legislature.vermont.gov/people/">.
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-zine
+      module: knowing-your-community
+      location: Going deeper section intro paragraph (knowing-your-community.astro line 208)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "this zine"
+        URL:    https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view
+        Site state pre-day-17: plain text "Check out this zine for more ideas." (no link)
+      inferred_source: workbook p16 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p16 wraps "this zine" in a Drive-file anchor. Site renders
+        as plain text. Restored on day 17 via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-roles-list
+      module: knowing-your-community
+      location: Going deeper roles-list intro paragraph (knowing-your-community.astro line 230)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "this list"
+        URL:    https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view
+        Site state pre-day-17: plain text "Check out this list for more ideas." (no link)
+      inferred_source: workbook p16 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p16 wraps "this list" (the roles-to-modules PDF) in a
+        Drive-file anchor. Site renders as plain text. Restored on day 17
+        via <ExternalLink>.
       proposed_canonical_field: null
