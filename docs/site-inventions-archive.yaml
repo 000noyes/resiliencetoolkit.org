@@ -54,12 +54,240 @@ categories:
   # 1-12 Mutual Aid canonical Dean-Spade-style movement tenets that replaced
   # the workbook's narrative tenets. Candidate future feature: movement-canon
   # supplement alongside workbook-fidelity primary content.
-  invented_tenets: []
+  invented_tenets:
+    - id: archive-1-12-mutual-aid-tenet-01
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-solidarity" (line 47 pre-day-24)
+      type: invented_tenets
+      content: |
+        Solidarity, not charity
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site authors replaced the workbook's 5-tenet narrative with 6
+        canonical Dean-Spade movement principles. Per inventory decision
+        1a_strict_restore_workbook_AND_archive_site_content (catastrophic
+        content divergence — wholesale replacement of Mutual Aid Tenets
+        column). Restored to workbook tenets in 1-12.astro this commit;
+        archived as the first member of the movement-canon supplement
+        candidate set. Pattern name: "movement-canon content replacement"
+        — likely to recur in 2-x baseline-resilience modules.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-02
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-cooperation" (line 50 pre-day-24)
+      type: invented_tenets
+      content: |
+        Cooperation, not competition
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        second of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-03
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-urgency" (line 53 pre-day-24)
+      type: invented_tenets
+      content: |
+        Urgency, not waiting for the state or other officials to save us
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        third of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-04
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-direct-action" (line 56 pre-day-24)
+      type: invented_tenets
+      content: |
+        Direct action and community self-determination, not passivity and paternalism
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        fourth of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-05
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-voluntary" (line 59 pre-day-24)
+      type: invented_tenets
+      content: |
+        Voluntary, mutual, and reciprocal
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        fifth of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-06
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-tied-together" (line 62 pre-day-24)
+      type: invented_tenets
+      content: |
+        Our liberation is tied together
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        sixth of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
 
   # 1-12 + others — checklist bullets the site authored that do not trace
   # to any workbook/template PDF. Candidate future feature: community-contributed
   # checklist additions with review workflow.
-  invented_checklist_items: []
+  invented_checklist_items:
+    - id: archive-1-12-mutual-aid-checklist-01
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-identify-groups" (line 70 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Identify existing mutual aid and N2N groups to connect with (ask
+        around at a General Store, Town Hall, community centers, etc.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site authors replaced the workbook's 10-item checklist (Find a
+        buddy / Build a pod map / Connect with folks / Identify who and
+        where / Start small / Establish communications / Get the
+        conversation started / Offer help) with 8 different items.
+        Per inventory decision 1a_strict_restore_workbook_AND_archive_site_content
+        (catastrophic content divergence — wholesale replacement of
+        Mutual Aid Checklist column). Restored to workbook items in
+        1-12.astro this commit; archived as first of 8 candidate
+        community-contributed-checklist supplements.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-02
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-contact-info" (line 73 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Create a contact list of names, phone numbers, and addresses of
+        households in your community (physical or social)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — second of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-03
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-identify-needs" (line 76 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Identify who in your network has specific needs or abilities to
+        offer. Reach out and check in. Hold a gathering or forum to talk
+        about this as a group.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — third of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-04
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-communication" (line 79 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Choose a communications plan (e.g. FrontPorchForum, phone tree,
+        text chain, paper fliers and mail) so that you can let your
+        network know when something is happening
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — fourth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-05
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-practice" (line 82 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Practice! Engage in low-stakes mutual aid activities during calm
+        times (e.g. a meal share, a tool share, a community fridge)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — fifth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-06
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-decide-roles" (line 85 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Decide what kind of mutual aid or N2N work you want to do and
+        what roles you want to fill. You might decide to collect
+        donations, move donations, or track needs and resources. Check
+        out the "Knowing Your Community" section to think about your
+        interests and capacity.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — sixth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-07
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-coordination" (line 88 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Coordinate with existing Long-Term Recovery Groups and coalitions
+        of organizations active in disaster (Vermont Community Foundation,
+        GOCROS, etc.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — seventh of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-08
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-resources" (line 91 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Check out [Mutual Aid Disaster Relief's resources] and the [Big
+        Door Brigade Mutual Aid Toolkit].
+        (Two embedded ExternalLinks — see archive-1-12-mutual-aid-disaster-relief-link
+        and archive-1-12-big-door-brigade-link in invented_items for the
+        URL specifics.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — eighth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content. This item
+        embedded the 2 site-invented ExternalLinks (Mutual Aid Disaster
+        Relief + Big Door Brigade) — those are also archived separately
+        under invented_items so a future movement-canon supplement view
+        can re-expose the resource links independent of the prose item.
+      proposed_canonical_field: null
 
   # 1-5 "Activate, staff...", 1-12 "Mutual Aid Tenets & Checklist",
   # 1-13, 2-1 — site-invented h2/h3/row-header strings with no workbook anchor.
@@ -119,6 +347,30 @@ categories:
         The duplicated h3 + meta-note + Disabilities Todos archived here
         (data preserved); the merged section uses the Seniors Todos as
         base since they more closely match workbook structure.
+      proposed_canonical_field: null
+    - id: archive-1-12-row-header-mutual-aid-tenets-and-checklist
+      module: 1-12
+      location: 1-12.astro guide-table colspan="2" row above the Tenets/Checklist columns (line 38-40 pre-day-24)
+      type: invented_h2_headers
+      content: |
+        <tr>
+          <td colspan="2">
+            <strong>Mutual Aid Tenets &amp; Checklist</strong>
+          </td>
+        </tr>
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site-authored row-header <strong>Mutual Aid Tenets & Checklist</strong>
+        spanning both columns of the guide-table. Workbook page 78 has
+        no equivalent row-header — the two-column table is rendered
+        directly with column headers "Mutual Aid Tenets" and "Mutual Aid
+        Checklist" (already present as the per-column <strong> labels in
+        each <td>). Same invented row-header pattern as 1-5 "Activate,
+        staff…" (referenced in inventory line 64-65). Removed under
+        decision 1a_remove (per inventory line 2303). Class-c per
+        Source Fidelity firewall.
       proposed_canonical_field: null
 
   # 1-8 CHW/CHC/Free Clinic topic-branches (healthvermont.gov endpoints
@@ -793,6 +1045,28 @@ categories:
         archive-1-6-info-callout, archive-1-7-info-callout, archive-1-8-info-callout
         entries above.
       proposed_canonical_field: null
+    - id: archive-1-12-info-callout
+      module: 1-12
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        1-10 + 1-11 (day 23), and KYC (day 17). Identical text to the
+        archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout,
+        archive-1-11-info-callout entries above.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
@@ -830,6 +1104,52 @@ categories:
         supplement — service-animal accommodation guidance is a real
         accessibility concern that a future site-curated supplement could
         reintroduce alongside the workbook canonical content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-disaster-relief-link
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-resources" (line 91 pre-day-24, embedded ExternalLink)
+      type: invented_items
+      content: |
+        Anchor: "Mutual Aid Disaster Relief's resources"
+        URL: https://mutualaiddisasterrelief.org/collective-care/
+        Workbook context: workbook page 78 has no equivalent link — site
+        authored this resource pointer as part of the invented checklist
+        item 8 (archive-1-12-mutual-aid-checklist-08).
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Wholly site-invented ExternalLink (no workbook URL substitution —
+        this is net-new resource pointer not present in workbook page 78).
+        Removed under inventory decision: 1a_remove_AND_archive (line
+        2334-2337). Archived as candidate Step 2 movement-canon
+        supplement — Mutual Aid Disaster Relief is a recognized national
+        MA organization whose collective-care resources could re-emerge
+        as a "site-curated" supplement alongside workbook-fidelity
+        primary content. First member of the 1-12 movement-canon
+        ExternalLink cluster (paired with
+        archive-1-12-big-door-brigade-link).
+      proposed_canonical_field: null
+    - id: archive-1-12-big-door-brigade-link
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-resources" (line 91 pre-day-24, embedded ExternalLink)
+      type: invented_items
+      content: |
+        Anchor: "Big Door Brigade Mutual Aid Toolkit"
+        URL: https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit
+        Workbook context: workbook page 78 has no equivalent link — site
+        authored this resource pointer as part of the invented checklist
+        item 8 (archive-1-12-mutual-aid-checklist-08).
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Wholly site-invented ExternalLink. Removed under inventory
+        decision: 1a_remove_AND_archive (line 2338-2341). Archived as
+        candidate Step 2 movement-canon supplement — Big Door Brigade's
+        Mutual Aid Toolkit is a recognized movement-curated resource
+        document. Second member of the 1-12 movement-canon ExternalLink
+        cluster (paired with archive-1-12-mutual-aid-disaster-relief-link).
       proposed_canonical_field: null
 
   # Workbook items dropped from site (opposite direction — workbook-authored

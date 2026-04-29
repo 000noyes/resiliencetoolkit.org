@@ -2350,10 +2350,13 @@ modules:
     missing_sections_check: c_major                        # all 15 workbook items (5 tenets + 10 checklist) absent from site
     table_titles_check: c                                  # invented "Mutual Aid Tenets & Checklist" row-header
 
-    class_c_count: 7                                       # InfoCallout + invented row-header + 2 bulk content replacements (tenets + checklist) + 2 invented ExternalLinks + 15 missing workbook items treated as 1 bulk entry
-    class_c_per_item_count: 33                             # if counted per-item: 1 (InfoCallout) + 1 (row-header) + 6 (tenets) + 8 (checklist) + 2 (links) + 15 (missing) = 33
+    class_c_count: 0                                       # was 7; closed 2026-04-29 day-24 (catastrophic content restoration)
+    class_c_per_item_count: 0                              # was 33 (per-item); all 33 items archived to docs/site-inventions-archive.yaml under invented_tenets ×6 + invented_checklist_items ×8 + invented_h2_headers ×1 row-header + invented_prose ×1 InfoCallout + invented_items ×2 ExternalLinks
     scope: 1a
-    spec_required: true
+    spec_required: shipped                                  # docs/source-specs/1-12-mutual-aid-n2n.md (day 24)
+    spec_path: "docs/source-specs/1-12-mutual-aid-n2n.md"
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
     innovations:
       - flag: site_movement_canon_content_replacement
         description: >
@@ -2372,6 +2375,7 @@ modules:
         scope: 1a_strict_restore_with_archive
         user_directive: "restore fidelity, develop growth habits and safeguards to grow the toolkit from its foundation"
         archive_destination: "docs/site-inventions-archive.yaml → 1-12"
+        status: archived_and_restored_day_24                # closed 2026-04-29
 
     notes: >
       Walked 2026-04-24. LARGEST content fidelity issue in the walk
@@ -2384,8 +2388,63 @@ modules:
       to ALL previously-flagged class-c site inventions (1-5 row
       header, 1-8 URL subs, 1-8 service animals item, 1-8 meta-note,
       1-10 AHS/VDH URL, etc.) — all should be archived not deleted.
-      Class-c count 7 (bulk) / 33 (per-item). Running total 115
-      (bulk) / 141 (per-item) across 13 modules.
+      Class-c count was 7 (bulk) / 33 (per-item).
+
+      Day 24 (2026-04-29) — `feat(1-12): catastrophic content restoration`
+      shipped the largest single-module class-c archive load of the
+      Step 1 closeout sprint. Per closeout doc §2 row 24. 7-bulk / 33-
+      per-item class-c surface area closed in a single commit on
+      feat/step1a-priority-ep. Pattern: APPEND archive entries FIRST
+      (R2 archive-then-remove); THEN restore / remove. Archive entries
+      appended:
+        - invented_tenets — 6 Dean-Spade tenets
+          (archive-1-12-mutual-aid-tenet-01..06; first usage of this
+          category, was empty at top of file)
+        - invented_checklist_items — 8 site-invented checklist items
+          (archive-1-12-mutual-aid-checklist-01..08; first usage of
+          this category, was empty at top of file; item 08 embeds the
+          2 ExternalLinks separately archived under invented_items)
+        - invented_h2_headers — 1 row-header
+          (archive-1-12-row-header-mutual-aid-tenets-and-checklist;
+          colspan="2" "Mutual Aid Tenets & Checklist" row above the
+          two-column table)
+        - invented_prose — 1 InfoCallout
+          (archive-1-12-info-callout; same recurring text as 1-1/1-2/
+          1-3/1-4/1-5/1-6/1-7/1-8/1-10/1-11/KYC sweeps)
+        - invented_items — 2 ExternalLinks
+          (archive-1-12-mutual-aid-disaster-relief-link +
+          archive-1-12-big-door-brigade-link; movement-canon
+          supplement candidate cluster)
+
+      Source-side restoration on src/pages/modules/emergency-preparedness/
+      1-12.astro: replaced 6 invented Tenet Todos with 5 workbook Tenet
+      Todos (Get people together / Build relationships / Make decisions
+      based on consensus / Share rather than hoard / Recognize the value
+      in all kinds of support); replaced 8 invented Checklist Todos
+      with 10 workbook Checklist Todos (Find a buddy / Build a pod map /
+      Who could help me? / Connect with those folks / Identify who and
+      where / My building, my block, my co-workers? / Start small /
+      Establish communication channels / Get the conversation started /
+      Offer help); removed the colspan="2" invented row-header; removed
+      the InfoCallout + unused InfoCallout import; removed the 2
+      site-invented ExternalLinks and the unused ExternalLink import.
+      Workbook-fidelity intro paragraph (classification a) preserved
+      verbatim. Scaffold-spec authored docs/source-specs/1-12-mutual-aid-n2n.md
+      (PDF page 78; force-added per .gitignore policy commit 1da68c6;
+      single section-anchor placeholder field per the recurring R10
+      idiom; subheadings: []; links: [] — the lone workbook anchor is
+      the folder header pinned for the ModuleLayout button surface per
+      R-day-19-second-commit; same as 1-10/1-11). Citation HTML
+      comment added to 1-12.astro.
+
+      Gates: vitest 486/486 green; astro 0 errors / 0 warnings / 10
+      pre-existing hints; verify 22 entries / 22 pass / 0 fail
+      (was 21 entries entering session; +1 for new 1-12 spec). NO codex
+      this commit (decision p — mechanical-edit cadence; days 23-28
+      skip codex). Running total now 116 / 142 across 14 modules; 1-12
+      contributes 0 unresolved class-c. Catastrophic-content-divergence
+      pattern resolved end-to-end — the precedent for any 2-x module
+      that exhibits the same wholesale-replacement shape.
 
   1-13:
     title: "Financial Resources"
