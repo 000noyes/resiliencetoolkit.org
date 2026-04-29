@@ -1528,7 +1528,17 @@ modules:
       verdict: clean                                       # day-21b closed all 14 residual class-c items
     scope: 1a
     spec_required: true
-    migration_required: true                               # unique to 1-8: seniors+disabilities merge
+    migration_required: shipped                            # day-22: IndexedDB migration shipped (commit pending)
+    migration_shipped:
+      day: 22
+      file: src/lib/storage.ts
+      function: migrateSeniorsAndDisabilities
+      marker_key: migration_seniors_and_disabilities_v1
+      tests: src/lib/data-preservation.test.ts             # 27 tests, 3 codex challenge rounds (clean on round 3)
+      semantics: target_authoritative                      # target wins on existing-target collision
+      notes_policy: concat_distinct_with_separator         # \n\n---\n\n; trim-based dedup
+      deprecated_keys: [senior-citizens, people-with-disabilities]
+      removal_policy: keep_readable_until_2_minor_versions_past_day_22
     innovations:
       - flag: section_split_requiring_data_migration
         description: >
@@ -1633,6 +1643,30 @@ modules:
       dropped_workbook_links; 1 in invented_prose for the merged form).
       Total ExternalLinks on 1-8 page: 21 (was 10 post-day-21).
       class_c_count: 14 → 0; structural_fidelity.verdict: clean.
+
+      Day-22 part-2 ships the IndexedDB migration that consolidates
+      pre-merge user check-state stored under the deprecated moduleKeys
+      senior-citizens + people-with-disabilities into the canonical
+      seniors-and-disabilities. Highest-risk gate of the closeout sprint
+      per R5/R6; codex challenge cadence day per decision p (R4).
+      Migration code: src/lib/storage.ts migrateSeniorsAndDisabilities
+      (idempotent via metadata marker `migration_seniors_and_disabilities_v1`,
+      target-authoritative semantics, mergeWinner with notes-concat across
+      candidates, trim-based dedup). importAllData clears the migration
+      marker on import so an imported snapshot re-evaluates against
+      current code. Tests: 27 in src/lib/data-preservation.test.ts (covers
+      happy path, 5 collision tie-breaks, legacy data preservation, 3
+      idempotency cases, atomicity + delta + import-clears-marker, 4 notes
+      preservation cases including dual-notes concat, whitespace dedup,
+      completed-vs-uncompleted note preservation, completed-vs-completed
+      asymmetric notes, marker hardening for null/non-string values, and
+      concurrent migrations). Codex challenge rounds: 1 surfaced 6 findings
+      (3 P1 + 3 P2), all addressed; round 2 surfaced 5 (1 P1 + 4 P2), all
+      addressed; round 3 CLEAN. Documented limitations: stale-tab writes
+      to deprecated keys after migration are orphaned (target-authoritative
+      trade-off; recovery path requires per-todo updatedAt schema field,
+      out of scope for day-22). Old keys remain readable and forensically
+      recoverable until 2 minor versions past the day-22 ship.
 
   1-9:
     title: "Community Emergency Response Plans"

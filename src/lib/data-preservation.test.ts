@@ -5,11 +5,30 @@
  * and verifies they match the canonical snapshot. Any migration that changes
  * these keys would destroy user data stored in IndexedDB.
  *
+ * Also covers the seniors-and-disabilities IndexedDB migration (day-22):
+ * verifies that pre-merge user check-state under `senior-citizens` and
+ * `people-with-disabilities` is consolidated under
+ * `seniors-and-disabilities-${todoId}` without data loss.
+ *
  * Run: pnpm vitest run src/lib/data-preservation.test.ts
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import 'fake-indexeddb/auto';
+import {
+  saveTodo,
+  getTodo,
+  getModuleTodos,
+  getMetadata,
+  setMetadata,
+  deleteMetadata,
+  deleteTodo,
+  importAllData,
+  migrateSeniorsAndDisabilities,
+  isDeprecatedModuleKey,
+  DEPRECATED_MODULE_KEYS,
+} from './storage';
 
 function findFiles(dir: string, patterns: string[]): string[] {
   const results: string[] = [];
@@ -114,5 +133,669 @@ describe('Data Preservation', () => {
     }
 
     expect(filesWithoutModuleKey).toEqual([]);
+  });
+});
+
+/**
+ * Seniors + Disabilities IndexedDB Migration (day-22)
+ *
+ * The 1-8 section split was unmerged in day-21 — the two old moduleKeys
+ * `senior-citizens` and `people-with-disabilities` were collapsed into a
+ * single canonical `seniors-and-disabilities`. Day-22 ships the migration
+ * that consolidates any user check-state stored under the old keys.
+ *
+ * These fixtures use scenario-prefixed `todoId`s so each test can run on
+ * a clean IDB slice without depending on test ordering.
+ */
+const MIGRATION_MARKER_KEY = 'migration_seniors_and_disabilities_v1';
+const MIGRATION_MODULE_KEYS = [
+  'senior-citizens',
+  'people-with-disabilities',
+  'seniors-and-disabilities',
+];
+
+// Tests share a single fake-indexeddb instance because storage.ts caches
+// the connection in a module-level singleton. Each test must clear ALL
+// todos on the migration moduleKeys (not just the ids it seeds) so that
+// state from prior tests does not leak into the migration's collision /
+// idempotency / no_data assertions.
+async function clearMigrationFixtures(): Promise<void> {
+  await deleteMetadata(MIGRATION_MARKER_KEY);
+  for (const moduleKey of MIGRATION_MODULE_KEYS) {
+    const todos = await getModuleTodos(moduleKey);
+    for (const todo of todos) {
+      await deleteTodo(moduleKey, todo.todoId);
+    }
+  }
+}
+
+describe('Seniors + Disabilities Migration', () => {
+  describe('happy path — copy under new moduleKey', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('copies all old-key check-states onto seniors-and-disabilities-${todoId}', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'hp-senior-only-checked',
+        completed: true,
+        completedAt: '2026-04-20T12:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'hp-disability-only-checked',
+        completed: true,
+        completedAt: '2026-04-21T12:00:00.000Z',
+        notes: 'Service animal plan drafted',
+      });
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'hp-senior-with-notes',
+        completed: false,
+        notes: 'Need to call council on aging',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.status).toBe('migrated');
+      expect(result.todosCopied).toBe(3);
+      expect(result.collisions).toBe(0);
+
+      const merged1 = await getTodo('seniors-and-disabilities', 'hp-senior-only-checked');
+      expect(merged1?.completed).toBe(true);
+      expect(merged1?.completedAt).toBe('2026-04-20T12:00:00.000Z');
+      expect(merged1?.moduleKey).toBe('seniors-and-disabilities');
+      expect(merged1?.id).toBe('seniors-and-disabilities-hp-senior-only-checked');
+
+      const merged2 = await getTodo('seniors-and-disabilities', 'hp-disability-only-checked');
+      expect(merged2?.completed).toBe(true);
+      expect(merged2?.completedAt).toBe('2026-04-21T12:00:00.000Z');
+      expect(merged2?.notes).toBe('Service animal plan drafted');
+
+      const merged3 = await getTodo('seniors-and-disabilities', 'hp-senior-with-notes');
+      expect(merged3?.completed).toBe(false);
+      expect(merged3?.notes).toBe('Need to call council on aging');
+    });
+  });
+
+  describe('collision tie-break', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('a completed entry beats an uncompleted entry on the same todoId', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'col-completed-vs-uncompleted',
+        completed: false,
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'col-completed-vs-uncompleted',
+        completed: true,
+        completedAt: '2026-04-22T08:00:00.000Z',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.collisions).toBe(1);
+
+      const merged = await getTodo('seniors-and-disabilities', 'col-completed-vs-uncompleted');
+      expect(merged?.completed).toBe(true);
+      expect(merged?.completedAt).toBe('2026-04-22T08:00:00.000Z');
+    });
+
+    it('among two completed entries, the later completedAt wins', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'col-both-completed',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'col-both-completed',
+        completed: true,
+        completedAt: '2026-04-25T08:00:00.000Z',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.collisions).toBe(1);
+
+      const merged = await getTodo('seniors-and-disabilities', 'col-both-completed');
+      expect(merged?.completedAt).toBe('2026-04-25T08:00:00.000Z');
+    });
+
+    it('among two uncompleted entries, the one with notes wins', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'col-both-uncompleted-with-notes',
+        completed: false,
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'col-both-uncompleted-with-notes',
+        completed: false,
+        notes: 'Reach out to disability rights group',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.collisions).toBe(1);
+
+      const merged = await getTodo('seniors-and-disabilities', 'col-both-uncompleted-with-notes');
+      expect(merged?.notes).toBe('Reach out to disability rights group');
+    });
+
+    it('when no other signal differs, the lexicographically first moduleKey is the primary, and distinct notes are preserved from both', async () => {
+      // Both entries identical except for notes. Lexicographic order:
+      // 'people-with-disabilities' < 'senior-citizens' — so the
+      // disabilities entry is the primary. Distinct notes from both
+      // sides survive via mergeWinner concat.
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'col-fallback-deterministic',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+        notes: 'from-senior',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'col-fallback-deterministic',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+        notes: 'from-disability',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.collisions).toBe(1);
+
+      const merged = await getTodo('seniors-and-disabilities', 'col-fallback-deterministic');
+      // Primary's note appears first (lexicographic anchor); secondary
+      // concatenated after the separator.
+      expect(merged?.notes?.startsWith('from-disability')).toBe(true);
+      expect(merged?.notes).toContain('from-senior');
+      expect(merged?.notes).toContain('---');
+    });
+
+    it('an existing post-merge entry on seniors-and-disabilities is preserved (target wins, source ignored)', async () => {
+      // Simulates: user clicked the Todo on the new build between day-21
+      // (when .astro switched to the new moduleKey) and day-22 (this commit).
+      // Their click on the merged key must NOT be overwritten when the
+      // pre-merge entry from senior-citizens runs through migration.
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'col-existing-target-wins',
+        completed: true,
+        completedAt: '2026-04-19T08:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'seniors-and-disabilities',
+        todoId: 'col-existing-target-wins',
+        completed: true,
+        completedAt: '2026-04-29T08:00:00.000Z',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      // Target exists → no write, no collision counted (collisions only
+      // count cross-old-key duplicates that get merged via mergeWinner).
+      expect(result.todosCopied).toBe(0);
+      expect(result.collisions).toBe(0);
+
+      const merged = await getTodo('seniors-and-disabilities', 'col-existing-target-wins');
+      expect(merged?.completedAt).toBe('2026-04-29T08:00:00.000Z');
+    });
+  });
+
+  describe('legacy data preservation', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('does not delete entries on old keys; old data remains readable post-migration', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'legacy-senior-readable',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'legacy-disability-readable',
+        completed: false,
+        notes: 'Pre-migration note',
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      const oldSenior = await getTodo('senior-citizens', 'legacy-senior-readable');
+      expect(oldSenior?.completed).toBe(true);
+      expect(oldSenior?.moduleKey).toBe('senior-citizens');
+
+      const oldDisability = await getTodo('people-with-disabilities', 'legacy-disability-readable');
+      expect(oldDisability?.notes).toBe('Pre-migration note');
+      expect(oldDisability?.moduleKey).toBe('people-with-disabilities');
+    });
+
+    it('flags old moduleKeys as deprecated via DEPRECATED_MODULE_KEYS', () => {
+      expect(DEPRECATED_MODULE_KEYS.has('senior-citizens')).toBe(true);
+      expect(DEPRECATED_MODULE_KEYS.has('people-with-disabilities')).toBe(true);
+      expect(DEPRECATED_MODULE_KEYS.has('seniors-and-disabilities')).toBe(false);
+
+      expect(isDeprecatedModuleKey('senior-citizens')).toBe(true);
+      expect(isDeprecatedModuleKey('people-with-disabilities')).toBe(true);
+      expect(isDeprecatedModuleKey('seniors-and-disabilities')).toBe(false);
+    });
+  });
+
+  describe('idempotency', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('a second run reports already_run and copies nothing', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'idem-once',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+
+      const first = await migrateSeniorsAndDisabilities();
+      expect(first.status).toBe('migrated');
+      expect(first.todosCopied).toBe(1);
+
+      const second = await migrateSeniorsAndDisabilities();
+      expect(second.status).toBe('already_run');
+      expect(second.todosCopied).toBe(0);
+      expect(second.collisions).toBe(0);
+
+      // Marker is set
+      const marker = await getMetadata(MIGRATION_MARKER_KEY);
+      expect(typeof marker).toBe('string');
+    });
+
+    it('a second run does not overwrite a post-migration write on the merged key', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'idem-post-marker-set',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      // After migration, user toggles the merged key explicitly (e.g.,
+      // unchecks the item). This write is the source of truth going forward.
+      await saveTodo({
+        moduleKey: 'seniors-and-disabilities',
+        todoId: 'idem-post-marker-set',
+        completed: false,
+      });
+
+      const second = await migrateSeniorsAndDisabilities();
+      expect(second.status).toBe('already_run');
+
+      const merged = await getTodo('seniors-and-disabilities', 'idem-post-marker-set');
+      expect(merged?.completed).toBe(false);
+    });
+
+    it('on a fresh device with no old-key data, returns no_data and intentionally does NOT set the marker', async () => {
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.status).toBe('no_data');
+      expect(result.todosCopied).toBe(0);
+
+      // Marker stays unset so a future import that brings old-key data in
+      // will trigger a real migration pass (regression: P1 #1 from codex).
+      const marker = await getMetadata(MIGRATION_MARKER_KEY);
+      expect(marker).toBeUndefined();
+
+      // No todos created on the merged key.
+      const merged = await getModuleTodos('seniors-and-disabilities');
+      expect(merged).toEqual([]);
+    });
+
+    it('a fresh-device no_data does NOT skip migration when old-key data appears later', async () => {
+      // Simulates: user's first page load, no old data → no_data, no marker.
+      // Then importAllData (or a real-world re-seed) brings old-key data in.
+      // Next migration run must NOT short-circuit on a stale marker.
+      const first = await migrateSeniorsAndDisabilities();
+      expect(first.status).toBe('no_data');
+
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'idem-late-arrival',
+        completed: true,
+        completedAt: '2026-04-25T08:00:00.000Z',
+      });
+
+      const second = await migrateSeniorsAndDisabilities();
+      expect(second.status).toBe('migrated');
+      expect(second.todosCopied).toBe(1);
+
+      const merged = await getTodo('seniors-and-disabilities', 'idem-late-arrival');
+      expect(merged?.completed).toBe(true);
+    });
+  });
+
+  describe('atomicity + delta (codex challenge regressions)', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('the merged-key target is authoritative — post-migration writes are never overwritten by deprecated-key drift', async () => {
+      // Codex P1 #3 documented limitation: a stale tab still running the
+      // pre-day-21 UI may keep writing to a deprecated moduleKey after
+      // migration ran on another tab. Those writes are orphaned. The
+      // migration intentionally never re-imports source state once the
+      // merged-key target exists, so post-migration user actions on the
+      // merged key (unchecks, edits, notes) are preserved across reloads.
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'target-authoritative',
+        completed: false,
+      });
+      await migrateSeniorsAndDisabilities();
+
+      // Stale-tab write — appears in IndexedDB but must NOT propagate.
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'target-authoritative',
+        completed: true,
+        completedAt: '2099-01-01T00:00:00.000Z',
+      });
+
+      const second = await migrateSeniorsAndDisabilities();
+      expect(second.status).toBe('already_run');
+      expect(second.todosCopied).toBe(0);
+
+      const merged = await getTodo('seniors-and-disabilities', 'target-authoritative');
+      expect(merged?.completed).toBe(false);
+      expect(merged?.completedAt).toBeUndefined();
+
+      // Stale-tab write IS preserved on the deprecated key for forensic
+      // recovery if a future migration version chooses to re-merge.
+      const orphaned = await getTodo('senior-citizens', 'target-authoritative');
+      expect(orphaned?.completed).toBe(true);
+      expect(orphaned?.completedAt).toBe('2099-01-01T00:00:00.000Z');
+    });
+
+    it('a fully-current delta pass produces zero todo writes and reports already_run', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'delta-noop',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      // Sources still exist (read-only deprecated keys) but the merged-key
+      // target already matches. The delta pass should be zero-write.
+      const second = await migrateSeniorsAndDisabilities();
+      expect(second.status).toBe('already_run');
+      expect(second.todosCopied).toBe(0);
+    });
+
+    it('importAllData clears the migration marker so imported old-key data is migrated', async () => {
+      // First device: fresh, no_data → no marker.
+      // Then this device imports a snapshot from an OLDER device that
+      // (somehow) carries a marker AND old-key todos that were never
+      // migrated on the source device.
+      const importPayload = {
+        todos: [
+          {
+            id: 'senior-citizens-imported-old-key',
+            moduleKey: 'senior-citizens',
+            todoId: 'imported-old-key',
+            completed: true,
+            completedAt: '2026-04-15T08:00:00.000Z',
+          },
+        ],
+        tables: [],
+        metadata: {
+          [MIGRATION_MARKER_KEY]: '2026-04-10T08:00:00.000Z',
+        },
+      };
+
+      await importAllData(importPayload);
+
+      // Marker must have been cleared by importAllData (codex P1 #1).
+      const markerAfterImport = await getMetadata(MIGRATION_MARKER_KEY);
+      expect(markerAfterImport).toBeUndefined();
+
+      // Migration runs on the imported state and migrates the old-key todo.
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.status).toBe('migrated');
+      expect(result.todosCopied).toBe(1);
+
+      const merged = await getTodo('seniors-and-disabilities', 'imported-old-key');
+      expect(merged?.completed).toBe(true);
+    });
+
+    it('a non-string migration marker is treated as already-set (does not silently re-run)', async () => {
+      // Codex P2 #5: a malformed import or manual IDB poke could leave
+      // the marker as a non-string value. The guard is `marker !== undefined`,
+      // not `isString(marker)`, so we don't silently redo work.
+      await setMetadata(MIGRATION_MARKER_KEY, true);
+
+      // No source data → already_run, not no_data, not migrated.
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.status).toBe('already_run');
+      expect(result.todosCopied).toBe(0);
+    });
+
+    it('merged-key counts after migration match the union of distinct todoIds across old keys', async () => {
+      // Codex P2 #6: tests should assert merged-key totals after migration.
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'count-shared',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'count-shared',
+        completed: true,
+        completedAt: '2026-04-21T08:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'count-senior-only',
+        completed: false,
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'count-disability-only',
+        completed: false,
+        notes: 'tracking',
+      });
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.status).toBe('migrated');
+      expect(result.todosCopied).toBe(3); // 3 distinct todoIds
+      expect(result.collisions).toBe(1); // count-shared collided
+
+      const mergedTodos = await getModuleTodos('seniors-and-disabilities');
+      const mergedIds = mergedTodos.map((t) => t.todoId).sort();
+      expect(mergedIds).toEqual(['count-disability-only', 'count-senior-only', 'count-shared']);
+    });
+  });
+
+  describe('notes preservation (codex P2 #4)', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('concatenates notes from multiple uncompleted entries with distinct notes', async () => {
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'notes-dual',
+        completed: false,
+        notes: 'Senior-side note: call council on aging',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'notes-dual',
+        completed: false,
+        notes: 'Disability-side note: contact VCIL',
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      const merged = await getTodo('seniors-and-disabilities', 'notes-dual');
+      expect(merged?.completed).toBe(false);
+      expect(merged?.notes).toContain('Senior-side note: call council on aging');
+      expect(merged?.notes).toContain('Disability-side note: contact VCIL');
+      expect(merged?.notes).toContain('---');
+    });
+
+    it('does not duplicate notes when both uncompleted entries carry the same note text', async () => {
+      const sharedNote = 'Same note on both sides';
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'notes-shared',
+        completed: false,
+        notes: sharedNote,
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'notes-shared',
+        completed: false,
+        notes: sharedNote,
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      const merged = await getTodo('seniors-and-disabilities', 'notes-shared');
+      expect(merged?.notes).toBe(sharedNote);
+    });
+
+    it('keeps completed-side state AND preserves the uncompleted-side note (regression for codex v2 P2 #5)', async () => {
+      // The completed entry's check + completedAt is authoritative, but
+      // the uncompleted-side note is also user-visible intent and must
+      // not be silently dropped. mergeWinner concats the note onto the
+      // completed primary's notes (which are typically empty).
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'notes-asymmetric',
+        completed: true,
+        completedAt: '2026-04-22T08:00:00.000Z',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'notes-asymmetric',
+        completed: false,
+        notes: 'Need paratransit follow-up',
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      const merged = await getTodo('seniors-and-disabilities', 'notes-asymmetric');
+      expect(merged?.completed).toBe(true);
+      expect(merged?.completedAt).toBe('2026-04-22T08:00:00.000Z');
+      expect(merged?.notes).toBe('Need paratransit follow-up');
+    });
+
+    it('preserves the older completed note when the later-completedAt winner has no notes (codex v3 test-gap closure)', async () => {
+      // Two completed entries; the later-completedAt one is the primary
+      // per pickMigrationWinner, but the older one carries the only note.
+      // mergeWinner must concat that note onto the primary.
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'notes-completed-asymmetric',
+        completed: true,
+        completedAt: '2026-04-15T08:00:00.000Z',
+        notes: 'Initial intake note',
+      });
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'notes-completed-asymmetric',
+        completed: true,
+        completedAt: '2026-04-25T08:00:00.000Z',
+        // No notes on the later-completedAt winner.
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      const merged = await getTodo('seniors-and-disabilities', 'notes-completed-asymmetric');
+      expect(merged?.completed).toBe(true);
+      expect(merged?.completedAt).toBe('2026-04-25T08:00:00.000Z');
+      expect(merged?.notes).toBe('Initial intake note');
+    });
+
+    it('dedupes notes that differ only by surrounding whitespace (regression for codex v2 P2 #4)', async () => {
+      // people-with-disabilities is lexicographically first, so it's the
+      // primary. Its note text is preserved verbatim. The trailing-space
+      // candidate from senior-citizens is recognized as a trim-duplicate
+      // and NOT concatenated — preventing pile-up over repeat migrations.
+      await saveTodo({
+        moduleKey: 'people-with-disabilities',
+        todoId: 'notes-whitespace-dup',
+        completed: false,
+        notes: 'Call council',
+      });
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'notes-whitespace-dup',
+        completed: false,
+        notes: 'Call council ', // trailing space — semantically the same
+      });
+
+      await migrateSeniorsAndDisabilities();
+
+      const merged = await getTodo('seniors-and-disabilities', 'notes-whitespace-dup');
+      expect(merged?.notes).toBe('Call council');
+    });
+  });
+
+  describe('marker hardening (codex v2 P2 #2)', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('a null-valued marker is treated as already-set (does not silently re-run)', async () => {
+      // The guard is `marker !== undefined`, so any non-undefined value
+      // (true, null, an object, a number) counts as "already migrated".
+      // Defends against malformed imports that left a non-string value
+      // at the migration marker key.
+      await setMetadata(MIGRATION_MARKER_KEY, null);
+
+      const result = await migrateSeniorsAndDisabilities();
+      expect(result.status).toBe('already_run');
+      expect(result.todosCopied).toBe(0);
+    });
+  });
+
+  describe('concurrent migrations (codex v2 P2 #3)', () => {
+    beforeEach(async () => {
+      await clearMigrationFixtures();
+    });
+
+    it('a tab serialized after another tab finishes the merge reports already_run, not a misleading migrated:0', async () => {
+      // Simulates the tail-end of a two-tab race: both tabs pre-checked
+      // with no marker, both saw source data. Tab A finished first,
+      // populated the merged key + marker. Tab B's tx now runs second,
+      // sees the existing target, skips writes. Status must be
+      // 'already_run' (zero work) — not 'migrated' (which used to be
+      // returned because hasMarker was captured pre-tx as false).
+      await saveTodo({
+        moduleKey: 'senior-citizens',
+        todoId: 'concurrent-tail',
+        completed: true,
+        completedAt: '2026-04-20T08:00:00.000Z',
+      });
+
+      // Tab A run.
+      const tabA = await migrateSeniorsAndDisabilities();
+      expect(tabA.status).toBe('migrated');
+      expect(tabA.todosCopied).toBe(1);
+
+      // Tab B run with a stale "no marker" view: simulate by clearing
+      // the marker between A's commit and B's start.
+      await deleteMetadata(MIGRATION_MARKER_KEY);
+
+      const tabB = await migrateSeniorsAndDisabilities();
+      expect(tabB.status).toBe('already_run');
+      expect(tabB.todosCopied).toBe(0);
+    });
   });
 });
