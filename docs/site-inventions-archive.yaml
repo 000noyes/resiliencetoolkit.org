@@ -63,7 +63,31 @@ categories:
 
   # 1-5 "Activate, staff...", 1-12 "Mutual Aid Tenets & Checklist",
   # 1-13, 2-1 — site-invented h2/h3/row-header strings with no workbook anchor.
-  invented_h2_headers: []
+  invented_h2_headers:
+    - id: archive-1-13-financial-support-directory-h2
+      module: 1-13
+      location: top of <ModuleLayout> (above the 4-bullet <ul>, line 17 pre-removal)
+      type: invented_h2_headers
+      content: |
+        <h2 class="text-title font-semibold mb-4">Financial support directory</h2>
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-6 + 1-13): paired clean modules (day 19, second commit)'
+      rationale: |
+        Site-authored h2 "Financial support directory" sat above the 4
+        workbook-verbatim bullets. Workbook page 78 (displayed page 39)
+        labels this section "1.13 Financial resources" — which the
+        ModuleLayout already renders via sectionData.title. The extra
+        on-site h2 was an editorial/style addition with no workbook
+        anchor (and a substantive title rephrase, not just a styling
+        wrapper). Class-c per inventory; removed under
+        Source Fidelity HARD INVARIANT class-c firewall + decision a
+        (1a_remove_AND_archive). Archived as a candidate "Step 2 alt
+        section title" — if the registry surfaces a short directory-
+        focused alt title view, the "Financial support directory" string
+        can be re-exposed alongside the workbook canonical without
+        re-editing source.
+      proposed_canonical_field: null
 
   # 1-8 CHW/CHC/Free Clinic topic-branches (healthvermont.gov endpoints
   # vs workbook humanservices.vermont.gov); 1-10 AHS/VDH substitutions;
@@ -483,6 +507,25 @@ categories:
         Renamed on day 18 to the workbook-verbatim heading per the inventory
         `invented_table_titles_pattern` decision. Spec
         docs/source-specs/0-1-going-deeper.md cites workbook p16.
+      proposed_canonical_field: null
+    - id: archive-1-6-info-callout
+      module: 1-6
+      location: top of <ModuleLayout> (above guide-table, lines 18-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-6 + 1-13): paired clean modules (day 19, second commit)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into the per-module day. Same InfoCallout
+        pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5 (days 8-11),
+        and KYC (day 17). Identical text to the archive-1-1-info-callout
+        entry above.
       proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that

@@ -1079,6 +1079,7 @@ modules:
           source_cited: null
           classification: c
           recurring: true
+          status: removed_day_19_second_commit                # archived to docs/site-inventions-archive.yaml → archive-1-6-info-callout
         - type: table.guide-table
           classification: a
           note: "3 sub-sections (Emergency shuttles, Shared use vehicles, Heavy equipment directory) — all match workbook verbatim, rendered as <tr colspan=2> row headers. Unlike 1-5 invented row-header, these are faithful."
@@ -1104,9 +1105,12 @@ modules:
     missing_sections_check: ok
     table_titles_check: ok                                 # all sub-section titles match workbook
 
-    class_c_count: 1                                       # InfoCallout only; folder-header pinned separately
+    class_c_count: 0                                       # was 1 (InfoCallout); closed day 19 second commit. Folder-header pinned separately.
     scope: 1a
     spec_required: true
+    spec_path: "docs/source-specs/1-6-vehicles-and-equipment.md"   # written day 19 second commit
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
     innovations: []                                        # no new patterns
 
     notes: >
@@ -1114,9 +1118,10 @@ modules:
       no invented content, no internal-anchor substitutions, no
       placement drift. 16 Todos verbatim-match; 3 ExternalLinks wired
       correctly; 3 sub-section row-headers match workbook structure
-      faithfully. Only class-c item is the recurring InfoCallout
-      "How this works" meta-instruction. Running total 48 across 7
-      modules.
+      faithfully. Only class-c item was the recurring InfoCallout
+      "How this works" meta-instruction — removed 2026-04-29 in the
+      day-19 second commit (paired with 1-13). Running total 48 across
+      7 modules; 1-6 contributes 0 unresolved class-c after closure.
 
   1-7:
     title: "Sanitation and Hygiene"
@@ -2280,7 +2285,8 @@ modules:
           workbook_title: "1.13 Financial resources"
           classification: c
           decision: 1a_remove_AND_archive
-          archive_destination: "docs/site-inventions-archive.yaml → 1-13.invented_h2"
+          archive_destination: "docs/site-inventions-archive.yaml → archive-1-13-financial-support-directory-h2"
+          status: removed_day_19_second_commit             # closed 2026-04-29
         - type: ul_li_bullets
           count: 4
           classification: a                                # all 4 bullets verbatim-match workbook
@@ -2295,16 +2301,24 @@ modules:
     missing_sections_check: ok
     table_titles_check: na                                 # no tables
 
-    class_c_count: 1                                       # just the invented h2
+    class_c_count: 0                                       # was 1 (invented h2); closed day 19 second commit
     scope: 1a
     spec_required: true
+    spec_path: "docs/source-specs/1-13-financial-resources.md"   # written day 19 second commit
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
     innovations: []
 
     notes: >
       Walked 2026-04-24. Short, clean module. Only 1 class-c: invented
       h2 "Financial support directory" (workbook title is "1.13
-      Financial resources"). Archive + restore per user directive.
-      Running total 116 / 142 across 14 modules.
+      Financial resources"). Archive + restore per user directive —
+      h2 removed 2026-04-29 in the day-19 second commit (paired with
+      1-6). After removal the page renders as a single <ul> of 4
+      verbatim bullets directly under the ModuleLayout title (which
+      surfaces "Financial Resources" via sectionData.title). Running
+      total 116 / 142 across 14 modules; 1-13 contributes 0 unresolved
+      class-c after closure.
 
   2-1:
     title: "Basic Needs"
