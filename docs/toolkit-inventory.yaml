@@ -2073,9 +2073,11 @@ modules:
     missing_sections_check: partial                        # 3 items dropped (see components_wired)
     table_titles_check: na
 
-    class_c_count: 4                                       # AHS/VDH URL sub + 3 dropped items; folder-header pinned
+    class_c_count: 0                                       # day-23: AHS/VDH URL restored + 3 items restored; folder-header still pinned (deferred)
     scope: 1a
-    spec_required: true
+    spec_required: shipped                                 # docs/source-specs/1-10-volunteer-management.md (day 23, citing PDF pp69-70)
+    structural_fidelity:
+      verdict: clean                                       # day-23: 4/4 class-c closed
     innovations:
       - flag: topic_branch_vt_resource_another_instance
         description: >
@@ -2101,6 +2103,21 @@ modules:
       link; Count-volunteer-hours bullet). No paragraph-level rewrites
       on kept content. 5 ExternalLinks wired (4 match; 1 substituted).
       Running total 106 across 11 modules.
+
+      Day-23 (2026-04-29): 4 class-c items closed in `feat(1-10 + 1-11):
+      paired modules`. AHS/VDH URL restored to workbook URL
+      (humanservices.vermont.gov/about-us/field-services); alt_url archived
+      under id archive-1-10-ahs-vdh-url-substitution. Three dropped items
+      restored at workbook positions: "Youth organizations" sub-list item
+      (between Schools and American Legion); "See Youth engagement in flood
+      recovery…" tail sentence + ExternalLink on Managing volunteers row 1;
+      "Count volunteer hours…" bullet between work-crews and feed-volunteers.
+      All three drops archived under
+      dropped_workbook_items_flagged_for_restore. Spec
+      docs/source-specs/1-10-volunteer-management.md authored citing PDF
+      pp69-70; 6 in-prose ExternalLinks enumerated in spec.links[] (folder
+      header excluded — pinned for ModuleLayout button surface). class_c_count
+      4 → 0. structural_fidelity.verdict: clean.
 
   1-11:
     title: "Flood Recovery Supplies and Work"
@@ -2194,9 +2211,11 @@ modules:
     missing_sections_check: ok                             # subsection headers all present; only link drops
     table_titles_check: ok
 
-    class_c_count: 2                                       # InfoCallout + House-Gutting file link drop; 3 folder re-links pinned separately
+    class_c_count: 0                                       # day-23: InfoCallout removed + House-Gutting link restored; 3 folder re-links still pinned separately (deferred)
     scope: 1a
-    spec_required: true
+    spec_required: shipped                                 # docs/source-specs/1-11-flood-recovery-supplies-and-work.md (day 23, citing PDF pp73-77)
+    structural_fidelity:
+      verdict: clean                                       # day-23: 2/2 class-c closed
     innovations:
       - flag: workbook_subsection_headers_as_folder_re_links
         description: >
@@ -2216,6 +2235,19 @@ modules:
       sub-headings all match workbook. 2 of 2 wired ExternalLinks
       match workbook URLs. Structurally faithful. Running total 108
       across 12 modules.
+
+      Day-23 (2026-04-29): 2 class-c items closed in `feat(1-10 + 1-11):
+      paired modules`. InfoCallout removed (decision o; recurring sweep);
+      site-invented form archived under id archive-1-11-info-callout. House
+      Gutting subsection-label link restored via <ExternalLink> wrapping the
+      bold "House Gutting" markup in the Gutting subsection definition
+      paragraph; Drive file URL (1EYIHSzB…) archived under id
+      archive-1-11-house-gutting-link-drop. Spec
+      docs/source-specs/1-11-flood-recovery-supplies-and-work.md authored
+      citing PDF pp73-77; 3 in-prose ExternalLinks enumerated in spec.links[]
+      (folder header + 3 folder-re-link subsection headers excluded — all
+      pinned for design-review under the folder-header group). InfoCallout
+      import removed. class_c_count 2 → 0. structural_fidelity.verdict: clean.
 
   1-12:
     title: "Mutual Aid/Neighbor to Neighbor (N2N)"

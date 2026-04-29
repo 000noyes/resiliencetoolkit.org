@@ -215,6 +215,29 @@ categories:
         Archived for forward-compat (the site root URL is functionally
         equivalent but not workbook-canonical).
       proposed_canonical_field: null
+    - id: archive-1-10-ahs-vdh-url-substitution
+      module: 1-10
+      location: 1-10.astro Recruiting volunteers sub-list, AHS/VDH bullet (line 30 pre-day-23)
+      type: alt_urls
+      content: |
+        Anchor: "AHS / VDH regional field Directors can be a conduit to local organizations"
+        Site URL pre-day-23: https://www.healthvermont.gov/about-us/contact-us
+        Workbook URL (PDF p69, displayed p34): https://humanservices.vermont.gov/about-us/field-services
+        Workbook context: anchor wraps the full sentence about AHS/VDH regional
+        field directors and links to the VT Agency of Human Services field-services
+        directory. Site swapped that for the VT Department of Health contact-us page.
+      inferred_source: workbook PDF p69 AHS/VDH anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Pure URL substitution. Same topic-branch pattern as 1-8 CHW/CHC/Free Clinic
+        (healthvermont.gov picked over the workbook's other VT-gov sub-domain).
+        Per inventory `decision: 1a_restore_workbook_url_strict`. Archived as
+        alt_url so a future topic-branch view can re-expose healthvermont.gov as
+        a "site-curated" supplement alongside the workbook canonical link
+        (innovations.topic_branch_vt_resource_another_instance — second member
+        of the 1-8 cluster).
+      proposed_canonical_field: null
 
   # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
   # site-authored paragraphs/sentences not in the workbook.
@@ -749,6 +772,27 @@ categories:
         `lep-populations-lep-after-healthcare` — verified non-colliding with
         existing canonical keys + fixtures).
       proposed_canonical_field: null
+    - id: archive-1-11-info-callout
+      module: 1-11
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        and KYC (day 17). Identical text to the archive-1-1-info-callout,
+        archive-1-6-info-callout, archive-1-7-info-callout, archive-1-8-info-callout
+        entries above.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
@@ -1128,6 +1172,66 @@ categories:
         Per decision 1a_restore_as_Todos. Restored verbatim as <Todo> with
         new id `senior-vcil` under moduleKey `seniors-and-disabilities`.
         Composite key `seniors-and-disabilities-senior-vcil` is new.
+      proposed_canonical_field: null
+    - id: archive-1-10-youth-organizations-drop
+      module: 1-10
+      location: 1-10.astro Recruiting volunteers sub-list (between Schools and American Legion, line 27 pre-day-23)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p69 (displayed p34) Recruiting volunteers sub-list
+        item 5 (between Schools and American Legion): "Youth organizations"
+      inferred_source: workbook PDF p69 Recruiting volunteers sub-list row 5
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site Recruiting volunteers sub-list dropped this single item entirely
+        (workbook has 9 items, site had 8 — Mutual aid, Local companies, Faith
+        communities, Schools, American Legion, Elks Club, Rotary Club, AHS/VDH).
+        Per inventory `decision: 1a_restore_as_list_item`. Restored verbatim as
+        a <li> in the existing nested <ul> at workbook-correct position
+        (between Schools and American Legion). Sub-list is plain prose (no
+        Todo / no moduleKey), so no fixture or canonical-set impact.
+      proposed_canonical_field: null
+    - id: archive-1-10-youth-engagement-sentence-drop
+      module: 1-10
+      location: 1-10.astro Managing volunteers, first bullet "People will want to bring children..." tail (line 64 pre-day-23)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p70 (displayed p35) Managing volunteers col 1 row 1 tail:
+        "See Youth engagement in flood recovery for more information about
+        involving young people in helpful, safe ways."
+        Anchor "Youth engagement in flood recovery" wraps a Drive file URL:
+        https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open
+      inferred_source: workbook PDF p70 Managing volunteers row 1 tail sentence
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site dropped the workbook's tail sentence + ExternalLink entirely.
+        Per inventory `decision: 1a_restore_full_workbook_sentence_with_link` /
+        `1a_restore_sentence_with_ExternalLink`. Restored verbatim as appended
+        sentence on the existing children bullet, with <ExternalLink> wrapping
+        "Youth engagement in flood recovery" anchor text. Plain prose (no Todo /
+        no moduleKey), so no fixture or canonical-set impact.
+      proposed_canonical_field: null
+    - id: archive-1-10-count-volunteer-hours-bullet-drop
+      module: 1-10
+      location: 1-10.astro Managing volunteers list (between organize-into-work-crews and feed-volunteers bullets, line 71 pre-day-23)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p70 (displayed p35) Managing volunteers col 1 row 9:
+        "Count volunteer hours, even if a rough estimate. This can be tracked
+        through collecting work sheets from volunteer crews or through SignUp
+        Genius. Municipalities will apply for grants that require volunteer
+        hours as part of the application. Rough estimates are okay!"
+      inferred_source: workbook PDF p70 Managing volunteers row 9
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site dropped this entire bullet. Workbook lists 10 Managing volunteers
+        items; site had 9. Per inventory `decision: 1a_restore_bullet`. Restored
+        verbatim as a new <li> at workbook-correct position (between work-crews
+        and feed-volunteers bullets). Plain prose (no Todo / no moduleKey),
+        so no fixture or canonical-set impact.
       proposed_canonical_field: null
 
   # Workbook section orderings the site reshuffled away from. Tracked so
@@ -1536,4 +1640,31 @@ categories:
         Workbook p58 wraps "FSA & NRCS Offices" in a USDA Farmers.gov anchor
         (FSA + NRCS portal). Per decision 1a_restore_as_Todo_plus_ExternalLink.
         Restored via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-11-house-gutting-link-drop
+      module: 1-11
+      location: 1-11.astro Gutting subsection definition paragraph (line 257 pre-day-23, "<strong>House Gutting</strong> is the process of removing sheetrock...")
+      type: dropped_workbook_links
+      content: |
+        Anchor: "House Gutting" (within "House Gutting is the process of removing
+        sheetrock, insulation and water-logged permeable materials in order to
+        expose joists, studs, subfloor, etc.")
+        URL:    https://drive.google.com/file/d/1EYIHSzBZjEisON-7tjwueVQ1OS1EcCqs/view?usp=drive_link
+        Site state pre-day-23: <strong>House Gutting</strong> rendered as plain
+        bold text — no <a> wrapper.
+      inferred_source: workbook PDF p74 (displayed p37) Gutting subsection definition paragraph
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Workbook p74 wraps the "House Gutting" subsection-label phrase (the
+        bold lead-in of the Gutting subsection definition paragraph) in a
+        Drive-file anchor pointing at the House Gutting specific template
+        — distinct from the section folder URL. Per inventory `decision:
+        1a_restore_as_inline_ExternalLink_on_subsection_label`. Restored via
+        <ExternalLink> wrapping the existing <strong>House Gutting</strong>
+        markup. Note: 3 of the 4 subsection re-links (Pumping, Mucking, Mold
+        remediation) all point at the SAME 1.11 folder URL and remain
+        deferred under `pin_with_folder_header` — only the House Gutting
+        subsection label re-links to a distinct file URL, which is why it
+        alone surfaces in this commit.
       proposed_canonical_field: null
