@@ -1,7 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
-import InfoCallout from '@/components/InfoCallout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -14,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-7-sanitation-and-hygiene.md page: 52 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <table class="guide-table">
         <thead>
           <tr>
@@ -41,7 +38,7 @@ const sectionData: SectionData = {
               <p>Identify places for public access to safe sanitation and hygiene.</p>
               <div class="guide-table__checklist">
                 <Todo id="public-bathrooms-directory" moduleKey="sanitation-hygiene" client:load>
-                  Create a directory of local public buildings with bathrooms, sinks and/or showers
+                  <ExternalLink href="https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link">Create a directory of local public buildings</ExternalLink> with bathrooms, sinks and/or showers
                   that could be made available to disaster survivors and volunteers.
                 </Todo>
                 <Todo id="handwashing-plans" moduleKey="sanitation-hygiene" client:load>
@@ -86,7 +83,7 @@ const sectionData: SectionData = {
                   water.
                 </Todo>
                 <Todo id="water-containers-spigot" moduleKey="sanitation-hygiene" client:load>
-                  Purchase water containers with a side spigot, or build them.
+                  Purchase water containers with a side spigot, or <ExternalLink href="https://drive.google.com/file/d/14xHhFJ-GLWtaBJpPCBwpheO-rYCwtHd-/view?usp=drive_link">build them</ExternalLink>.
                 </Todo>
               </div>
               <p>
@@ -95,7 +92,7 @@ const sectionData: SectionData = {
               <div class="guide-table__checklist">
                 <Todo id="bucket-toilet" moduleKey="sanitation-hygiene" client:load>
                   For short-term use, all you need is a bucket with a lid and dry material like sawdust,
-                  wood shavings or wood chips. Or, build a composting toilet box.
+                  wood shavings or wood chips. Or, build a <ExternalLink href="https://drive.google.com/file/d/1zDFvshC71Se1-9a4JiTaGa0IHKqQH4e1/view?usp=drive_link">composting toilet box</ExternalLink>.
                 </Todo>
                 <Todo id="toilet-supplies" moduleKey="sanitation-hygiene" client:load>
                   Stock with period products and toilet paper
@@ -131,11 +128,11 @@ const sectionData: SectionData = {
               <p>Identify places for public, low-cost and preferably free access to do laundry</p>
               <div class="guide-table__checklist">
                 <Todo id="laundry-directory" moduleKey="sanitation-hygiene" client:load>
-                  Create a directory of households, businesses and public spaces with washers and
+                  <ExternalLink href="https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link">Create a directory</ExternalLink> of households, businesses and public spaces with washers and
                   dryers
                 </Todo>
                 <Todo id="free-laundry-services" moduleKey="sanitation-hygiene" client:load>
-                  Contact local churches and other orgs to set up free laundry services. Example here.
+                  Contact local churches and other orgs to set up free laundry services. <ExternalLink href="https://barrecongregational.org/laundry-love">Example here</ExternalLink>.
                 </Todo>
               </div>
             </td>
@@ -157,7 +154,7 @@ const sectionData: SectionData = {
                   Laundry baskets/bags
                 </Todo>
                 <Todo id="portable-laundry-trailers" moduleKey="sanitation-hygiene" client:load>
-                  Portable laundry trailers
+                  <ExternalLink href="https://www.portablerestroomtrailers.com/products/trailer-types/laundry-trailers.html">Portable laundry trailers</ExternalLink>
                 </Todo>
                 <Todo id="off-grid-wash-systems" moduleKey="sanitation-hygiene" client:load>
                   Off grid hand powered or low voltage (solar power) wash systems

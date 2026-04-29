@@ -1235,9 +1235,12 @@ modules:
     missing_sections_check: ok
     table_titles_check: ok
 
-    class_c_count: 7                                       # InfoCallout + 6 in-prose link drops; folder-header pinned separately
+    class_c_count: 0                                       # was 7 (InfoCallout + 6 in-prose link drops); closed day 20. Folder-header pinned separately.
     scope: 1a
     spec_required: true
+    spec_path: "docs/source-specs/1-7-sanitation-and-hygiene.md"   # written day 20
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
     innovations: []                                        # no new patterns; same "zero-hrefs" magnitude as 1-4
 
     notes: >
@@ -1245,10 +1248,14 @@ modules:
       in-prose links dropped (Todos: public-bathrooms-directory,
       water-containers-spigot, bucket-toilet, laundry-directory,
       free-laundry-services, portable-laundry-trailers). Zero
-      ExternalLinks on site — structurally faithful, link-wise
-      systematically under-wired. 23 Todos verbatim-match; 2
-      row-headers + 3 Stuff sub-heads all match workbook.
-      Running total 55 across 8 modules.
+      ExternalLinks on site pre-day-20 — structurally faithful,
+      link-wise systematically under-wired. 23 Todos verbatim-match; 2
+      row-headers + 3 Stuff sub-heads all match workbook. All 6
+      in-prose links restored 2026-04-29 (day 20) via ExternalLink
+      wrappers; recurring InfoCallout removed in same commit per
+      decision o (archive id: archive-1-7-info-callout). Running total
+      48 across 8 modules; 1-7 contributes 0 unresolved class-c after
+      closure.
 
   1-8:
     title: "Populations with Specific Needs"

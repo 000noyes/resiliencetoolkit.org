@@ -527,6 +527,26 @@ categories:
         and KYC (day 17). Identical text to the archive-1-1-info-callout
         entry above.
       proposed_canonical_field: null
+    - id: archive-1-7-info-callout
+      module: 1-7
+      location: top of <ModuleLayout> (above guide-table, lines 18-20 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-7): 6 in-prose link drops + InfoCallout removal (day 20)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into the per-module day. Same InfoCallout
+        pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5 (days 8-11),
+        1-6 (day 19 second commit), and KYC (day 17). Identical text to
+        the archive-1-1-info-callout and archive-1-6-info-callout entries
+        above.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
