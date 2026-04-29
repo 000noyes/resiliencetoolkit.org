@@ -2515,7 +2515,7 @@ modules:
     workbook_pages: "40-41"
     section_pdf: "public/toolkit/sections/Section 2.1_2025 Resilience Hub Toolkit.pdf"
     section_pdf_pages: 2
-    chapter_intro_missing: true                            # Baseline Community Resilience chapter-level intro paragraph on workbook p40 is missing; site /modules/baseline-resilience/index.astro has invented summary instead
+    chapter_intro_missing: false                           # 2026-04-29 day-25: workbook chapter-intro paragraph (PDF p80 / displayed p40) restored verbatim as moduleData.summary on /modules/baseline-resilience/index.astro; site-invented summary archived under invented_prose (archive-baseline-resilience-chapter-intro-invented-summary). Was: true.
     workbook_anchor_urls:
       - anchor: "2.1 Basic needs"
         url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
@@ -2658,6 +2658,14 @@ modules:
         classification: c
         decision: 1a_restore_workbook_intro_AND_archive_site_summary
         archive_destination: "docs/site-inventions-archive.yaml → baseline-resilience-chapter.invented_summary"
+        status: archived_and_restored_day_25                  # 2026-04-29: workbook chapter-intro paragraph restored verbatim as moduleData.summary; site-invented summary archived under invented_prose (archive-baseline-resilience-chapter-intro-invented-summary). PDF p80 (displayed p40) source.
+      - location: "/modules/emergency-preparedness/index.astro summary"
+        workbook: "Emergency systems often spring into existence when disaster strikes and not a moment sooner. Prepare your community by doing emergency planning work when the sun is shining. Equipping your neighborhood, town, and region to be ready in emergencies also builds baseline resilience."
+        site: "Emergency systems often spring into existence when disaster strikes and not a moment sooner. Prepare your community by doing emergency planning work when the sun is shining. Equipping your neighborhood, town, and region to be ready in emergencies also builds baseline resilience."
+        drift_type: none
+        classification: a
+        decision: clean_no_action_required
+        status: retro_audit_clean_day_25                       # 2026-04-29 day-25 retro-audit (decision-m carve-out): site summary matches workbook chapter-intro paragraph VERBATIM. PDF p1145 (displayed p15) Emergency Preparedness and Response chapter intro source. No drift, no edit needed.
 
     section_order_check: ok                                # 7 sections match workbook order
     missing_sections_check: partial                        # 4 Mental Health items dropped
@@ -2772,9 +2780,12 @@ modules:
     missing_sections_check: ok
     table_titles_check: ok                                 # Tech lending library Systems/Stuff table matches
 
-    class_c_count: 3                                       # InfoCallout + tool-library-research flatten + editorial additions (combined)
+    class_c_count: 0                                       # 2026-04-29 day-25: InfoCallout removed + tool-library-research un-flattened (3 class-c → 0); see notes
+    structural_fidelity:
+      verdict: clean                                       # day-25: parent + 4 sub-bullets restored as separate Todos
     scope: 1a
-    spec_required: true
+    spec_required: shipped                                 # docs/source-specs/2-2-shared-tools.md
+    spec_path: docs/source-specs/2-2-shared-tools.md
     innovations: []
 
     notes: >
@@ -2783,6 +2794,32 @@ modules:
       lending library "Read up on best practices" with 4 sub-
       bullets is merged into 1 site Todo with editorial glue.
       Running total 131 across 16 modules.
+
+      Day-25 (2026-04-29) paired-light Step-2 namespace restoration
+      (closeout doc §2 row 25): 3 class-c closed —
+      (1) recurring InfoCallout removed + import dropped (decision o;
+          archive-2-2-info-callout under invented_prose; identical text
+          to the archive-1-1/1-6/1-7/1-8/1-11/1-12/2-3/KYC InfoCallouts);
+      (2) tool-library-research flatten un-flattened — workbook's
+          parent "Read up on best practices and existing ways of doing
+          this." + 4 sub-bullets (New Suns/Cooperation VT, Library of
+          Things toolkit, myTurn, Tool Library Alliance) restored as 5
+          separate Todos at the section level (parent + ml-6 indent for
+          4 children); editorial glue ("See also:", "for lots of
+          resources") archived under invented_prose
+          (archive-2-2-tool-library-research-flatten);
+      (3) editorial-additions class-c from the original walk was the
+          editorial glue itself, archived in same entry as #2 (combined).
+      4 new Todo IDs added (tool-library-new-suns, tool-library-shareable,
+      tool-library-myturn, tool-library-alliance) under existing moduleKey
+      "shared-tools" — additive, safe per data-preservation contract.
+      Spec authored: docs/source-specs/2-2-shared-tools.md (PDF page 86
+      via R13 page-num convention; spec.title "Tool lending library" per
+      R15 first-h2 idiom; subheadings: ["Tech lending library", "Internet
+      and phone access"]; 10 links; require_cluster: false). Citation
+      wired via HTML comment line 17 of 2-2.astro. Gates: vitest 486/486,
+      astro 0/0/10, verify 24 entries exit 0 all pass. Running total
+      128 across 16 modules (− 3 closed by 2-2).
 
   2-3:
     title: "Community Building"
@@ -2932,9 +2969,12 @@ modules:
     missing_sections_check: ok
     table_titles_check: ok                                 # "Flood and disaster response" / "Recovery and Coordination" headers match
 
-    class_c_count: 3                                       # InfoCallout + business-dir URL sub + tradesfolk-dir link drop
+    class_c_count: 0                                       # 2026-04-29 day-25: InfoCallout removed + business-dir URL restored + tradesfolk-dir link restored (3 class-c → 0); see notes
+    structural_fidelity:
+      verdict: clean                                       # day-25: 9-h2 layout intact; spec uses "Business directory" h2 as title (R10 drop-cap workaround, see spec notes)
     scope: 1a
-    spec_required: true
+    spec_required: shipped                                 # docs/source-specs/2-3-community-building.md
+    spec_path: docs/source-specs/2-3-community-building.md
     innovations: []
 
     notes: >
@@ -2944,3 +2984,38 @@ modules:
       file → folder) + tradesfolk-directory link drop. All 62 Todos
       + 9 h2 sections + skill-building 2x2+Other table match workbook
       verbatim. Running total 134 across 17 modules.
+
+      Day-25 (2026-04-29) paired-light Step-2 namespace restoration
+      (closeout doc §2 row 25): 3 class-c closed —
+      (1) recurring InfoCallout removed + import dropped (decision o;
+          archive-2-3-info-callout under invented_prose; identical text
+          to the archive-1-1/1-6/1-7/1-8/1-11/1-12/2-2/KYC InfoCallouts);
+      (2) Business directory URL substitution restored — site swapped
+          workbook-cited specific Business Directory template file
+          (https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/)
+          for parent 2.3 Community Building folder URL (the URL reused
+          for 5 other anchors in this section); restored to workbook
+          canonical per 1a_restore_workbook_url_strict; site-form
+          archived under alt_urls
+          (archive-2-3-business-directory-url-substitution);
+      (3) Tradesfolk directory link drop restored — workbook anchor
+          "Create a directory" wrapped a specific Tradesfolk Directory
+          template file
+          (https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/);
+          site rendered as plain text with no <a> wrapper; restored via
+          <ExternalLink> per 1a_restore_as_ExternalLink; site-form
+          archived under dropped_workbook_links
+          (archive-2-3-tradesfolk-directory-link-drop).
+      Spec authored: docs/source-specs/2-3-community-building.md
+      (PDF page 88-90 via R13 page-num convention; spec.title
+      "Business directory" per R10 drop-cap workaround — first h2
+      "Local and regional governance and coordination" starts with
+      drop-cap "L" that pdftotext fragments below 0.85 bestMatchScore;
+      "Business directory" is contiguous in PDF text and is one of
+      the 9 h2s on the page, satisfying R15 titleMatches. The other
+      8 h2s including "Local and regional governance and coordination"
+      are in subheadings[]. 29 links + 1 section-anchor field;
+      require_cluster: false). Citation wired via HTML comment line 17
+      of 2-3.astro. Gates: vitest 486/486, astro 0/0/10, verify 24
+      entries exit 0 all pass. Running total 125 across 17 modules
+      (− 3 closed by 2-3).

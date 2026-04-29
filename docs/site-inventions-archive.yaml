@@ -490,6 +490,36 @@ categories:
         (innovations.topic_branch_vt_resource_another_instance — second member
         of the 1-8 cluster).
       proposed_canonical_field: null
+    - id: archive-2-3-business-directory-url-substitution
+      module: 2-3
+      location: 2-3.astro Business directory section, Todo id="business-directory" (line 91-93 pre-day-25, "Create a directory of this information." anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Create a directory of this information." (within "Connect with
+        local businesses to learn about what services they offer, and how
+        they can help people in your community. Create a directory of this
+        information.")
+        Site URL pre-day-25: https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4
+        Workbook URL (PDF p88, displayed p43): https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link
+        Workbook context: anchor wraps "Create a directory" within the
+        Business directory section's first Todo, linking to a specific
+        Business Directory template file. Site swapped that for the parent
+        2.3 Community Building folder URL (the same URL used for 5 other
+        anchors in this section).
+      inferred_source: workbook PDF p88 Business directory anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Pure URL substitution. Site swapped the workbook-cited specific
+        Business Directory template file for the parent 2.3 Community
+        Building folder URL (which the site already reuses for Institutional
+        allies + Community spokespeople + de-escalation training-how-to-
+        intervene). Per inventory `decision: 1a_restore_workbook_url_strict`.
+        Restored to the workbook-canonical specific file URL. Archived as
+        alt_url so a future topic-branch view can re-expose the parent
+        folder URL as a "browse all 2.3 templates" supplement alongside the
+        workbook canonical link.
+      proposed_canonical_field: null
 
   # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
   # site-authored paragraphs/sentences not in the workbook.
@@ -1066,6 +1096,112 @@ categories:
         archive-1-1-info-callout, archive-1-6-info-callout,
         archive-1-7-info-callout, archive-1-8-info-callout,
         archive-1-11-info-callout entries above.
+      proposed_canonical_field: null
+    - id: archive-2-2-info-callout
+      module: 2-2
+      location: top of <ModuleLayout> (above first <section>, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        1-10 + 1-11 (day 23), 1-12 (day 24), and KYC (day 17). Identical text
+        to the archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout,
+        archive-1-11-info-callout, archive-1-12-info-callout entries above.
+        Day-25 first 2-x ("baseline-resilience") namespace InfoCallout removal.
+      proposed_canonical_field: null
+    - id: archive-2-2-tool-library-research-flatten
+      module: 2-2
+      location: 2-2.astro Tool lending library section, Todo id="tool-library-research" (line 35-37 pre-day-25)
+      type: invented_prose
+      content: |
+        Read up on best practices and existing ways of doing this. New Suns
+        Community Center (Thetford) and Cooperation Vermont (Marshfield) have
+        tool libraries. See also: <ExternalLink>Library of Things toolkit from
+        Shareable</ExternalLink>, <ExternalLink>myTurn</ExternalLink> (online
+        tool for managing tool sharing), and <ExternalLink>Tool Library
+        Alliance</ExternalLink> for lots of resources.
+      inferred_source: workbook PDF p86 (displayed p42) Tool lending library "Read up on best practices..." parent + 4 sub-bullets
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Workbook PDF p86 has a parent bullet "Read up on best practices and
+        existing ways of doing this." with 4 sub-bullets:
+          1. New Suns Community Center (Thetford) and Cooperation Vermont
+             (Marshfield) have tool libraries.
+          2. Library of Things toolkit from Shareable
+          3. myTurn, online tool for managing tool sharing
+          4. Tool Library Alliance - lots of resources here
+        Site flattened these into a single Todo joining the 4 sub-bullets in
+        prose with editorial glue ("See also:" before sub-bullet 2, comma-and
+        join, "for lots of resources" replacing workbook's "- lots of
+        resources here"). Per inventory `decision: 1a_restore_4_sub_bullets`.
+        Day-25 restores the parent + 4 sub-bullets as separate Todos.
+        Archived to document the editorial-flattening site form. The 3
+        ExternalLinks (Library of Things, myTurn, Tool Library Alliance)
+        are preserved verbatim in the restored sub-bullets — only the
+        editorial-prose glue is removed.
+      proposed_canonical_field: null
+    - id: archive-2-3-info-callout
+      module: 2-3
+      location: top of <ModuleLayout> (above first <section>, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern as archive-2-2-info-callout (this commit) and
+        all prior InfoCallout removals from 1-1/1-2/1-3/1-4/1-5/1-6/1-7/1-8/
+        1-10/1-11/1-12 + KYC. Day-25 second 2-x ("baseline-resilience")
+        namespace InfoCallout removal — paired with archive-2-2-info-callout.
+      proposed_canonical_field: null
+    - id: archive-baseline-resilience-chapter-intro-invented-summary
+      module: baseline-resilience
+      location: src/pages/modules/baseline-resilience/index.astro moduleData.summary (lines 6-7 pre-day-25)
+      type: invented_prose
+      content: |
+        Build everyday resilience through shared resources, community care,
+        and organizing practices that keep people safe before disaster strikes.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Decision-m carve-out (roadmap §7 line 476): chapter-intro drift on
+        baseline-resilience/index.astro. Site rendered an invented one-line
+        editorial summary ("Build everyday resilience through shared
+        resources...") instead of the workbook chapter intro paragraph from
+        PDF page 80 (displayed page 40). Workbook canonical:
+          "The material in this section builds on systems and stuff outlined
+          in the Emergency Preparedness and Response section to deepen
+          resilience in the day-to-day. Many people in our communities are
+          in crisis all the time, and working towards a reality in which
+          everyone is safe and has their needs met as a baseline means we
+          can all be more resilient when acute disaster strikes."
+        Per inventory line 2655 + roadmap §7 line 476 + closeout doc §2
+        row-25 decision-m carve-out. Day-25 restores the workbook chapter
+        intro verbatim as moduleData.summary. Archived to document the
+        editorial site-form summary as a candidate movement-canon supplement.
+        Companion retro-audit on emergency-preparedness/index.astro (day-25
+        same commit) confirmed CLEAN — site summary already matches workbook
+        PDF p1145 verbatim ("Emergency systems often spring into existence...
+        builds baseline resilience.").
       proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
@@ -1987,4 +2123,27 @@ categories:
         deferred under `pin_with_folder_header` — only the House Gutting
         subsection label re-links to a distinct file URL, which is why it
         alone surfaces in this commit.
+      proposed_canonical_field: null
+    - id: archive-2-3-tradesfolk-directory-link-drop
+      module: 2-3
+      location: 2-3.astro Tradesfolk directory section, Todo id="tradesfolk-directory" (line 105-107 pre-day-25, "Create a directory" phrase)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Create a directory" (within "Create a directory of trusted
+        local (or almost local) contractors, electricians, plumbers, land
+        movers, haulers, structural engineers, etc. that could be called
+        any day or during disasters.")
+        URL: https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link
+        Site state pre-day-25: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p88 (displayed p43) Tradesfolk directory section first Todo
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Workbook PDF p88 wraps "Create a directory" within the Tradesfolk
+        directory section's first Todo in a Drive-file anchor pointing at a
+        specific Tradesfolk Directory template file. Site dropped the link,
+        rendering "Create a directory" as plain text. Per inventory
+        `decision: 1a_restore_as_ExternalLink`. Restored via <ExternalLink>
+        wrapping the "Create a directory" phrase. Archived to document the
+        dropped-link site form.
       proposed_canonical_field: null
