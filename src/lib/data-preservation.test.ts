@@ -46,6 +46,7 @@ const CANONICAL_MODULE_KEYS = new Set([
   'children-disaster',
   'senior-citizens',
   'people-with-disabilities',
+  'seniors-and-disabilities',
   'lep-populations',
   'warming-cooling-shelter',
   'farm-animals',
@@ -87,7 +88,7 @@ describe('Data Preservation', () => {
   });
 
   it('canonical moduleKey set has not shrunk (no keys removed)', () => {
-    expect(CANONICAL_MODULE_KEYS.size).toBe(21);
+    expect(CANONICAL_MODULE_KEYS.size).toBe(22);
   });
 
   it('every section file with interactive components has a moduleKey', () => {
