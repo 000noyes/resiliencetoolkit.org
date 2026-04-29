@@ -722,6 +722,33 @@ categories:
         Drift type added_words per inventory paragraph_drift item 2.
         Restored verbatim.
       proposed_canonical_field: null
+    - id: archive-1-8-lep-after-access-item-merging
+      module: 1-8
+      location: 1-8.astro LEP After Disaster Todo id="lep-after-access" (line 431)
+      type: invented_prose
+      content: |
+        Site form pre-day-21b (single Todo): "Ensure individuals have access
+        to appropriate needs. Do individuals have healthcare needs?"
+        Workbook PDF p57 has these as TWO SEPARATE list items (After Disaster
+        column 1):
+          - "Ensure individuals have access to appropriate needs"
+          - "Do individuals have healthcare needs?"
+      inferred_source: workbook PDF p57 (displayed p29) After Disaster col 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Drift type two_workbook_items_merged_into_one_site_todo per inventory
+        paragraph_drift item 4. Per decision 1a_split_back_into_2_Todos. The
+        single merged Todo is split back into 2 separate <Todo> elements
+        preserving the workbook's column-1 list ordering. Original site
+        composite key `lep-populations-lep-after-access` keeps the FIRST item
+        ("Ensure individuals have access to appropriate needs.") so existing
+        user check-state for that prompt is preserved; the SECOND item
+        ("Do individuals have healthcare needs?") gets a new id
+        `lep-after-healthcare` (composite key
+        `lep-populations-lep-after-healthcare` — verified non-colliding with
+        existing canonical keys + fixtures).
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
@@ -1053,6 +1080,55 @@ categories:
         section uses the Seniors Todos as base, so the drop bites; the
         full workbook sentence + URL is restored on the merged Todo).
       proposed_canonical_field: null
+    - id: archive-1-8-senior-asl-drop
+      module: 1-8
+      location: 1-8.astro merged seniors-and-disabilities Communication and Coordination col 1 (after senior-coordinate)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Communication and Coordination col 1
+        item 5: "Have first responders learn basics of American Sign Language"
+      inferred_source: workbook PDF p55 col 1 row 5
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Site Seniors Communication col 1 dropped 3 workbook items entirely
+        (workbook col 1 has 7 items pre-day-21b; site had 4). Per decision
+        1a_restore_as_Todos. Restored verbatim as <Todo> with new id
+        `senior-asl` under moduleKey `seniors-and-disabilities`. Composite
+        key `seniors-and-disabilities-senior-asl` is new (no fixture
+        collision; data-preservation invariant intact).
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-visual-aids-drop
+      module: 1-8
+      location: 1-8.astro merged seniors-and-disabilities Communication and Coordination col 1 (after senior-asl)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Communication and Coordination col 1
+        item 6: "Include visual aids on important informational resources"
+      inferred_source: workbook PDF p55 col 1 row 6
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Per decision 1a_restore_as_Todos. Restored verbatim as <Todo> with
+        new id `senior-visual-aids` under moduleKey `seniors-and-disabilities`.
+        Composite key `seniors-and-disabilities-senior-visual-aids` is new.
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-vcil-drop
+      module: 1-8
+      location: 1-8.astro merged seniors-and-disabilities Communication and Coordination col 1 (after senior-visual-aids)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Communication and Coordination col 1
+        item 7: "Consult with the Vermont Center for Independent Living when
+        creating emergency plans"
+      inferred_source: workbook PDF p55 col 1 row 7
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Per decision 1a_restore_as_Todos. Restored verbatim as <Todo> with
+        new id `senior-vcil` under moduleKey `seniors-and-disabilities`.
+        Composite key `seniors-and-disabilities-senior-vcil` is new.
+      proposed_canonical_field: null
 
   # Workbook section orderings the site reshuffled away from. Tracked so
   # the restored ordering can be verified post-day-17.
@@ -1258,4 +1334,206 @@ categories:
         Workbook p16 wraps "this list" (the roles-to-modules PDF) in a
         Drive-file anchor. Site renders as plain text. Restored on day 17
         via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-folder-header-link-drop
+      module: 1-8
+      location: 1-8.astro LEP h3 leading <p> "Folder with resources and templates: Limited English Proficiency Documents" (line 274)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Limited English Proficiency Documents"
+        URL:    https://drive.google.com/drive/folders/1if3D-wTHEf1hYUKyJk9w0EeX5ZSUi3Q-?usp=drive_link
+        Site state pre-day-21b: plain <p>Folder with resources and templates:
+        Limited English Proficiency Documents</p> — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP folder header
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "Limited English Proficiency Documents" as a Drive
+        folder anchor on the section's leading "Folder with resources and
+        templates:" line. Site rendered as plain text. Per decision
+        1a_restore_as_inline_link_or_layout_button — user choice 2026-04-29:
+        inline link (matches workbook's in-prose treatment; only the 1.8
+        top-level folder is pinned via ModuleLayout button). Restored via
+        <ExternalLink> wrapping the "Limited English Proficiency Documents"
+        text in the existing <p>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-organizations-and-groups-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-partner-orgs" (line 299)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "organizations and groups" (within "Partner with organizations
+        and groups that work with (im)migrant individuals…")
+        URL:    https://docs.google.com/document/d/1Is0po3dbNMNl56RA0zm1ARid5JoWtv-ZUnPgr__oGOM/edit?usp=sharing
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 1 row 2
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "organizations and groups" in a Google Doc anchor
+        (LEP partner organizations doc). Site renders as plain text inside
+        the Todo. Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink> wrapping the anchor phrase inside the existing
+        <Todo>. Todo id and moduleKey unchanged.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-list-of-organizations-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-directory-orgs" (line 305)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "list of organizations and people" (within "Make a list of
+        organizations and people who can support…")
+        URL:    https://drive.google.com/file/d/1NWSRoDXt7IR8wDNnoC1lyebI9vkCJZ4R/view?usp=drive_link
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 1 row 4
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "list of organizations and people" in a Drive-file
+        anchor (LEP org+people list template). Per decision
+        1a_restore_as_Todo_plus_ExternalLink. Restored via <ExternalLink>
+        wrapping the anchor phrase inside the existing <Todo>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-list-of-resources-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-compile-resources" (line 311)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "list of resources" (within "Compile a list of resources in
+        other languages around disasters…")
+        URL:    https://docs.google.com/document/d/1JwdvySyIuOi1SlBlFE7KF3Eh09IAmzPp289-Zlqu-O0/edit?usp=sharing
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 1 row 6
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "list of resources" in a Google Doc anchor (LEP
+        resources-in-other-languages doc). Per decision
+        1a_restore_as_Todo_plus_ExternalLink. Restored via <ExternalLink>
+        wrapping the anchor phrase inside the existing <Todo>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-aalv-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-interpreter-money" (line 314)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "AALV" (within "you can contact someone from AALV for in-person
+        interpreter services…")
+        URL:    https://www.aalv-vt.org/interpreter
+        Site state pre-day-21b: plain text "AALV" — no <a> wrapper. The
+        adjacent "LanguageLine" anchor in the same Todo IS already wrapped.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 2 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "AALV" in an external anchor (Association of Africans
+        Living in Vermont — interpreter services). Site renders as plain text
+        despite wrapping the adjacent LanguageLine anchor in the same prose.
+        Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored via
+        <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-procedure-link-drop
+      module: 1-8
+      location: 1-8.astro LEP During Disaster Todo id="lep-during-train" (line 393)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "procedure" (within "Train volunteers on the procedure for
+        interacting with LEP individuals, from start to finish")
+        URL:    https://docs.google.com/document/d/135iBbFYDUUojTu9_irbQbnm_s5woAnX5TniHpGRedsY/edit?usp=sharing
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p57 (displayed p29) LEP During Disaster col 1 row 3
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p57 wraps "procedure" in a Google Doc anchor (LEP procedure
+        template). Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-parent-child-centers-link-drop
+      module: 1-8
+      location: 1-8.astro LEP After Disaster Todo id="lep-parent-child-centers" (line 437)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Parent Child Centers" (within "Parent Child Centers and food
+        shelves can support with access to food and other concrete supports")
+        URL:    https://dcf.vermont.gov/contacts/partners/pcc
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p57 (displayed p29) LEP After Disaster col 2 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p57 wraps "Parent Child Centers" in a VT DCF directory
+        anchor. Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-food-shelves-link-drop
+      module: 1-8
+      location: 1-8.astro LEP After Disaster Todo id="lep-parent-child-centers" (line 437)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "food shelves" (within "Parent Child Centers and food shelves
+        can support with access to food and other concrete supports")
+        URL:    https://www.vtfoodbank.org/access-food/find-a-food-shelf/
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p57 (displayed p29) LEP After Disaster col 2 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p57 wraps "food shelves" in a VT Foodbank find-a-food-shelf
+        anchor. Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink> in the SAME Todo as Parent Child Centers (workbook
+        prose has both anchors in one sentence, so they share a Todo).
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-create-a-plan-link-drop
+      module: 1-8
+      location: 1-8.astro Farm Before Disaster Todo id="farm-plan" (line 479)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Create a Plan" (within "Create a Plan [Another Plan Template]
+        (With daily feed & water requirements for most livestock)")
+        URL:    https://www.usda.gov/sites/default/files/documents/usda-livestock-preparedness-fact-sheet.pdf
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p58 (displayed p30) Farm Before Disaster col 1 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p58 wraps "Create a Plan" in a USDA Livestock Preparedness
+        fact-sheet PDF anchor. Per decision 1a_restore_as_Todo_plus_ExternalLink.
+        Restored via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-another-plan-template-link-drop
+      module: 1-8
+      location: 1-8.astro Farm Before Disaster Todo id="farm-plan" (line 479)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Another Plan Template" (within "Create a Plan [Another Plan
+        Template] (With daily feed & water requirements for most livestock)")
+        URL:    https://www.prep4agthreats.org/Assets/Factsheets/livestock-emergency-preparedness-plan.pdf
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p58 (displayed p30) Farm Before Disaster col 1 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p58 wraps "Another Plan Template" in a Prep4AgThreats Livestock
+        Emergency Plan template PDF anchor. Per decision
+        1a_restore_as_Todo_plus_ExternalLink. Restored via <ExternalLink> in
+        the SAME Todo as "Create a Plan" (workbook bracket form shares one
+        Todo).
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-fsa-nrcs-offices-link-drop
+      module: 1-8
+      location: 1-8.astro Farm Before Disaster Todo id="farm-fsa-nrcs" (line 487)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "FSA & NRCS Offices" (within "Consider Connecting with your
+        local FSA & NRCS Offices…")
+        URL:    https://www.farmers.gov/
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p58 (displayed p30) Farm Before Disaster col 1 row 3
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p58 wraps "FSA & NRCS Offices" in a USDA Farmers.gov anchor
+        (FSA + NRCS portal). Per decision 1a_restore_as_Todo_plus_ExternalLink.
+        Restored via <ExternalLink>.
       proposed_canonical_field: null

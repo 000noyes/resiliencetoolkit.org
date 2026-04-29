@@ -1522,10 +1522,10 @@ modules:
     missing_sections_check: partial                        # Seniors-combined split into 2; 3 Seniors Communication items dropped
     table_titles_check: c                                  # section-title drift "Senior citizens and elders" vs workbook
 
-    class_c_count: 14                                      # post-day-21: 24 → 14. Closed: InfoCallout(1) + section-split(1) + invented-meta-note(1) + title-drift(1) + invented-service-animals(1) + senior-partners-aaa-drop(1) + 3-URL-subs(3) + 2-narrative-drifts(senior-glasses, farm-prioritize-safety) = 10. Remaining: 3 dropped Seniors items (3) + 10 LEP/Farm link drops (10) + LEP item-merging (1) = 14. Day-22 is migration-only per closeout doc; day-21-followup commit (or part-1b) needed before 1-8 closes to 0.
+    class_c_count: 0                                       # post-day-21b: 14 → 0. Day-21 closed 10/24; day-21b closed remaining 14: 3 dropped Seniors Communication items restored as <Todo>s (senior-asl, senior-visual-aids, senior-vcil); LEP folder header URL restored as inline ExternalLink (per user choice 2026-04-29); 7 LEP in-prose anchor drops restored as ExternalLinks (organizations and groups, list of organizations and people, list of resources, AALV, procedure, Parent Child Centers, food shelves); 3 Farm in-prose anchor drops restored (Create a Plan, Another Plan Template, FSA & NRCS Offices); lep-after-access split into 2 Todos (lep-after-access keeps "Ensure individuals…" prompt; lep-after-healthcare NEW carries "Do individuals have healthcare needs?"). 15 archive entries appended.
     spec_path: docs/source-specs/1-8-populations-with-specific-needs.md   # day-21
     structural_fidelity:
-      verdict: partial_clean                               # day-21 closed 10/24 class-c items; 14 remain (see class_c_count note)
+      verdict: clean                                       # day-21b closed all 14 residual class-c items
     scope: 1a
     spec_required: true
     migration_required: true                               # unique to 1-8: seniors+disabilities merge
@@ -1602,6 +1602,37 @@ modules:
       folder-header URL restoration, 1 LEP item-merging split. These
       need a "feat(1-8) part 1b" commit (or expanded part-2) before
       class_c_count reaches 0; closeout doc row-22 is migration-only.
+
+      Day-21b part-1b closed the remaining 14 class-c items (commit
+      "feat(1-8) part 1b: 14 residual class-c restorations" — path A
+      per user decision 2026-04-29: insert day-21b before day-22
+      migration commit, day-22 → day-23, day-29 ship → day-30 absorbing
+      the buffer day): 3 dropped Seniors Communication items restored
+      as <Todo>s in the merged seniors-and-disabilities Communication
+      and Coordination col 1 (new ids senior-asl, senior-visual-aids,
+      senior-vcil — verbatim from workbook PDF p55); LEP folder header
+      "Limited English Proficiency Documents" restored as inline
+      ExternalLink in the leading <p> (per user choice — workbook
+      itself renders this as in-prose anchor, only the 1.8 top-level
+      folder is pinned via ModuleLayout button); 7 LEP in-prose anchor
+      drops restored as ExternalLinks within existing Todos
+      (organizations and groups in lep-partner-orgs; list of
+      organizations and people in lep-directory-orgs; list of resources
+      in lep-compile-resources; AALV in lep-interpreter-money;
+      procedure in lep-during-train; Parent Child Centers + food
+      shelves both in lep-parent-child-centers); 3 Farm in-prose anchor
+      drops restored as ExternalLinks (Create a Plan + Another Plan
+      Template both in farm-plan; FSA & NRCS Offices in farm-fsa-nrcs);
+      lep-after-access Todo split into 2 separate Todos —
+      lep-after-access (kept) carries "Ensure individuals have access
+      to appropriate needs." (preserves existing user check-state on
+      composite key lep-populations-lep-after-access); new
+      lep-after-healthcare carries "Do individuals have healthcare
+      needs?". 15 archive entries appended (3 in
+      dropped_workbook_items_flagged_for_restore; 11 in
+      dropped_workbook_links; 1 in invented_prose for the merged form).
+      Total ExternalLinks on 1-8 page: 21 (was 10 post-day-21).
+      class_c_count: 14 → 0; structural_fidelity.verdict: clean.
 
   1-9:
     title: "Community Emergency Response Plans"
