@@ -2,6 +2,68 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.10] - 2026-04-30
+
+### Source Fidelity restoration across all 17 modules
+
+This release closes the workbook-fidelity sweep. Every module section
+page on the site has been walked against the master Resilience Hub
+Toolkit workbook PDF and brought back into one-to-one alignment.
+Approximately 134 class-c items (drifted titles, reworded prompts,
+substituted URLs, dropped sentences, invented links, missing
+sub-sections) were either restored verbatim from the workbook or
+removed and recorded for audit.
+
+### Added
+- `docs/site-inventions-archive.yaml` preserves every removed class-c
+  item (~129 entries across 8 categories) with workbook reference,
+  inferred source if any, and removal commit. Nothing was deleted
+  without an audit trail.
+- `docs/toolkit-inventory.yaml` per-module ledger now records
+  `class_c_count: 0` and a `structural_fidelity.verdict` for all 17
+  modules, with the per-day reconciliation history inline.
+- Two new DataTable source specs on 1-9: Neighbor Directory and First
+  Responder Directory, both citing the workbook page and Drive folder.
+- Source registry (`docs/source-specs/_sources.yaml`) pruned to 26
+  content-hash keys, all cited by at least one current spec.
+- 1-8 (Populations with specific needs): Seniors+Disabilities IndexedDB
+  migration with a real-fixture data-preservation test suite. Existing
+  user data on the legacy `senior-citizens` and `people-with-disabilities`
+  module keys merges cleanly into the merged `seniors-and-disabilities`
+  key with no user-visible loss.
+- 1-9 pandemics ExternalLink restored to the workbook folder anchor
+  (was substituted with a different Drive file id).
+- 14 internal PDF cross-references on 1-9 (Section 1.X / (N.M) anchors)
+  now render as site-internal `/modules/...` routes instead of external
+  links to GoogleDoc HTML pages.
+
+### Changed
+- `pnpm verify` runs in the `prebuild` hook; broken source chains fail
+  the build. CI runs verify on every push. Any merge that drifts the
+  site away from the workbook is caught before it ships.
+- Workbook structural fidelity: KYC restored to the 11-section workbook
+  order with the full Bringing People Together agenda + facilitation
+  guides + readiness checklist + pod-mapping prose recovered from the
+  earlier hardcoded reduction.
+- Chapter intros on `baseline-resilience/index.astro` and
+  `emergency-preparedness/index.astro` restored to workbook prose +
+  cross-link fidelity (closed the chapter-level summary drift surfaced
+  during the 2-1 / 2-2 / 2-3 walks).
+
+### Verification
+- 486 / 486 unit + integration tests passing.
+- `pnpm verify` clean: 25 entries, exit 0.
+- `pnpm astro check`: 0 errors, 0 warnings.
+
+### Known follow-up backlog
+A targeted spot-check on the three highest-load modules (Knowing Your
+Community, 1-8, 1-9) at the close of the sweep surfaced one additional
+URL drift on 1-9, which is included in this release, plus four minor
+text-level drifts deferred to the follow-up backlog (1-8 title-case +
+punctuation; 1-9 bullet split + plain-text internal anchor). None
+invalidates the per-module attestation. A full 17-module re-walk is
+planned before the next round of verify enforcement ships.
+
 ## [0.0.9] - 2026-04-21
 
 ### Added
