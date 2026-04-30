@@ -1529,7 +1529,7 @@ modules:
     missing_sections_check: partial                        # Seniors-combined split into 2; 3 Seniors Communication items dropped
     table_titles_check: c                                  # section-title drift "Senior citizens and elders" vs workbook
 
-    class_c_count: 0                                       # post-day-21b: 14 → 0. Day-21 closed 10/24; day-21b closed remaining 14: 3 dropped Seniors Communication items restored as <Todo>s (senior-asl, senior-visual-aids, senior-vcil); LEP folder header URL restored as inline ExternalLink (per user choice 2026-04-29); 7 LEP in-prose anchor drops restored as ExternalLinks (organizations and groups, list of organizations and people, list of resources, AALV, procedure, Parent Child Centers, food shelves); 3 Farm in-prose anchor drops restored (Create a Plan, Another Plan Template, FSA & NRCS Offices); lep-after-access split into 2 Todos (lep-after-access keeps "Ensure individuals…" prompt; lep-after-healthcare NEW carries "Do individuals have healthcare needs?"). 15 archive entries appended.
+    class_c_count: 0                                       # post-day-21b: 14 → 0. Day-21 closed 10/24; day-21b closed remaining 14: 3 dropped Seniors Communication items restored as <Todo>s (senior-asl, senior-visual-aids, senior-vcil); LEP folder header URL restored as inline ExternalLink (per user choice 2026-04-29); 7 LEP in-prose anchor drops restored as ExternalLinks (organizations and groups, list of organizations and people, list of resources, AALV, procedure, Parent Child Centers, food shelves); 3 Farm in-prose anchor drops restored (Create a Plan, Another Plan Template, FSA & NRCS Offices); lep-after-access split into 2 Todos (lep-after-access keeps "Ensure individuals…" prompt; lep-after-healthcare NEW carries "Do individuals have healthcare needs?"). 15 archive entries appended.; 2 minor drifts found in day-28 spot-check (Save-the-Whole-Family title-case + Livestock-Ideally punctuation/casing) deferred to Step 2 backlog — neither invalidates ship attestation
     spec_path: docs/source-specs/1-8-populations-with-specific-needs.md   # day-21
     structural_fidelity:
       verdict: clean                                       # day-21b closed all 14 residual class-c items
@@ -1828,9 +1828,7 @@ modules:
       - anchor: "pandemics"
         url: "https://drive.google.com/drive/folders/1TmJ4hbHtf9gQUctlilz046B3fpmS1_yK"  # folder
         page: 33
-        on_site_url_substitution: "https://drive.google.com/file/d/1_e3AA4pD7dJCAcfMHLVJ3dqJgK5_5Wrc/view?usp=drive_link"  # file, different id
-        on_site: url_substituted
-        decision: 1a_restore_workbook_url_strict
+        on_site: true                                         # day-29 spot-check correction: site URL was 1_e3AA4pD7dJ... (file) until day-29 commit; now matches workbook folder anchor
       - anchor: "Section 2.1"
         url: "2025 Resilience Hub Toolkit_V1 final.html#40"
         target_type: internal_pdf_page_anchor
@@ -1955,7 +1953,7 @@ modules:
     missing_sections_check: partial                        # "Planning for other kinds" section structurally present but closing military-presence sentence dropped
     table_titles_check: na                                 # DataTable tableName props match Phase 1 spec
 
-    class_c_count: 0                                       # day-28 reconciliation: was 23 (pre-day-13/14 walk); days 12+13+14 shipped (commits b394ca8 + ab85c32 + 2db4130) closed all 23 — Neighbor + First Responder DataTable specs added day-12, 8 paragraph drifts restored verbatim day-13, 14 internal-anchor cross-refs converted to /modules/... routes day-14 (includes pandemics URL + military-presence sentence + (1.3)→(1.4) numeric drift)
+    class_c_count: 0   # day-28 reconciliation + day-29 spot-check correction: was 23 (pre-day-13/14 walk); 22 closed days 12+13+14 (commits b394ca8 + ab85c32 + 2db4130) — Neighbor + First Responder DataTable specs day-12, 8 paragraph drifts day-13, 13 internal-anchor cross-refs converted to /modules/... routes day-14 (includes military-presence sentence + (1.3)→(1.4) numeric drift; day-28 reconciliation note inaccurately attributed pandemics URL to day-14, corrected day-29). 1 closed day-29 (pandemics folder URL substitution corrected to 1TmJ4hbHtf workbook anchor per spot-check finding NEW-3). 2 minor drifts found in day-28 spot-check (Town Clerk bullet split + (2.3) anchor drop) deferred to Step 2 backlog.
     structural_fidelity:
       verdict: clean                                       # day-28 reconciliation: days 12+13+14 shipped 1-9 class-c remediation; 3 DataTable specs (Leader/Neighbor/First Responder) all pass verify
     scope: 1a
