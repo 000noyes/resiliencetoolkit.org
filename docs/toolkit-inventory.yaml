@@ -2668,12 +2668,15 @@ modules:
         status: retro_audit_clean_day_25                       # 2026-04-29 day-25 retro-audit (decision-m carve-out): site summary matches workbook chapter-intro paragraph VERBATIM. PDF p1145 (displayed p15) Emergency Preparedness and Response chapter intro source. No drift, no edit needed.
 
     section_order_check: ok                                # 7 sections match workbook order
-    missing_sections_check: partial                        # 4 Mental Health items dropped
-    table_titles_check: c                                  # 1 section-title drift
+    missing_sections_check: ok                             # 2026-04-30 day-26: 4 dropped Mental Health items restored as Todos with workbook ExternalLinks. Was: partial.
+    table_titles_check: ok                                 # 2026-04-30 day-26: section-title drift restored from "Network of mental health workers" to workbook canonical "Network of community physical and mental health workers". Was: c.
 
-    class_c_count: 12                                      # InfoCallout + section-title-drift + 3 URL subs + 4 dropped MH items + partial-sentence-drop + 2 "Can" prefixes + chapter-level summary drift
+    structural_fidelity:
+      verdict: clean                                       # 2026-04-30 day-26: all 11 post-day-25 class-c units restored on 2-1.astro; spec shipped; verify pass.
+    class_c_count: 0                                       # 2026-04-30 day-26: was 12 (chapter-intro drift closed day-25 → 11 in 2-1.astro post-day-25 → 0 today). Closed: InfoCallout + section-title-drift + 3 URL subs + 4 dropped MH items + partial-sentence-drop + 2 "Can" prefixes + parent-prefix-drop.
     scope: 1a
-    spec_required: true
+    spec_required: shipped                                 # 2026-04-30 day-26: docs/source-specs/2-1-basic-needs.md (PDF p80-81). Was: true.
+    spec_path: docs/source-specs/2-1-basic-needs.md        # spec.title "Community meals and food distribution" — chosen over first h2 "Community food production" because the latter is drop-cap-fragmented in pdftotext (R-day-25 mitigation, same shape as 2-3 day-25). Other 6 h2s in subheadings[].
     innovations:
       - flag: topic_branch_samhsa_to_vtsos
         description: >
@@ -2684,6 +2687,7 @@ modules:
           resources and 1-10 AHS/VDH).
         scope: deferred_product_innovation
         archive_destination: "docs/site-inventions-archive.yaml → 2-1.topic_branch_samhsa_vtsos"
+        status: archived_and_restored_day_26               # 2026-04-30: archive-2-1-samhsa-vtsos-url-and-anchor-substitution appended to alt_urls; URL+anchor restored to workbook canonical (mentalhealth.vermont.gov/flood + "SAMHSA Disaster Distress Helpline").
       - flag: chapter_level_intro_missing
         description: >
           Baseline Resilience chapter intro paragraph (~60 words)
@@ -2694,6 +2698,7 @@ modules:
           modules/index.astro) for similar drifts.
         scope: 1a
         retro_audit_required: true
+        status: closed_day_25                              # 2026-04-29: chapter intro restored on baseline-resilience/index.astro (PDF p80); emergency-preparedness/index.astro retro-audit clean (PDF p1145 verbatim match).
 
     notes: >
       Walked 2026-04-24. 12 class-c: InfoCallout + section-title
@@ -2703,6 +2708,38 @@ modules:
       signals need for retro-audit of baseline-resilience/index.astro
       and emergency-preparedness/index.astro. Running total 128/154
       across 15 modules.
+
+      2026-04-30 day-26 (closeout doc §2 row-26, single-module
+      large-archive shape — comparable to KYC day 17-18 and 1-8 part 1
+      day 21): all 11 post-day-25 class-c units in 2-1.astro restored.
+      11 archive entries appended FIRST to docs/site-inventions-archive.yaml
+      (R2 archive-then-remove): 4 alt_urls (SAMHSA→VTSOS topic-branch,
+      Drift Dusters .com→.org, Vermont Care Partners path-drop, plus the
+      chapter-intro day-25 entry already in place), 4 invented_prose
+      (InfoCallout, section-title drift, "Can" prefix + parent-drop
+      structural drift, plus the chapter-intro entry already in place),
+      5 dropped_workbook_items_flagged_for_restore (4 Mental Health bullets
+      + 1 community-clinic partial-sentence drop). THEN restored on
+      2-1.astro: section title to "Network of community physical and
+      mental health workers"; 4 new Todos for dropped Mental Health items
+      with workbook ExternalLinks (CHW/CHC/Free Clinics/VHC Assister +
+      primary-care-provider) — additive moduleKey composites; community-
+      clinic Todo restored ", and partner with your local Department of
+      Health office"; "Take note if they can:" parent prefix appended to
+      mental-health-directory Todo; 4 children Todos (affordable-sessions,
+      group-sessions, disaster-site-support, mental-health-examples)
+      indented under <div class="ml-6"> wrapper (parent + ml-6 children
+      same shape as 2-2 day-25 tool-library un-flatten); "Can" prefixes
+      removed; 3 URLs restored to workbook canonical (Drift Dusters .com,
+      Vermont Care Partners /intake-and-crisis-lines/, SAMHSA helpline
+      /flood); InfoCallout + import removed (recurring sweep, decision o);
+      docs/source-specs/2-1-basic-needs.md scaffolded (PDF p80-81) with
+      title "Community meals and food distribution" (R-day-25 drop-cap
+      mitigation — first h2 "Community food production" is fragmented in
+      pdftotext); citation comment placed AFTER frontmatter (R9). Gates:
+      vitest 486/486 green, astro 0/0/10 hints, verify 25 entries exit 0
+      ALL pass (2-1 status: pass). NO codex (decision p — mechanical-edit
+      cadence; days 23-28 skip codex).
 
   2-2:
     title: "Shared Tools"

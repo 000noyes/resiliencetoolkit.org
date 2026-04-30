@@ -520,6 +520,91 @@ categories:
         folder URL as a "browse all 2.3 templates" supplement alongside the
         workbook canonical link.
       proposed_canonical_field: null
+    - id: archive-2-1-samhsa-vtsos-url-and-anchor-substitution
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section, Todo id="mental-health-examples" (line 153 pre-day-26, third ExternalLink in "Examples:" list)
+      type: alt_urls
+      content: |
+        Anchor (workbook): "SAMHSA Disaster Distress Helpline"
+        Anchor (site pre-day-26): "VTSOS - VT Starting over Strong"
+        Site URL pre-day-26: https://mentalhealth.vermont.gov/sosvt
+        Workbook URL (PDF p81, displayed p41): https://mentalhealth.vermont.gov/flood
+        Workbook context: third anchor in the "Examples:" inline list at the
+        end of the trauma-informed mental-health-worker directory Todo —
+        sequence is "Examples: KURRVE mental health, Vermont Care Partners,
+        SAMHSA Disaster Distress Helpline". Site replaced both the anchor
+        text AND the URL: anchor swapped from "SAMHSA Disaster Distress
+        Helpline" to "VTSOS - VT Starting over Strong", URL swapped from
+        the VT-flood mental-health page to the VT-SOS page on the same host.
+      inferred_source: workbook PDF p81 mental-health Examples anchor 3
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Combined URL+anchor substitution with topic-branch flag (third member
+        of the topic-branch alt-URL family after 1-8 VT resources cluster
+        and 1-10 AHS/VDH). Per inventory line 2563-2569 `decision:
+        1a_restore_workbook_url_strict_AND_archive` + `topic_branch_candidate:
+        true`. Site replaced the federal SAMHSA Disaster Distress Helpline
+        with the VT-specific VTSOS (VT Starting over Strong) program — both
+        valid disaster-mental-health resources, but the site's choice diverges
+        from the workbook canonical at both anchor text and URL. Restored to
+        workbook canonical. Archived as alt_url so a future topic-branch view
+        can re-expose VTSOS as a VT-specific supplement alongside the
+        workbook-canonical SAMHSA federal resource.
+      proposed_canonical_field: null
+    - id: archive-2-1-drift-dusters-url-substitution
+      module: 2-1
+      location: 2-1.astro Ridesharing and carpooling section, Todo id="transportation-maps" (line 127 pre-day-26, "Drift Dusters in Derby, VT" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Drift Dusters in Derby, VT"
+        Site URL pre-day-26: https://driftdusters.org/
+        Workbook URL (PDF p81, displayed p41): https://www.driftdusters.com/
+        Workbook context: anchor wraps "Drift Dusters in Derby, VT" within
+        the "Creating and disseminating maps... Example: Trails maintained
+        by snowmobile clubs such as Drift Dusters in Derby, VT" Todo. Site
+        swapped the .com TLD for .org (host "driftdusters.org" instead of
+        "www.driftdusters.com").
+      inferred_source: workbook PDF p81 Ridesharing transportation-maps anchor
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        TLD-level URL drift. Per inventory line 2546-2551 `decision:
+        1a_verify_live_and_restore_correct_url`. The site's .org host may
+        reflect a domain change over time, but the workbook canonical is the
+        .com host. Restored to workbook canonical .com URL. Archived as
+        alt_url so a future topic-branch view can re-expose .org as a
+        movement-canon supplement alongside the workbook-canonical .com link.
+        Note: site form drops the leading "www." prefix vs the workbook URL;
+        restoration uses the full "https://www.driftdusters.com/" string.
+      proposed_canonical_field: null
+    - id: archive-2-1-vermont-care-partners-url-substitution
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section, Todo id="mental-health-examples" (line 153 pre-day-26, second ExternalLink in "Examples:" list)
+      type: alt_urls
+      content: |
+        Anchor: "Vermont Care Partners"
+        Site URL pre-day-26: https://vermontcarepartners.org/
+        Workbook URL (PDF p81, displayed p41): https://vermontcarepartners.org/intake-and-crisis-lines/
+        Workbook context: second anchor in the "Examples:" inline list at
+        the end of the trauma-informed mental-health-worker directory Todo
+        — sequence is "Examples: KURRVE mental health, Vermont Care Partners,
+        SAMHSA Disaster Distress Helpline". Site dropped the workbook URL
+        path /intake-and-crisis-lines/, linking to the org homepage instead
+        of the specific intake-and-crisis-lines directory page.
+      inferred_source: workbook PDF p81 mental-health Examples anchor 2
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Path-level URL drift (same shape as archive-1-8-free-clinic-url-substitution
+        — site dropped /find-a-clinic/ path). Per inventory line 2558-2562
+        `decision: 1a_restore_workbook_url_strict`. Workbook URL points at
+        the specific intake-and-crisis-lines page (the operational entry
+        point for Vermont Care Partners' member-org crisis lines); site
+        homepage URL is functionally a parent of that page. Restored to
+        workbook-canonical path. Archived for forward-compat (the homepage
+        URL is functionally equivalent but not workbook-canonical).
+      proposed_canonical_field: null
 
   # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
   # site-authored paragraphs/sentences not in the workbook.
@@ -1203,6 +1288,87 @@ categories:
         PDF p1145 verbatim ("Emergency systems often spring into existence...
         builds baseline resilience.").
       proposed_canonical_field: null
+    - id: archive-2-1-info-callout
+      module: 2-1
+      location: top of <ModuleLayout> (above first <section>, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        1-10 + 1-11 (day 23), 1-12 (day 24), 2-2 + 2-3 (day 25), and KYC (day 17).
+        Identical text to the archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout, archive-1-11-info-callout,
+        archive-1-12-info-callout, archive-2-2-info-callout, archive-2-3-info-callout
+        entries above. Day-26 third 2-x ("baseline-resilience") namespace
+        InfoCallout removal (after 2-2 and 2-3 day-25); closes the recurring
+        sweep across all 17 modules.
+      proposed_canonical_field: null
+    - id: archive-2-1-mental-health-section-title-drift
+      module: 2-1
+      location: 2-1.astro Mental Health <section> heading (h2 line 133 pre-day-26)
+      type: invented_prose
+      content: |
+        Network of mental health workers
+      inferred_source: null
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Site shortened the workbook PDF p81 (displayed p41) section heading
+        "Network of community physical and mental health workers" to
+        "Network of mental health workers" — dropping "community physical and"
+        from the heading. Per inventory line 2600-2604 `decision:
+        1a_restore_workbook_title`. The dropped phrase "community physical
+        and" is what justifies the section's 4 dropped Mental Health items
+        (CHW, Free Clinics, CHC, VHC Assister) — the workbook scope is
+        BOTH physical and mental health workers; site narrowed scope to
+        mental health alone. Restored to workbook-canonical full heading.
+        Archived as invented_prose because the site re-titled the heading
+        with editorial intent (narrowing scope rather than dropping content
+        outright). Closes the section-title-drift class-c unit on this page.
+      proposed_canonical_field: null
+    - id: archive-2-1-mental-health-can-prefix-and-parent-drop-drift
+      module: 2-1
+      location: 2-1.astro Mental Health <section>, Todo id="affordable-sessions" + Todo id="group-sessions" + Todo id="disaster-site-support" (lines 140-150 pre-day-26)
+      type: invented_prose
+      content: |
+        Site form (3 sibling Todos, no parent prefix):
+          - "Can offer free, low-cost or sliding scale sessions as a part of their practice"
+          - "Offer group sessions"
+          - "Can show up near disaster sites to offer emotional support and counseling"
+        Workbook PDF p81 form (parent + 3 children):
+          parent: "Take note if they can:"
+            - "Offer free, low-cost or sliding scale sessions as a part of their practice"
+            - "Offer group sessions"
+            - "Show up near disaster sites to offer emotional support and counseling"
+      inferred_source: workbook PDF p81 mental-health-worker directory Todo (parent + 3 nested children at end of "Create a directory of people in your community..." Todo)
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Two-sided structural drift. Site dropped the workbook parent prefix
+        "Take note if they can:" AND prefixed 2 of 3 children with "Can"
+        ("Can offer..." / "Can show up...") to compensate for the missing
+        parent's grammatical hook. The middle child ("Offer group sessions")
+        was left without a "Can" prefix, leaving inconsistent treatment.
+        Per inventory line 2622-2629 `decision: 1a_restore_workbook_structure`.
+        Restored as: parent Todo "Take note if they can:" with 3 nested
+        children (workbook-canonical wording, all without "Can" prefix).
+        Archived as invented_prose because the "Can" prefixes are
+        site-authored editorial additions (compensating for the dropped
+        parent), not workbook content. Same shape as archive-2-2-tool-library-research-flatten
+        (parent+children flatten/un-flatten pattern, day-25). Closes both
+        the parent-drop and the 2 "Can" prefix drifts as a single structural
+        unit.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
@@ -1688,6 +1854,129 @@ categories:
         verbatim as a new <li> at workbook-correct position (between work-crews
         and feed-volunteers bullets). Plain prose (no Todo / no moduleKey),
         so no fixture or canonical-set impact.
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-mental-health-primary-care-provider
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (between community-clinic Todo and herbal-support h2; was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 1 of 4),
+        no embedded ExternalLink:
+        "If individuals have a primary care provider, it is important to
+        connect them to that same provider for continuity of care. Add
+        community health centers and other similar resources/sites to your
+        directory."
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 1
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        First of 4 dropped Mental Health bullets. Site dropped the entire
+        bullet (sentence has no embedded ExternalLink to track). Per inventory
+        line 2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-primary-care-provider"
+        and moduleKey="basic-needs", placed within the Mental Health section
+        at workbook-correct position (after community-clinic Todo, before
+        items 2-4 in workbook order). New moduleKey-todoId composite — no
+        fixture impact (additive only).
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-community-health-worker
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 2 of 4),
+        with embedded ExternalLink "Community Health Worker" →
+        https://www.vtassociationofcommunityhealthworkers.com/:
+        "For those still needing assistance accessing in clinic healthcare
+        services, connect individuals with a Community Health Worker"
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 2
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Second of 4 dropped Mental Health bullets. Site dropped both the
+        sentence AND the embedded ExternalLink. Same workbook URL as
+        archive-1-8-chw-url-substitution (1-8 paired-section CHW anchor) —
+        the 1-8 day-21 commit restored to this URL there. Per inventory
+        line 2570-2572 + 2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-chw" and
+        moduleKey="basic-needs". The ExternalLink wraps "Community Health
+        Worker" verbatim. New moduleKey-todoId composite — no fixture impact.
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-free-clinics-and-community-health-centers
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 3 of 4),
+        with TWO embedded ExternalLinks:
+          - "Free Clinics" → https://vtfreeclinics.org/find-a-clinic/
+          - "Community Health Centers" → https://bistatepca.org/centers/
+        "Free Clinics and Community Health Centers are great resources for
+        those who need sliding scale and financial assistance options"
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 3
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Third of 4 dropped Mental Health bullets. Site dropped the sentence
+        AND its 2 embedded ExternalLinks (Free Clinics + Community Health
+        Centers). Both URLs match the 1-8 paired-section anchors (workbook
+        canonical pp54+57 + p81 — same VT Free Clinics directory + same
+        Bi-State Primary Care VT centers directory). Per inventory line
+        2573-2577 + 2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-free-clinics-chc"
+        and moduleKey="basic-needs". Both ExternalLinks restored verbatim
+        within the Todo prose. New moduleKey-todoId composite — no fixture
+        impact (additive only).
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-vermont-health-connect-assister
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 4 of 4),
+        with embedded ExternalLink "Vermont Health Connect Assister" →
+        https://info.healthconnect.vermont.gov/find-local-help/find:
+        "If individuals need help applying to health insurance, adjusting
+        information due to disaster (i.e. income) they can connect with a
+        Vermont Health Connect Assister, who is trained to help community
+        members navigate the Vermont health insurance marketplace"
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 4
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Fourth of 4 dropped Mental Health bullets. Site dropped the sentence
+        AND its embedded ExternalLink. Per inventory line 2579-2581 +
+        2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-vhc-assister" and
+        moduleKey="basic-needs". The ExternalLink wraps "Vermont Health
+        Connect Assister" verbatim. New moduleKey-todoId composite — no
+        fixture impact (additive only).
+      proposed_canonical_field: null
+    - id: archive-2-1-community-clinic-partial-sentence-drop
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section, Todo id="community-clinic" (line 156-158 pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) community-clinic Todo verbatim:
+        "Consider setting up a recurring community health clinic day with
+        local practitioners and partner with your local Department of Health
+        office"
+        Site form pre-day-26: "Consider setting up a recurring community
+        health clinic day with local practitioners." (drops "and partner
+        with your local Department of Health office" — 9 words including
+        the closing sentence period; site terminates after "practitioners.")
+      inferred_source: workbook PDF p81 community-clinic Todo
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Partial-sentence drop on existing site Todo (same shape as
+        archive-kyc-bringing-people-together-bullet-2-drop dropping "Who is
+        missing?"). Per inventory line 2616-2621 + 2645-2648 `decision:
+        1a_restore_verbatim`. Site's editorial choice was to truncate the
+        sentence at "local practitioners.", which leaves out the workbook's
+        explicit pointer to the local Department of Health office as a
+        partnership channel. Restored verbatim. Todo id and moduleKey
+        unchanged — no fixture impact.
       proposed_canonical_field: null
 
   # Workbook section orderings the site reshuffled away from. Tracked so

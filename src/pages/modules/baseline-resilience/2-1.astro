@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -14,12 +13,9 @@ const sectionData: SectionData = {
   nextSection: { number: "2.2", title: "Shared Tools", slug: "2-2" }
 };
 ---
+<!-- source: docs/source-specs/2-1-basic-needs.md page: 80 -->
 
 <ModuleLayout sectionData={sectionData}>
-  <InfoCallout icon="lock" variant="info">
-    <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-  </InfoCallout>
-
   <section>
     <h2 class="text-title font-semibold mb-4">Community food production</h2>
     <p class="mb-4">Growing food locally and in a decentralized way increases food security. Community and collective gardens, town orchards, and other shared food production can produce fresh abundant food for community meals and households.</p>
@@ -124,37 +120,55 @@ const sectionData: SectionData = {
       </Todo>
 
       <Todo id="transportation-maps" moduleKey="basic-needs" client:load>
-        Creating and disseminating maps (on and offline) of nearest transportation, trails, and routes - Example: Trails maintained by snowmobile clubs such as <ExternalLink href="https://driftdusters.org/">Drift Dusters in Derby, VT</ExternalLink>
+        Creating and disseminating maps (on and offline) of nearest transportation, trails, and routes - Example: Trails maintained by snowmobile clubs such as <ExternalLink href="https://www.driftdusters.com/">Drift Dusters in Derby, VT</ExternalLink>
       </Todo>
     </div>
   </section>
 
   <section>
-    <h2 class="text-title font-semibold mb-4">Network of mental health workers</h2>
+    <h2 class="text-title font-semibold mb-4">Network of community physical and mental health workers</h2>
 
     <div class="space-y-4">
       <Todo id="mental-health-directory" moduleKey="basic-needs" client:load>
-        <ExternalLink href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory</ExternalLink> of people in your community who are trauma-informed and have specific therapeutic skills to support mental health and nervous systems in disaster-related events. Caring for victims and responders is a part of recovery and can build capacity and resilience for future disaster.
+        <ExternalLink href="https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link">Create a directory</ExternalLink> of people in your community who are trauma-informed and have specific therapeutic skills to support mental health and nervous systems in disaster-related events. Caring for victims and responders is a part of recovery and can build capacity and resilience for future disaster. Take note if they can:
       </Todo>
 
-      <Todo id="affordable-sessions" moduleKey="basic-needs" client:load>
-        Can offer free, low-cost or sliding scale sessions as a part of their practice
-      </Todo>
+      <div class="ml-6 space-y-4">
+        <Todo id="affordable-sessions" moduleKey="basic-needs" client:load>
+          Offer free, low-cost or sliding scale sessions as a part of their practice
+        </Todo>
 
-      <Todo id="group-sessions" moduleKey="basic-needs" client:load>
-        Offer group sessions
-      </Todo>
+        <Todo id="group-sessions" moduleKey="basic-needs" client:load>
+          Offer group sessions
+        </Todo>
 
-      <Todo id="disaster-site-support" moduleKey="basic-needs" client:load>
-        Can show up near disaster sites to offer emotional support and counseling
-      </Todo>
+        <Todo id="disaster-site-support" moduleKey="basic-needs" client:load>
+          Show up near disaster sites to offer emotional support and counseling
+        </Todo>
 
-      <Todo id="mental-health-examples" moduleKey="basic-needs" client:load>
-        Examples: <ExternalLink href="https://nekprosper.org/get-involved/flood-recovery-resources/">KURRVE mental health</ExternalLink>, <ExternalLink href="https://vermontcarepartners.org/">Vermont Care Partners</ExternalLink>, <ExternalLink href="https://mentalhealth.vermont.gov/sosvt">VTSOS - VT Starting over Strong</ExternalLink>
-      </Todo>
+        <Todo id="mental-health-examples" moduleKey="basic-needs" client:load>
+          Examples: <ExternalLink href="https://nekprosper.org/get-involved/flood-recovery-resources/">KURRVE mental health</ExternalLink>, <ExternalLink href="https://vermontcarepartners.org/intake-and-crisis-lines/">Vermont Care Partners</ExternalLink>, <ExternalLink href="https://mentalhealth.vermont.gov/flood">SAMHSA Disaster Distress Helpline</ExternalLink>
+        </Todo>
+      </div>
 
       <Todo id="community-clinic" moduleKey="basic-needs" client:load>
-        Consider setting up a recurring community health clinic day with local practitioners.
+        Consider setting up a recurring community health clinic day with local practitioners and partner with your local Department of Health office
+      </Todo>
+
+      <Todo id="mental-health-primary-care-provider" moduleKey="basic-needs" client:load>
+        If individuals have a primary care provider, it is important to connect them to that same provider for continuity of care. Add community health centers and other similar resources/sites to your directory.
+      </Todo>
+
+      <Todo id="mental-health-chw" moduleKey="basic-needs" client:load>
+        For those still needing assistance accessing in clinic healthcare services, connect individuals with a <ExternalLink href="https://www.vtassociationofcommunityhealthworkers.com/">Community Health Worker</ExternalLink>
+      </Todo>
+
+      <Todo id="mental-health-free-clinics-chc" moduleKey="basic-needs" client:load>
+        <ExternalLink href="https://vtfreeclinics.org/find-a-clinic/">Free Clinics</ExternalLink> and <ExternalLink href="https://bistatepca.org/centers/">Community Health Centers</ExternalLink> are great resources for those who need sliding scale and financial assistance options
+      </Todo>
+
+      <Todo id="mental-health-vhc-assister" moduleKey="basic-needs" client:load>
+        If individuals need help applying to health insurance, adjusting information due to disaster (i.e. income) they can connect with a <ExternalLink href="https://info.healthconnect.vermont.gov/find-local-help/find">Vermont Health Connect Assister</ExternalLink>, who is trained to help community members navigate the Vermont health insurance marketplace
       </Todo>
     </div>
   </section>
