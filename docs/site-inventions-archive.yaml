@@ -372,6 +372,51 @@ categories:
         decision 1a_remove (per inventory line 2303). Class-c per
         Source Fidelity firewall.
       proposed_canonical_field: null
+    - id: archive-1-3-invented-h2-first-aid-preparedness
+      module: 1-3
+      location: top of <ModuleLayout> (above InfoCallout, line 18 pre-day-9)
+      type: invented_h2_headers
+      content: |
+        <h2 class="text-title font-semibold mb-4">First aid preparedness</h2>
+      inferred_source: null
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Site-authored h2 "First aid preparedness" sat above the InfoCallout
+        on workbook page 42. ModuleLayout already renders the section title
+        from sectionData.title; the extra on-site h2 was an editorial
+        rephrase with no workbook anchor. Per inventory class_c
+        decision: 1a_remove_all_invented_h2 (recurring family with the
+        KYC tableName invented headers and 1-13 "Financial support directory"
+        h2). Backfilled day 27 — the day-9 commit removed this h2 without
+        appending an archive entry; this entry restores the archive-then-
+        remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-invented-row-header-activate-staff-supply
+      module: 1-5
+      location: 1-5.astro guide-table colspan="2" row above the Systems/Stuff content (lines 33-37 pre-day-11)
+      type: invented_h2_headers
+      content: |
+        <tr>
+          <td colspan="2">
+            <strong>Activate, staff, and supply local shelters</strong>
+          </td>
+        </tr>
+      inferred_source: null
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Site-authored colspan=2 row-header above the workbook's Systems/Stuff
+        content. Workbook page 23/45 has no equivalent row-header — the
+        guide-table renders directly with column headers Systems and Stuff.
+        Same invented row-header pattern as 1-12 "Mutual Aid Tenets &
+        Checklist" (day-24) and the parent family of invented h2/h3 headers
+        (1-3, 1-13, KYC tableName props). Removed per inventory innovation
+        decision: 1a_remove (line 1029-1030). Class-c per Source Fidelity
+        firewall. Backfilled day 27 — the day-11 commit removed this
+        row-header without appending an archive entry; this entry restores
+        the archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
 
   # 1-8 CHW/CHC/Free Clinic topic-branches (healthvermont.gov endpoints
   # vs workbook humanservices.vermont.gov); 1-10 AHS/VDH substitutions;
@@ -604,6 +649,73 @@ categories:
         homepage URL is functionally a parent of that page. Restored to
         workbook-canonical path. Archived for forward-compat (the homepage
         URL is functionally equivalent but not workbook-canonical).
+      proposed_canonical_field: null
+    - id: archive-1-2-cdc-gov-url-substitution
+      module: 1-2
+      location: 1-2.astro Community meals Stuff col, Todo id="safe-food-handling" (line 213-215 pre-day-8, "safe food handling" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "safe food handling"
+        Site URL pre-day-8: https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html
+        Workbook URL (page 35): https://drive.google.com/file/d/1C5a0Sf1NWRU0XnMkHayw_vjwpuzqVZzJ/view
+        Workbook context: anchor wraps "safe food handling" within the
+        Community meals distribution Todo, linking to the workbook's
+        canonical Drive-hosted safe food handling Drive file.
+      inferred_source: workbook page 35 safe-food-handling anchor
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Pure URL substitution: site preserves workbook anchor text but swaps
+        the Drive-hosted safe food handling file for the CDC food-safety
+        external URL. Per inventory line 593-594 / innovations.link_substitution_pattern
+        decision: 1a_restore_workbook_link (status RESOLVED day 8). Archived
+        as alt_url so a future topic-branch view can re-expose
+        cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html
+        as a "movement-canon" supplement alongside the workbook-canonical
+        Drive file. First occurrence of pure URL substitution drift in the
+        walk (per inventory line 650-654). Backfilled day 27 — the day-8
+        commit removed this URL substitution without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-identify-internal-anchor-substitution
+      module: 1-5
+      location: 1-5.astro Systems col, Todo id="identify-meal-sources" (line 51 pre-day-11, "Identify" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Identify" (within "Identify local restaurants or people to
+        bring meals to the shelter")
+        Site URL pre-day-11: https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.kr2z9mn98cbm
+        Workbook URL (page 23/45): 2025 Resilience Hub Toolkit_V1 final.html#20
+          (internal PDF page anchor → workbook page 20 = Section 1.2 Food
+           and water; master-PDF equivalent is .html#35)
+        Workbook context: anchor wraps "Identify" in a workbook intra-PDF
+        page anchor that cross-references Section 1.2 Food and water.
+        Restored on site as <a href="/modules/emergency-preparedness/1-2">
+        per the locked feedback_internal_anchor_to_site_route translation
+        rule.
+      inferred_source: workbook page 23/45 internal PDF anchor → 1.2 page
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Link-type substitution: site rendered a workbook intra-PDF page
+        anchor as an ExternalLink to the 14BP-QH2d Local Resilience master
+        Google Doc instead of as a site-internal /modules/emergency-preparedness/1-2
+        route. Per inventory line 1004-1014 + feedback_internal_anchor_to_site_route
+        decision: 1a_replace_with_site_internal_link. The 14BP-QH2d doc is
+        the Local Resilience master Google Doc cited 39× in master-workbook
+        TOC and used in src/data/downloads.ts for the Downloads page; site
+        preserved that doc as the pivot but in-prose references to workbook
+        internal page anchors must stay in-site, not bounce out. First
+        occurrence of internal-anchor-to-GDoc substitution in the walk
+        (precedent for 1-9 day-14 14-anchor sweep). Distinct from pure URL
+        substitution (same anchor, different external URL) and link drop
+        (anchor wrapper missing). Archived as alt_url so a future topic-
+        branch view can re-expose the 14BP-QH2d GDoc as a "site-curated"
+        deep-link alongside the canonical site-internal route. Backfilled
+        day 27 — the day-11 commit replaced this link-type substitution
+        without appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
       proposed_canonical_field: null
 
   # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
@@ -1369,6 +1481,139 @@ categories:
         the parent-drop and the 2 "Can" prefix drifts as a single structural
         unit.
       proposed_canonical_field: null
+    - id: archive-1-2-info-callout
+      module: 1-2
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-day-8)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. First occurrence
+        of the recurring InfoCallout removal pattern (day 8 was earliest
+        in the sweep — same pattern subsequently removed from 1-3/1-4/1-5
+        (days 9-11), 1-1 (day 16), KYC (day 17), 1-6 (day 19 second commit),
+        1-7 (day 20), 1-8 (day 21), 2-2/2-3 (day 25), 2-1 (day 26)).
+        Identical text to archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout, archive-1-3-info-callout,
+        archive-1-4-info-callout, archive-1-5-info-callout. Backfilled day 27
+        — the day-8 commit removed the InfoCallout without appending an
+        archive entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-3-info-callout
+      module: 1-3
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-day-9)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. Identical text to
+        archive-1-2-info-callout (day 8 sibling), and downstream
+        archive-1-1-info-callout (day 16) etc. Backfilled day 27 — the
+        day-9 commit removed the InfoCallout without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-3-rescue-squad-plural-drop
+      module: 1-3
+      location: 1-3.astro Systems col, Todo id="connect-first-responders" (line 37 pre-day-9)
+      type: invented_prose
+      content: |
+        Connect with First Responders and/or rescue squad that serve your area. Types of
+        services: fire departments, first responders (EMTs, back country rescue, etc), ambulance
+        transport
+      inferred_source: null
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Site dropped the plural on "rescue squads" — workbook page 42 reads
+        "rescue squads" (plural). Drift type plural_drop per inventory
+        paragraph_drift (line 760-767), classification c, decision
+        1a_restore_verbatim. Restored to plural in day-9 wiring commit.
+        Archived to document the singular site form for forward-compat
+        tracking. Backfilled day 27 — the day-9 commit restored the plural
+        without appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-4-info-callout
+      module: 1-4
+      location: top of <ModuleLayout> (above guide-table, lines 17-19 pre-day-10)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-4): source spec + wiring (day 10)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. Identical text to
+        archive-1-2-info-callout, archive-1-3-info-callout (day-8/9 siblings)
+        and downstream archive-1-1-info-callout (day 16) etc. Backfilled
+        day 27 — the day-10 commit removed the InfoCallout without
+        appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-info-callout
+      module: 1-5
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-day-11)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. Identical text to
+        archive-1-2-info-callout, archive-1-3-info-callout, archive-1-4-info-callout
+        (day-8/9/10 siblings) and downstream archive-1-1-info-callout
+        (day 16) etc. Backfilled day 27 — the day-11 commit removed the
+        InfoCallout without appending an archive entry; this entry restores
+        the archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-2-critter-containers-period-drop
+      module: 1-2
+      location: 1-2.astro Backup food supply Systems col, Todo id="critter-safe-containers" (line 48 pre-day-8)
+      type: invented_prose
+      content: |
+        Use critter and humidity safe containers
+      inferred_source: null
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Site form dropped the terminal period; workbook page 35 reads
+        "Use critter and humidity safe containers." (with period). Drift
+        type punctuation_drop per inventory paragraph_drift (line 628-636),
+        classification a after restoration, decision 1a_restore_verbatim
+        (status closed_day_8). Restored verbatim with terminal period in
+        the day-8 wiring commit. Same shape as archive-1-1-paragraph-drift-period-add
+        (inverse direction — 1-1 had a site-added period; 1-2 had a
+        site-dropped period). Archived to document the dropped-period
+        site form for forward-compat tracking. Backfilled day 27 — the
+        day-8 commit restored the period without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
@@ -2029,6 +2274,46 @@ categories:
         immediately follows Pod mapping activity (workbook p17 + pp19-22
         contiguity preserved).
       proposed_canonical_field: null
+    - id: archive-1-5-low-stimulation-areas-placement
+      module: 1-5
+      location: 1-5.astro Stuff col, Todo id="low-stimulation-areas" (line 96 pre-day-11)
+      type: reordered_sections_flagged_for_restore
+      content: |
+        Pre-day-11 site placement:
+          Stuff col → "For cooling/warming shelters" sub-section
+            ...
+            backup-power-available
+            low-stimulation-areas    ← misplaced under cooling/warming sub-section
+          Stuff col → "Additional supplies for overnight shelters" sub-section
+            cots-mats-blankets
+        Workbook order (page 23/45):
+          Stuff col → "For cooling/warming shelters" sub-section
+            ...
+            backup-power-available
+          Stuff col → "Additional supplies for overnight shelters" sub-section
+            cots-mats-blankets
+            low-stimulation-areas    ← belongs under overnight sub-section
+        Todo id "low-stimulation-areas" preserved across the move so
+        IndexedDB user data is retained.
+      inferred_source: workbook page 23/45 Stuff col sub-section ordering
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Sub-section placement drift per inventory paragraph_drift line
+        987-994 (drift_type sub_section_placement, classification c,
+        decision 1a_restore). The Todo "As is possible, create
+        low-stimulation areas with minimal sound, soft seating, and low
+        light" was placed in the wrong sub-section on site (For
+        cooling/warming shelters) when it belongs under Additional
+        supplies for overnight shelters per workbook ordering. Moved in
+        the day-11 commit; Todo id preserved for IndexedDB invariant.
+        Distinct from KYC-style whole-section reordering (archive-kyc-
+        section-order-drift) — this is item-level mis-placement between
+        two adjacent sub-sections within a single column. Backfilled day
+        27 — the day-11 commit moved the Todo without appending an
+        archive entry; this entry restores the archive-then-remove
+        invariant retroactively.
+      proposed_canonical_field: null
 
   # Bulk link drops — workbook had a link that the site dropped without
   # substitution. 6 in 1-7, more in 1-8, etc.
@@ -2435,4 +2720,148 @@ categories:
         `decision: 1a_restore_as_ExternalLink`. Restored via <ExternalLink>
         wrapping the "Create a directory" phrase. Archived to document the
         dropped-link site form.
+      proposed_canonical_field: null
+    - id: archive-1-2-folder-header-link-drop
+      module: 1-2
+      location: top of 1-2.astro <ModuleLayout> (above guide-table); was missing pre-day-8
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.2 Food and water"
+        URL:    https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu
+        Workbook context: workbook page 35 opens with "Folder with resources
+        and templates: 1.2 Food and water" — folder header line linking
+        the 1HZSXmTaX Drive folder. Site never surfaced this header.
+      inferred_source: workbook page 35 folder header
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Workbook p35 opens with a "Folder with resources and templates:" line
+        linking the 1HZSXmTaX Drive folder (1.2 Food and water). Site never
+        surfaced this header inline. Per inventory innovations.folder_header_missing_recurs
+        decision: restore_via_spec_links (status RESOLVED day 8). Restored
+        on day 8 as a leading <p>Folder with resources and templates:
+        <ExternalLink ...>1.2 Food and water</ExternalLink></p> line — the
+        first occurrence of the recurring folder-header-missing pattern
+        (later observed on 1-1, 1-3, 1-4, 1-5, KYC). Same shape as
+        archive-1-1-folder-header-link (day 16 sibling). Backfilled day 27
+        — the day-8 commit restored this folder header without appending
+        an archive entry; this entry restores the archive-then-remove
+        invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-3-folder-header-link-drop
+      module: 1-3
+      location: top of 1-3.astro <ModuleLayout> (above guide-table); was missing pre-day-9
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.4 First aid and medical"   # workbook typo; section is 1.3
+        URL:    https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH
+        Workbook context: workbook page 42 opens with "Folder with resources
+        and templates: 1.4 First aid and medical" — folder header line
+        linking the 1HI-sf3 Drive folder. Workbook anchor text reads "1.4
+        First aid and medical" (upstream off-by-one typo — section is
+        actually 1.3). Site never surfaced this header.
+      inferred_source: workbook page 42 folder header (with upstream "1.4" typo)
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Workbook p42 opens with a "Folder with resources and templates:" line
+        linking the 1HI-sf3 Drive folder. Site never surfaced this header
+        inline. Per inventory folder_header_pattern decision pinned for
+        design review (innovations.folder_header_pattern_pinned_for_design_review)
+        AND per workbook fidelity restored inline on day 9 (1-2 day-8
+        precedent followed for cross-module consistency). Anchor text
+        preserves workbook upstream typo "1.4 First aid and medical" verbatim.
+        Same shape as archive-1-2-folder-header-link-drop (day-8 sibling)
+        and archive-1-1-folder-header-link (day-16 downstream). Backfilled
+        day 27 — the day-9 commit restored this folder header without
+        appending an archive entry; this entry restores the archive-then-
+        remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-4-folder-header-link-drop
+      module: 1-4
+      location: top of 1-4.astro <ModuleLayout> (above guide-table); was missing pre-day-10
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.3 Power supply"            # workbook typo; section is 1.4
+        URL:    https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU
+        Workbook context: workbook page 45 opens with "Folder with resources
+        and templates: 1.3 Power supply" — folder header line linking
+        the 1Bl9xBYa Drive folder. Workbook anchor text reads "1.3 Power
+        supply" (upstream off-by-one typo — section is actually 1.4).
+        Site never surfaced this header.
+      inferred_source: workbook page 45 folder header (with upstream "1.3" typo)
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-4): source spec + wiring (day 10)'
+      rationale: |
+        Workbook p45 opens with a "Folder with resources and templates:" line
+        linking the 1Bl9xBYa Drive folder. Site never surfaced this header
+        inline. Restored inline on day 10 with workbook label verbatim
+        ("1.3 Power supply" — upstream typo preserved per inventory
+        workbook_typo_note). Same shape as archive-1-2-folder-header-link-drop
+        (day-8 sibling) and archive-1-3-folder-header-link-drop (day-9 sibling
+        — same off-by-one workbook typo pattern). Backfilled day 27 — the
+        day-10 commit restored this folder header without appending an
+        archive entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-4-power-supply-inventory-link-drop
+      module: 1-4
+      location: 1-4.astro Power supply Stuff col, Todo id="power-inventory" (line 46 pre-day-10)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Power Supply inventory" (within "Keep track of your power
+        sources with the Power Supply inventory template.")
+        URL:    https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit
+          (workbook anchor target is cell-level:
+           ?gid=1882137661#gid=1882137661&range=A1:C1 — restored as
+           sheet-level URL per innovations.cell_level_spreadsheet_link
+           decision drop_range_use_sheet_level_url, sheet-level URL is
+           visually equivalent in browser and keeps normalizeUrl scope simpler)
+        Site state pre-day-10: plain text — no <a> wrapper around "Power
+        Supply inventory" phrase.
+      inferred_source: workbook page 45 Power Supply inventory anchor (cell-level target in master Templates Directory sheet)
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-4): source spec + wiring (day 10)'
+      rationale: |
+        Workbook page 45 wraps "Power Supply inventory" in an anchor pointing
+        at a specific row in the Templates Directory master sheet via
+        ?gid=1882137661&range=A1:C1 cell-level targeting. Site rendered
+        the phrase as plain text. Per inventory plain_text_dropped_link
+        decision: 1a_restore_as_ExternalLink_sheet_level. Restored via
+        <ExternalLink> wrapping the "Power Supply inventory" phrase using
+        sheet-level URL (cell-level range dropped per the
+        innovations.cell_level_spreadsheet_link decision —
+        drop_range_use_sheet_level_url). First occurrence of cell-level
+        spreadsheet targeting in the walk; sheet-level restoration is
+        visually equivalent in the browser. Backfilled day 27 — the
+        day-10 commit restored this anchor without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-folder-header-link-drop
+      module: 1-5
+      location: top of 1-5.astro <ModuleLayout> (above guide-table); was missing pre-day-11
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.5 Warming/cooling/emergency shelter"
+        URL:    https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF
+        Workbook context: workbook page 23/45 opens with "Folder with
+        resources and templates: 1.5 Warming/cooling/emergency shelter"
+        — folder header line linking the 1GAq4V6y Drive folder. No
+        upstream typo on this one (1.5 is the correct section number).
+        Site never surfaced this header.
+      inferred_source: workbook page 23/45 folder header
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Workbook p23/45 opens with a "Folder with resources and templates:"
+        line linking the 1GAq4V6y Drive folder (1.5 Warming/cooling/emergency
+        shelter). Site never surfaced this header inline. Restored inline
+        on day 11 with workbook label verbatim. Same shape as
+        archive-1-2/1-3/1-4-folder-header-link-drop (days 8/9/10 siblings)
+        — first folder-header restoration without an upstream typo (1.5 is
+        the correct section number, unlike 1-3's "1.4" and 1-4's "1.3"
+        typos). Backfilled day 27 — the day-11 commit restored this folder
+        header without appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
       proposed_canonical_field: null
