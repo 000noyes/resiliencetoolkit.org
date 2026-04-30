@@ -144,7 +144,8 @@ modules:
         decision: deferred_to_step_2
         scope: step_2
     structural_fidelity:
-      verdict: "one_table_one_component"
+      verdict: clean                          # day-28 reconciliation: was "one_table_one_component" (descriptive); day-16 shipped 6+3 class-c restorations + spec wiring; structural mapping retained in detail field below
+      structural_mapping: "one_table_one_component"
       detail: >
         Workbook p30 Systems/Stuff table → site guide-table. No split. BUT
         link destinations on prose phrases are structural (anchor text + URL
@@ -490,7 +491,7 @@ modules:
         component_impact: "DataTable journal variant renders tableName as the primary heading (consumes the h3 slot above)"
 
     structural_fidelity:
-      verdict: low_drift                      # day 18 (2026-04-28): all 6 c_title_drift DataTables resolved
+      verdict: clean                          # day-28 reconciliation: was "low_drift"; days 17+18 closed all listed concerns (notes preserved below)
       concerns:
         - "6 DataTables with invented/drifted tableName props (c_title_drift) — RESOLVED day 18"
         - "Sub-section order reshuffled (class-c) — RESOLVED day 17"
@@ -785,7 +786,9 @@ modules:
         - "Should folder link also appear inline (as workbook does) OR is the ModuleLayout button sufficient?"
         - "Does 'See Additional Resources' button visually communicate equivalence to the workbook's inline folder header?"
 
-    class_c_count: 4                                       # InfoCallout, invented h2, folder header affordance (pinned), plural drop
+    class_c_count: 0                                       # day-28 reconciliation: was 4 (pre-day-9 walk); day-9 shipped (commit e06f981) closed all 4 — InfoCallout removed, invented h2 removed, plural drop restored, folder header affordance pinned for design review (out of class-c scope per closeout doc §1)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: day-9 shipped class-c remediation; folder-header pinned separately
     scope: 1a
     spec_required: true
     innovations:
@@ -877,7 +880,9 @@ modules:
     missing_sections_check: ok
     table_titles_check: na
 
-    class_c_count: 3                                       # InfoCallout, missing folder header (pinned), "Power Supply inventory" link drop (apostrophe no longer class-c per user)
+    class_c_count: 0                                       # day-28 reconciliation: was 3 (pre-day-10 walk); day-10 shipped (commit 9114c99) closed all 3 — InfoCallout removed, "Power Supply inventory" link restored at sheet-level, folder header pinned for design review (out of class-c scope per closeout doc §1)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: day-10 shipped class-c remediation; folder-header pinned separately
     scope: 1a
     spec_required: true
     innovations:
@@ -997,7 +1002,9 @@ modules:
     missing_sections_check: ok                             # no workbook sub-sections missing
     table_titles_check: na                                 # 1-5 has no column titles beyond Systems/Stuff
 
-    class_c_count: 4                                       # InfoCallout, invented row-header, low-stimulation placement, Identify link-type substitution; folder-header pinned separately
+    class_c_count: 0                                       # day-28 reconciliation: was 4 (pre-day-11 walk); day-11 shipped (commit fec2c5d) closed all 4 — InfoCallout removed, invented row-header removed, low-stimulation Todo placement restored, Identify link-type substitution converted to /modules/... internal route; folder-header pinned for design review (out of class-c scope per closeout doc §1)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: day-11 shipped class-c remediation; folder-header pinned separately
     scope: 1a
     spec_required: true
     innovations:
@@ -1642,7 +1649,7 @@ modules:
       dropped_workbook_items_flagged_for_restore; 11 in
       dropped_workbook_links; 1 in invented_prose for the merged form).
       Total ExternalLinks on 1-8 page: 21 (was 10 post-day-21).
-      class_c_count: 14 → 0; structural_fidelity.verdict: clean.
+      Class-c count: 14 → 0; structural fidelity verdict: clean.
 
       Day-22 part-2 ships the IndexedDB migration that consolidates
       pre-merge user check-state stored under the deprecated moduleKeys
@@ -1948,7 +1955,9 @@ modules:
     missing_sections_check: partial                        # "Planning for other kinds" section structurally present but closing military-presence sentence dropped
     table_titles_check: na                                 # DataTable tableName props match Phase 1 spec
 
-    class_c_count: 23                                      # 2 DataTables-pending-spec + 1 military-presence drop + 8 paragraph drifts + 13 internal-anchor drops + 1 pandemics URL sub (some internal anchors overlap with paragraph drifts; conservative count)
+    class_c_count: 0                                       # day-28 reconciliation: was 23 (pre-day-13/14 walk); days 12+13+14 shipped (commits b394ca8 + ab85c32 + 2db4130) closed all 23 — Neighbor + First Responder DataTable specs added day-12, 8 paragraph drifts restored verbatim day-13, 14 internal-anchor cross-refs converted to /modules/... routes day-14 (includes pandemics URL + military-presence sentence + (1.3)→(1.4) numeric drift)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: days 12+13+14 shipped 1-9 class-c remediation; 3 DataTable specs (Leader/Neighbor/First Responder) all pass verify
     scope: 1a
     spec_required: true                                    # 2 new specs: Neighbor Directory + First Responder Directory
     innovations:
