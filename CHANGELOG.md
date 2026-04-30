@@ -8,11 +8,13 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 This release closes the workbook-fidelity sweep. Every module section
 page on the site has been walked against the master Resilience Hub
-Toolkit workbook PDF and brought back into one-to-one alignment.
-Approximately 134 class-c items (drifted titles, reworded prompts,
-substituted URLs, dropped sentences, invented links, missing
-sub-sections) were either restored verbatim from the workbook or
-removed and recorded for audit.
+Toolkit workbook PDF. Approximately 134 class-c items (drifted titles,
+reworded prompts, substituted URLs, dropped sentences, invented links,
+missing sub-sections) were either restored verbatim from the workbook
+or removed and recorded for audit. Four minor text-level drifts
+surfaced in a final spot-check are deferred to a follow-up backlog
+(see "Known follow-up backlog" below) — none invalidates the
+per-module attestation.
 
 ### Added
 - `docs/site-inventions-archive.yaml` preserves every removed class-c
@@ -33,7 +35,7 @@ removed and recorded for audit.
   key with no user-visible loss.
 - 1-9 pandemics ExternalLink restored to the workbook folder anchor
   (was substituted with a different Drive file id).
-- 14 internal PDF cross-references on 1-9 (Section 1.X / (N.M) anchors)
+- Internal PDF cross-references on 1-9 (Section 1.X / (N.M) anchors)
   now render as site-internal `/modules/...` routes instead of external
   links to GoogleDoc HTML pages.
 
