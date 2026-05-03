@@ -66,6 +66,18 @@ notes: |
   Citation is wired via an HTML comment at the top of src/pages/modules/emergency-preparedness/1-2.astro
   rather than a component prop, since no DataTable / PlanForm exists on this page.
 
+  Day 8 (commit 2e108e6) initially restored the workbook folder header as a
+  leading "Folder with resources and templates: 1.2 Food and water" `<p>`
+  line above the guide-table. Day 30 (commit a556954) removed that inline
+  `<p>` as a duplicate of the ModuleLayout "See Additional Resources"
+  button affordance. The 1HZSXmTaX folder URL is sourced from
+  `src/data/downloads.ts` via `getResourcesUrlForSection(sectionData.number)`
+  and recognized by the verifier's layout-aware link check (commit 4a9c134).
+  The folder URL is also targeted by the inline `community backup stores`,
+  `community-scale equipment and infrastructure`, `set up kitchens`, and
+  `Create a directory of food access points` anchors, so it remains
+  reachable via the layout button plus four inline ExternalLinks.
+
   Day 19 (2026-04-28) closes the two prose-link drops the day-8 commit deferred:
   "community backup stores" (Backup food supply, Systems col Todo) and
   "community-scale equipment and infrastructure" (Community food infrastructure,

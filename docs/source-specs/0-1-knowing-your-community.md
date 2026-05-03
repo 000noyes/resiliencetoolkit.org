@@ -99,6 +99,16 @@ notes: |
   https://batjc.org/ (site substitution) to the workbook Pod Mapping
   Worksheet file URL per inventory `decision: 1a_restore_workbook_link`.
 
+  Day 30 (commit a556954) removed the inline "Folder with resources here:"
+  `<p>` line as a duplicate of the ModuleLayout "See Additional Resources"
+  button affordance. The 161QG8b folder URL is sourced from
+  `src/data/downloads.ts` via `getResourcesUrlForSection(sectionData.number)`
+  and recognized by the verifier's layout-aware link check (commit 4a9c134).
+  The "page of prompts" and "Community Needs Assessment" anchors inside
+  the Facilitation guides section continue to wrap the same 161QG8b folder
+  URL, so the folder remains reachable via three independent surfaces
+  (layout button + two inline anchors).
+
   prose_scope is set file-wide (start_line: 1, end_line: 486) per
   decision j symmetric-scoping retrofit on day 18. The day-18 commit
   added 6 sibling DataTable specs (place-characteristics,

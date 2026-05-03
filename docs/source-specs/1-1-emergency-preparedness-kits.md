@@ -55,6 +55,15 @@ notes: |
   4 inline href="#" anchors are upgraded to <ExternalLink>. Verify via
   linksMatch.
 
+  Day 30 (commit a556954) removed the inline "Folder with resources and
+  templates:" `<p>` line as a duplicate of the ModuleLayout "See Additional
+  Resources" button affordance. The 13eSjal folder URL is now sourced from
+  `src/data/downloads.ts` via `getResourcesUrlForSection(sectionData.number)`
+  and recognized by the verifier's layout-aware link check (commit 4a9c134).
+  The 4 inline `<ExternalLink>` anchors for "emergency plans", "emergency
+  kits", "storing backup food", and "go bags" are unchanged; the workbook
+  folder URL remains reachable from the page via the layout button.
+
   The InfoCallout ("How this works…" UX meta-instruction) was removed in the
   same commit per the class-c firewall (decision o; folded into the 1-1 day
   per closeout doc). Three minor paragraph drifts (period add, curly-quote

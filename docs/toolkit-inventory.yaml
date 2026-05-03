@@ -206,6 +206,13 @@ modules:
       Appendix templates p31 (Street Medic First Aid Kit) + p32
       (Go Bag Gear List) remain deferred to Step 2.
 
+      Day 30 (commit a556954) removed the inline folder-header <p> line
+      as a duplicate of the ModuleLayout "See Additional Resources"
+      button affordance. The 13eSjal folder URL is now sourced from
+      src/data/downloads.ts via getResourcesUrlForSection() and
+      recognized by the verifier's layout-aware link check (commit
+      4a9c134). The 4 inline ExternalLink anchors are unchanged.
+
   knowing-your-community:
     title: "Organizing your community: who is here and what are they doing?"
     short_title: "Knowing Your Community"
@@ -623,8 +630,8 @@ modules:
         - type: workbook_folder_header_missing
           source_cited: "docs/source-specs/1-2-food-and-water.md"
           classification: a                    # day-8 restored "Folder with resources and templates: 1.2 Food and water"
-          status: restored_day_8
-          note: "Folder header restored as <p> above guide-table in day-8 commit 2e108e6"
+          status: layout_button_day_30
+          note: "Folder header restored as <p> above guide-table in day-8 commit 2e108e6; day-30 commit a556954 removed the inline <p> as a duplicate of the ModuleLayout 'See Additional Resources' button affordance. The 1HZSXmTaX folder URL is sourced from src/data/downloads.ts via getResourcesUrlForSection() and recognized by the verifier's layout-aware link check (commit 4a9c134); also reachable via 4 inline ExternalLink anchors on the page."
 
     paragraph_drift:
       - location: "Backup food supply, Systems col bullet #3 (workbook p35)"

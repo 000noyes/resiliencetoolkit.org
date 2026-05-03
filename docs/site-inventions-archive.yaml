@@ -2336,6 +2336,12 @@ categories:
         Restored on day 16 as a leading <p>Folder with resources and templates:
         <ExternalLink ...>1.1 Emergency preparedness kits</ExternalLink></p>
         line — same shape as 1-2's day-8 wiring.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        13eSjal folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134); no fidelity loss.
       proposed_canonical_field: null
     - id: archive-1-1-anchor-emergency-plans
       module: 1-1
@@ -2420,6 +2426,14 @@ categories:
         on day 17 as a leading <p>Folder with resources here:
         <ExternalLink ...>0. Organizing your community</ExternalLink></p>
         line — same shape as 1-1's day-16 wiring.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        161QG8b folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134). The folder is also reached
+        from the inline "page of prompts" and "Community Needs Assessment"
+        anchors in the Facilitation guides section.
       proposed_canonical_field: null
     - id: archive-kyc-link-drop-legislators
       module: knowing-your-community
@@ -2747,6 +2761,15 @@ categories:
         — the day-8 commit restored this folder header without appending
         an archive entry; this entry restores the archive-then-remove
         invariant retroactively.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        1HZSXmTaX folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134); also reachable via the
+        inline "community backup stores", "community-scale equipment and
+        infrastructure", "set up kitchens", and "Create a directory of
+        food access points" anchors.
       proposed_canonical_field: null
     - id: archive-1-3-folder-header-link-drop
       module: 1-3
@@ -2864,4 +2887,11 @@ categories:
         typos). Backfilled day 27 — the day-11 commit restored this folder
         header without appending an archive entry; this entry restores the
         archive-then-remove invariant retroactively.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        1GAq4V6y folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134); also reachable via the
+        Systems column's "Create a system" inline anchor.
       proposed_canonical_field: null

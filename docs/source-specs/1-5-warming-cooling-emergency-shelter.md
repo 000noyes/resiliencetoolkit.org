@@ -48,13 +48,18 @@ notes: |
 
   Folder-header label is the workbook's verbatim "1.5 Warming/cooling/emergency
   shelter" (no upstream typo, unlike 1-3/1-4). The folder URL is also targeted
-  by the Systems column's "Create a system" anchor — both render as
-  ExternalLinks pointing to the same Drive folder. The folder-header inline
-  rendering pattern is also surfaced via the ModuleLayout "See Additional
-  Resources" action-bar button driven by src/data/downloads.ts.moduleDownloads
-  []. resourcesUrl; whether inline + page-chrome is redundant or complementary
-  is pinned for design review per the inventory walk's folder_header_pattern.
-  decision (same as 1-3/1-4).
+  by the Systems column's "Create a system" anchor — wired as ExternalLink
+  pointing to the same Drive folder. Day 11 (commit fec2c5d) initially
+  restored the folder header as an inline `<p>Folder with resources and
+  templates: ...</p>` line; day 30 (commit a556954) removed that inline
+  `<p>` as a duplicate of the ModuleLayout "See Additional Resources"
+  button affordance, which renders the same 1GAq4V6y URL via
+  `getResourcesUrlForSection(sectionData.number)` from
+  `src/data/downloads.ts`. The verifier's layout-aware link check (commit
+  4a9c134) recognizes the equivalence, so the spec's folder URL still
+  passes linksMatch even though no inline `<p>` carries it. Folder remains
+  reachable via the layout button plus the inline "Create a system"
+  anchor.
 
   Identify → site-internal route: the workbook anchors the in-prose word
   "Identify" (in "Identify local restaurants or people to bring meals to the
