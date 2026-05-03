@@ -1,0 +1,3072 @@
+# Toolkit Inventory — resiliencetoolkit.org
+#
+# Generated during Step 1a Days 2–4 Inventory Walk (started 2026-04-21).
+# Classifies every user-facing content piece across the 17 module pages
+# against the canonical workbook (public/toolkit/2025 Resilience Hub
+# Toolkit w Templates_V1 final.pdf, 97pp, 258 hrefs, 41 Drive IDs).
+#
+# Classification taxonomy:
+#   a  = workbook-cited (wireable in Step 1)
+#   b  = template-cited (rt-templates/ — scrapped on Day 7; any (b) must
+#        re-anchor to the workbook page range on promotion)
+#   c  = no source / site-invented (HARD FLAG — SCOPE.md class-(c) firewall:
+#        must be deleted or promoted via reviewed spec)
+#
+# Innovation flags per module: prose-content-could-be-interactive,
+# structural-fidelity risks, and missing UI affordances the workbook implies.
+# Each flag records its per-module decision (accepted/deferred/rejected + scope).
+#
+# Source-of-truth memory: project_rt_source_truth_pdfs.md
+# Plan artifact: vscode-feat-step1a-priority-ep-eng-review-test-plan-20260421.md §2a
+
+meta:
+  walk_started: "2026-04-21"
+  branch: "feat/step1a-priority-ep"
+  workbook: "public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf"
+  workbook_pages: 97
+  workbook_hrefs_total: 258
+  workbook_drive_ids_total: 41
+
+modules:
+  1-1:
+    title: "Emergency preparedness kits"
+    workbook_pages: "30"
+    workbook_pages_extended: "30-32"   # p31-32 are appendix templates linked from 1-1 Drive folder
+    section_pdf: "public/toolkit/sections/Section 1.1_2025 Resilience Hub Toolkit.pdf"
+    workbook_anchor_urls:              # corrected 2026-04-22 with anchor-pair extraction
+      - anchor: "1.1 Emergency preparedness kits"
+        url: "https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F"
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: false
+      - anchor: "emergency plans"
+        url: "https://docs.google.com/document/d/154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto/edit?tab=t.0"
+        purpose: "Emergency plans doc linked from Systems col prose"
+        on_site: false                 # site has href="#"
+      - anchor: "emergency kits"
+        url: "https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F"
+        purpose: "Folder reused (same URL as folder header)"
+        on_site: false                 # site has href="#"
+      - anchor: "storing backup food"
+        url: "https://docs.google.com/spreadsheets/d/1RaYyavdAbn43b3EH9zMzQir6G6gxnQE0XxMBxMH5iTQ/edit?usp=drive_link"
+        purpose: "Backup food storage spreadsheet"
+        on_site: false                 # site has href="#"
+      - anchor: "go bags"
+        url: "https://drive.google.com/file/d/1Ea1zc8wSbvVoMqcLqNz19sNJTsuThQIM/view?usp=drive_link"
+        purpose: "Go Bags resource file"
+        on_site: false                 # site has href="#"
+    workbook_anchor_count: 5           # 5 distinct anchor occurrences pointing to 4 unique URLs
+    workbook_unique_urls: 4
+    site_anchor_count: 0               # all 4 inline anchors are dead href="#"; folder header not surfaced
+    link_delta: "-5 anchor occurrences / -4 unique URLs (13eSjal folder, 154qilah doc, 1RaYyavd sheet, 1Ea1zc8w file)"
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-1.astro"
+      module_key: "emergency-preparedness-kits"
+      storage_label: "Emergency Kits"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          note: >
+            "How this works: Fill out forms… offline… private." — site-invented
+            meta-instruction. NOT workbook content. Accepted as per-site UX
+            metadata exception? Pending: not addressed in 1-1 answer; defer to
+            common-pattern decision (applies across many modules).
+        - type: table.guide-table
+          source_cited: null
+          classification: a
+          note: >
+            Systems/Stuff two-column layout mirrors workbook p30 structure
+            directly. One PDF table → one HTML table. Structural fidelity ✓.
+        - type: anchor_href_hash
+          count: 4
+          source_cited: null
+          classification: c
+          note: >
+            4 dead href="#" anchors on "emergency plans", "emergency kits",
+            "storing backup food", "go bags". Workbook has real Drive links
+            behind these phrases. HARD FIDELITY VIOLATION.
+          promotion: "1a — restore via spec links[]"
+        - type: Todo
+          count: 25
+          source_cited: null
+          classification: a
+          note: >
+            11 Household + 14 Go Bag checkboxes. Bullet text is class-(a)
+            workbook-verbatim; checkbox affordance itself is innovation
+            (bullets→checkboxes, P2). Todo IDs are site-invented but safe;
+            moduleKey contract preserved.
+        - type: workbook_folder_header_missing
+          source_cited: null
+          classification: c
+          note: >
+            Workbook p30 opens with "Folder with resources and templates: 1.1
+            Emergency preparedness kits" linking to Drive folder 13eSjal…
+            NOT surfaced on site. Inventory gap.
+          promotion: "1a — restore via spec links[] (Drive folder)"
+      appendix_templates:
+        - workbook_page: 31
+          title: "Street Medic First Aid Kit"
+          on_site: false
+          note: "Full first-aid-kit breakdown; linked from 1-1 Drive folder."
+        - workbook_page: 32
+          title: "Go Bag Gear List"
+          on_site: false
+          note: "Expanded go-bag list; linked from 1-1 Drive folder."
+    innovations:
+      - flag: dead_link_regression
+        description: >
+          4 href="#" anchors drop 4 of the workbook's 5 page-30 external
+          Drive links. Every linked phrase in the workbook is inert prose on
+          site. Missing Drive-folder header = 5th lost link.
+        decision: accept_as_1a_fix
+        scope: 1a
+        action: >
+          Spec links[] includes all 5 workbook page-30 Drive URLs. 1a wiring
+          replaces href="#" with real URLs during module 1-1 scaffolding.
+          Verify via linksMatch check.
+        structural_fidelity_bearing: true
+      - flag: appendix_templates_not_surfaced
+        description: >
+          Workbook p31 (Street Medic First Aid Kit) + p32 (Go Bag Gear List)
+          are detailed appendix templates linked from 1-1's Drive folder but
+          not exposed on site. Workbook users see full gear lists; site
+          users see only top-level bullets.
+        decision: deferred_to_step_2
+        scope: step_2
+        action: >
+          Candidates for interactive DataTable/checklist expansion in Step 2.
+          Not just PDF-linked — actual interactive surface. Track in TODOS
+          when Step 2 opens.
+      - flag: bullets_to_checkboxes
+        description: >
+          Site converts 25 workbook bullets to Todo components. Known P2
+          innovation already logged. Flagged here for inventory completeness.
+        decision: deferred_to_step_2
+        scope: step_2
+    structural_fidelity:
+      verdict: clean                          # day-28 reconciliation: was "one_table_one_component" (descriptive); day-16 shipped 6+3 class-c restorations + spec wiring; structural mapping retained in detail field below
+      structural_mapping: "one_table_one_component"
+      detail: >
+        Workbook p30 Systems/Stuff table → site guide-table. No split. BUT
+        link destinations on prose phrases are structural (anchor text + URL
+        together), flagged by user: linksMatch must validate both anchor
+        text and URL, not URL alone.
+    paragraph_drift:                          # added on 1-1 re-walk with paragraph-diff methodology
+      - location: "Systems col, Household subsection (workbook p30)"
+        workbook: "…need to be refreshed on a regular basis"
+        site: "…refreshed on a regular basis."
+        drift_type: punctuation_add
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+      - location: "Systems col, Individual subsection (workbook p30)"
+        workbook: "prepare 'go bags,'"        # workbook uses curly single quotes
+        site: "prepare go bags,"
+        drift_type: quote_drop
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+      - location: "Household bullet #9 (workbook p30)"
+        workbook: "Personal sanitation supplies (incl. moist towelettes, garbage bags and plastic ties)"
+        site: "Personal sanitation supplies (incl. moist towelettes, garbage bags, and plastic ties)"
+        drift_type: oxford_comma_add
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim
+    section_order_check: ok                   # 2 subsections (Household/Individual) match workbook order
+    missing_sections_check:
+      - section: "Module intro paragraph"
+        status: correct_placement             # on category index, not 1-1 page
+      - section: "Folder header"
+        status: already_flagged_class_c       # see components_wired
+      - section: "Appendix templates p31-32"
+        status: already_flagged_deferred_step_2
+    class_c_count: 0                          # day 16 (2026-04-28): 6+3 closed via spec wiring + restore + archive
+    scope: 1a
+    spec_required: true
+    notes: >
+      First module walked (2026-04-21). Re-walked same day with
+      paragraph-diff methodology after KYC surfaced methodology gap.
+      Re-walk added 3 minor-severity punctuation drifts (period add,
+      quote drop, Oxford comma add). Meaning preserved; strict
+      SCOPE.md reading requires verbatim restore. InfoCallout
+      classification as site-UX exception (not a toolkit-content
+      class-c) resolved per decision o (closeout doc §1) — folded
+      into the 1-1 module day, not a separate sweep.
+
+      Day 16 (2026-04-28) — closeout commit shipped:
+      docs/source-specs/1-1-emergency-preparedness-kits.md scaffolded;
+      page=30 citation comment wired on src/pages/modules/emergency-preparedness/1-1.astro;
+      4 dead href="#" anchors restored as ExternalLink to workbook URLs;
+      folder header surfaced as leading <p>...</p> line; 3 paragraph
+      drifts restored verbatim (period drop, curly-quote add, Oxford
+      comma drop); InfoCallout removed. 9 archive entries appended to
+      docs/site-inventions-archive.yaml (4 invented_prose + 5
+      dropped_workbook_links) — archive-then-remove honored per FQ4.
+      Appendix templates p31 (Street Medic First Aid Kit) + p32
+      (Go Bag Gear List) remain deferred to Step 2.
+
+      Day 30 (commit a556954) removed the inline folder-header <p> line
+      as a duplicate of the ModuleLayout "See Additional Resources"
+      button affordance. The 13eSjal folder URL is now sourced from
+      src/data/downloads.ts via getResourcesUrlForSection() and
+      recognized by the verifier's layout-aware link check (commit
+      4a9c134). The 4 inline ExternalLink anchors are unchanged.
+
+  knowing-your-community:
+    title: "Organizing your community: who is here and what are they doing?"
+    short_title: "Knowing Your Community"
+    workbook_pages: "10-17"
+    workbook_pages_extended: "10-17, 19-22"   # p19-22 are Pods appendix (Mia Mingus/BATJC)
+    section_pdf: "public/toolkit/sections/Section 0_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 9
+    workbook_anchor_urls:                      # corrected 2026-04-22 with anchor-pair extraction
+      - anchor: "0. Organizing your community"
+        url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link"
+        page: 10
+        purpose: "Folder with resources here (folder header)"
+        on_site: false
+      - anchor: "legislature.vermont.gov/people/"
+        url: "http://legislature.vermont.gov/people/"
+        page: 10
+        purpose: "Find your legislators (anchor IS the URL text)"
+        on_site: false                         # plain text, NO href
+      - anchor: "https://anrmaps.vermont.gov/websites/anra5/"
+        url: "https://anrmaps.vermont.gov/websites/anra5/"
+        page: 12
+        purpose: "ANR atlas (anchor IS the URL text)"
+        on_site: true
+      - anchor: "page of prompts"
+        url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+        page: 14
+        purpose: "Interactive toolkit activity prompts (inside Facilitation guides section)"
+        on_site: false                         # entire Facilitation guides section missing
+      - anchor: "Community Needs Assessment"
+        url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
+        page: 14
+        purpose: "Community Needs Assessment printable (inside Facilitation guides section)"
+        on_site: false                         # entire Facilitation guides section missing
+      - anchor: "Check out this zine for more ideas"
+        url: "https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view"
+        page: 16
+        purpose: "Zine for more ideas (Going deeper intro)"
+        on_site: false                         # plain text, NO href
+      - anchor: "Check out this list"
+        url: "https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view"
+        page: 16
+        purpose: "Roles-to-modules list (Going deeper table intro)"
+        on_site: false                         # plain text, NO href
+      - anchor: "Bay Area Transformative Justice Center"
+        url: "https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link"
+        page: 17
+        purpose: "Pod Mapping Worksheet file (anchored via BATJC phrase, not via worksheet title)"
+        on_site: substituted                   # site links BATJC phrase to batjc.org homepage instead
+        decision: 1a_restore_workbook_link     # drop batjc.org; BATJC anchor → 1H6acuvhgEZG… Worksheet file; keep callout button (redundant but OK)
+    workbook_anchor_count: 8                   # 8 distinct anchor occurrences
+    workbook_unique_urls: 6                    # 161QG8b folder linked from 3 anchors; rest 1:1
+    site_added_links:                          # in site but not in workbook
+      - url: "https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0"
+        purpose: "Vermont Town Directory (site-added editorial callout)"
+        decision: promote_as_editorial_supplement
+      - url: "http://tinyurl.com/RHTmaterials"
+        purpose: "More in-depth facilitation guides (site-added in agenda Todo)"
+        decision: promote_as_editorial_supplement
+      - url: "https://batjc.org/"
+        purpose: "BATJC homepage (SITE-SUBSTITUTES workbook's BATJC-phrase→Pod Mapping Worksheet link)"
+        decision: 1a_remove                    # restore workbook link on BATJC anchor (→ Pod Mapping Worksheet file)
+    link_delta_summary: "-5 workbook anchor occurrences dropped (folder header + legislators + 'page of prompts' + 'Community Needs Assessment' + 'zine' + 'list'), +1 substitution (BATJC anchor: workbook → Pod Mapping Worksheet file; site → batjc.org homepage), +2 site-only (VT Town Directory, tinyurl.com/RHTmaterials)"
+
+    current_site_state:
+      astro: "src/pages/modules/knowing-your-community.astro"
+      module_keys:
+        - "knowing-community"
+        - "bringing-people-together"
+      components_wired:
+        - type: Callout
+          label: "Vermont Town Directory"
+          source_cited: null
+          classification: c
+          promotion: 1a_editorial_supplement
+        - type: DataTable
+          tableName: "Place Characteristics"
+          invented_title: true
+          correct_title: "Mapping your community"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Community Roles"
+          invented_title: true
+          correct_title: "Who is in your community/place?"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Community Dynamics"
+          invented_title: true
+          correct_title: "What other dynamics are present in your place?"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Stuff and Systems"
+          invented_title: true
+          correct_title: "Stuff and systems in your community"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Knowing Your Ecosystem"
+          invented_title: partial        # close to workbook "Knowing your ecosystem" but capitalization changed
+          correct_title: "Knowing your ecosystem"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: DataTable
+          tableName: "Going Deeper"
+          invented_title: partial
+          correct_title: "Going deeper: finding the community work you want to do"
+          source_cited: null
+          classification: c_title_drift
+          promotion: 1a_rename_tableName_to_exact_workbook_heading
+        - type: Callout
+          label: "Pod Mapping Worksheet"
+          source_cited: null
+          classification: c                 # site-invented callout surrounding BATJC pod mapping
+          promotion: retain_as_ux_chrome_but_embed_workbook_content_inline
+        - type: Todo
+          count: 6
+          moduleKey: "bringing-people-together"
+          classification: a_with_drift
+          note: "Workbook-sourced agenda items; 1 invented bullet + 5 dropped items"
+        - type: guide_table_roles
+          classification: a                 # matches workbook roles-to-modules table
+        - type: ul_lists
+          classification: a_with_drops
+          note: "Workbook-sourced ecosystem bullets + bringing-people-together bullets; 1 bullet dropped ('Who is missing?')"
+
+    paragraph_drift:
+      - location: "Lead paragraph (workbook p10)"
+        workbook: "…thinking about who is in in it, and the place where you live. You can do this activity alone, but best to do it with a few other people—friends, colleagues, neighbors."
+        site: "…thinking about who is in your community and the place where you live. You can do this activity alone, but it's best to do it with a few other people. They could be your friends, colleagues, neighbors, or someone else you just met who's excited about organizing your community to be more resilient."
+        drift_type: rephrase_plus_invention
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Bringing people together opener (workbook p13)"
+        workbook: "Once you have a few people - it can just be four or ten people! - you can meet. You'll need:"
+        site: "Once you have a few people - it can just be four or ten people! - you can get together and look at this toolkit. In order to have a meeting, you'll need"
+        drift_type: invention
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Bringing people together bullet #2 (workbook p13)"
+        workbook: "Where can you go to know them better or introduce yourself? Who is missing?"
+        site: "Where can you go to know them better or introduce yourself?"
+        drift_type: drop
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Dynamics question (workbook p11)"
+        workbook: "Who is the newest in your place?"
+        site: "Who is newest in your place?"
+        drift_type: drop_word
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Going Deeper Q2 (workbook p16)"
+        workbook: "…that other people find difficult"
+        site: "…that other people consider difficult"
+        drift_type: rephrase
+        classification: c
+        fix: 1a_restore_verbatim
+      - location: "Pod mapping first sentence (workbook p17)"
+        workbook: "Use the diagram on the next page to do this activity. To start, write your name…"
+        site: "To start, write your name…"
+        drift_type: drop
+        classification: c
+        fix: 1a_restore_with_diagram_reference_pointing_to_embedded_worksheet
+
+    agenda_restructure:
+      location: "Bringing people together agenda (workbook p13)"
+      classification: c
+      site_drops:
+        - "Do one or more of the activities in the toolkit (with 2 sub-items: Organizing your community activities pages 9-11, Get to know the toolkit interactive activity)"
+        - "Reconvene and discuss one or more of these questions (with 3 sub-questions)"
+        - "Make a plan for who will find the space to meet..."
+        - "Consider posting about your next meeting publicly..."
+        - "It makes sense to start with a small group..."
+        - "Plan to conduct the community needs assessment activity..."
+      site_inventions:
+        - "Discuss what sections jump out as important or priorities in your community."
+      site_drops_links:
+        - "resiliencetoolkit.org/downloads (on 'Printed copies of the toolkit' item)"
+      fix: 1a_restore_full_agenda_with_all_nested_sub_items
+
+    missing_sections:
+      - section: "Facilitation guides"
+        workbook_page: 14
+        missing_content:
+          - "Get to know the toolkit: interactive activity (45 minutes to 1 hour, 5-step facilitator guide)"
+          - "Conduct a Community Needs Assessment (6-step guide with link to printable assessment)"
+        classification: c
+        scope: 1a
+        action: rebuild_full_content
+      - section: "'…and when to ask for more help?' block"
+        workbook_page: 15
+        missing_content:
+          - "Title correction: 'We started organizing. How do we know it's working, and when to ask for more help?' (site drops second half)"
+          - "Readiness checklist (5 bullets: met 2+ times, group of 2-5 excited, 10+ neighbors, used needs assessment, identified 3 sections)"
+          - "Kinds of assistance (5 bullets: fiscal sponsorship, fundraising, technical assistance with 3 sub-bullets, relationships with institutions, connection with officials)"
+          - "CROs contact paragraph + info@gocros.org (the RT-to-consultancy funnel)"
+        classification: c
+        scope: 1a
+        action: rebuild_full_content_verbatim
+        innovation_bearing: funnel_critical       # Fern Lickfield inbound confirms this funnel works
+      - section: "Pods appendix"
+        workbook_pages: "19-22"
+        missing_content:
+          - "Full narrative by Mia Mingus for BATJC, June 2016"
+          - "4 pages of pod-mapping rationale and worksheet prompts"
+          - "Pod diagram (visual)"
+        classification: c
+        scope: 1a
+        action: embed_worksheet_narrative_inline_plus_diagram_reference
+      - section: "Section 0 Drive folder header"
+        workbook_page: 10
+        missing_content: "Folder with resources here: 0. Organizing your community"
+        classification: c
+        scope: 1a
+        action: restore_via_spec_links
+
+    order_drift:
+      classification: c
+      workbook_order:
+        - "Organizing your community (intro)"
+        - "Mapping your community"
+        - "Who is in your community/place?"
+        - "What other dynamics"
+        - "Stuff and systems"
+        - "Knowing your ecosystem"
+        - "Bringing people together"
+        - "Facilitation guides"
+        - "We started organizing. How do we know it's working, and when to ask for more help?"
+        - "Going deeper"
+        - "Pod mapping"
+      site_order:
+        - "Vermont Town Directory (site-added, promoted as editorial)"
+        - "Organizing your community (intro)"
+        - "Mapping your community"
+        - "Who is in your community/place?"
+        - "What other dynamics"
+        - "Stuff and systems"
+        - "Knowing your ecosystem"
+        - "Pod mapping (⬆ moved from end)"
+        - "Going deeper"
+        - "Bringing people together"
+        - "We started organizing. How do we know it's working? (title truncated)"
+      scope: 1a
+      action: reorder_site_to_match_workbook
+
+    innovations:
+      - flag: cros_referral_funnel_dropped
+        description: >
+          Workbook p15 closes KYC with an explicit CROs contact block
+          (readiness checklist + kinds of assistance + info@gocros.org).
+          Site drops it entirely. Fern Lickfield inbound via RT contact
+          form demonstrates this funnel works — dropping the CTA
+          degrades the RT-to-consultancy pathway.
+        decision: restore_in_1a_verbatim
+        scope: 1a
+        funnel_critical: true
+      - flag: pods_appendix_content_loss
+        description: >
+          Workbook pages 19-22 contain Mia Mingus/BATJC pod-mapping
+          narrative + diagram. Site has a PDF download callout but no
+          in-page content. Users who can't/won't download miss the
+          entire rationale.
+        decision: restore_in_1a_with_inline_narrative
+        scope: 1a
+      - flag: invented_table_titles_pattern
+        description: >
+          4 tableName props invent titles that don't exist in the
+          workbook. Precedent directly regresses PR #18 "— town
+          context" class-(c) bug.
+        decision: rename_each_tableName_to_exact_workbook_heading_and_remove_h3_above
+        rationale: >
+          User preference: tables must be self-describing so they can be
+          rendered in other contexts (e.g., Drive-linked, exported,
+          standalone). Workbook heading becomes the table's owned title;
+          no duplicate h3 above.
+        scope: 1a
+        component_impact: "DataTable journal variant renders tableName as the primary heading (consumes the h3 slot above)"
+
+    structural_fidelity:
+      verdict: clean                          # day-28 reconciliation: was "low_drift"; days 17+18 closed all listed concerns (notes preserved below)
+      concerns:
+        - "6 DataTables with invented/drifted tableName props (c_title_drift) — RESOLVED day 18"
+        - "Sub-section order reshuffled (class-c) — RESOLVED day 17"
+        - "3 workbook sections entirely missing (Facilitation guides, CROs block, Pods appendix) — RESOLVED day 17"
+        - "Agenda nested structure flattened — RESOLVED day 17"
+
+    class_c_count: 0                          # day 18 (2026-04-28): all 6 DataTable tableName drifts renamed to workbook-verbatim headings (Mapping your community, Who is in your community/place?, What other dynamics, Stuff and systems, Knowing your ecosystem, Going deeper); 6 archive entries appended to site-inventions-archive.yaml first per R2/FQ4. KYC class-c remediation COMPLETE.
+
+    scope: 1a
+    scope_escalation_note: >
+      KYC full restore is the largest 1a workload of any module. Will
+      likely slip 14-day plan by 2-3 days OR crowd out one of
+      1-2/1-3/1-4/1-5. Replan at end of inventory walk.
+      2026-04-28: Day-17 closed half-1; day-18 closed half-2 (the 6
+      tableName renames + 6 net-new DataTable specs). KYC class-c
+      remediation now COMPLETE (class_c_count: 0). The 17/18 split
+      held; no further KYC work scheduled in Step 1.
+    spec_required: true
+    spec_priority: highest     # funnel-critical + highest drift surface
+    notes: >
+      Walked 2026-04-21. User pivoted walk order to KYC (was module 17)
+      after catching paragraph drift in their own PDF read. Methodology
+      adjusted: paragraph-diff + section-order + missing-sections checks
+      now mandatory for all remaining 15 modules.
+      2026-04-22 amendment: anchor-pair extraction surfaced BATJC link
+      substitution (workbook BATJC→Pod Mapping Worksheet vs site
+      BATJC→batjc.org homepage) and that "page of prompts" + "Community
+      Needs Assessment" anchors inside Facilitation guides both link to
+      the 161QG8b folder (not counted previously since the whole section
+      is missing from site).
+
+  1-2:
+    title: "Food and water"
+    workbook_pages: "35-36"
+    section_pdf: "public/toolkit/sections/Section 1.2_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    workbook_anchor_urls:                      # extracted 2026-04-22 with anchor-pair extraction
+      - anchor: "1.2 Food and water"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: false
+      - anchor: "community backup stores"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder linked from Systems col prose (Backup food supply)"
+        on_site: false                         # plain text Todo, no link wrapper
+      - anchor: "community-scale equipment and infrastructure"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder linked from Systems col prose (Community food infrastructure)"
+        on_site: false                         # plain text, no link wrapper
+      - anchor: "Create a directory"
+        url: "https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view?usp=drive_link"
+        page: 35
+        purpose: "Kitchen directory template"
+        on_site: true
+      - anchor: "set up kitchens"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder linked from Community meals bullet"
+        on_site: true
+      - anchor: "Create a directory of cooks"
+        url: "https://drive.google.com/file/d/1at2VF06qMMKi3olVD4uNecniZZFnjKz0/view?usp=drive_link"
+        page: 35
+        purpose: "Cooks directory template"
+        on_site: true
+      - anchor: "Ensure safe food handling"
+        url: "https://drive.google.com/file/d/1C5a0Sf1NWRU0XnMkHayw_vjwpuzqVZzJ/view"
+        page: 35
+        purpose: "Safe food handling Drive file"
+        on_site: substituted                   # site links same anchor to cdc.gov/foodsafety
+        decision: 1a_restore_workbook_link     # drop cdc.gov; anchor → 1C5a0Sf1 Drive file (strict workbook fidelity)
+      - anchor: "Create a directory of food access points"
+        url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
+        page: 35
+        purpose: "Same 1.2 folder (food access directory use case)"
+        on_site: true
+      - anchor: "google map"
+        url: "http://tinyurl.com/freefoodbtv"
+        page: 35
+        purpose: "freefoodbtv google map"
+        on_site: true
+      - anchor: "other format"
+        url: "https://cdn.flowcode.com/prodassets/NEKCA_FoodAccess_Summer.24.2.pdf?"
+        page: 35
+        purpose: "NEKCA Food Access summer PDF example"
+        on_site: true
+      - anchor: "supplies"
+        url: "https://www.albertahealthservices.ca/assets/info/nutrition/if-nfs-collective-kitchen-sample-kitchen-equipment-list.pdf"
+        page: 36
+        purpose: "Alberta Health Services collective kitchen equipment list (Stuff col header link)"
+        on_site: true
+    workbook_anchor_count: 11                  # 11 distinct anchor occurrences
+    workbook_unique_urls: 7                    # 1HZSXmTaX folder linked from 5 anchors; rest 1:1
+    site_added_links:
+      - url: "https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html"
+        purpose: "cdc.gov food safety tips (SUBSTITUTES workbook 1C5a0Sf1 Drive file)"
+        decision: 1a_remove                    # restore workbook link on 'safe food handling' anchor (→ 1C5a0Sf1)
+    link_delta_summary: "-4 workbook anchor occurrences dropped (folder header + 'community backup stores' + 'community-scale equipment and infrastructure' + a duplicate), +1 substitution (safe food handling: workbook 1C5a0Sf1 → site cdc.gov)"
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-2.astro"
+      module_key: "food-and-water"
+      storage_label: "Food & Water"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          status: removed_day_8                # day-8 commit 2e108e6 removed per class-c firewall
+          note: "Same 'How this works' pattern as 1-1/KYC"
+        - type: table.guide-table
+          source_cited: null
+          classification: a                    # mirrors workbook 4-subsection structure
+        - type: Todo
+          count: 68
+          source_cited: null
+          classification: a                    # all 68 bullets verbatim-match workbook
+          note: "11 Backup food + 5 Community infrastructure + 10 Water + 42 Community meals (9 Systems + 33 Stuff)"
+        - type: ExternalLink
+          count: 9                             # day-19: +2 (community backup stores, community-scale equipment)
+          classification: a                    # day-19: cdc.gov substitution restored to 1C5a0Sf1 (day-8); both prose-link drops restored (day-19)
+          note: "All 9 ExternalLinks now verbatim-match workbook anchors: 1HZSXmTaX folder header (day-8), community backup stores (day-19), community-scale equipment (day-19), 1VO1V7xk Create a directory, 1HZSXmTaX set up kitchens, 1at2VF06 Create a directory of cooks, 1C5a0Sf1 safe food handling (day-8 restoration), 1HZSXmTaX Create a directory of food access points, tinyurl freefoodbtv, cdn.flowcode NEKCA, albertahealth supplies"
+        - type: plain_text_prose_link_drops
+          count: 0                             # day-19: both restored
+          status: closed_day_19                # commit feat(1-2): anchor restorations
+          classification: a
+          note: "Both 'community backup stores' and 'community-scale equipment and infrastructure' restored to 1HZSXmTaX folder via Todo+ExternalLink (day-8 pattern)"
+        - type: workbook_folder_header_missing
+          source_cited: "docs/source-specs/1-2-food-and-water.md"
+          classification: a                    # day-8 restored "Folder with resources and templates: 1.2 Food and water"
+          status: layout_button_day_30
+          note: "Folder header restored as <p> above guide-table in day-8 commit 2e108e6; day-30 commit a556954 removed the inline <p> as a duplicate of the ModuleLayout 'See Additional Resources' button affordance. The 1HZSXmTaX folder URL is sourced from src/data/downloads.ts via getResourcesUrlForSection() and recognized by the verifier's layout-aware link check (commit 4a9c134); also reachable via 4 inline ExternalLink anchors on the page."
+
+    paragraph_drift:
+      - location: "Backup food supply, Systems col bullet #3 (workbook p35)"
+        workbook: "Use critter and humidity safe containers."
+        site: "Use critter and humidity safe containers."
+        drift_type: punctuation_drop
+        classification: a                      # day-8 restored period
+        status: closed_day_8
+        severity: minor
+        fix: 1a_restore_verbatim
+
+    section_order_check: ok                    # 4 subsections match workbook order
+    missing_sections_check: ok                 # no missing sub-sections; no appendix
+    table_titles_check: na                     # uses raw table, not DataTable
+
+    class_c_count: 0                           # day-19 closeout: InfoCallout (day-8), period drop (day-8), folder header (day-8), link substitution (day-8), 2 missing anchor links (day-19) — REMEDIATION COMPLETE
+
+    innovations:
+      - flag: link_substitution_pattern
+        description: >
+          "Ensure safe food handling" anchor text preserved; URL swapped
+          from workbook's 1C5a0Sf1 Drive file to cdc.gov external. First
+          occurrence of pure URL-substitution drift in walk. Implications
+          for linksMatch check: substitution is harder to detect than
+          missing (anchor text matches, only URL differs). Spec links[]
+          must bind (anchor, URL) pairs, not URLs alone.
+        decision: 1a_restore_workbook_link
+        status: RESOLVED day 8                 # day-8 commit 2e108e6 restored 1C5a0Sf1 anchor; cdc.gov dropped
+        scope: 1a
+      - flag: dropped_inline_prose_links
+        description: >
+          2 Systems col prose phrases ("community backup stores",
+          "community-scale equipment and infrastructure") in workbook
+          link to the 1HZSXmTaX Drive folder; site renders them as
+          plain Todo text with no link wrapper. Same systematic drift
+          as 1-1's 4 href="#" anchors.
+        decision: restore_via_todo_plus_externallink_pattern
+        status: RESOLVED day 19                # day-19 commit closes both prose-link drops; spike concern moot — pattern already shipped on this page (kitchen-directory, cooks-directory, safe-food-handling, food-access-directory) without click-toggle interference
+        scope: 1a
+      - flag: folder_header_missing_recurs
+        description: >
+          Same pattern as 1-1 and KYC: workbook "Folder with resources
+          and templates" header with Drive folder link is absent on
+          site. Systematic omission across modules.
+        decision: restore_via_spec_links
+        status: RESOLVED day 8                 # day-8 commit 2e108e6 restored "Folder with resources and templates: 1.2 Food and water"
+        scope: 1a
+
+    structural_fidelity:
+      verdict: clean                           # day-19: all link drift restored
+      detail: >
+        One workbook table → one site table. 4 sub-sections mirror
+        workbook. Todo+ExternalLink composition preserves all
+        workbook anchors as of day-19 (community backup stores +
+        community-scale equipment restored).
+      composition_pattern_for_1a: >
+        The 1-2 Todo+ExternalLink pattern is the reference for all
+        dead-link restorations in 1a. E.g., 1-1's href="#" phrases
+        (closed day-16) and 1-2's own plain-text drops (closed day-19)
+        all use:
+        <Todo id="..."><ExternalLink href="...">phrase</ExternalLink> rest of bullet text...</Todo>
+      composition_risk_to_spike: >
+        RESOLVED day-19: ExternalLink-inside-Todo click does NOT toggle
+        checkbox state. The 1-2 page has shipped with this composition
+        since day-8 (kitchen-directory, cooks-directory,
+        safe-food-handling, food-access-directory) — four occurrences
+        in production with no observed click-toggle interference. The
+        1-1 day-16 commit added more occurrences. The pattern is safe
+        to use for the rest of 1a.
+
+    scope: 1a
+    spec_required: true
+    notes: >
+      Walked 2026-04-22 with full paragraph-diff + anchor-pair
+      methodology. User caught two missed Systems col anchor drops
+      during walk — triggered anchor-pair extraction memory. 1-1 +
+      KYC entries amended in same commit with re-extracted anchor
+      maps.
+
+  1-3:
+    title: "First aid and medical"
+    workbook_pages: "42"
+    section_pdf: "public/toolkit/sections/Section 1.3_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_typo_note: >
+      Workbook folder-header anchor text reads "1.4 First aid and
+      medical" but the section is 1.3. Upstream workbook error
+      (not a site drift).
+    workbook_anchor_urls:
+      - anchor: "1.4 First aid and medical"                # typo in workbook; actually 1.3
+        url: "https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH"
+        page: 42
+        purpose: "Folder with resources and templates (folder header, workbook typo)"
+        on_site: surface_via_module_layout_button         # day-30: inline <p> removed; URL exposed via ModuleLayout "See Additional Resources" button (downloads.ts → getResourcesUrlForSection); recognized by layout-aware verify (commit 4a9c134). Workbook typo "1.4" no longer rendered.
+      - anchor: "Create (and circulate!) a list"
+        url: "https://drive.google.com/file/d/1xVIJEWpkQT6K5mp-9DUn-mR3T5GWQ2bt/view?usp=drive_link"
+        page: 42
+        purpose: "Local emergency response numbers list template"
+        on_site: true
+      - anchor: "https://www.aedgrant.com/"
+        url: "https://www.aedgrant.com/"
+        page: 42
+        purpose: "AED grant application"
+        on_site: true
+    workbook_anchor_count: 4                               # 4 anchor occurrences (folder linked from 2)
+    workbook_unique_urls: 3
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-3.astro"
+      module_key: "first-aid-medical"
+      components_wired:
+        - type: invented_h2
+          label: "First aid preparedness"
+          source_cited: null
+          classification: c
+          decision: 1a_remove                              # h2 not in workbook; ModuleLayout already renders section title
+          note: "Site-invented h2 above InfoCallout. Second occurrence of invented-heading pattern (first was KYC's 4 tableName props)."
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          note: "Same 'How this works' pattern as 1-1/1-2/KYC"
+        - type: table.guide-table
+          source_cited: null
+          classification: a
+        - type: Todo
+          count: 37
+          classification: a
+          note: "6 Systems + 31 Stuff (14 First Aid Supplies + 8 Medications + 9 Equipment)"
+        - type: ExternalLink
+          count: 2
+          classification: a
+          note: "1xVIJEWpk (emergency response list) + aedgrant.com — both verbatim workbook matches"
+
+    paragraph_drift:
+      - location: "Systems col bullet #1 (workbook p42)"
+        workbook: "First Responders and/or rescue squads that serve your area."
+        site: "First Responders and/or rescue squad that serve your area."
+        drift_type: plural_drop
+        classification: c
+        severity: minor
+        fix: 1a_restore_verbatim                           # restore plural
+
+    section_order_check: ok                                # single table
+    missing_sections_check: ok                             # no missing sub-sections
+    table_titles_check: na                                 # raw table, not DataTable
+
+    folder_header_pattern:
+      observed_modules: ["1-1", "1-2", "1-3", "knowing-your-community"]
+      site_affordance: >
+        ModuleLayout already renders a "See Additional Resources" button
+        in the action bar (src/layouts/ModuleLayout.astro:181-192) driven
+        by getResourcesUrlForSection() → src/data/downloads.ts
+        moduleDownloads[].resourcesUrl. This IS the site's answer to
+        the workbook's "Folder with resources and templates" header —
+        just expressed as page chrome rather than inline prose.
+      decision: pinned_for_design_review
+      open_questions:
+        - "Are all section Drive folder URLs wired in downloads.ts? (verify coverage)"
+        - "Should folder link also appear inline (as workbook does) OR is the ModuleLayout button sufficient?"
+        - "Does 'See Additional Resources' button visually communicate equivalence to the workbook's inline folder header?"
+
+    class_c_count: 0                                       # day-28 reconciliation: was 4 (pre-day-9 walk); day-9 shipped (commit e06f981) closed all 4 — InfoCallout removed, invented h2 removed, plural drop restored, folder header affordance pinned for design review (out of class-c scope per closeout doc §1)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: day-9 shipped class-c remediation; folder-header pinned separately
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: invented_h2_heading_pattern
+        description: >
+          Site adds <h2>First aid preparedness</h2> above InfoCallout;
+          workbook has no such sub-heading. Second occurrence of the
+          invented-heading class-(c) pattern (first was KYC tableName
+          props). Likely shared across other modules — check 1-4+
+          aggressively.
+        decision: 1a_remove_all_invented_h2
+        scope: 1a
+      - flag: folder_header_pattern_pinned_for_design_review
+        description: >
+          4 modules so far (1-1, 1-2, 1-3, KYC) have the workbook's
+          inline "Folder with resources and templates" header omitted
+          on site. But site has a ModuleLayout action-bar button ("See
+          Additional Resources") that points to the same Drive folder
+          via downloads.ts. The fidelity concern reduces to:
+          (a) verify the button's URL matches the workbook folder URL
+              per section (coverage audit)
+          (b) design review: is page-chrome affordance sufficient or
+              should inline rendering also exist?
+        decision: pinned_for_design_review
+        scope: to_be_decided_post_design_review
+    notes: >
+      Walked 2026-04-24. Invented h2 pattern flagged as second
+      occurrence of class-(c) invented-heading type. Folder-header
+      question reframed as affordance-shape question (ModuleLayout
+      already has "See Additional Resources" button) — pinned for
+      design review rather than solved per-module.
+
+  1-4:
+    title: "Power supply"
+    workbook_pages: "45"                                   # 1.5 content bleeds onto same page
+    section_pdf: "public/toolkit/sections/Section 1.4_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1                                   # includes 1.5 content at bottom
+    workbook_typo_note: >
+      Workbook folder-header anchor text reads "1.3 Power supply"
+      (should be "1.4"). Same off-by-one pattern as 1-3's
+      "1.4 First aid and medical" typo. Upstream workbook error.
+    workbook_anchor_urls:
+      - anchor: "1.3 Power supply"                         # typo in workbook; actually 1.4
+        url: "https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU"
+        page: 45
+        purpose: "Folder with resources and templates (folder header, workbook typo)"
+        on_site: surface_via_module_layout_button          # day-30: inline <p> removed; URL exposed via ModuleLayout "See Additional Resources" button (downloads.ts → getResourcesUrlForSection); recognized by layout-aware verify (commit 4a9c134). Workbook typo "1.3" no longer rendered. Same disposition as 1-3.
+      - anchor: "Power Supply inventory"
+        url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1882137661#gid=1882137661&range=A1:C1"
+        page: 45
+        purpose: "Power Supply inventory row in Templates Directory master sheet (cell-level range)"
+        on_site: false                                     # plain text on site, no link
+        decision: 1a_restore_sheet_level_url               # drop cell-range specificity; link to sheet only
+        sheet_level_url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit"
+    workbook_anchor_count: 3                               # 3 anchor occurrences for 1.4 (folder linked from 2)
+    workbook_unique_urls: 2
+    site_link_count: 0                                     # no ExternalLinks on 1-4.astro; no hrefs at all
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-4.astro"
+      module_key: "power-supply"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+        - type: table.guide-table
+          classification: a
+          note: "2 sub-sections (Emergency/backup power, Solar emergency response trailer) match workbook"
+        - type: Todo
+          count: 10
+          classification: a                                # all 10 bullets verbatim-match workbook
+          note: "2 Systems + 5 Stuff (Emergency/backup power) + 2 Systems + 1 Stuff (Solar trailer) = 10"
+        - type: plain_text_dropped_link
+          phrase: "Power Supply inventory"
+          classification: c
+          decision: 1a_restore_as_ExternalLink_sheet_level
+          note: "Workbook links this phrase to Templates Directory sheet with cell-level gid+range; site renders as plain text. Fix: wrap in ExternalLink pointing to sheet-level URL (drop range specificity per user decision)."
+
+    paragraph_drift:
+      - location: "Systemic apostrophe encoding"
+        workbook: "you're / they're (curly apostrophe ’)"
+        site: "you're / they're (straight apostrophe ')"
+        drift_type: encoding_style
+        classification: not_a_fidelity_issue               # per user decision 2026-04-24: encoding convenience
+        decision: accept_site_wide                         # no per-module fix; walk-summary note only
+        scope_note: "Likely site-wide. First flagged on 1-4; not re-flagging per-module."
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: na
+
+    class_c_count: 0                                       # day-28 reconciliation: was 3 (pre-day-10 walk); day-10 shipped (commit 9114c99) closed all 3 — InfoCallout removed, "Power Supply inventory" link restored at sheet-level, folder header pinned for design review (out of class-c scope per closeout doc §1)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: day-10 shipped class-c remediation; folder-header pinned separately
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: cell_level_spreadsheet_link
+        description: >
+          Workbook "Power Supply inventory" anchor targets a specific
+          row in the Templates Directory master sheet via
+          ?gid=1882137661&range=A1:C1. First occurrence of cell-level
+          targeting in the walk. normalizeUrl (shipped day 1) retains
+          'gid' but 'range' param may need handling too.
+        decision: drop_range_use_sheet_level_url           # user decision: sheet-level simpler, visually equivalent in browser
+        scope: 1a
+        implication_for_linksmatch: >
+          Spec links[] should store sheet-level URL. normalizeUrl
+          should keep gid but can optionally strip range. Verify with
+          test case when runner.ts linksMatch ships on day 5.
+      - flag: apostrophe_encoding_site_wide
+        description: >
+          Straight ' on site vs curly ’ on workbook. Likely site-
+          wide encoding difference. User accepts as encoding
+          convenience, not a fidelity concern. Walk-summary note
+          only; no per-module tracking or fix.
+        decision: accept_site_wide
+        scope: walk_summary_observation
+
+    notes: >
+      Walked 2026-04-24. No invented h2 (clean unlike 1-3). ZERO
+      hrefs on site — all 2 workbook unique URLs dropped. Apostrophe
+      encoding divergence accepted as site-wide convention (not a
+      fidelity issue per user).
+
+  1-5:
+    title: "Warming/cooling/emergency shelter"
+    workbook_pages: "23 (final) / 45 (master)"
+    section_pdf: "public/toolkit/sections/Section 1.5_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "1.5 Warming/cooling/emergency shelter"
+        url: "https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF"
+        page: "23/45"
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # see 1-3/1-4 pinned-for-design-review discussion
+      - anchor: "Identify"                                 # in "Identify local restaurants or people to bring meals to the shelter"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#20"  # internal PDF page anchor (final workbook) = page where 1.2 Food and water begins
+        url_master_equiv: "2025 Resilience Hub Toolkit w Templates_V1 final.html#35"  # same target in master
+        page: "23/45"
+        purpose: "Cross-reference to 1.2 Food and water section (intra-workbook navigation)"
+        target_type: internal_pdf_page_anchor
+        on_site: external_link_substitution                # site has ExternalLink→14BP-QH2d GDoc instead of site-internal route
+        decision: 1a_replace_with_site_internal_link       # see internal-anchor-to-site-route feedback memory
+        correct_site_href: "/modules/emergency-preparedness/1-2"
+      - anchor: "Create a directory"                       # in "Create a directory of day use, overnight, and other shelters"
+        url: "https://drive.google.com/file/d/1S7LKMy_vRhA5tM5gHWOFE1qtN9iYKi3p/view?usp=drive_link"
+        page: "23/45"
+        purpose: "Directory of temporary shelters template"
+        on_site: true                                      # wired as ExternalLink ✓
+      - anchor: "Create a system"                          # in "Create a system for volunteer staffing, delivering supplies, and shuttling people to shelters"
+        url: "https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF"
+        page: "23/45"
+        purpose: "Links back to 1.5 folder (same URL as folder header)"
+        on_site: true                                      # wired as ExternalLink ✓
+    workbook_anchor_count: 4                               # 4 distinct anchor occurrences on 1.5 page
+    workbook_unique_urls: 3                                # 1GAq4V6y folder cited by 2 anchors; Identify internal anchor; 1S7LKMy_
+    site_link_count: 3                                     # 3 ExternalLinks: identify-meal-sources, directory-shelters, volunteer-system
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-5.astro"
+      module_key: "warming-cooling-shelter"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: invented_table_row_subsection_header
+          text: "Activate, staff, and supply local shelters"
+          structure: "<tr><td colspan=2><strong>…</strong></td></tr>"
+          source_cited: null
+          classification: c
+          decision: 1a_remove                              # user decision 2026-04-24: pattern-match to invented h2
+        - type: table.guide-table
+          classification: a
+          note: "Systems (5 Todos + italic paragraph) + Stuff (For cooling/warming + Additional for overnight sub-sections)"
+        - type: Todo
+          count: 14
+          classification: a                                # all 14 bullet texts verbatim-match workbook
+          note: "Systems: 5 (3 Identify + 2 Create-a) | Stuff: 8 under For-cooling + 1 under Additional-overnight"
+        - type: ExternalLink
+          count: 3
+          details:
+            - anchor: "Identify"
+              href: "https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.kr2z9mn98cbm"
+              classification: c                           # link-type substitution: internal PDF anchor → external GDoc instead of site-internal route
+              decision: 1a_replace_with_internal_site_link
+              correct_href: "/modules/emergency-preparedness/1-2"
+              note: >
+                The 14BP-QH2d doc is the 'Local Resilience' master Google Doc
+                (cited 39× in master workbook TOC, used in src/data/downloads.ts
+                for the Downloads page). In-prose references to workbook
+                internal page anchors must stay in-site, not bounce out.
+            - anchor: "Create a directory"
+              href: "https://drive.google.com/file/d/1S7LKMy_vRhA5tM5gHWOFE1qtN9iYKi3p/view?usp=drive_link"
+              classification: a
+            - anchor: "Create a system"
+              href: "https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF"
+              classification: a
+
+    paragraph_drift:
+      - location: "Stuff column — low-stimulation-areas Todo placement"
+        workbook: "'As is possible, create low-stimulation areas…' appears under 'Additional supplies for overnight shelters' sub-section (with cots-mats-blankets)"
+        site: "low-stimulation-areas Todo placed under 'For cooling/warming shelters' sub-section (after backup-power-available, before Additional-overnight header)"
+        drift_type: sub_section_placement
+        classification: c
+        decision: 1a_restore                               # user confirmed 2026-04-24: strict paragraph-level verbatim restore
+        note: "Move the Todo from cooling-warming sub-section to overnight sub-section in .astro; preserve id 'low-stimulation-areas' so IndexedDB data is retained."
+
+    section_order_check: ok                                # Systems column order matches; Stuff column sub-section order matches (cooling/warming before overnight)
+    missing_sections_check: ok                             # no workbook sub-sections missing
+    table_titles_check: na                                 # 1-5 has no column titles beyond Systems/Stuff
+
+    class_c_count: 0                                       # day-28 reconciliation: was 4 (pre-day-11 walk); day-11 shipped (commit fec2c5d) closed all 4 — InfoCallout removed, invented row-header removed, low-stimulation Todo placement restored, Identify link-type substitution converted to /modules/... internal route; folder-header pinned for design review (out of class-c scope per closeout doc §1)
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: day-11 shipped class-c remediation; folder-header pinned separately
+    scope: 1a
+    spec_required: true
+    innovations:
+      - flag: internal_anchor_link_type_substitution
+        description: >
+          Site renders workbook internal PDF page anchors as
+          ExternalLinks to external Google Docs (14BP-QH2d). Correct
+          translation per user decision 2026-04-24 is a site-internal
+          route (e.g., /modules/emergency-preparedness/1-2). Distinct
+          from 'link substitution' (same anchor, different external URL)
+          and 'link drop' (anchor wrapper missing). First occurrence
+          on 1-5; retro-audit 1-1..1-4 at walk end to catch any other
+          instances silently translated during first-walk methodology.
+          Memory: feedback_internal_anchor_to_site_route.md
+        scope: 1a
+        retro_audit_required: true
+        implication_for_linksmatch: >
+          sourceSpecSchema.links[] target_type field should distinguish
+          'external_url' vs 'internal_route'. linksMatch must accept
+          site <a href='/modules/...'> when spec says target_type:
+          internal_route. normalizeUrl should not apply to site-internal
+          URLs.
+      - flag: invented_table_row_subsection_header
+        description: >
+          "Activate, staff, and supply local shelters" is a colspan=2
+          table row header above the Systems/Stuff content. Workbook
+          has no such heading. Same family as invented h2 (1-3, KYC)
+          but inside a table component. User decision: remove in 1a
+          under same 'invented_subsection_header' pattern.
+        decision: 1a_remove
+        scope: 1a
+
+    notes: >
+      Walked 2026-04-24. Clean paragraph-diff (italic "In both cases…"
+      prose verbatim matches workbook). 14 Todos match verbatim. Two
+      notable innovations: (1) internal-anchor-to-GDoc substitution
+      pattern revealed via "Identify" link — user decision locks
+      site-internal routing as the correct translation of workbook
+      intra-PDF anchors; (2) invented table-row subsection header
+      pattern (distinct from bare h2). class-c count 4; running total
+      47 across 6 modules.
+
+  1-6:
+    title: "Vehicles and equipment"
+    workbook_pages: "24"
+    section_pdf: "public/toolkit/sections/Section 1.6_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "1.6 Vehicles and equipment"
+        url: "https://drive.google.com/drive/folders/1KYOLws3XyfnWG622Zv5UpgeEKAqb2mJ5"
+        page: 24
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned (recurring)
+      - anchor: "Create a directory"                       # in "Create a directory of shared use vehicles, including who owns and insures vehicles"
+        url: "https://drive.google.com/file/d/1WGTfHGl9tRgEqzmeueS-8hHPSDqcx1Rs/view?usp=drive_link"
+        page: 24
+        purpose: "Shared use vehicles directory template"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "https://foldupkayaks.com/"
+        url: "https://foldupkayaks.com/"
+        page: 24
+        purpose: "Fold-up kayak vendor (inline reference in water-transport Todo)"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory / directory of heavy equipment"  # overlapping anchors, same URL
+        url: "https://drive.google.com/file/d/1lIdpnkjjrCrk4e1OMb1hsHeX3u4Xs49D/view?usp=drive_link"
+        page: 24
+        purpose: "Heavy equipment directory template"
+        on_site: true                                      # ExternalLink ✓ (site uses longer anchor "directory of heavy equipment")
+        note: "Workbook has two overlapping PDF link annotations on this phrase — one on 'Create a directory', another on 'directory of heavy equipment'. Both point to same URL. Site renders one ExternalLink over the longer phrase; not a fidelity issue."
+    workbook_anchor_count: 5                               # 5 distinct PDF annotations (folder + 4 in-prose)
+    workbook_unique_urls: 4                                # folder, 2 directory Drive files, foldupkayaks.com
+    site_link_count: 3                                     # 3 ExternalLinks (all present workbook URLs except folder header)
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-6.astro"
+      module_key: "vehicles-equipment"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+          status: removed_day_19_second_commit                # archived to docs/site-inventions-archive.yaml → archive-1-6-info-callout
+        - type: table.guide-table
+          classification: a
+          note: "3 sub-sections (Emergency shuttles, Shared use vehicles, Heavy equipment directory) — all match workbook verbatim, rendered as <tr colspan=2> row headers. Unlike 1-5 invented row-header, these are faithful."
+        - type: table_row_subsection_headers
+          count: 3
+          classification: a                                # verified faithful to workbook
+          note: "Emergency shuttles / Shared use vehicles / Heavy equipment directory — all present in workbook sub-section structure"
+        - type: stuff_column_subheadings
+          count: 3
+          classification: a
+          note: "Water transport / Useful vehicles to have for shared use / Useful equipment — all match workbook"
+        - type: Todo
+          count: 16
+          classification: a                                # all 16 bullet texts verbatim-match workbook
+          note: "Emergency shuttles: 2+1 | Shared use vehicles: 2+3 | Heavy equipment: 2+6"
+        - type: ExternalLink
+          count: 3
+          classification: a                                # all 3 match workbook URLs (shared-dir, foldupkayaks, heavy-dir)
+
+    paragraph_drift: []                                    # no drift detected
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: ok                                 # all sub-section titles match workbook
+
+    class_c_count: 0                                       # was 1 (InfoCallout); closed day 19 second commit. Folder-header pinned separately.
+    scope: 1a
+    spec_required: true
+    spec_path: "docs/source-specs/1-6-vehicles-and-equipment.md"   # written day 19 second commit
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
+    innovations: []                                        # no new patterns
+
+    notes: >
+      Walked 2026-04-24. CLEANEST module so far. No paragraph drift,
+      no invented content, no internal-anchor substitutions, no
+      placement drift. 16 Todos verbatim-match; 3 ExternalLinks wired
+      correctly; 3 sub-section row-headers match workbook structure
+      faithfully. Only class-c item was the recurring InfoCallout
+      "How this works" meta-instruction — removed 2026-04-29 in the
+      day-19 second commit (paired with 1-13). Running total 48 across
+      7 modules; 1-6 contributes 0 unresolved class-c after closure.
+
+  1-7:
+    title: "Sanitation and Hygiene"
+    workbook_pages: "25"
+    section_pdf: "public/toolkit/sections/Section 1.7_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_title_inconsistency: >
+      Workbook section title uses ampersand ("1.7 Sanitation &
+      Hygiene") while folder header uses "and" ("1.7 Sanitation
+      and hygiene"). Site uses "and" (matches folder header).
+      Upstream workbook inconsistency; not a site drift.
+    workbook_anchor_urls:
+      - anchor: "1.7 Sanitation and hygiene"
+        url: "https://drive.google.com/drive/folders/1b1h7aUHjcx3LudPM6kFB7-ypshucSGOL"
+        page: 25
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "Create a directory of local public buildings"
+        url: "https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link"
+        page: 25
+        purpose: "Directory of showers/laundry template (covers both bathrooms and laundry directories)"
+        on_site: false                                     # DROPPED on public-bathrooms-directory Todo
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "build them"                               # in "Purchase water containers with a side spigot, or build them"
+        url: "https://drive.google.com/file/d/14xHhFJ-GLWtaBJpPCBwpheO-rYCwtHd-/view?usp=drive_link"
+        page: 25
+        purpose: "DIY water container with spigot build guide"
+        on_site: false                                     # DROPPED on water-containers-spigot Todo
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "composting toilet box"                    # in "build a composting toilet box"
+        url: "https://drive.google.com/file/d/1zDFvshC71Se1-9a4JiTaGa0IHKqQH4e1/view?usp=drive_link"
+        page: 25
+        purpose: "Composting toilet box build guide"
+        on_site: false                                     # DROPPED on bucket-toilet Todo
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "Create a directory"                       # laundry — in "Create a directory of households, businesses and public spaces with washers and dryers"
+        url: "https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link"
+        page: 25
+        purpose: "Directory of showers/laundry template (same URL as bathrooms anchor)"
+        on_site: false                                     # DROPPED on laundry-directory Todo
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "Example here"                             # in "Contact local churches and other orgs to set up free laundry services. Example here."
+        url: "https://barrecongregational.org/laundry-love"
+        page: 25
+        purpose: "Real-world example of free laundry service (Barre Congregational Church)"
+        on_site: false                                     # DROPPED on free-laundry-services Todo
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "Portable laundry trailers"
+        url: "https://www.portablerestroomtrailers.com/products/trailer-types/laundry-trailers.html"
+        page: 25
+        purpose: "Vendor reference for portable laundry trailers"
+        on_site: false                                     # DROPPED on portable-laundry-trailers Todo
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+    workbook_anchor_count: 7                               # 7 distinct PDF annotations (folder + 6 in-prose)
+    workbook_unique_urls: 6                                # 1b1h7aUH folder + 1BvGEOJSKy (×2) + 14xHhFJ + 1zDFvshC + barrecongregational + portablerestroomtrailers
+    site_link_count: 0                                     # ZERO ExternalLinks on 1-7.astro
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-7.astro"
+      module_key: "sanitation-hygiene"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: table.guide-table
+          classification: a
+          note: "2 top-level sub-sections (Handwashing-toilets-showers / Laundry) match workbook"
+        - type: table_row_subsection_headers
+          count: 2
+          classification: a                                # faithful to workbook
+        - type: stuff_column_subheadings
+          list: ["DIY handwashing station", "DIY toilets", "DIY showers"]
+          classification: a                                # all match workbook
+        - type: Todo
+          count: 23
+          classification: a                                # all 23 verbatim-match
+          note: "Systems handwashing: 5 + 2 safe-sanitation | Stuff handwashing: 2 | Stuff toilets: 2 | Stuff showers: 3 | Laundry Systems: 2 | Laundry Stuff: 7 = 23"
+        - type: plain_text_dropped_links
+          count: 6
+          details:
+            - phrase: "Create a directory of local public buildings"
+              todo_id: "public-bathrooms-directory"
+              missing_url: "https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link"
+              classification: c
+            - phrase: "build them"
+              todo_id: "water-containers-spigot"
+              missing_url: "https://drive.google.com/file/d/14xHhFJ-GLWtaBJpPCBwpheO-rYCwtHd-/view?usp=drive_link"
+              classification: c
+            - phrase: "composting toilet box"
+              todo_id: "bucket-toilet"
+              missing_url: "https://drive.google.com/file/d/1zDFvshC71Se1-9a4JiTaGa0IHKqQH4e1/view?usp=drive_link"
+              classification: c
+            - phrase: "Create a directory"                 # laundry
+              todo_id: "laundry-directory"
+              missing_url: "https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link"
+              classification: c
+            - phrase: "Example here"
+              todo_id: "free-laundry-services"
+              missing_url: "https://barrecongregational.org/laundry-love"
+              classification: c
+            - phrase: "Portable laundry trailers"
+              todo_id: "portable-laundry-trailers"
+              missing_url: "https://www.portablerestroomtrailers.com/products/trailer-types/laundry-trailers.html"
+              classification: c
+          decision: 1a_restore_all_as_Todo_plus_ExternalLink
+
+    paragraph_drift: []                                    # no drift detected
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: ok
+
+    class_c_count: 0                                       # was 7 (InfoCallout + 6 in-prose link drops); closed day 20. Folder-header pinned separately.
+    scope: 1a
+    spec_required: true
+    spec_path: "docs/source-specs/1-7-sanitation-and-hygiene.md"   # written day 20
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
+    innovations: []                                        # no new patterns; same "zero-hrefs" magnitude as 1-4
+
+    notes: >
+      Walked 2026-04-24. Biggest link-drop module after KYC: 6
+      in-prose links dropped (Todos: public-bathrooms-directory,
+      water-containers-spigot, bucket-toilet, laundry-directory,
+      free-laundry-services, portable-laundry-trailers). Zero
+      ExternalLinks on site pre-day-20 — structurally faithful,
+      link-wise systematically under-wired. 23 Todos verbatim-match; 2
+      row-headers + 3 Stuff sub-heads all match workbook. All 6
+      in-prose links restored 2026-04-29 (day 20) via ExternalLink
+      wrappers; recurring InfoCallout removed in same commit per
+      decision o (archive id: archive-1-7-info-callout). Running total
+      48 across 8 modules; 1-7 contributes 0 unresolved class-c after
+      closure.
+
+  1-8:
+    title: "Populations with Specific Needs"
+    workbook_pages: "26-31"                                # 6 pages: Children (26), Seniors+Disabilities combined (26-27), LEP (28-29), Farm animals (30-31)
+    section_pdf: "public/toolkit/sections/Section 1.8_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 6
+    workbook_sections:
+      - name: "Children, childcare, and youth engagement with disaster"
+        page: 26
+      - name: "Senior citizens; people with mobility challenges and other disabilities"
+        page: "26-27"
+        note: "SINGLE COMBINED section in workbook — site splits into 2 separate h3 sections"
+      - name: "(Im)migrant populations with Limited English Proficiency (LEP)"
+        page: "28-29"
+      - name: "Farm animals and livestock"
+        page: "30-31"
+    workbook_anchor_urls:
+      - anchor: "1.8 Populations with specific needs"      # top-level folder header
+        url: "https://drive.google.com/drive/folders/1pVuxTqRsFs2ZprmP6qJKCekvJubQ_YKi?usp=drive_link"
+        page: 26
+        purpose: "1.8 top-level folder"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "Limited English Proficiency Documents"    # LEP sub-folder header
+        url: "https://drive.google.com/drive/folders/1if3D-wTHEf1hYUKyJk9w0EeX5ZSUi3Q-?usp=drive_link"
+        page: 28
+        purpose: "LEP sub-section folder"
+        on_site: site_renders_as_plain_p                   # site has <p>Folder with resources and templates: Limited English Proficiency Documents</p> — plain text, no link
+        decision: 1a_restore_as_inline_link_or_layout_button
+      - anchor: "Community Health Worker"
+        url: "https://www.vtassociationofcommunityhealthworkers.com/"
+        page: "26, 29"                                     # appears twice (Children + LEP After Disaster)
+        purpose: "VT Association of Community Health Workers"
+        on_site_url_substitution: "https://www.healthvermont.gov/health-equity/community-health-workers"
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict           # user decision 2026-04-24: strict restoration
+      - anchor: "Community Health Center"
+        url: "https://bistatepca.org/centers/"
+        page: "26, 29"
+        purpose: "Bi-State Primary Care Association — VT community health centers directory"
+        on_site_url_substitution: "https://www.vt211.org/search/community-health-centers"
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+      - anchor: "Free Clinic"
+        url: "https://vtfreeclinics.org/find-a-clinic/"
+        page: "26, 29"
+        purpose: "Vermont Free Clinics — find-a-clinic page"
+        on_site_url_substitution: "https://vtfreeclinics.org/"
+        on_site: url_substituted                           # path-level drift (lost /find-a-clinic/)
+        decision: 1a_restore_workbook_url_strict
+      - anchor: "https://dcf.vermont.gov/doc/contacts/partners/aaa"
+        url: "https://dcf.vermont.gov/doc/contacts/partners/aaa"
+        page: 27
+        purpose: "VT Area Agencies on Aging contacts page"
+        on_site: partial                                   # kept on disability-partners Todo; DROPPED on senior-partners Todo (same sentence in workbook)
+        decision: 1a_restore_on_senior_partners
+      - anchor: "organizations and groups"                 # in "Partner with organizations and groups that work with (im)migrant individuals"
+        url: "https://docs.google.com/document/d/1Is0po3dbNMNl56RA0zm1ARid5JoWtv-ZUnPgr__oGOM/edit?usp=sharing"
+        page: 28
+        purpose: "LEP partner organizations doc"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "list of organizations and people"         # in "Make a list of organizations and people who can support…"
+        url: "https://drive.google.com/file/d/1NWSRoDXt7IR8wDNnoC1lyebI9vkCJZ4R/view?usp=drive_link"
+        page: 28
+        purpose: "LEP org+people list template"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "list of resources"                        # in "Compile a list of resources in other languages…"
+        url: "https://docs.google.com/document/d/1JwdvySyIuOi1SlBlFE7KF3Eh09IAmzPp289-Zlqu-O0/edit?usp=sharing"
+        page: 28
+        purpose: "LEP resources-in-other-languages doc"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "AALV"
+        url: "https://www.aalv-vt.org/interpreter"
+        page: 28
+        purpose: "Association of Africans Living in Vermont — interpreter services"
+        on_site: false                                     # plain text on site
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "LanguageLine"
+        url: "https://www.languageline.com/"
+        page: 28
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "WhatsApp"
+        url: "https://www.whatsapp.com/?lang=en"
+        page: 28
+        on_site_url_drift: "https://www.whatsapp.com/"     # query param dropped
+        on_site: true                                      # functionally equivalent; minor drift
+        decision: accept_as_query_param_drift              # workbook has ?lang=en; site has none — not worth flagging as class-c
+      - anchor: "procedure"                                # in "Train volunteers on the procedure for interacting with LEP individuals"
+        url: "https://docs.google.com/document/d/135iBbFYDUUojTu9_irbQbnm_s5woAnX5TniHpGRedsY/edit?usp=sharing"
+        page: 29
+        purpose: "LEP procedure template doc"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "Google Translate"
+        url: "https://translate.google.com/?sl=auto&tl=en&op=translate"
+        page: 29
+        on_site_url_drift: "https://translate.google.com/"
+        on_site: true                                      # ExternalLink ✓; minor query param drop
+        decision: accept_as_query_param_drift
+      - anchor: "Parent Child Centers"
+        url: "https://dcf.vermont.gov/contacts/partners/pcc"
+        page: 29
+        purpose: "VT Parent-Child Centers directory"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "food shelves"
+        url: "https://www.vtfoodbank.org/access-food/find-a-food-shelf/"
+        page: 29
+        purpose: "VT Foodbank — find a food shelf"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "Create a Plan"
+        url: "https://www.usda.gov/sites/default/files/documents/usda-livestock-preparedness-fact-sheet.pdf"
+        page: 30
+        purpose: "USDA Livestock Preparedness fact sheet"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "Another Plan Template"
+        url: "https://www.prep4agthreats.org/Assets/Factsheets/livestock-emergency-preparedness-plan.pdf"
+        page: 30
+        purpose: "Prep4AgThreats Livestock Emergency Plan template"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+      - anchor: "FSA & NRCS Offices"
+        url: "https://www.farmers.gov/"
+        page: 30
+        purpose: "USDA Farmers.gov (FSA + NRCS portal)"
+        on_site: false
+        decision: 1a_restore_as_Todo_plus_ExternalLink
+    workbook_anchor_count: 20                              # 2 folder headers + ~18 in-prose
+    workbook_unique_urls: 18
+    site_link_count: 6                                     # dcf-aaa, LanguageLine, WhatsApp, healthvermont CHW sub, vt211 CHC sub, vtfreeclinics sub (minus path), Google Translate
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-8.astro"
+      module_keys:                                         # MULTIPLE moduleKeys — unique to 1-8
+        - children-disaster
+        - senior-citizens
+        - people-with-disabilities
+        - lep-populations
+        - farm-animals
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: children_section
+          classification: a
+          todo_count: 15
+          note: "Structure matches workbook: Communication-and-planning + Essential-Items-for-Go-Bags + Community-Care-and-Well-Being sections. 3 URL substitutions on pediatrician sentence (CHW/CHC/Free-Clinic)."
+        - type: seniors_vs_disabilities_section_split
+          classification: c                                # MAJOR structural drift
+          workbook_structure: "ONE combined section: 'Senior citizens; people with mobility challenges and other disabilities'"
+          site_structure: "TWO separate h3 sections with near-duplicated tables"
+          moduleKeys_affected: ["senior-citizens", "people-with-disabilities"]
+          decision: 1a_restore_combined_with_indexeddb_migration  # user decision 2026-04-24
+          migration_required: true
+          migration_spec: >
+            Merge moduleKeys 'senior-citizens' and 'people-with-disabilities'
+            into new key (proposed: 'seniors-and-disabilities'). Copy all
+            composite keys '${old_moduleKey}-${todoId}' from both old keys
+            into new key, preserving user check states. Old keys remain
+            read-only until 2 minor versions pass, then removed.
+        - type: invented_meta_note
+          text: "Note: Much of the guidance for seniors also applies to people with mobility challenges and other disabilities. See the 'Senior citizens and elders' section above for additional information on communication, preparedness, shelter support, and community connection."
+          location: "People with mobility challenges and other disabilities section"
+          source_cited: null
+          classification: c
+          decision: 1a_remove                              # will be obsolete once section is merged back
+        - type: section_title_drift
+          workbook: "Senior citizens; people with mobility challenges and other disabilities"
+          site: "Senior citizens and elders"               # and secondarily "People with mobility challenges and other disabilities"
+          classification: c
+          decision: 1a_restore_workbook_title              # after merge
+        - type: dropped_workbook_items
+          location: "Seniors Communication and Coordination"
+          items:
+            - "Have first responders learn basics of American Sign Language"
+            - "Include visual aids on important informational resources"
+            - "Consult with the Vermont Center for Independent Living when creating emergency plans"
+          classification: c
+          count: 3
+          decision: 1a_restore_as_Todos                    # strict 2026-04-24
+        - type: invented_item
+          location: "People-with-disabilities Communication and Coordination"
+          text: "Plan for service animals, sight and hearing accommodations"
+          source_cited: null
+          classification: c
+          decision: 1a_remove_strict                       # user decision: strict restoration
+        - type: narrative_drift_senior_partners
+          location: "senior-partners Todo"
+          workbook: "Partner with senior centers, councils on aging, and home health agencies. Find your local council on aging at https://dcf.vermont.gov/doc/contacts/partners/aaa."
+          site: "Partner with senior centers, councils on aging, and home health agencies."
+          drift_type: sentence_drop_with_url
+          classification: c
+          decision: 1a_restore_sentence_with_url
+        - type: narrative_drift_farm_prioritize_safety
+          workbook: "Prioritize Safety. Checking on/moving livestock in the height of disaster can be extremely dangerous. Take every precaution to limit human exposure to peak disaster conditions."
+          site: "Prioritize Safety - Checking on/moving/handling livestock during the height of disaster can be extremely dangerous. Take every precaution possible to limit human exposure to peak disaster conditions."
+          drift_type: added_words  # site added "handling" and "possible"
+          classification: c
+          decision: 1a_restore_verbatim
+        - type: narrative_drift_senior_glasses
+          workbook: "Glasses, hearing aid batteries, mobility aids (cane, walker)"
+          site: "Glasses, hearing aid batteries, mobility aids (cane, walker, etc.)"
+          drift_type: added_words
+          classification: c
+          decision: 1a_restore_verbatim
+        - type: item_merging_lep_after_access
+          workbook: "Ensure individuals have access to appropriate needs." + "Do individuals have healthcare needs?"  # 2 separate items
+          site: "Ensure individuals have access to appropriate needs. Do individuals have healthcare needs?"          # merged into 1 Todo
+          classification: c
+          decision: 1a_split_back_into_2_Todos
+        - type: Todo
+          count: 124
+          classification: mixed                            # most verbatim-match; listed drifts above
+          note: "Children: 15 | Seniors: 33 | Disabilities: 33 (near-duplicated) | LEP: 28 | Farm: 15"
+        - type: ExternalLink
+          count: 6
+          classification: mixed                            # dcf-aaa matches; 3 URL-substituted; 2 query-param drift
+          details:
+            - anchor: "https://dcf.vermont.gov/doc/contacts/partners/aaa"
+              classification: a
+              note: "wired correctly on disability-partners; missing on senior-partners"
+            - anchor: "LanguageLine"
+              classification: a
+            - anchor: "WhatsApp"
+              classification: a_with_minor_query_drift
+            - anchor: "Google Translate"
+              classification: a_with_minor_query_drift
+            - anchor: "Community Health Worker"
+              site_url: "https://www.healthvermont.gov/health-equity/community-health-workers"
+              workbook_url: "https://www.vtassociationofcommunityhealthworkers.com/"
+              classification: c
+              decision: 1a_restore_workbook_url
+            - anchor: "Community Health Center"
+              site_url: "https://www.vt211.org/search/community-health-centers"
+              workbook_url: "https://bistatepca.org/centers/"
+              classification: c
+              decision: 1a_restore_workbook_url
+            - anchor: "Free Clinic"
+              site_url: "https://vtfreeclinics.org/"
+              workbook_url: "https://vtfreeclinics.org/find-a-clinic/"
+              classification: c
+              decision: 1a_restore_workbook_url
+
+    paragraph_drift:
+      - location: "senior-partners Todo"
+        drift: sentence_drop_with_url
+        classification: c
+      - location: "farm-prioritize-safety Todo"
+        drift: added_words_handling_possible
+        classification: c
+      - location: "senior-glasses Todo"
+        drift: added_etc
+        classification: c
+      - location: "lep-after-access Todo"
+        drift: two_workbook_items_merged_into_one_site_todo
+        classification: c
+
+    section_order_check: mostly_ok                         # within sub-populations OK; structural issue is section-split
+    missing_sections_check: partial                        # Seniors-combined split into 2; 3 Seniors Communication items dropped
+    table_titles_check: c                                  # section-title drift "Senior citizens and elders" vs workbook
+
+    class_c_count: 0                                       # post-day-21b: 14 → 0. Day-21 closed 10/24; day-21b closed remaining 14: 3 dropped Seniors Communication items restored as <Todo>s (senior-asl, senior-visual-aids, senior-vcil); LEP folder header URL restored as inline ExternalLink (per user choice 2026-04-29); 7 LEP in-prose anchor drops restored as ExternalLinks (organizations and groups, list of organizations and people, list of resources, AALV, procedure, Parent Child Centers, food shelves); 3 Farm in-prose anchor drops restored (Create a Plan, Another Plan Template, FSA & NRCS Offices); lep-after-access split into 2 Todos (lep-after-access keeps "Ensure individuals…" prompt; lep-after-healthcare NEW carries "Do individuals have healthcare needs?"). 15 archive entries appended.; 2 minor drifts found in day-28 spot-check (Save-the-Whole-Family title-case + Livestock-Ideally punctuation/casing) deferred to Step 2 backlog — neither invalidates ship attestation
+    spec_path: docs/source-specs/1-8-populations-with-specific-needs.md   # day-21
+    structural_fidelity:
+      verdict: clean                                       # day-21b closed all 14 residual class-c items
+    scope: 1a
+    spec_required: true
+    migration_required: shipped                            # day-22: IndexedDB migration shipped (commit pending)
+    migration_shipped:
+      day: 22
+      file: src/lib/storage.ts
+      function: migrateSeniorsAndDisabilities
+      marker_key: migration_seniors_and_disabilities_v1
+      tests: src/lib/data-preservation.test.ts             # 27 tests, 3 codex challenge rounds (clean on round 3)
+      semantics: target_authoritative                      # target wins on existing-target collision
+      notes_policy: concat_distinct_with_separator         # \n\n---\n\n; trim-based dedup
+      deprecated_keys: [senior-citizens, people-with-disabilities]
+      removal_policy: keep_readable_until_2_minor_versions_past_day_22
+    innovations:
+      - flag: section_split_requiring_data_migration
+        description: >
+          Site has split a combined workbook section into two
+          sections with separate moduleKeys. Restoring combined
+          structure requires IndexedDB migration to preserve
+          existing user data. First instance of a migration-
+          requiring fidelity fix in the walk. Sets precedent for
+          any future cases where site structural drift has
+          created parallel user-data stores that need consolidation.
+        scope: 1a
+      - flag: topic_branch_resource_database
+        description: >
+          URL substitutions (CHW/CHC/Free Clinic) on 1-8 point to
+          site-selected alternative resources for the same topic
+          (VT community health access). User observation 2026-04-24:
+          each topic could have BOTH the workbook's canonical link
+          AND site-maintained alternative/supplementary links,
+          growing into a topic-resource database with a submission
+          portal. Deferred product innovation. For 1a, strict
+          restore workbook URLs; preserve site-selected URLs in an
+          inventory note under a "topic branches" innovation flag
+          so they're not lost when we restore workbook URLs.
+          Requires UI/UX design pass before implementation.
+        scope: deferred_product_innovation
+        preserved_alt_urls:
+          community_health_worker:
+            workbook: "https://www.vtassociationofcommunityhealthworkers.com/"
+            site_selected: "https://www.healthvermont.gov/health-equity/community-health-workers"
+          community_health_center:
+            workbook: "https://bistatepca.org/centers/"
+            site_selected: "https://www.vt211.org/search/community-health-centers"
+          free_clinic:
+            workbook: "https://vtfreeclinics.org/find-a-clinic/"
+            site_selected: "https://vtfreeclinics.org/"
+        implication_for_linksmatch: >
+          Future topic-branch feature would need sourceSpecSchema
+          to support alt_links[] alongside primary link. Not in
+          1a runner.ts scope.
+
+    notes: >
+      Walked 2026-04-24. SECOND-WORST class-c count after KYC (24 vs
+      ~22). Largest module structurally (6 workbook pages, 4 sub-
+      populations, 124 Todos). Biggest fidelity issue: site splits a
+      combined workbook section into two, requiring IndexedDB
+      migration to merge back. Second-biggest: 3 URL substitutions
+      on recurring VT resource links preserved for future topic-
+      branch innovation. Full strict 1a restoration plan documented.
+      Running total 79 across 9 modules.
+
+      Day-21 part-1 closed 10/24 class-c items (commit
+      "feat(1-8) part 1: section split unmerge + URL-substitution
+      corrections + content drifts"): InfoCallout removed; section
+      reunified into one workbook-titled h3 "Senior citizens; people
+      with mobility challenges and other disabilities" with new
+      moduleKey "seniors-and-disabilities" (canonical-set bumped 21→22
+      in data-preservation.test.ts; old keys senior-citizens +
+      people-with-disabilities remain read-only until day-22
+      IndexedDB migration ships); invented meta-note removed; invented
+      service-animals Todo removed; 3 URL substitutions corrected at
+      both Children pediatrician + LEP After-Disaster locations
+      (vtassociationofcommunityhealthworkers.com /
+      bistatepca.org/centers/ / vtfreeclinics.org/find-a-clinic/);
+      senior-partners workbook sentence + dcf-aaa URL restored;
+      senior-glasses ", etc." dropped; farm-prioritize-safety added
+      "/handling" + "possible" dropped + sentence-period restored.
+      Archive entries appended for all 10 closed items (8 alt_urls/
+      invented_prose/invented_h2/invented_items/dropped_workbook +
+      InfoCallout). 14 class-c items remain pending: 3 dropped Seniors
+      Communication items, 10 LEP/Farm in-prose link drops + LEP
+      folder-header URL restoration, 1 LEP item-merging split. These
+      need a "feat(1-8) part 1b" commit (or expanded part-2) before
+      class_c_count reaches 0; closeout doc row-22 is migration-only.
+
+      Day-21b part-1b closed the remaining 14 class-c items (commit
+      "feat(1-8) part 1b: 14 residual class-c restorations" — path A
+      per user decision 2026-04-29: insert day-21b before day-22
+      migration commit, day-22 → day-23, day-29 ship → day-30 absorbing
+      the buffer day): 3 dropped Seniors Communication items restored
+      as <Todo>s in the merged seniors-and-disabilities Communication
+      and Coordination col 1 (new ids senior-asl, senior-visual-aids,
+      senior-vcil — verbatim from workbook PDF p55); LEP folder header
+      "Limited English Proficiency Documents" restored as inline
+      ExternalLink in the leading <p> (per user choice — workbook
+      itself renders this as in-prose anchor, only the 1.8 top-level
+      folder is pinned via ModuleLayout button); 7 LEP in-prose anchor
+      drops restored as ExternalLinks within existing Todos
+      (organizations and groups in lep-partner-orgs; list of
+      organizations and people in lep-directory-orgs; list of resources
+      in lep-compile-resources; AALV in lep-interpreter-money;
+      procedure in lep-during-train; Parent Child Centers + food
+      shelves both in lep-parent-child-centers); 3 Farm in-prose anchor
+      drops restored as ExternalLinks (Create a Plan + Another Plan
+      Template both in farm-plan; FSA & NRCS Offices in farm-fsa-nrcs);
+      lep-after-access Todo split into 2 separate Todos —
+      lep-after-access (kept) carries "Ensure individuals have access
+      to appropriate needs." (preserves existing user check-state on
+      composite key lep-populations-lep-after-access); new
+      lep-after-healthcare carries "Do individuals have healthcare
+      needs?". 15 archive entries appended (3 in
+      dropped_workbook_items_flagged_for_restore; 11 in
+      dropped_workbook_links; 1 in invented_prose for the merged form).
+      Total ExternalLinks on 1-8 page: 21 (was 10 post-day-21).
+      Class-c count: 14 → 0; structural fidelity verdict: clean.
+
+      Day-22 part-2 ships the IndexedDB migration that consolidates
+      pre-merge user check-state stored under the deprecated moduleKeys
+      senior-citizens + people-with-disabilities into the canonical
+      seniors-and-disabilities. Highest-risk gate of the closeout sprint
+      per R5/R6; codex challenge cadence day per decision p (R4).
+      Migration code: src/lib/storage.ts migrateSeniorsAndDisabilities
+      (idempotent via metadata marker `migration_seniors_and_disabilities_v1`,
+      target-authoritative semantics, mergeWinner with notes-concat across
+      candidates, trim-based dedup). importAllData clears the migration
+      marker on import so an imported snapshot re-evaluates against
+      current code. Tests: 27 in src/lib/data-preservation.test.ts (covers
+      happy path, 5 collision tie-breaks, legacy data preservation, 3
+      idempotency cases, atomicity + delta + import-clears-marker, 4 notes
+      preservation cases including dual-notes concat, whitespace dedup,
+      completed-vs-uncompleted note preservation, completed-vs-completed
+      asymmetric notes, marker hardening for null/non-string values, and
+      concurrent migrations). Codex challenge rounds: 1 surfaced 6 findings
+      (3 P1 + 3 P2), all addressed; round 2 surfaced 5 (1 P1 + 4 P2), all
+      addressed; round 3 CLEAN. Documented limitations: stale-tab writes
+      to deprecated keys after migration are orphaned (target-authoritative
+      trade-off; recovery path requires per-todo updatedAt schema field,
+      out of scope for day-22). Old keys remain readable and forensically
+      recoverable until 2 minor versions past the day-22 ship.
+
+  1-9:
+    title: "Community Emergency Response Plans"
+    workbook_pages: "32-33"
+    section_pdf: "public/toolkit/sections/Section 1.9_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    phase_1_shipped: true                                  # PR #13 shipped DataTable journal variant + 3 directories on 1-9
+    site_structure: "Rich prose (ul/li nested) + 3 DataTable components. No top-level InfoCallout (DataTable has built-in privacy notice via showInfoCallout prop)."
+    workbook_anchor_urls:
+      - anchor: "1.9 Community emergency response plans"
+        url: "https://drive.google.com/drive/folders/1ZP8p1LZ9F5tOJ3Yo-sLllSWd22ydXzNQ"
+        page: 32
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "LEMPs"
+        url: "https://drive.google.com/file/d/1ds67bbFqr4C5ZsaBgJFVusylEhogWepo/view?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory"                       # leader directory
+        url: "https://drive.google.com/file/d/1T53T9L9naTi0IibuIFdXohQXkCHitwZ3/view?usp=drive_link"
+        page: 32
+        purpose: "Leader directory template — absorbed into DataTable"
+        on_site: datatable_source                          # captured in docs/source-specs/1-9-leader-directory.md
+      - anchor: "phone tree systems"
+        url: "https://drive.google.com/file/d/1k7SXv4md2Kjh0t-nGx5xIKVPpg0bSPmn/view?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory of neighbors"
+        url: "https://drive.google.com/file/d/1volnFb9p7K24iROikMt_zOg9_RT9WRVR/view?usp=drive_link"
+        page: 32
+        purpose: "Neighbor directory template — absorbed into DataTable"
+        on_site: datatable_source_needs_spec               # Neighbor Directory DataTable exists but no source spec yet
+        decision: 1a_create_source_spec_cite_this_url
+      - anchor: "Create a directory of local first responders"
+        url: "https://drive.google.com/file/d/1_s3dzOMkIUT5BGBFjfFlEDeHfHcc5m-N/view?usp=drive_link"
+        page: 32
+        purpose: "First responder directory template — absorbed into DataTable"
+        on_site: datatable_source_needs_spec               # First Responder Directory DataTable exists but no source spec yet
+        decision: 1a_create_source_spec_cite_this_url
+      - anchor: "information about preparedness"
+        url: "https://drive.google.com/file/d/1kFn8Lmia51X-Y5ZCzu2VlsWJd7JEq1dy/view?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "GoogleTranslate"
+        url: "https://translate.google.com/"
+        page: 32
+        purpose: "Referenced in language-access sentence — DROPPED on site along with surrounding sentence rewrite"
+        on_site: false_due_to_sentence_compression
+        decision: 1a_restore_sentence_and_link
+      - anchor: "VT Language Justice Project"
+        url: "https://www.vtlanguagejustice.org/ify?"
+        page: 32
+        on_site: true                                      # ExternalLink ✓ but sentence rewritten (see paragraph_drift)
+      - anchor: "Section 1.8"                              # internal PDF anchor → #26
+        url: "2025 Resilience Hub Toolkit_V1 final.html#26"
+        target_type: internal_pdf_page_anchor
+        page: 32
+        purpose: "Cross-reference to 1.8 Populations with specific needs"
+        on_site: false_due_to_sentence_compression
+        decision: 1a_restore_as_site_internal_link_to_modules_emergency-preparedness_1-8
+      - anchor: "situation reports"
+        url: "https://docs.google.com/document/d/1p7EPPThPDA--5NxEKXIi6MZDzHthwg8VGi5XX1tq9Ek/edit?usp=drive_link"
+        page: 32
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "waterdata.usgs.gov/vt/nwis/rt"
+        url: "https://waterdata.usgs.gov/vt/nwis/rt"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "River Aware"
+        url: "https://www.riveraware.app/"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "vem.vermont.gov/vtalert"
+        url: "https://vem.vermont.gov/vtalert"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Wildfire smoke"
+        url: "https://drive.google.com/file/d/1W8BnUVz9kKa5PFywiWXJgacrnKS93ssK/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "AirNow.gov"
+        url: "https://www.airnow.gov/"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "(1.3)"                                    # N95s/respirators reference — workbook has #22 internal anchor
+        url: "2025 Resilience Hub Toolkit_V1 final.html#22"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site_text_drift: "(1.4)"                        # site shows wrong section number; numeric drift
+        on_site: false_with_numeric_drift
+        decision: 1a_restore_as_site_internal_link_to_1-3_and_fix_numeric_drift
+      - anchor: "(1.5)"                                    # warming/cooling shelters ref in wildfire smoke section
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false                                     # site has "(1.5)" plain text, no link
+        decision: 1a_restore_as_site_internal_link_to_1-5
+      - anchor: "Wet bulb temperatures & High Heat Index"
+        url: "https://drive.google.com/file/d/10X2ipgJTjW1SdCaNbJZfEOI4ukD8UVYz/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "(1.9)"                                    # heat section cross-ref
+        url: "2025 Resilience Hub Toolkit_V1 final.html#32"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-9
+      - anchor: "(1.2)"                                    # heat/hydration cross-ref
+        url: "2025 Resilience Hub Toolkit_V1 final.html#20"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-2
+      - anchor: "(1.5)"                                    # heat cooling shelters cross-ref
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"
+        target_type: internal_pdf_page_anchor
+        page: 33
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-5
+      - anchor: "Drought"
+        url: "https://drive.google.com/file/d/1glq_jPse9R4geIkeaCUr7rnAgNG5JOyW/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger"
+        url: "https://fpr.vermont.gov/forest/wildland-fire/monitoring-fire-danger"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Ice & Wind storms"
+        url: "https://drive.google.com/file/d/10xdbWN2CSxa_C-__rtC2H4iSBzgDVO-s/view"
+        page: 33
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "(1.2)"                                    # ice/wind cross-ref to food
+        url: "2025 Resilience Hub Toolkit_V1 final.html#20"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-2
+      - anchor: "(1.4)"                                    # ice/wind cross-ref to power
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"   # NB: workbook #23 = 1.5 page; upstream workbook anchor typo
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-4  # follow the visible number, not the broken workbook anchor
+        note: "Workbook anchor points to #23 (=1.5 page) but text says '1.4' — upstream workbook link typo. Restore site link by visible number."
+      - anchor: "(1.5)"                                    # ice/wind cross-ref to shelters
+        url: "2025 Resilience Hub Toolkit_V1 final.html#23"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-5
+      - anchor: "(1.9;2.2)"                                # ice/wind cross-refs to CERP + comms
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_two_site_internal_links
+      - anchor: "pandemics"
+        url: "https://drive.google.com/drive/folders/1TmJ4hbHtf9gQUctlilz046B3fpmS1_yK"  # folder
+        page: 33
+        on_site: true                                         # day-29 spot-check correction: site URL was 1_e3AA4pD7dJ... (file) until day-29 commit; now matches workbook folder anchor
+      - anchor: "Section 2.1"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#40"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_2-1
+      - anchor: "(1.9)"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#32"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-9
+      - anchor: "1.8"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#26"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-8
+      - anchor: "(1.12)"
+        url: "2025 Resilience Hub Toolkit_V1 final.html#39"
+        target_type: internal_pdf_page_anchor
+        on_site: false
+        decision: 1a_restore_as_site_internal_link_to_1-12
+    workbook_anchor_count: 30                              # 1 folder + 16 external URLs + ~13 internal PDF anchors
+    workbook_unique_urls: 14                               # unique external URLs (folder + 13 prose); internal anchors not counted
+    site_link_count: 14                                    # <ExternalLink> count
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-9.astro"
+      module_key: "community-emergency-response"
+      components_wired:
+        - type: h3_before_disaster
+          classification: a                                # matches workbook structure
+        - type: nested_ul_li_rich_prose
+          location: "Before disaster intro"
+          classification: a                                # verbatim workbook list
+        - type: DataTable
+          name: "Leader Directory"
+          source: "docs/source-specs/1-9-leader-directory.md"
+          classification: a                                # spec cited ✓
+          note: "14 initialRows including roles beyond workbook list (State Senator, LTRG, etc.) — check spec for citation"
+        - type: DataTable
+          name: "Neighbor Directory"
+          source: null
+          classification: c                                # needs spec
+          decision: 1a_create_source_spec
+          note: "DataTable shipped in PR #13 with no source spec. Must spec to be class-a. Cite 1volnFb9p7K2…"
+        - type: DataTable
+          name: "First Responder Directory"
+          source: null
+          classification: c                                # needs spec
+          decision: 1a_create_source_spec
+          note: "DataTable shipped in PR #13 with no source spec. Must spec to be class-a. Cite 1_s3dzOMkIUT5…"
+        - type: h3_during_disaster
+          classification: a
+        - type: h3_planning_for_other_kinds
+          classification: a                                # "Planning for other kinds of climate disaster" — matches workbook heading
+        - type: ExternalLink
+          count: 14
+          classification: mostly_a
+          url_substitution_pandemics: "site uses file 1_e3AA4pD7dJ vs workbook folder 1TmJ4hbHtf"
+        - type: internal_pdf_anchor_drops
+          count: 13                                        # (1.3), (1.5)×2, (1.9)×3, (1.2)×2, (1.4), (1.5), (2.1), (1.8), (1.12)
+          classification: c
+          decision: 1a_restore_as_site_internal_links
+          note: "Largest occurrence of internal-anchor substitutions in the walk. Systematic conversion to /modules/... routes required."
+
+    paragraph_drift:
+      - location: "Language access sentence (Before disaster)"
+        workbook: "Identify language access needs and utilize tools like the GoogleTranslate to support communication during emergencies. The VT Language Justice Project app can also be used to share informational videos in individuals' language. See Section 1.8 for info on populations with specific needs."
+        site: "Identify language access needs and utilize tools like the VT Language Justice Project app to support communication during emergencies."
+        drift_type: sentence_compression_with_drops
+        classification: c
+        decision: 1a_restore_full_workbook_sentence_with_both_links_and_Section_1.8_cross_ref
+      - location: "Drought monitoring sentence"
+        workbook: "Monitor fire danger to protect people, buildings, and ecosystems from preventable fire damage during drought conditions: fpr.vermont.gov/..."
+        site: "Keep an eye on fire danger to protect people, buildings, and ecosystems from preventable fire damage during drought conditions. Fire forecasts here: fpr.vermont.gov/..."
+        drift_type: wording_rewrite
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Drought watering sentence"
+        workbook: "Cut back on watering lawns and non-food plants; turn off taps; reduce toilet flushing."
+        site: "During drought, cut back on watering lawns and non-food plants. Conserve water by turning off taps and reducing toilet flushing."
+        drift_type: wording_rewrite
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Ice & Wind — leave home sentence"
+        workbook: "If staying home is not safe, leave home before travel conditions worsen. Identify local warming and cooling shelters (1.5) ahead of the storm"
+        site: "[bullet 1] If staying home is not safe, leave home before travel conditions worsen [bullet 2] Identify local warming and cooling shelters (1.5) ahead of the storm"
+        drift_type: single_sentence_split_into_two_bullets
+        classification: c
+        decision: 1a_restore_combined_sentence
+      - location: "Pandemics — emergent-threats sentence"
+        workbook: "Emergent public health threats can be difficult to plan for, but keeping people healthy can protect communities from the worst impacts…"
+        site: "Emergent public health threats can be difficult to plan for, but keeping people healthy as a baseline can protect communities from the worst impacts…"
+        drift_type: added_words
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Pandemics — creating-plans sentence"
+        workbook: "Creating community emergency response plans (1.9) beforehand, plans to support populations with specific needs (1.8), and setting up mutual aid networks (1.12) can increase community resilience amid public health crises."
+        site: "Creating community emergency response plans (1.9) before disaster strikes, plans to support populations with specific needs (1.8), and setting up mutual aid/neighbor to neighbor networks (1.12) can increase community resilience amid public health crises."
+        drift_type: multiple_wording_rewrites
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "Pandemics — stay-updated sentence"
+        workbook: "Stay updated with new information coming from local, state, or federal government sources…"
+        site: "Stay up to date with new information coming from local, state, or federal government sources…"
+        drift_type: wording_rewrite
+        classification: c
+        decision: 1a_restore_verbatim
+      - location: "N95s bullet numeric reference"
+        workbook: "(1.3)"
+        site: "(1.4)"
+        drift_type: numeric_drift
+        classification: c
+        decision: 1a_restore_numeric_and_link_to_1-3
+      - location: "Closing sentence at end of 1.9"
+        workbook: "Also consider planning for disasters that include increased military presence or heightened risk of violence."
+        site: "[MISSING — site omits this closing line entirely]"
+        drift_type: entire_sentence_drop
+        classification: c
+        decision: 1a_restore_full_workbook_sentence
+
+    section_order_check: ok                                # Before disaster / During disaster / Planning for other kinds — matches workbook
+    missing_sections_check: partial                        # "Planning for other kinds" section structurally present but closing military-presence sentence dropped
+    table_titles_check: na                                 # DataTable tableName props match Phase 1 spec
+
+    class_c_count: 0   # day-28 reconciliation + day-29 spot-check correction: was 23 (pre-day-13/14 walk). 22 closed days 12+13+14 (commits b394ca8 + ab85c32 + 2db4130) — see workbook_anchor_links + paragraph_drift + dropped_workbook_items blocks above for the full per-day itemization. 1 closed day-29 (pandemics folder URL substitution corrected to 1TmJ4hbHtf workbook anchor per spot-check finding NEW-3 — day-28 reconciliation note had inaccurately attributed this closure to day-14 commit 2db4130, but git show 2db4130 proves the URL was untouched). Total: 22 + 1 = 23 (matches pre-walk baseline). 2 minor drifts found in day-28 spot-check (Town Clerk bullet split + (2.3) anchor drop) deferred to Step 2 backlog.
+    structural_fidelity:
+      verdict: clean                                       # day-28 reconciliation: days 12+13+14 shipped 1-9 class-c remediation; 3 DataTable specs (Leader/Neighbor/First Responder) all pass verify
+    scope: 1a
+    spec_required: true                                    # 2 new specs: Neighbor Directory + First Responder Directory
+    innovations:
+      - flag: datatable_conversion_of_directory_instructions
+        description: >
+          Site converted 3 workbook "Create a directory of ___"
+          items from Todo+ExternalLink patterns into interactive
+          DataTable components (Leader / Neighbor / First Responder).
+          First (Leader) has source spec; other two do not. Phase 1
+          shipped work (PR #13). Preserves user data via IndexedDB
+          tableId scope. Not a fidelity regression — an architectural
+          upgrade that needs backing specs.
+        scope: 1a
+        decision: create_specs_for_2_remaining_datatables
+      - flag: massive_internal_anchor_density
+        description: >
+          1-9 has 13 internal PDF anchor cross-references (the most
+          in any single module). All need conversion to site-internal
+          /modules/... routes per locked pattern. Includes one
+          numeric-drift case: (1.3) on workbook became (1.4) on site
+          for N95s/respirators bullet — both the number and the link
+          need restoration.
+        scope: 1a
+
+    notes: >
+      Walked 2026-04-24. Phase 1 module; first with DataTables. 23
+      class-c: 2 DataTables needing specs + 8 paragraph drifts + 13
+      internal-anchor drops + 1 pandemics URL sub + 1 dropped closing
+      sentence. Rich prose rewrites (Drought, Ice&Wind, Pandemics)
+      suggest this module had more editorial polish than others —
+      strict 1a restoration needs careful per-sentence comparison.
+      Running total 102 across 10 modules (first module to push
+      total past 100).
+
+  1-10:
+    title: "Volunteer Management"
+    workbook_pages: "34-35"
+    section_pdf: "public/toolkit/sections/Section 1.10_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    site_structure: "4 h3 sections with <ul><li> content (matching workbook structure). No InfoCallout."
+    workbook_anchor_urls:
+      - anchor: "1.10 Volunteer Management"
+        url: "https://drive.google.com/drive/folders/1QGrMJ_mv5LSGZ4ECDOuuOs9OJtcOfZY3"
+        page: 34
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "AHS / VDH regional field Directors can be a conduit to local organizations"
+        url: "https://humanservices.vermont.gov/about-us/field-services"
+        page: 34
+        purpose: "VT Agency of Human Services / VDH field services directory"
+        on_site_url_substitution: "https://www.healthvermont.gov/about-us/contact-us"
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+        topic_branch_candidate: true                       # same pattern as 1-8 CHW/CHC/Free Clinic
+      - anchor: "SignUp Genius"
+        url: "https://www.signupgenius.com/nonprofit-volunteer-management"
+        page: 34
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "shareable spreadsheet"
+        url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1323271388#gid=1323271388&range=A9"
+        page: 34
+        purpose: "Templates Directory master sheet — volunteer shifts row (cell-level link)"
+        on_site: true                                      # ExternalLink ✓
+        note: "Cell-level link with gid+range preserved on site. Consistent with 1-4 decision to keep sheet-level URL; this one has the range retained."
+      - anchor: "Youth engagement in flood recovery"
+        url: "https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open"
+        page: 35
+        purpose: "Youth engagement template — referenced in Managing volunteers children sentence"
+        on_site: dropped_with_containing_sentence
+        decision: 1a_restore_full_workbook_sentence_with_link
+      - anchor: "Crisis Cleanup"
+        url: "http://crisiscleanup.org/"
+        page: 35
+        on_site: true                                      # ExternalLink ✓ (site has no trailing slash; functionally equivalent)
+      - anchor: "sign a waiver"
+        url: "https://docs.google.com/document/d/1TNQQW3tC_uiBaEp6ndfhjITBqmlt39CU/edit?usp=drive_link&ouid=106837070816865731479&rtpof=true&sd=true"
+        page: 35
+        on_site: true                                      # ExternalLink ✓
+    workbook_anchor_count: 7                               # 1 folder + 6 in-prose
+    workbook_unique_urls: 7
+    site_link_count: 5                                     # 5 ExternalLinks (AHS/VDH substituted, 4 matching)
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-10.astro"
+      module_key: "volunteer-management"
+      no_info_callout: true                                # 1-10 has no InfoCallout (similar to 1-9; both rely on other mechanisms)
+      components_wired:
+        - type: h3_recruiting_volunteers
+          classification: a
+        - type: h3_setting_up_volunteer_shifts
+          classification: a
+        - type: h3_potential_volunteer_tasks
+          classification: a
+        - type: h3_managing_volunteers
+          classification: a
+        - type: dropped_workbook_items
+          count: 3
+          items:
+            - location: "Recruiting volunteers sub-list"
+              dropped_text: "Youth organizations"
+              classification: c
+              decision: 1a_restore_as_list_item
+            - location: "Managing volunteers — first bullet tail"
+              dropped_text: "See Youth engagement in flood recovery for more information about involving young people in helpful, safe ways."
+              dropped_link: "https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open"
+              classification: c
+              decision: 1a_restore_sentence_with_ExternalLink
+            - location: "Managing volunteers — bullet between work-crews and feed-volunteers"
+              dropped_text: "Count volunteer hours, even if a rough estimate. This can be tracked through collecting work sheets from volunteer crews or through SignUp Genius. Municipalities will apply for grants that require volunteer hours as part of the application. Rough estimates are okay!"
+              classification: c
+              decision: 1a_restore_bullet
+        - type: ExternalLink
+          count: 5
+          classification: mostly_a
+          url_substitution_ahs_vdh:
+            workbook_url: "https://humanservices.vermont.gov/about-us/field-services"
+            site_url: "https://www.healthvermont.gov/about-us/contact-us"
+
+    paragraph_drift: []                                    # no sentence-level drift on kept content; all drift is missing-item structural
+
+    section_order_check: ok
+    missing_sections_check: partial                        # 3 items dropped (see components_wired)
+    table_titles_check: na
+
+    class_c_count: 0                                       # day-23: AHS/VDH URL restored + 3 items restored; folder-header still pinned (deferred)
+    scope: 1a
+    spec_required: shipped                                 # docs/source-specs/1-10-volunteer-management.md (day 23, citing PDF pp69-70)
+    structural_fidelity:
+      verdict: clean                                       # day-23: 4/4 class-c closed
+    innovations:
+      - flag: topic_branch_vt_resource_another_instance
+        description: >
+          AHS/VDH URL substitution on 1-10 (humanservices.vermont.gov
+          → healthvermont.gov) joins the 1-8 cluster (CHW/CHC/Free
+          Clinic) as another candidate for the "topic branch
+          alt-URL" innovation. Site appears to have a pattern of
+          picking healthvermont.gov destinations where workbook used
+          other VT gov sub-domains. Worth a walk-summary note that
+          multiple VT-resource links have this pattern — product
+          innovation could either (a) standardize on healthvermont.gov
+          as a topic alias, or (b) keep both as topic-branch alts.
+        scope: deferred_product_innovation
+        preserved_alt_urls:
+          ahs_vdh_field_directors:
+            workbook: "https://humanservices.vermont.gov/about-us/field-services"
+            site_selected: "https://www.healthvermont.gov/about-us/contact-us"
+
+    notes: >
+      Walked 2026-04-24. 1 URL substitution (AHS/VDH → healthvermont.gov;
+      joins 1-8 topic-branch cluster). 3 dropped workbook items
+      (Youth organizations sub-item; See-Youth-engagement sentence +
+      link; Count-volunteer-hours bullet). No paragraph-level rewrites
+      on kept content. 5 ExternalLinks wired (4 match; 1 substituted).
+      Running total 106 across 11 modules.
+
+      Day-23 (2026-04-29): 4 class-c items closed in `feat(1-10 + 1-11):
+      paired modules`. AHS/VDH URL restored to workbook URL
+      (humanservices.vermont.gov/about-us/field-services); alt_url archived
+      under id archive-1-10-ahs-vdh-url-substitution. Three dropped items
+      restored at workbook positions: "Youth organizations" sub-list item
+      (between Schools and American Legion); "See Youth engagement in flood
+      recovery…" tail sentence + ExternalLink on Managing volunteers row 1;
+      "Count volunteer hours…" bullet between work-crews and feed-volunteers.
+      All three drops archived under
+      dropped_workbook_items_flagged_for_restore. Spec
+      docs/source-specs/1-10-volunteer-management.md authored citing PDF
+      pp69-70; 6 in-prose ExternalLinks enumerated in spec.links[] (folder
+      header excluded — pinned for ModuleLayout button surface). class_c_count
+      4 → 0. structural_fidelity.verdict: clean.
+
+  1-11:
+    title: "Flood Recovery Supplies and Work"
+    workbook_pages: "36-38"
+    section_pdf: "public/toolkit/sections/Section 1.11_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 3
+    workbook_anchor_urls:
+      - anchor: "1.11 Flood recovery supplies and work"
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 36
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "flood survivor/site sheet or tracking system"
+        url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=825618087#gid=825618087&range=A14:D14"
+        page: 36
+        purpose: "Templates Directory master sheet — flood-site row (cell-level)"
+        on_site: true                                      # ExternalLink ✓ with range preserved
+      - anchor: "Pumping"                                  # subsection header linked in workbook
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 36
+        purpose: "Subsection header re-links to 1.11 folder"
+        on_site: false
+        decision: pin_with_folder_header                   # same group as folder header pinned-for-design-review
+      - anchor: "healthvermont.gov/lab/forms"
+        url: "https://www.healthvermont.gov/lab/forms"
+        page: 36
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Mucking"                                  # subsection header linked in workbook
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 36
+        purpose: "Subsection header re-links to 1.11 folder"
+        on_site: false
+        decision: pin_with_folder_header
+      - anchor: "House Gutting"                            # subsection header linked to SPECIFIC file (not folder)
+        url: "https://drive.google.com/file/d/1EYIHSzBZjEisON-7tjwueVQ1OS1EcCqs/view?usp=drive_link"
+        page: 37
+        purpose: "House Gutting specific template file — NOT same as folder"
+        on_site: false                                     # dropped — distinct file link
+        decision: 1a_restore_as_inline_ExternalLink_on_subsection_label
+      - anchor: "Mold remediation"                         # subsection header linked to folder in workbook
+        url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
+        page: 38
+        purpose: "Subsection header re-links to 1.11 folder"
+        on_site: false
+        decision: pin_with_folder_header
+    workbook_anchor_count: 7                               # 1 folder + 1 flood-sheet + 1 healthvermont + 4 subsection re-links (3 folder, 1 file)
+    workbook_unique_urls: 4                                # folder (cited 4x as subsection anchors), flood-sheet, healthvermont, gutting-file
+    site_link_count: 2
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-11.astro"
+      module_key: "flood-recovery"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: intro_paragraph
+          text: "This section is focused on flood recovery for homes and other buildings, but can be useful for other disasters. These instructions were compiled by NEK Organizing, which has mucked and gutted hundreds of homes in the Kingdom."
+          classification: a                                # verbatim
+        - type: h3_managing_flood_site_and_survivor_information
+          classification: a
+        - type: h3_managing_flood_recovery_supplies
+          classification: a
+        - type: table.guide-table
+          classification: a
+          note: "4 sub-sections as <tr colspan=2> row headers: Pumping / Mucking / Gutting / Mold remediation — all match workbook structure"
+        - type: table_row_subsection_headers
+          count: 4
+          list: ["Pumping", "Mucking", "Gutting", "Mold remediation"]
+          classification: a                                # all match workbook exactly
+        - type: stuff_column_subheadings
+          list: ["Sump Pump Kit", "Other helpful pumps to have on hand", "Work Tote", "Work Tote pack list", "Other Muck Tools (not stored in tote)", "Gut Kit", "Gut Kit pack list", "Other Gut Tools (not stored in tote)", "Mold Remediation Tools"]
+          classification: a                                # all match workbook
+        - type: Todo
+          count: 72
+          classification: a                                # all 72 verbatim-match
+          note: "Pumping: 1+5 | Mucking Systems: 6 | Mucking Stuff (Work Tote pack): 15 | Mucking Stuff (Other Muck): 14 | Gutting Systems: 4 | Gutting Stuff (Gut Kit): 11 | Gutting Stuff (Other Gut): 6 | Mold Systems: 2 | Mold Stuff: 8 = 72"
+        - type: ExternalLink
+          count: 2
+          classification: a                                # both match workbook URLs exactly
+          details:
+            - anchor: "flood survivor/site sheet or tracking system"
+              href_matches_workbook: true
+            - anchor: "healthvermont.gov/lab/forms"
+              href_matches_workbook: true
+
+    paragraph_drift: []                                    # no drift detected; all prose + Todos verbatim
+
+    section_order_check: ok
+    missing_sections_check: ok                             # subsection headers all present; only link drops
+    table_titles_check: ok
+
+    class_c_count: 0                                       # day-23: InfoCallout removed + House-Gutting link restored; 3 folder re-links still pinned separately (deferred)
+    scope: 1a
+    spec_required: shipped                                 # docs/source-specs/1-11-flood-recovery-supplies-and-work.md (day 23, citing PDF pp73-77)
+    structural_fidelity:
+      verdict: clean                                       # day-23: 2/2 class-c closed
+    innovations:
+      - flag: workbook_subsection_headers_as_folder_re_links
+        description: >
+          1-11 workbook has subsection labels (Pumping, Mucking,
+          Mold remediation) re-linked back to the 1.11 top-level
+          folder. This is essentially 3 additional instances of the
+          folder-header pattern within a single module. Pinned for
+          design review under the existing folder-header group. One
+          subsection label (House Gutting) has a distinct file
+          target that IS class-c and must be restored in 1a.
+        scope: pinned_for_design_review_except_file_link
+
+    notes: >
+      Walked 2026-04-24. SECOND-CLEANEST module after 1-6. Only 2
+      class-c items: recurring InfoCallout + 1 House-Gutting file
+      link drop. 72 Todos verbatim-match. 4 row-headers + 9 Stuff
+      sub-headings all match workbook. 2 of 2 wired ExternalLinks
+      match workbook URLs. Structurally faithful. Running total 108
+      across 12 modules.
+
+      Day-23 (2026-04-29): 2 class-c items closed in `feat(1-10 + 1-11):
+      paired modules`. InfoCallout removed (decision o; recurring sweep);
+      site-invented form archived under id archive-1-11-info-callout. House
+      Gutting subsection-label link restored via <ExternalLink> wrapping the
+      bold "House Gutting" markup in the Gutting subsection definition
+      paragraph; Drive file URL (1EYIHSzB…) archived under id
+      archive-1-11-house-gutting-link-drop. Spec
+      docs/source-specs/1-11-flood-recovery-supplies-and-work.md authored
+      citing PDF pp73-77; 3 in-prose ExternalLinks enumerated in spec.links[]
+      (folder header + 3 folder-re-link subsection headers excluded — all
+      pinned for design-review under the folder-header group). InfoCallout
+      import removed. class_c_count 2 → 0. structural_fidelity.verdict: clean.
+
+  1-12:
+    title: "Mutual Aid/Neighbor to Neighbor (N2N)"
+    workbook_pages: "39"                                   # 1.13 also bleeds onto p39
+    section_pdf: "public/toolkit/sections/Section 1.12_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "1.12 Mutual Aid"
+        url: "https://drive.google.com/drive/folders/1lgAo_M6Jq3i4AR9xbtpxDpFLv5MAAVyg"
+        page: 39
+        purpose: "Folder with resources and templates (folder header)"
+        on_site: surface_via_module_layout_button          # pinned
+    workbook_anchor_count: 1                               # ONLY folder header; no in-prose workbook URLs on page 39 for 1.12 content
+    workbook_unique_urls: 1
+    site_link_count: 2                                     # BOTH site-invented (not in workbook)
+
+    catastrophic_content_divergence: true                  # largest fidelity issue in the walk
+
+    workbook_content:
+      intro_paragraph: "Mutual Aid/N2N groups spring up after disasters like COVID lockdown and flooding… (verbatim on site ✓)"
+      tenets:                                              # WORKBOOK TENETS (5 items, narrative)
+        - "Get people together in your community to provide material support to each other"
+        - "Build relationships with your neighbors based on trust and common interests"
+        - "Make decisions based on consensus vs hierarchy"
+        - "Share things rather than hoard"
+        - "Recognize the value in all kinds of support: emotional, food, childcare, translation etc."
+      checklist:                                           # WORKBOOK CHECKLIST (10 items)
+        - "Find a buddy to work with."
+        - "Build a pod map (see Organizing your community section)"
+        - "Who could help me?"
+        - "Connect with those folks. Ask if they can help!"
+        - "Identify who and where you can get and give support"
+        - "My building, my block, my co-workers?"
+        - "Start small, with 15-20 people"
+        - "Establish communication channels"
+        - "Get the conversation started. What needs, goals, other ideas come up for people?"
+        - "Offer help: Grocery and medicine pickup, cleaning, company, etc."
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-12.astro"
+      module_key: "mutual-aid"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: intro_paragraph
+          classification: a                                # verbatim match with workbook
+        - type: invented_table_row_subsection_header
+          text: "Mutual Aid Tenets & Checklist"
+          source_cited: null
+          classification: c
+          decision: 1a_remove                              # same pattern as 1-5 invented row-header
+        - type: CONTENT_WHOLESALE_REPLACEMENT
+          location: "Mutual Aid Tenets column (Systems)"
+          site_items:                                      # 6 SITE-INVENTED tenets (canonical Dean-Spade MA movement principles)
+            - "Solidarity, not charity"
+            - "Cooperation, not competition"
+            - "Urgency, not waiting for the state or other officials to save us"
+            - "Direct action and community self-determination, not passivity and paternalism"
+            - "Voluntary, mutual, and reciprocal"
+            - "Our liberation is tied together"
+          source_inferred: "Dean Spade, 'Mutual Aid: Building Solidarity During This Crisis (And the Next)' (2020) — canonical MA movement principles"
+          classification: c_bulk
+          decision: 1a_strict_restore_workbook_AND_archive_site_content
+          archive_destination: "docs/site-inventions-archive.yaml → 1-12.invented_tenets"
+        - type: CONTENT_WHOLESALE_REPLACEMENT
+          location: "Mutual Aid Checklist column (Stuff)"
+          site_items:                                      # 8 SITE-INVENTED checklist items
+            - "Identify existing mutual aid and N2N groups to connect with (ask around at a General Store, Town Hall, community centers, etc.)"
+            - "Create a contact list of names, phone numbers, and addresses of households in your community (physical or social)"
+            - "Identify who in your network has specific needs or abilities to offer. Reach out and check in. Hold a gathering or forum to talk about this as a group."
+            - "Choose a communications plan (e.g. FrontPorchForum, phone tree, text chain, paper fliers and mail) so that you can let your network know when something is happening"
+            - "Practice! Engage in low-stakes mutual aid activities during calm times (e.g. a meal share, a tool share, a community fridge)"
+            - "Decide what kind of mutual aid or N2N work you want to do and what roles you want to fill. You might decide to collect donations, move donations, or track needs and resources. Check out the 'Knowing Your Community' section to think about your interests and capacity."
+            - "Coordinate with existing Long-Term Recovery Groups and coalitions of organizations active in disaster (Vermont Community Foundation, GOCROS, etc.)"
+            - "Check out Mutual Aid Disaster Relief's resources and the Big Door Brigade Mutual Aid Toolkit."
+          classification: c_bulk
+          decision: 1a_strict_restore_workbook_AND_archive_site_content
+          archive_destination: "docs/site-inventions-archive.yaml → 1-12.invented_checklist_items"
+        - type: site_invented_ExternalLinks
+          count: 2
+          details:
+            - anchor: "Mutual Aid Disaster Relief's resources"
+              url: "https://mutualaiddisasterrelief.org/collective-care/"
+              classification: c
+              decision: 1a_remove_AND_archive
+            - anchor: "Big Door Brigade Mutual Aid Toolkit"
+              url: "https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit"
+              classification: c
+              decision: 1a_remove_AND_archive
+
+    paragraph_drift:
+      - location: "Entire tenets + checklist table content"
+        drift: wholesale_content_replacement
+        classification: c_bulk
+        decision: 1a_strict_restore_with_archive
+
+    section_order_check: partial                           # structural tables match; CONTENT inside is entirely different
+    missing_sections_check: c_major                        # all 15 workbook items (5 tenets + 10 checklist) absent from site
+    table_titles_check: c                                  # invented "Mutual Aid Tenets & Checklist" row-header
+
+    class_c_count: 0                                       # was 7; closed 2026-04-29 day-24 (catastrophic content restoration)
+    class_c_per_item_count: 0                              # was 33 (per-item); all 33 items archived to docs/site-inventions-archive.yaml under invented_tenets ×6 + invented_checklist_items ×8 + invented_h2_headers ×1 row-header + invented_prose ×1 InfoCallout + invented_items ×2 ExternalLinks
+    scope: 1a
+    spec_required: shipped                                  # docs/source-specs/1-12-mutual-aid-n2n.md (day 24)
+    spec_path: "docs/source-specs/1-12-mutual-aid-n2n.md"
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
+    innovations:
+      - flag: site_movement_canon_content_replacement
+        description: >
+          Site authors replaced the workbook's 5-tenet/10-item
+          narrative with 6 canonical MA movement principles (from
+          Dean Spade's book) + 8 different checklist items +
+          references to MADR and Big Door Brigade Mutual Aid Toolkit.
+          Arguably better-sourced than the workbook content.
+          Restored in 1a per strict SCOPE.md; preserved in
+          docs/site-inventions-archive.yaml for future "toolkit
+          growth" features per user meta-decision 2026-04-24.
+          Pattern name: "movement-canon content replacement" —
+          distinct from URL substitution and invented h2 patterns.
+          Likely to recur in 2-x modules (baseline resilience) —
+          watch for it.
+        scope: 1a_strict_restore_with_archive
+        user_directive: "restore fidelity, develop growth habits and safeguards to grow the toolkit from its foundation"
+        archive_destination: "docs/site-inventions-archive.yaml → 1-12"
+        status: archived_and_restored_day_24                # closed 2026-04-29
+
+    notes: >
+      Walked 2026-04-24. LARGEST content fidelity issue in the walk
+      — not just drift, but wholesale replacement of tenets +
+      checklist content with movement-canon material. User directive:
+      restore to workbook strict, but ARCHIVE all deleted site content
+      into docs/site-inventions-archive.yaml as foundation for future
+      toolkit growth mechanisms. Memory saved:
+      feedback_site_inventions_archive.md. This decision generalizes
+      to ALL previously-flagged class-c site inventions (1-5 row
+      header, 1-8 URL subs, 1-8 service animals item, 1-8 meta-note,
+      1-10 AHS/VDH URL, etc.) — all should be archived not deleted.
+      Class-c count was 7 (bulk) / 33 (per-item).
+
+      Day 24 (2026-04-29) — `feat(1-12): catastrophic content restoration`
+      shipped the largest single-module class-c archive load of the
+      Step 1 closeout sprint. Per closeout doc §2 row 24. 7-bulk / 33-
+      per-item class-c surface area closed in a single commit on
+      feat/step1a-priority-ep. Pattern: APPEND archive entries FIRST
+      (R2 archive-then-remove); THEN restore / remove. Archive entries
+      appended:
+        - invented_tenets — 6 Dean-Spade tenets
+          (archive-1-12-mutual-aid-tenet-01..06; first usage of this
+          category, was empty at top of file)
+        - invented_checklist_items — 8 site-invented checklist items
+          (archive-1-12-mutual-aid-checklist-01..08; first usage of
+          this category, was empty at top of file; item 08 embeds the
+          2 ExternalLinks separately archived under invented_items)
+        - invented_h2_headers — 1 row-header
+          (archive-1-12-row-header-mutual-aid-tenets-and-checklist;
+          colspan="2" "Mutual Aid Tenets & Checklist" row above the
+          two-column table)
+        - invented_prose — 1 InfoCallout
+          (archive-1-12-info-callout; same recurring text as 1-1/1-2/
+          1-3/1-4/1-5/1-6/1-7/1-8/1-10/1-11/KYC sweeps)
+        - invented_items — 2 ExternalLinks
+          (archive-1-12-mutual-aid-disaster-relief-link +
+          archive-1-12-big-door-brigade-link; movement-canon
+          supplement candidate cluster)
+
+      Source-side restoration on src/pages/modules/emergency-preparedness/
+      1-12.astro: replaced 6 invented Tenet Todos with 5 workbook Tenet
+      Todos (Get people together / Build relationships / Make decisions
+      based on consensus / Share rather than hoard / Recognize the value
+      in all kinds of support); replaced 8 invented Checklist Todos
+      with 10 workbook Checklist Todos (Find a buddy / Build a pod map /
+      Who could help me? / Connect with those folks / Identify who and
+      where / My building, my block, my co-workers? / Start small /
+      Establish communication channels / Get the conversation started /
+      Offer help); removed the colspan="2" invented row-header; removed
+      the InfoCallout + unused InfoCallout import; removed the 2
+      site-invented ExternalLinks and the unused ExternalLink import.
+      Workbook-fidelity intro paragraph (classification a) preserved
+      verbatim. Scaffold-spec authored docs/source-specs/1-12-mutual-aid-n2n.md
+      (PDF page 78; force-added per .gitignore policy commit 1da68c6;
+      single section-anchor placeholder field per the recurring R10
+      idiom; subheadings: []; links: [] — the lone workbook anchor is
+      the folder header pinned for the ModuleLayout button surface per
+      R-day-19-second-commit; same as 1-10/1-11). Citation HTML
+      comment added to 1-12.astro.
+
+      Gates: vitest 486/486 green; astro 0 errors / 0 warnings / 10
+      pre-existing hints; verify 22 entries / 22 pass / 0 fail
+      (was 21 entries entering session; +1 for new 1-12 spec). NO codex
+      this commit (decision p — mechanical-edit cadence; days 23-28
+      skip codex). Running total now 116 / 142 across 14 modules; 1-12
+      contributes 0 unresolved class-c. Catastrophic-content-divergence
+      pattern resolved end-to-end — the precedent for any 2-x module
+      that exhibits the same wholesale-replacement shape.
+
+  1-13:
+    title: "Financial Resources"
+    workbook_pages: "39"                                   # shared page with 1.12
+    section_pdf: "public/toolkit/sections/Section 1.13_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "1.13 Financial resources"
+        url: "https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N"
+        page: 39
+        purpose: "Folder header + same URL used by 'Create a directory' anchor"
+        on_site: consolidated_into_bullet_1_ExternalLink
+      - anchor: "Create a directory"                       # same URL as folder header
+        url: "https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N"
+        page: 39
+        on_site: true                                      # ExternalLink ✓
+    workbook_anchor_count: 2                               # 2 anchors, same URL
+    workbook_unique_urls: 1
+    site_link_count: 1
+
+    current_site_state:
+      astro: "src/pages/modules/emergency-preparedness/1-13.astro"
+      module_key: "financial-resources"
+      no_info_callout: true                                # like 1-9, 1-10 directory-focused modules
+      components_wired:
+        - type: invented_h2
+          text: "Financial support directory"
+          workbook_title: "1.13 Financial resources"
+          classification: c
+          decision: 1a_remove_AND_archive
+          archive_destination: "docs/site-inventions-archive.yaml → archive-1-13-financial-support-directory-h2"
+          status: removed_day_19_second_commit             # closed 2026-04-29
+        - type: ul_li_bullets
+          count: 4
+          classification: a                                # all 4 bullets verbatim-match workbook
+        - type: ExternalLink
+          anchor: "Create a directory"
+          href: "https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N"
+          classification: a
+
+    paragraph_drift: []                                    # all 4 bullets verbatim
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: na                                 # no tables
+
+    class_c_count: 0                                       # was 1 (invented h2); closed day 19 second commit
+    scope: 1a
+    spec_required: true
+    spec_path: "docs/source-specs/1-13-financial-resources.md"   # written day 19 second commit
+    structural_fidelity:
+      verdict: clean                                       # all class-c surface area resolved
+    innovations: []
+
+    notes: >
+      Walked 2026-04-24. Short, clean module. Only 1 class-c: invented
+      h2 "Financial support directory" (workbook title is "1.13
+      Financial resources"). Archive + restore per user directive —
+      h2 removed 2026-04-29 in the day-19 second commit (paired with
+      1-6). After removal the page renders as a single <ul> of 4
+      verbatim bullets directly under the ModuleLayout title (which
+      surfaces "Financial Resources" via sectionData.title). Running
+      total 116 / 142 across 14 modules; 1-13 contributes 0 unresolved
+      class-c after closure.
+
+  2-1:
+    title: "Basic Needs"
+    workbook_pages: "40-41"
+    section_pdf: "public/toolkit/sections/Section 2.1_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 2
+    chapter_intro_missing: false                           # 2026-04-29 day-25: workbook chapter-intro paragraph (PDF p80 / displayed p40) restored verbatim as moduleData.summary on /modules/baseline-resilience/index.astro; site-invented summary archived under invented_prose (archive-baseline-resilience-chapter-intro-invented-summary). Was: true.
+    workbook_anchor_urls:
+      - anchor: "2.1 Basic needs"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        page: 40
+        purpose: "Folder header — same URL reused as source for 4 different 'Create a directory' anchors"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "Create a directory (local producers)"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "local producers"
+        url: "https://www.vtfarmtoplate.com/food-system-map"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "gleaning networks"
+        url: "https://www.vermontgleaningcollective.org/"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory (community meals)"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "community meals"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Create a directory of public showers"
+        url: "https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "https://capstonevt.org/find-a-ride"
+        url: "https://capstonevt.org/find-a-ride"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Drift Dusters in Derby, VT"
+        url: "https://www.driftdusters.com/"
+        on_site_url_substitution: "https://driftdusters.org/"   # TLD .com → .org
+        on_site: url_substituted
+        decision: 1a_verify_live_and_restore_correct_url
+        note: "URL may have changed host over time; verify current state before 1a fix"
+      - anchor: "Create a directory (mental health)"
+        url: "https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "KURRVE mental health"
+        url: "https://nekprosper.org/get-involved/flood-recovery-resources/"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Vermont Care Partners"
+        url: "https://vermontcarepartners.org/intake-and-crisis-lines/"
+        on_site_url_substitution: "https://vermontcarepartners.org/"  # path dropped
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+      - anchor: "SAMHSA Disaster Distress Helpline"
+        url: "https://mentalhealth.vermont.gov/flood"
+        on_site_url_substitution: "https://mentalhealth.vermont.gov/sosvt"
+        on_site_anchor_substitution: "VTSOS - VT Starting over Strong"
+        on_site: url_and_anchor_substituted
+        decision: 1a_restore_workbook_url_strict_AND_archive
+        topic_branch_candidate: true
+      - anchor: "Community Health Worker"
+        url: "https://www.vtassociationofcommunityhealthworkers.com/"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Free Clinics"
+        url: "https://vtfreeclinics.org/find-a-clinic/"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Community Health Centers"
+        url: "https://bistatepca.org/centers/"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Vermont Health Connect Assister"
+        url: "https://info.healthconnect.vermont.gov/find-local-help/find"
+        on_site: dropped_with_containing_sentence
+      - anchor: "Create a directory of local herbalists"
+        url: "https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link"
+        on_site: true                                      # ExternalLink ✓
+      - anchor: "Rose Core Collective"
+        url: "https://www.rosecorecollective.org/"
+        on_site: true                                      # ExternalLink ✓
+    workbook_anchor_count: 19
+    workbook_unique_urls: 14
+    site_link_count: 10
+
+    current_site_state:
+      astro: "src/pages/modules/baseline-resilience/2-1.astro"
+      module_key: "basic-needs"
+      components_wired:
+        - type: InfoCallout
+          source_cited: null
+          classification: c
+          recurring: true
+        - type: section_title_drift
+          workbook: "Network of community physical and mental health workers"
+          site: "Network of mental health workers"
+          classification: c
+          decision: 1a_restore_workbook_title
+        - type: dropped_workbook_items
+          location: "Mental Health section"
+          count: 4
+          items:
+            - "If individuals have a primary care provider, it is important to connect them to that same provider for continuity of care. Add community health centers and other similar resources/sites to your directory."
+            - "For those still needing assistance accessing in clinic healthcare services, connect individuals with a Community Health Worker"
+            - "Free Clinics and Community Health Centers are great resources for those who need sliding scale and financial assistance options"
+            - "If individuals need help applying to health insurance, adjusting information due to disaster (i.e. income) they can connect with a Vermont Health Connect Assister, who is trained to help community members navigate the Vermont health insurance marketplace"
+          classification: c_bulk
+          decision: 1a_restore_as_Todos_with_workbook_ExternalLinks
+          archive_destination: "docs/site-inventions-archive.yaml → 2-1.dropped_mental_health_items (workbook items that should be restored)"
+        - type: partial_sentence_drop
+          location: "community-clinic Todo"
+          workbook: "Consider setting up a recurring community health clinic day with local practitioners and partner with your local Department of Health office"
+          site: "Consider setting up a recurring community health clinic day with local practitioners."
+          classification: c
+          decision: 1a_restore_verbatim
+        - type: minor_prefix_drift
+          location: "affordable-sessions + disaster-site-support Todos"
+          workbook_parent: "Take note if they can:"
+          workbook_children: ["Offer free, low-cost or sliding scale sessions...", "Offer group sessions", "Show up near disaster sites..."]
+          site_children: ["Can offer free, low-cost or sliding scale sessions...", "Offer group sessions", "Can show up near disaster sites..."]
+          drift_type: "can_prefixing_on_2_of_3_items"
+          classification: c
+          decision: 1a_restore_workbook_structure
+        - type: Todo
+          count: 29
+          classification: a_mostly
+        - type: ExternalLink
+          count: 10
+          classification: mixed
+          details:
+            - anchor: "Drift Dusters"
+              classification: c_url_drift
+            - anchor: "Vermont Care Partners"
+              classification: c_url_sub
+            - anchor: "SAMHSA / VTSOS"
+              classification: c_url_and_anchor_sub
+              topic_branch: true
+
+    paragraph_drift:
+      - location: "community-clinic Todo"
+        drift: "Partial sentence drop"
+        classification: c
+      - location: "affordable-sessions + disaster-site-support"
+        drift: "Minor 'Can' prefixing"
+        classification: c
+
+    chapter_level_drift:
+      - location: "/modules/baseline-resilience/index.astro summary"
+        workbook: "The material in this section builds on systems and stuff outlined in the Emergency Preparedness and Response section to deepen resilience in the day-to-day. Many people in our communities are in crisis all the time, and working towards a reality in which everyone is safe and has their needs met as a baseline means we can all be more resilient when acute disaster strikes."
+        site: "Build everyday resilience through shared resources, community care, and organizing practices that keep people safe before disaster strikes."
+        drift_type: invented_summary_instead_of_workbook_intro
+        classification: c
+        decision: 1a_restore_workbook_intro_AND_archive_site_summary
+        archive_destination: "docs/site-inventions-archive.yaml → baseline-resilience-chapter.invented_summary"
+        status: archived_and_restored_day_25                  # 2026-04-29: workbook chapter-intro paragraph restored verbatim as moduleData.summary; site-invented summary archived under invented_prose (archive-baseline-resilience-chapter-intro-invented-summary). PDF p80 (displayed p40) source.
+      - location: "/modules/emergency-preparedness/index.astro summary"
+        workbook: "Emergency systems often spring into existence when disaster strikes and not a moment sooner. Prepare your community by doing emergency planning work when the sun is shining. Equipping your neighborhood, town, and region to be ready in emergencies also builds baseline resilience."
+        site: "Emergency systems often spring into existence when disaster strikes and not a moment sooner. Prepare your community by doing emergency planning work when the sun is shining. Equipping your neighborhood, town, and region to be ready in emergencies also builds baseline resilience."
+        drift_type: none
+        classification: a
+        decision: clean_no_action_required
+        status: retro_audit_clean_day_25                       # 2026-04-29 day-25 retro-audit (decision-m carve-out): site summary matches workbook chapter-intro paragraph VERBATIM. PDF p1145 (displayed p15) Emergency Preparedness and Response chapter intro source. No drift, no edit needed.
+
+    section_order_check: ok                                # 7 sections match workbook order
+    missing_sections_check: ok                             # 2026-04-30 day-26: 4 dropped Mental Health items restored as Todos with workbook ExternalLinks. Was: partial.
+    table_titles_check: ok                                 # 2026-04-30 day-26: section-title drift restored from "Network of mental health workers" to workbook canonical "Network of community physical and mental health workers". Was: c.
+
+    structural_fidelity:
+      verdict: clean                                       # 2026-04-30 day-26: all 11 post-day-25 class-c units restored on 2-1.astro; spec shipped; verify pass.
+    class_c_count: 0                                       # 2026-04-30 day-26: was 12 (chapter-intro drift closed day-25 → 11 in 2-1.astro post-day-25 → 0 today). Closed: InfoCallout + section-title-drift + 3 URL subs + 4 dropped MH items + partial-sentence-drop + 2 "Can" prefixes + parent-prefix-drop.
+    scope: 1a
+    spec_required: shipped                                 # 2026-04-30 day-26: docs/source-specs/2-1-basic-needs.md (PDF p80-81). Was: true.
+    spec_path: docs/source-specs/2-1-basic-needs.md        # spec.title "Community meals and food distribution" — chosen over first h2 "Community food production" because the latter is drop-cap-fragmented in pdftotext (R-day-25 mitigation, same shape as 2-3 day-25). Other 6 h2s in subheadings[].
+    innovations:
+      - flag: topic_branch_samhsa_to_vtsos
+        description: >
+          Site replaced SAMHSA Disaster Distress Helpline with
+          VTSOS (VT Starting over Strong) — both URL and anchor
+          text. VTSOS is VT-specific; SAMHSA is federal. Third
+          candidate for topic-branch alt-URL pattern (after 1-8 VT
+          resources and 1-10 AHS/VDH).
+        scope: deferred_product_innovation
+        archive_destination: "docs/site-inventions-archive.yaml → 2-1.topic_branch_samhsa_vtsos"
+        status: archived_and_restored_day_26               # 2026-04-30: archive-2-1-samhsa-vtsos-url-and-anchor-substitution appended to alt_urls; URL+anchor restored to workbook canonical (mentalhealth.vermont.gov/flood + "SAMHSA Disaster Distress Helpline").
+      - flag: chapter_level_intro_missing
+        description: >
+          Baseline Resilience chapter intro paragraph (~60 words)
+          on workbook p40 is missing from site; replaced with an
+          invented 1-line summary on /modules/baseline-resilience/
+          index.astro. Precedent for checking other chapter-level
+          intro pages (emergency-preparedness/index.astro, potentially
+          modules/index.astro) for similar drifts.
+        scope: 1a
+        retro_audit_required: true
+        status: closed_day_25                              # 2026-04-29: chapter intro restored on baseline-resilience/index.astro (PDF p80); emergency-preparedness/index.astro retro-audit clean (PDF p1145 verbatim match).
+
+    notes: >
+      Walked 2026-04-24. 12 class-c: InfoCallout + section-title
+      drift + 3 URL subs (1 topic-branch candidate) + 4 dropped
+      Mental Health items + partial sentence drop + 2 minor "Can"
+      prefixes + chapter-level intro drift. Chapter-level drift
+      signals need for retro-audit of baseline-resilience/index.astro
+      and emergency-preparedness/index.astro. Running total 128/154
+      across 15 modules.
+
+      2026-04-30 day-26 (closeout doc §2 row-26, single-module
+      large-archive shape — comparable to KYC day 17-18 and 1-8 part 1
+      day 21): all 11 post-day-25 class-c units in 2-1.astro restored.
+      11 archive entries appended FIRST to docs/site-inventions-archive.yaml
+      (R2 archive-then-remove): 4 alt_urls (SAMHSA→VTSOS topic-branch,
+      Drift Dusters .com→.org, Vermont Care Partners path-drop, plus the
+      chapter-intro day-25 entry already in place), 4 invented_prose
+      (InfoCallout, section-title drift, "Can" prefix + parent-drop
+      structural drift, plus the chapter-intro entry already in place),
+      5 dropped_workbook_items_flagged_for_restore (4 Mental Health bullets
+      + 1 community-clinic partial-sentence drop). THEN restored on
+      2-1.astro: section title to "Network of community physical and
+      mental health workers"; 4 new Todos for dropped Mental Health items
+      with workbook ExternalLinks (CHW/CHC/Free Clinics/VHC Assister +
+      primary-care-provider) — additive moduleKey composites; community-
+      clinic Todo restored ", and partner with your local Department of
+      Health office"; "Take note if they can:" parent prefix appended to
+      mental-health-directory Todo; 4 children Todos (affordable-sessions,
+      group-sessions, disaster-site-support, mental-health-examples)
+      indented under <div class="ml-6"> wrapper (parent + ml-6 children
+      same shape as 2-2 day-25 tool-library un-flatten); "Can" prefixes
+      removed; 3 URLs restored to workbook canonical (Drift Dusters .com,
+      Vermont Care Partners /intake-and-crisis-lines/, SAMHSA helpline
+      /flood); InfoCallout + import removed (recurring sweep, decision o);
+      docs/source-specs/2-1-basic-needs.md scaffolded (PDF p80-81) with
+      title "Community meals and food distribution" (R-day-25 drop-cap
+      mitigation — first h2 "Community food production" is fragmented in
+      pdftotext); citation comment placed AFTER frontmatter (R9). Gates:
+      vitest 486/486 green, astro 0/0/10 hints, verify 25 entries exit 0
+      ALL pass (2-1 status: pass). NO codex (decision p — mechanical-edit
+      cadence; days 23-28 skip codex).
+
+  2-2:
+    title: "Shared Tools"
+    workbook_pages: "42"
+    section_pdf: "public/toolkit/sections/Section 2.2_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 1
+    workbook_anchor_urls:
+      - anchor: "2.2 Shared tools"
+        url: "https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C"
+        page: 42
+        on_site: surface_via_module_layout_button          # pinned (also reused as tech-directory URL)
+      - anchor: "Library of Things toolkit from Shareable"
+        url: "https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes"
+        on_site: true
+      - anchor: "myTurn"
+        url: "https://myturn.com/"
+        on_site: true
+      - anchor: "Tool Library Alliance"
+        url: "https://www.toollibraryalliance.org/"
+        on_site: true
+      - anchor: "Create a directory of available items"
+        url: "https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C"
+        on_site: true                                      # same URL as folder header
+      - anchor: "libraries"
+        url: "https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf"
+        on_site: true
+      - anchor: "Mesh Networks"
+        url: "https://docs.engnroom.org/digital-resilience-hub/meaningful-connectivity/alternative-tech-tools-for-knowledge-sharing/mesh-and-community-networks"
+        on_site: true
+      - anchor: "Fognet"
+        url: "https://fognet.me/"
+        on_site: true
+      - anchor: "Meshtastic - Low-power data sharing & communications network"
+        url: "https://meshtastic.org/docs/introduction/"
+        on_site: true
+      - anchor: "DIY Cellular Signal Booster - No Electricity Required"
+        url: "https://www.youtube.com/watch?v=BpSkjRKGxyc"
+        on_site: true
+      - anchor: "Information on digital resilience"
+        url: "https://docs.engnroom.org/digital-resilience-hub"
+        on_site: true
+    workbook_anchor_count: 11
+    workbook_unique_urls: 10
+    site_link_count: 10
+
+    current_site_state:
+      astro: "src/pages/modules/baseline-resilience/2-2.astro"
+      module_key: "shared-tools"
+      components_wired:
+        - type: InfoCallout
+          classification: c
+          recurring: true
+        - type: tool_library_research_bullet_flattening
+          workbook_structure: "Parent 'Read up on best practices and existing ways of doing this' with 4 sub-bullets: New Suns/Cooperation VT, Library of Things toolkit, myTurn, Tool Library Alliance"
+          site_structure: "Single tool-library-research Todo flattening all 4 into one prose paragraph with editorial glue 'See also:' and 'for lots of resources'"
+          classification: c
+          decision: 1a_restore_4_sub_bullets
+          archive_destination: "docs/site-inventions-archive.yaml → 2-2.editorial_additions"
+        - type: h2_sections
+          list: ["Tool lending library", "Tech lending library", "Internet and phone access"]
+          classification: a
+        - type: Todo
+          count: 20
+          classification: a                                # all verbatim-match workbook
+        - type: ExternalLink
+          count: 10
+          classification: a                                # all 10 URLs match workbook
+
+    paragraph_drift:
+      - location: "tool-library-research Todo"
+        drift: "4 sub-bullets flattened into 1 Todo + editorial additions"
+        classification: c
+
+    section_order_check: ok
+    missing_sections_check: ok
+    table_titles_check: ok                                 # Tech lending library Systems/Stuff table matches
+
+    class_c_count: 0                                       # 2026-04-29 day-25: InfoCallout removed + tool-library-research un-flattened (3 class-c → 0); see notes
+    structural_fidelity:
+      verdict: clean                                       # day-25: parent + 4 sub-bullets restored as separate Todos
+    scope: 1a
+    spec_required: shipped                                 # docs/source-specs/2-2-shared-tools.md
+    spec_path: docs/source-specs/2-2-shared-tools.md
+    innovations: []
+
+    notes: >
+      Walked 2026-04-24. Only 3 class-c. Perfect 10/10 URL match
+      on ExternalLinks. One structural drift: workbook's Tool
+      lending library "Read up on best practices" with 4 sub-
+      bullets is merged into 1 site Todo with editorial glue.
+      Running total 131 across 16 modules.
+
+      Day-25 (2026-04-29) paired-light Step-2 namespace restoration
+      (closeout doc §2 row 25): 3 class-c closed —
+      (1) recurring InfoCallout removed + import dropped (decision o;
+          archive-2-2-info-callout under invented_prose; identical text
+          to the archive-1-1/1-6/1-7/1-8/1-11/1-12/2-3/KYC InfoCallouts);
+      (2) tool-library-research flatten un-flattened — workbook's
+          parent "Read up on best practices and existing ways of doing
+          this." + 4 sub-bullets (New Suns/Cooperation VT, Library of
+          Things toolkit, myTurn, Tool Library Alliance) restored as 5
+          separate Todos at the section level (parent + ml-6 indent for
+          4 children); editorial glue ("See also:", "for lots of
+          resources") archived under invented_prose
+          (archive-2-2-tool-library-research-flatten);
+      (3) editorial-additions class-c from the original walk was the
+          editorial glue itself, archived in same entry as #2 (combined).
+      4 new Todo IDs added (tool-library-new-suns, tool-library-shareable,
+      tool-library-myturn, tool-library-alliance) under existing moduleKey
+      "shared-tools" — additive, safe per data-preservation contract.
+      Spec authored: docs/source-specs/2-2-shared-tools.md (PDF page 86
+      via R13 page-num convention; spec.title "Tool lending library" per
+      R15 first-h2 idiom; subheadings: ["Tech lending library", "Internet
+      and phone access"]; 10 links; require_cluster: false). Citation
+      wired via HTML comment line 17 of 2-2.astro. Gates: vitest 486/486,
+      astro 0/0/10, verify 24 entries exit 0 all pass. Running total
+      128 across 16 modules (− 3 closed by 2-2).
+
+  2-3:
+    title: "Community Building"
+    workbook_pages: "43-45"
+    section_pdf: "public/toolkit/sections/Section 2.3_2025 Resilience Hub Toolkit.pdf"
+    section_pdf_pages: 3
+    workbook_anchor_urls:
+      - anchor: "2.3 Community building"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        page: 43
+        purpose: "Folder — same URL reused 5× (folder header + Institutional allies + Community spokespeople + de-escalation-training-how-to-intervene)"
+        on_site: surface_via_module_layout_button          # pinned
+      - anchor: "Regional Planning Commissions"
+        url: "https://www.vapda.org/"
+        on_site: true
+      - anchor: "natural resource conservation districts"
+        url: "https://www.vacd.org/conservation-districts/"
+        on_site: true
+      - anchor: "Create a directory (Institutional allies)"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: true                                      # same folder
+      - anchor: "Create a directory (Business directory)"
+        url: "https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link"
+        on_site_url_substitution: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: url_substituted
+        decision: 1a_restore_workbook_url_strict
+        note: "Workbook cites specific Business directory template file; site uses parent folder instead"
+      - anchor: "Create a directory (Tradesfolk directory)"
+        url: "https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link"
+        on_site: false                                     # link dropped — plain text on site
+        decision: 1a_restore_as_ExternalLink
+      - anchor: "Create a directory (Community spokespeople)"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: true
+      - anchor: "Develop a media list"
+        url: "https://drive.google.com/file/d/1a8iZejQbOW4QDwxzgJtWeyEqztupJgkY/view?usp=drive_link"
+        on_site: true
+      - anchor: "Rural VT Activist Toolkit"
+        url: "https://www.ruralvermont.org/activist-toolkit-1"
+        on_site: true
+      - anchor: "Vermont League of Cities and Towns"
+        url: "https://www.vlct.org/resource/effective-testimony-guide-municipal-officials"
+        on_site: true
+      - anchor: "how to intervene in escalating situations"
+        url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+        on_site: true
+      - anchor: "practice conflict management and transformation"
+        url: "https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link"
+        on_site: true
+      - anchor: "libraries"
+        url: "https://libraries.vermont.gov/sites/libraries/files/documents/PublicLibraryDirectory.pdf"
+        on_site: true
+      - anchor: "grange halls"
+        url: "http://www.vtstategrange.org/vermont-granges.html"
+        on_site: true
+      - anchor: "Flood Preparation"
+        url: "https://www.floodsmart.gov/prepare/minimize-damage"
+        on_site: true
+      - anchor: "General First Aid and Basic Life Support"
+        url: "https://www.redcross.org/take-a-class/train-my-employees"
+        on_site: true
+      - anchor: "Basic Rescue"
+        url: "https://mutualaiddisasterreliefsite.wordpress.com/wp-content/uploads/2017/04/basic_rescue_skills_2003.pdf"
+        on_site: true
+      - anchor: "Examples from Mutual Aid Disaster Relief"
+        url: "https://mutualaiddisasterrelief.org/safety-diy-cleanup/"
+        on_site: true
+      - anchor: "Safe Food Prep"
+        url: "https://www.vtchamber.com/servsafe/"
+        on_site: true
+      - anchor: "Train NEK"
+        url: "https://trainnek.com/about-us/"
+        on_site: true
+      - anchor: "NOLS courses"
+        url: "https://www.nols.edu/en/courses/"
+        on_site: true
+      - anchor: "Stop the bleed"
+        url: "https://cms.bleedingcontrol.org/Class/Search"
+        on_site: true
+      - anchor: "Narcan"
+        url: "https://vtcares.org/how-to-use-narcan/"
+        on_site: true
+      - anchor: "Mental health first aid"
+        url: "https://www.are.na/local-directory/radical-mental-health-first-aid"
+        on_site: true
+      - anchor: "Radical Mental Health First Aide (RMHFA) Action Plan"
+        url: "https://attachments.are.na/27186484/03bcff689a69c106cd91a68bebc381df.pdf?1711408036"
+        on_site: true
+      - anchor: "Open Street Maps"
+        url: "https://openstreetmap.us/get-involved/start-mapping/"
+        on_site: true
+      - anchor: "Conflict de-escalation"
+        url: "https://drive.google.com/file/d/1jvwkbqaxuct6_xQxSgT1p-WfNcod2d5I/view?usp=drive_link"
+        on_site: true
+      - anchor: "Conflict management"
+        url: "https://drive.google.com/file/d/1U0VtVuH8hfQIf9zjGJyAVPPdSvfHoYpy/view?usp=drive_link"
+        on_site: true
+      - anchor: "how to host a public assembly"
+        url: "https://drive.google.com/file/d/1nUkRdNmMf4eisAdmVFbGJKiCiEiea6Cv/view"
+        on_site: true
+      - anchor: "Civic Standard"
+        url: "https://www.thecivicstandard.org/"
+        on_site: true
+      - anchor: "NEK Organizing"
+        url: "https://nekorganizing.org/"
+        on_site: true
+      - anchor: "Hartland Community Breakfasts"
+        url: "https://hartland.govoffice.com/index.asp?SEC=F4B6B828-2DC9-4153-9BAF-212AAF3965D5&DE=E3079F17-2186-4D40-A9F5-82F8DE844030"
+        on_site: true
+    workbook_anchor_count: 33                              # most in any single module
+    workbook_unique_urls: 32                               # folder cited 5x counts as 1
+    site_link_count: 26
+
+    current_site_state:
+      astro: "src/pages/modules/baseline-resilience/2-3.astro"
+      module_key: "community-building"
+      components_wired:
+        - type: InfoCallout
+          classification: c
+          recurring: true
+        - type: h2_sections
+          count: 9
+          list: ["Local and regional governance and coordination", "Institutional allies", "Business directory", "Tradesfolk directory", "Community spokespeople", "De-escalators and conflict facilitators", "Third spaces", "Skill building workshops", "Fun activities that build community"]
+          classification: a                                # all match workbook
+        - type: skill_building_table
+          structure: "2-col (Flood and disaster response / Recovery and Coordination) + Other row colspan=2"
+          classification: a                                # matches workbook
+        - type: Todo
+          count: 62
+          classification: a                                # all verbatim-match
+        - type: ExternalLink
+          count: 26                                        # 26 of 32 workbook unique URLs wired correctly
+          classification: mostly_a
+        - type: business_directory_url_substitution
+          workbook_url: "https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link"
+          site_url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
+          classification: c
+          decision: 1a_restore_workbook_specific_file_url
+        - type: tradesfolk_directory_link_drop
+          missing_url: "https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link"
+          classification: c
+          decision: 1a_restore_as_Todo_plus_ExternalLink
+
+    paragraph_drift: []                                    # no narrative drift detected
+
+    section_order_check: ok                                # all 9 sections match workbook order
+    missing_sections_check: ok
+    table_titles_check: ok                                 # "Flood and disaster response" / "Recovery and Coordination" headers match
+
+    class_c_count: 0                                       # 2026-04-29 day-25: InfoCallout removed + business-dir URL restored + tradesfolk-dir link restored (3 class-c → 0); see notes
+    structural_fidelity:
+      verdict: clean                                       # day-25: 9-h2 layout intact; spec uses "Business directory" h2 as title (R10 drop-cap workaround, see spec notes)
+    scope: 1a
+    spec_required: shipped                                 # docs/source-specs/2-3-community-building.md
+    spec_path: docs/source-specs/2-3-community-building.md
+    innovations: []
+
+    notes: >
+      Walked 2026-04-24. LARGEST module by workbook URL count (32
+      unique) — yet very clean fidelity. Only 2 non-InfoCallout
+      class-c issues: business-directory URL substitution (specific
+      file → folder) + tradesfolk-directory link drop. All 62 Todos
+      + 9 h2 sections + skill-building 2x2+Other table match workbook
+      verbatim. Running total 134 across 17 modules.
+
+      Day-25 (2026-04-29) paired-light Step-2 namespace restoration
+      (closeout doc §2 row 25): 3 class-c closed —
+      (1) recurring InfoCallout removed + import dropped (decision o;
+          archive-2-3-info-callout under invented_prose; identical text
+          to the archive-1-1/1-6/1-7/1-8/1-11/1-12/2-2/KYC InfoCallouts);
+      (2) Business directory URL substitution restored — site swapped
+          workbook-cited specific Business Directory template file
+          (https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/)
+          for parent 2.3 Community Building folder URL (the URL reused
+          for 5 other anchors in this section); restored to workbook
+          canonical per 1a_restore_workbook_url_strict; site-form
+          archived under alt_urls
+          (archive-2-3-business-directory-url-substitution);
+      (3) Tradesfolk directory link drop restored — workbook anchor
+          "Create a directory" wrapped a specific Tradesfolk Directory
+          template file
+          (https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/);
+          site rendered as plain text with no <a> wrapper; restored via
+          <ExternalLink> per 1a_restore_as_ExternalLink; site-form
+          archived under dropped_workbook_links
+          (archive-2-3-tradesfolk-directory-link-drop).
+      Spec authored: docs/source-specs/2-3-community-building.md
+      (PDF page 88-90 via R13 page-num convention; spec.title
+      "Business directory" per R10 drop-cap workaround — first h2
+      "Local and regional governance and coordination" starts with
+      drop-cap "L" that pdftotext fragments below 0.85 bestMatchScore;
+      "Business directory" is contiguous in PDF text and is one of
+      the 9 h2s on the page, satisfying R15 titleMatches. The other
+      8 h2s including "Local and regional governance and coordination"
+      are in subheadings[]. 29 links + 1 section-anchor field;
+      require_cluster: false). Citation wired via HTML comment line 17
+      of 2-3.astro. Gates: vitest 486/486, astro 0/0/10, verify 24
+      entries exit 0 all pass. Running total 125 across 17 modules
+      (− 3 closed by 2-3).

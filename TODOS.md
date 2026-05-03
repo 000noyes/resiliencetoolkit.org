@@ -27,6 +27,12 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 
 **Depends on:** Drive MCP install (Days 1-3 of Step 1a) for (5) and (6). Extractor upgrade for (3) and (4) is independent — can start immediately.
 
+### Keep public/toolkit/sections/ PDFs in sync with canonical workbook
+**Priority:** P2
+**Description:** The 17 per-module PDFs in `public/toolkit/sections/` are surfaced to users as module-level downloads via `downloads.astro` and `pdfLookup.ts`. They were last exported 2025-11-20 (Chrome Print-to-PDF from Google Docs). The canonical `2025 Resilience Hub Toolkit w Templates_V1 final.pdf` was exported 2025-12-01 (Adobe Acrobat). That 11-day gap means section PDFs may serve stale content to users even though Step 1a keeps them out of the citation graph (citation anchor is the workbook only). If Rhizome edits the source Google Doc between workbook exports, the sections silently drift.
+**Fix:** (a) Define the regeneration workflow — currently manual Chrome Print-to-PDF per section. Document the workflow in `docs/toolkit-export-workflow.md`. (b) After every workbook re-export, re-export all 17 section PDFs from the same source revision. (c) Consider a build-time staleness check: compare each section PDF's text content against the corresponding page range of the workbook; warn if divergent. Candidate for post-Step-1a automation once Drive integration supports reading Doc revisions. (d) Flag in CI: if `public/toolkit/2025 Resilience Hub Toolkit w Templates_V1 final.pdf` mtime is newer than any `public/toolkit/sections/*.pdf`, warn.
+**Depends on:** Drive integration tooling (enables automated regeneration). Minimum viable fix (documented workflow + mtime CI warning) is independent.
+
 ### Verify skill: extend coverage beyond field labels
 
 ### Verify skill: extend coverage beyond field labels

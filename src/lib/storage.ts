@@ -328,6 +328,14 @@ export async function setMetadata(key: string, value: MetadataValue): Promise<vo
   });
 }
 
+/**
+ * Delete a metadata entry. Useful for resetting one-shot flags (e.g., migration markers).
+ */
+export async function deleteMetadata(key: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('metadata', key);
+}
+
 
 // ============================================================================
 // EXPORT OPERATIONS
@@ -444,8 +452,8 @@ export async function importAllData(data: unknown): Promise<{ todosImported: num
     }
 
     // Import metadata if present
+    const metadataStore = tx.objectStore('metadata');
     if (obj.metadata && typeof obj.metadata === 'object' && !Array.isArray(obj.metadata)) {
-      const metadataStore = tx.objectStore('metadata');
       const metadata = obj.metadata as Record<string, unknown>;
       for (const [key, value] of Object.entries(metadata)) {
         await metadataStore.put({
@@ -454,6 +462,14 @@ export async function importAllData(data: unknown): Promise<{ todosImported: num
           updatedAt: new Date().toISOString(),
         });
       }
+    }
+
+    // The imported snapshot may carry a stale or malformed migration
+    // marker (e.g., set on an older device that had `no_data` and is now
+    // about to import old-key todos). Clear all migration markers so the
+    // next initializeStorage re-evaluates against the imported state.
+    for (const markerKey of MIGRATION_MARKER_KEYS) {
+      await metadataStore.delete(markerKey);
     }
 
     await tx.done;
@@ -962,6 +978,301 @@ export async function savePersonalNotes(notes: string): Promise<void> {
 }
 
 // ============================================================================
+// MIGRATIONS
+// ============================================================================
+
+/**
+ * seniors-and-disabilities consolidation (1-8 Populations with Specific Needs).
+ *
+ * The site previously split a single workbook section into two h3 sections
+ * with separate moduleKeys (`senior-citizens`, `people-with-disabilities`).
+ * Day-21 (PR `feat/step1a-priority-ep`) re-merged the section under a new
+ * canonical moduleKey `seniors-and-disabilities`. Without this migration,
+ * any check-state a user recorded under the old keys becomes orphaned —
+ * still in IndexedDB, but never read by the new UI.
+ *
+ * Contract:
+ * - Idempotent: a successful run sets a metadata marker. Subsequent loads
+ *   short-circuit when no old-key data remains. When sources DO remain
+ *   (post-import re-seed, missing-marker-after-import), the migration
+ *   re-runs and writes only the todoIds whose merged-key target does
+ *   not yet exist.
+ * - Target authoritative: once a `seniors-and-disabilities-${todoId}`
+ *   record exists, it represents the user's most recent intent and the
+ *   migration will NEVER overwrite it. A user who unchecks an item on
+ *   the merged key after migration keeps that uncheck on every reload.
+ *   Known limitation (same root cause): writes on deprecated keys that
+ *   land AFTER the merged-key target was created — whether from a stale
+ *   tab still running pre-day-21 code, or imported as part of a snapshot
+ *   from a partially-migrated device — are orphaned on the deprecated
+ *   key. They remain forensically recoverable (the deprecated key data
+ *   is preserved verbatim) but do not surface in the active UI. Without
+ *   a per-todo `updatedAt` field on the todos schema, there is no way
+ *   to distinguish post-migration drift from pre-migration legacy data,
+ *   so we err toward preserving the user's most recent merged-key edit.
+ *   Mitigation path (out of scope for day-22): make `saveTodo` redirect
+ *   deprecated keys onto the canonical merged key, plus a per-todo
+ *   `updatedAt` to drive cross-key delta detection.
+ * - Lossless on initial migration: source todos under old keys are NOT
+ *   deleted. They remain readable until the deprecated allowlist is
+ *   dropped (planned: 2 minor versions past the migration ship). The
+ *   first-time merge is note-preserving: when multiple uncompleted
+ *   entries carry distinct notes, the migration concatenates them
+ *   rather than dropping one.
+ * - Collision-safe: when the same `todoId` exists under both old keys
+ *   (e.g., `senior-directory`) the winning entry is selected
+ *   deterministically — see `pickMigrationWinner` and `mergeWinner`.
+ * - Atomic: the per-todo source reads, target writes, and marker write all
+ *   run in a single readwrite transaction. A failure mid-flight rolls back;
+ *   the marker is only set on success, so a partial run simply re-runs.
+ * - Stable-state cheap: reloads on a fully-migrated device run two index
+ *   reads and exit without opening a readwrite tx.
+ */
+
+const SENIORS_AND_DISABILITIES_MERGED_KEY = 'seniors-and-disabilities';
+const SENIORS_AND_DISABILITIES_DEPRECATED_KEYS = [
+  'senior-citizens',
+  'people-with-disabilities',
+] as const;
+const SENIORS_AND_DISABILITIES_MIGRATION_MARKER = 'migration_seniors_and_disabilities_v1';
+const MIGRATION_NOTES_SEPARATOR = '\n\n---\n\n';
+
+/**
+ * Markers that gate one-shot migrations. Cleared on `importAllData` so an
+ * imported snapshot always re-evaluates against current code, regardless
+ * of which device produced the export.
+ */
+const MIGRATION_MARKER_KEYS = [SENIORS_AND_DISABILITIES_MIGRATION_MARKER] as const;
+
+/**
+ * moduleKeys whose data is preserved (readable) but no longer wired into
+ * the UI. New writes to these keys should be considered a bug — the .astro
+ * pages render under canonical post-migration moduleKeys instead.
+ *
+ * Removal policy: keep readable for at least 2 minor releases past the
+ * day-22 migration commit, then drop after a sweep confirms no live data
+ * loss risk.
+ */
+export const DEPRECATED_MODULE_KEYS: ReadonlySet<string> = new Set(
+  SENIORS_AND_DISABILITIES_DEPRECATED_KEYS,
+);
+
+export function isDeprecatedModuleKey(moduleKey: string): boolean {
+  return DEPRECATED_MODULE_KEYS.has(moduleKey);
+}
+
+/**
+ * Pick the primary entry between two competing todos. Used as the binary
+ * reducer; `mergeWinner` then layers note-preservation on top.
+ *
+ * Priority:
+ *   1. A completed entry beats an uncompleted one — never silently uncheck.
+ *   2. Among two completed entries, the later `completedAt` wins
+ *      (post-merge edits beat pre-merge state).
+ *   3. Among two uncompleted entries, the one with notes wins.
+ *   4. Final fallback: lexicographic on `moduleKey` for determinism
+ *      ('people-with-disabilities' < 'senior-citizens' < 'seniors-and-disabilities').
+ */
+function pickMigrationWinner(a: Todo, b: Todo): Todo {
+  if (a.completed !== b.completed) {
+    return a.completed ? a : b;
+  }
+
+  if (a.completed && b.completed) {
+    const ta = a.completedAt ?? '';
+    const tb = b.completedAt ?? '';
+    if (ta > tb) return a;
+    if (tb > ta) return b;
+  }
+
+  const aHasNotes = !!(a.notes && a.notes.length > 0);
+  const bHasNotes = !!(b.notes && b.notes.length > 0);
+  if (aHasNotes !== bHasNotes) {
+    return aHasNotes ? a : b;
+  }
+
+  return a.moduleKey <= b.moduleKey ? a : b;
+}
+
+/**
+ * Choose the winning todo state across N candidates and preserve notes
+ * that would otherwise be silently dropped.
+ *
+ * Selection rules:
+ * - Primary state (`completed`, `completedAt`, `id`) follows
+ *   `pickMigrationWinner` — completed beats uncompleted, later
+ *   `completedAt` wins, then notes-present, then lexicographic moduleKey.
+ * - Notes are preserved from EVERY candidate that contributes a unique
+ *   note (after whitespace trim). When the primary is completed and the
+ *   secondary candidate is not, the secondary's note is still merged in
+ *   — the user's check stays, AND the related uncompleted-side note
+ *   survives. This is the only branch where the returned record is
+ *   synthesized rather than one of the inputs verbatim.
+ * - Whitespace-only note differences are deduped via `.trim()` for the
+ *   uniqueness comparison; the original (untrimmed) text is preserved
+ *   in the concatenated output.
+ */
+function mergeWinner(candidates: Todo[]): Todo {
+  const primary = candidates.reduce(pickMigrationWinner);
+
+  const seenTrimmed = new Set<string>();
+  const distinctNotes: string[] = [];
+  const primaryTrimmed = (primary.notes ?? '').trim();
+  if (primaryTrimmed) {
+    seenTrimmed.add(primaryTrimmed);
+  }
+  for (const c of candidates) {
+    if (c === primary) continue;
+    const notes = c.notes;
+    if (!notes) continue;
+    const trimmed = notes.trim();
+    if (!trimmed) continue;
+    if (seenTrimmed.has(trimmed)) continue;
+    seenTrimmed.add(trimmed);
+    distinctNotes.push(notes);
+  }
+
+  if (distinctNotes.length === 0) {
+    return primary;
+  }
+
+  const primaryHasNotes = !!(primary.notes && primary.notes.length > 0);
+  const merged = primaryHasNotes
+    ? [primary.notes!, ...distinctNotes].join(MIGRATION_NOTES_SEPARATOR)
+    : distinctNotes.join(MIGRATION_NOTES_SEPARATOR);
+  return { ...primary, notes: merged };
+}
+
+export interface SeniorsAndDisabilitiesMigrationResult {
+  status: 'already_run' | 'migrated' | 'no_data';
+  todosCopied: number;
+  collisions: number;
+}
+
+/**
+ * Run the seniors-and-disabilities consolidation migration.
+ *
+ * Strategy:
+ *   1. Read-only fast path. If the marker is set AND no old-key data
+ *      exists, return `already_run` without opening a readwrite tx.
+ *      Stable post-migration loads pay only two index reads.
+ *   2. If old-key data exists, open a readwrite tx and re-read sources
+ *      INSIDE it — closing the TOCTOU race against another tab writing
+ *      between our pre-check and our writes.
+ *   3. For each `todoId`, merge candidate state (including any pre-existing
+ *      merged-key entry) via `mergeWinner` and skip the put when the
+ *      target already matches the winner — keeping repeat loads zero-write.
+ *   4. Set the marker only if there was data to migrate. Fresh devices
+ *      with no old-key data return `no_data` and DO NOT set the marker,
+ *      so a future import that brings old-key data in will still trigger
+ *      a real migration pass.
+ */
+export async function migrateSeniorsAndDisabilities(): Promise<SeniorsAndDisabilitiesMigrationResult> {
+  const markerValue = await getMetadata(SENIORS_AND_DISABILITIES_MIGRATION_MARKER);
+  const hasMarker = markerValue !== undefined;
+
+  const preCheckSourcesPerKey: Todo[][] = await Promise.all(
+    SENIORS_AND_DISABILITIES_DEPRECATED_KEYS.map((key) => getModuleTodos(key)),
+  );
+  const preCheckSources = preCheckSourcesPerKey.flat();
+
+  if (preCheckSources.length === 0) {
+    if (hasMarker) {
+      return { status: 'already_run', todosCopied: 0, collisions: 0 };
+    }
+    // Fresh device with no old-key data. Intentionally do NOT set the
+    // marker — a later `importAllData` that brings old-key data in must
+    // still get a real migration pass.
+    return { status: 'no_data', todosCopied: 0, collisions: 0 };
+  }
+
+  // Source data exists. Open a readwrite tx and re-read inside it so the
+  // collision merge is atomic with respect to old-key writes from any
+  // other tab.
+  const db = await getDB();
+  const tx = db.transaction(['todos', 'metadata'], 'readwrite');
+  const todoStore = tx.objectStore('todos');
+  const metadataStore = tx.objectStore('metadata');
+  const byModuleIndex = todoStore.index('by-module');
+
+  const sources: Todo[] = [];
+  for (const moduleKey of SENIORS_AND_DISABILITIES_DEPRECATED_KEYS) {
+    const fromKey = await byModuleIndex.getAll(moduleKey);
+    sources.push(...fromKey);
+  }
+
+  if (sources.length === 0) {
+    // Race: pre-check saw rows but the tx-internal read didn't. Close
+    // out with no writes; the next load will re-evaluate.
+    await tx.done;
+    return { status: 'already_run', todosCopied: 0, collisions: 0 };
+  }
+
+  const byTodoId = new Map<string, Todo[]>();
+  for (const todo of sources) {
+    const list = byTodoId.get(todo.todoId);
+    if (list) {
+      list.push(todo);
+    } else {
+      byTodoId.set(todo.todoId, [todo]);
+    }
+  }
+
+  let todosCopied = 0;
+  let collisions = 0;
+  const now = new Date().toISOString();
+
+  for (const [todoId, candidates] of byTodoId) {
+    const targetId = `${SENIORS_AND_DISABILITIES_MERGED_KEY}-${todoId}`;
+    const existingTarget = await todoStore.get(targetId);
+
+    if (existingTarget) {
+      // Target wins. The merged-key record is the user's authoritative
+      // post-migration state — never overwrite it from deprecated keys.
+      // This preserves post-migration unchecks, edits, and note changes
+      // even when the deprecated keys still hold the pre-merge state.
+      continue;
+    }
+
+    // First-time merge for this todoId. Cross-old-key duplicates count
+    // as collisions.
+    if (candidates.length > 1) {
+      collisions++;
+    }
+
+    const winner = mergeWinner(candidates);
+    await todoStore.put({
+      id: targetId,
+      moduleKey: SENIORS_AND_DISABILITIES_MERGED_KEY,
+      todoId,
+      completed: winner.completed,
+      completedAt: winner.completedAt,
+      notes: winner.notes,
+    });
+    todosCopied++;
+  }
+
+  await metadataStore.put({
+    key: SENIORS_AND_DISABILITIES_MIGRATION_MARKER,
+    value: now,
+    updatedAt: now,
+  });
+
+  await tx.done;
+
+  // Status is derived from the work this tx actually did, NOT from the
+  // pre-tx `hasMarker` snapshot. Concurrent tabs can both pass the
+  // pre-check with `hasMarker === false`, get serialized by IDB, and
+  // each return — we want the second tab to report `already_run` once
+  // the first has populated the merged key, not a misleading `migrated`.
+  return {
+    status: todosCopied > 0 ? 'migrated' : 'already_run',
+    todosCopied,
+    collisions,
+  };
+}
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
@@ -969,6 +1280,7 @@ export async function savePersonalNotes(notes: string): Promise<void> {
  * Initialize storage for local-only mode
  *
  * Generates and persists a unique device ID in localStorage for tracking purposes.
+ * Also runs any one-shot data migrations the app currently owns.
  *
  * @returns {Promise<{userId: string}>} Device ID
  */
@@ -989,6 +1301,17 @@ export async function initializeStorage(): Promise<{
 
     // Pre-warm the database connection so components don't pay the cost
     await getDB();
+
+    // Idempotent on every load — gated on a metadata marker. Failure to
+    // migrate must not break startup; existing UI continues to work even
+    // if a user-data merge gets skipped.
+    try {
+      await migrateSeniorsAndDisabilities();
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('[Storage] seniors-and-disabilities migration failed:', err);
+      }
+    }
 
     return { userId: deviceId };
   }

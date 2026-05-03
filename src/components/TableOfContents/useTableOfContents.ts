@@ -231,6 +231,27 @@ export function useTableOfContents(containerSelector: string = 'article') {
       });
     });
 
+    // Fallback: pages with no semantic headers and no table section headers
+    // (e.g. 1-3, 1-5, 1-12, 1-13) would otherwise render no sidebar at all.
+    // Synthesize a single "Top of page" entry pointing at the container so
+    // the sidebar still surfaces and the layout column stays consistent.
+    if (tocEntries.length === 0) {
+      const containerEl = container as HTMLElement;
+      if (!containerEl.id) {
+        containerEl.id = 'toc-top';
+      }
+      tocEntries.push({
+        id: containerEl.id,
+        text: 'Top of page',
+        level: 'h2',
+        element: containerEl,
+        hasInteractive: false,
+        interactiveCount: 0,
+        completedCount: 0,
+        children: [],
+      });
+    }
+
     setEntries(tocEntries);
     setIsLoading(false);
   }, [containerSelector]);

@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-5-warming-cooling-emergency-shelter.md page: 45 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <table class="guide-table">
         <thead>
           <tr>
@@ -33,11 +29,6 @@ const sectionData: SectionData = {
         </thead>
         <tbody>
           <tr>
-            <td colspan="2">
-              <strong>Activate, staff, and supply local shelters</strong>
-            </td>
-          </tr>
-          <tr>
             <td data-label="Systems">
               <div class="guide-table__checklist">
                 <Todo id="day-use-sites" moduleKey="warming-cooling-shelter" client:load>
@@ -48,7 +39,7 @@ const sectionData: SectionData = {
                   Identify shelters or other accessible places for people to sleep overnight
                 </Todo>
                 <Todo id="identify-meal-sources" moduleKey="warming-cooling-shelter" client:load>
-                  <ExternalLink href="https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.kr2z9mn98cbm">Identify</ExternalLink> local restaurants or people to bring meals to the shelter
+                  <a href="/modules/emergency-preparedness/1-2">Identify</a> local restaurants or people to bring meals to the shelter
                 </Todo>
               </div>
               <p>
@@ -92,15 +83,15 @@ const sectionData: SectionData = {
                 <Todo id="backup-power-available" moduleKey="warming-cooling-shelter" client:load>
                   If possible, keep a backup power source available
                 </Todo>
-                <Todo id="low-stimulation-areas" moduleKey="warming-cooling-shelter" client:load>
-                  As is possible, create low-stimulation areas with minimal sound, soft seating, and low
-                  light
-                </Todo>
               </div>
               <strong>Additional supplies for overnight shelters</strong>
               <div class="guide-table__checklist">
                 <Todo id="cots-mats-blankets" moduleKey="warming-cooling-shelter" client:load>
                   Foldable cots, sleeping mats, and blankets
+                </Todo>
+                <Todo id="low-stimulation-areas" moduleKey="warming-cooling-shelter" client:load>
+                  As is possible, create low-stimulation areas with minimal sound, soft seating, and low
+                  light
                 </Todo>
               </div>
             </td>

@@ -2,8 +2,18 @@
 # Emitted by scripts/measure-extraction-accuracy.ts. Per-template precision/recall
 # vs. human-authored ground-truth specs. Recall threshold pinned at 0.95
 # (see RECALL_THRESHOLD in src/lib/verify/accuracy.ts). Re-run when templates change.
+#
+# _matcher_regression_fixtures is a frozen historical pin — the baseline that
+# was measured against rt-templates/leader-directory.pdf (page 1) before that
+# PDF was scrapped in the day-7 re-anchor. Retained as a regression-test
+# artifact for the diff matcher. The underlying PDF is gone; do NOT pass this
+# key to `pnpm measure-accuracy`. See plan §1d (2026-04-21) for rationale.
 baselines:
-  leader-directory:
+  _matcher_regression_fixtures:
     measured_at: '2026-04-19T04:09:31.945Z'
+    precision: 0.0588
+    recall: 1
+  1-9-leader-directory-workbook:
+    measured_at: '2026-04-24T21:58:54.321Z'
     precision: 0.0588
     recall: 1

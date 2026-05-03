@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/2-3-community-building.md page: 88 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <section>
         <h2 class="text-title font-semibold mb-4">Local and regional governance and coordination</h2>
         <p class="mb-4">Practicing and developing coordination and connection between local groups, towns/municipalities, regional and county resources strengthens communities. Coordination helps prepare for emergency response by creating clear lines of communication and expectations.</p>
@@ -89,7 +85,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="business-directory" moduleKey="community-building" client:load>
-            Connect with local businesses to learn about what services they offer, and how they can help people in your community. <ExternalLink href="https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4">Create a directory of this information.</ExternalLink>
+            Connect with local businesses to learn about what services they offer, and how they can help people in your community. <ExternalLink href="https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link">Create a directory of this information.</ExternalLink>
           </Todo>
 
           <Todo id="business-opportunities" moduleKey="community-building" client:load>
@@ -103,7 +99,7 @@ const sectionData: SectionData = {
 
         <div class="space-y-4">
           <Todo id="tradesfolk-directory" moduleKey="community-building" client:load>
-            Create a directory of trusted local (or almost local) contractors, electricians, plumbers, land movers, haulers, structural engineers, etc. that could be called any day or during disasters.
+            <ExternalLink href="https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link">Create a directory</ExternalLink> of trusted local (or almost local) contractors, electricians, plumbers, land movers, haulers, structural engineers, etc. that could be called any day or during disasters.
           </Todo>
 
           <Todo id="tradesfolk-community-tool" moduleKey="community-building" client:load>

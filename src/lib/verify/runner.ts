@@ -1,13 +1,17 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type {
   ExtractionCache,
   SourceRegistry,
+  SourceSpec,
   VerifyReportEntry,
   VerifyStatus,
 } from './schemas';
+import { registryPageKey } from './schemas';
+import { runDay5aChecks } from './runner-checks';
 import {
   CacheCorruptedError,
   checkSourceFreshness,
@@ -73,6 +77,16 @@ const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
   'vision_api_failed',
   'spec_parse_error',
   'drive_id_not_allowed',
+  // Day-5 additions — all hard fails (no --fail-on-needs-review opt-in).
+  // Walk evidence shows these represent real fidelity breaks that block
+  // 1a class-a status, so they must count toward exit code 1.
+  'link_drift',
+  'link_missing',
+  'link_type_mismatch',
+  'title_drift',
+  'structural_fidelity_failed',
+  'key_drift',
+  'prose_drift',
 ]);
 
 /**
@@ -139,6 +153,20 @@ async function defaultGitSince(ref: string, projectRoot: string): Promise<string
 interface VerifyStepResult {
   entry: VerifyReportEntry;
   nextCache: ExtractionCache;
+  /**
+   * The parsed spec when load-spec succeeded. Absent when the early
+   * parse/freshness path emitted the entry — in that case the day-5 checks
+   * are skipped (we don't have a spec to compare against).
+   */
+  spec?: SourceSpec;
+  /**
+   * pdftotext extraction of the cited page(s). Populated only on the clean
+   * diff path — source_not_found, unregistered, content_drift, source_drift,
+   * and extract_failed all return BEFORE this is filled. `proseMatches`
+   * consumes this when present; absent means prose check silently skips,
+   * which is the correct behavior (no ground truth to compare against).
+   */
+  extractedText?: string;
 }
 
 /**
@@ -207,7 +235,7 @@ async function verifySpecMd(
   const pdfAbsolute = resolve(projectRoot, pdfRel);
   const pageFromSpec = loaded.spec.citation.page;
 
-  const freshness = await checkSourceFreshness(registry, pdfAbsolute, pdfRel);
+  const freshness = await checkSourceFreshness(registry, pdfAbsolute, pdfRel, pageFromSpec);
   const freshnessEntry = evaluateFreshness(citation, freshness, pdfRel);
   if (freshnessEntry) {
     return { entry: freshnessEntry, nextCache: cache };
@@ -244,7 +272,18 @@ async function verifySpecMd(
   // is unchanged). 'source_drift' + drifted content_hash escalates to
   // content_drift — the source_drift alone rule does NOT apply.
   if (freshness.state === 'fresh' || freshness.state === 'source_drift') {
-    const contentDrifted = outcome.result.content_hash !== freshness.entry.content_hash;
+    // Resolve the registered hash for this page. For 'fresh' the lookup
+    // already happened. For 'source_drift' (raw bytes moved) we still
+    // consult entry.content_hashes so a content move that LANDS on
+    // top of a source-bytes change escalates to content_drift (the
+    // hard fail), not the soft source_drift advisory.
+    const registeredPageHash =
+      freshness.state === 'fresh'
+        ? freshness.pageContentHash
+        : freshness.entry.content_hashes[registryPageKey(pageFromSpec)];
+    const contentDrifted =
+      registeredPageHash !== undefined &&
+      outcome.result.content_hash !== registeredPageHash;
     if (contentDrifted) {
       return {
         entry: {
@@ -255,6 +294,7 @@ async function verifySpecMd(
           message: `${pdfRel}: extracted content hash differs from registered hash — PDF text has moved; re-scaffold after reviewing`,
         },
         nextCache: outcome.cache,
+        spec: loaded.spec,
       };
     }
     if (freshness.state === 'source_drift') {
@@ -267,6 +307,7 @@ async function verifySpecMd(
           message: `${pdfRel}: source bytes changed since last registration but normalized text is unchanged — re-scaffold or update registry`,
         },
         nextCache: outcome.cache,
+        spec: loaded.spec,
       };
     }
   }
@@ -283,6 +324,8 @@ async function verifySpecMd(
       drift: result.drift,
     },
     nextCache: outcome.cache,
+    spec: loaded.spec,
+    extractedText: outcome.result.text,
   };
 }
 
@@ -368,9 +411,24 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
 
   const entries: VerifyReportEntry[] = [...selectedViolations];
 
+  // Memoize wired-file reads so multiple citations in one file don't re-open
+  // the source on disk. Keyed by relative file path (citation.file).
+  const siteContentCache = new Map<string, string | null>();
+  async function readSiteContent(relFile: string): Promise<string | null> {
+    if (siteContentCache.has(relFile)) return siteContentCache.get(relFile) ?? null;
+    try {
+      const text = await readFile(resolve(projectRoot, relFile), 'utf-8');
+      siteContentCache.set(relFile, text);
+      return text;
+    } catch {
+      siteContentCache.set(relFile, null);
+      return null;
+    }
+  }
+
   for (const cit of selectedCitations) {
     if (cit.source.toLowerCase().endsWith('.md')) {
-      const { entry, nextCache } = await verifySpecMd(
+      const { entry, nextCache, spec, extractedText } = await verifySpecMd(
         cit,
         projectRoot,
         cache,
@@ -379,6 +437,25 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
       );
       entries.push(entry);
       cache = nextCache;
+      // Day-5 site-side checks run whenever load-spec succeeded, independent
+      // of the diff result — an invented heading is an invented heading even
+      // if the fields diff passes. See runner-checks.ts for per-check rationale.
+      // proseMatches additionally requires extractedText (populated on the
+      // clean diff path only); absent → the check silently no-ops.
+      if (spec) {
+        const siteContent = await readSiteContent(cit.file);
+        if (siteContent !== null) {
+          const checkEntries = runDay5aChecks({
+            spec,
+            file: cit.file,
+            citationLine: cit.line,
+            siteContent,
+            source: cit.source,
+            extractedText,
+          });
+          entries.push(...checkEntries);
+        }
+      }
     } else {
       entries.push(await verifyRawSource(cit, projectRoot, registry));
     }

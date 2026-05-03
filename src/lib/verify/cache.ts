@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { load, dump } from 'js-yaml';
 import {
+  registryPageKey,
   sourceRegistrySchema,
   extractionCacheSchema,
   type SourceRegistry,
@@ -221,23 +222,83 @@ export function setSourceEntry(
   };
 }
 
+/**
+ * Merge a single (page, content_hash) measurement into the registry without
+ * disturbing other pages already registered for the same PDF.
+ *
+ * If the entry is absent OR the source_hash has changed since last
+ * registration, the previous content_hashes record is dropped — those hashes
+ * are stale because the underlying PDF bytes moved. The caller (scaffold) is
+ * responsible for re-extracting any other still-cited pages after a
+ * source-bytes change.
+ */
+export function setSourceContentHash(
+  registry: SourceRegistry,
+  repoRelativePath: string,
+  page: string | undefined,
+  source_hash: string,
+  content_hash: string,
+  last_verified: string,
+): SourceRegistry {
+  const key = registryPageKey(page);
+  const prior = registry.sources[repoRelativePath];
+  const carryHashes =
+    prior && prior.source_hash === source_hash ? prior.content_hashes : {};
+  const nextEntry: SourceRegistryEntry = {
+    source_hash,
+    content_hashes: { ...carryHashes, [key]: content_hash },
+    last_verified,
+    ...(prior?.drive_file_id ? { drive_file_id: prior.drive_file_id } : {}),
+  };
+  return {
+    sources: {
+      ...registry.sources,
+      [repoRelativePath]: nextEntry,
+    },
+  };
+}
+
 export type SourceFreshness =
   | { state: 'source_not_found' }
   | { state: 'unregistered'; currentSourceHash: string }
-  | { state: 'fresh'; currentSourceHash: string; entry: SourceRegistryEntry }
+  | { state: 'fresh'; currentSourceHash: string; entry: SourceRegistryEntry; pageContentHash: string }
   | { state: 'source_drift'; currentSourceHash: string; entry: SourceRegistryEntry };
 
+/**
+ * Look up freshness for a (PDF, page) pair. `page` matches the spec's
+ * citation.page (or undefined for whole-PDF and raw-PDF citations); the
+ * registry is keyed by registryPageKey(page) under the PDF entry's
+ * content_hashes record. A registered PDF without a content_hash for the
+ * requested page is treated as `unregistered` — the operator must run
+ * scaffold-spec on that page before verify can drift-check it.
+ *
+ * When `page` is not provided (raw-PDF citation, no spec), the lookup
+ * falls back to ANY content_hash on the entry: raw citations only care
+ * about source_hash freshness, not page-level granularity. The first
+ * available hash is returned for downstream content-drift comparison
+ * (effectively a no-op since raw citations don't extract text again).
+ */
 export async function checkSourceFreshness(
   registry: SourceRegistry,
   absolutePath: string,
   repoRelativePath: string,
+  page?: string,
 ): Promise<SourceFreshness> {
   if (!existsSync(absolutePath)) return { state: 'source_not_found' };
   const currentSourceHash = await computeSourceHash(absolutePath);
   const entry = getSourceEntry(registry, repoRelativePath);
   if (!entry) return { state: 'unregistered', currentSourceHash };
+  const key = registryPageKey(page);
+  let pageContentHash = entry.content_hashes[key];
+  if (!pageContentHash && (page === undefined || page.length === 0)) {
+    // No page requested → tolerate ANY registered page's hash. This is the
+    // raw-PDF-citation path; the caller does not run a content-drift diff.
+    const anyKey = Object.keys(entry.content_hashes)[0];
+    if (anyKey) pageContentHash = entry.content_hashes[anyKey];
+  }
   if (entry.source_hash === currentSourceHash) {
-    return { state: 'fresh', currentSourceHash, entry };
+    if (!pageContentHash) return { state: 'unregistered', currentSourceHash };
+    return { state: 'fresh', currentSourceHash, entry, pageContentHash };
   }
   return { state: 'source_drift', currentSourceHash, entry };
 }

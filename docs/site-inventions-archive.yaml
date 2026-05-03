@@ -1,0 +1,2915 @@
+# docs/site-inventions-archive.yaml
+#
+# Archive of site-invented (class-c) content removed during Step 1a strict
+# workbook-fidelity restoration. Per feedback_site_inventions_archive.md —
+# class-c content is NOT deleted; it is preserved here as the substrate for
+# future "toolkit growth" features (topic-branch alt-URLs, movement-canon
+# supplements, community-submitted additions).
+#
+# Every 1a PR that removes class-c content from src/pages/** or
+# src/components/** must append an entry below. Pre-PR checklist:
+# "have I appended archived content to docs/site-inventions-archive.yaml?"
+#
+# Entry schema (one entry per archived unit):
+#   id: "archive-1-12-mutual-aid-tenet-01"  # STABLE IMMUTABLE SLUG — see §forward-compat below
+#   module: "1-9"                # kebab section slug from src/pages/modules/...
+#   location: "h2 above Neighbor Directory"  # where in the module page
+#   type: invented_h2_headers    # category key (see below)
+#   content: |                   # verbatim content as authored on site
+#     ...
+#   inferred_source: null        # null if purely invented, URL/citation otherwise
+#   date_removed: "2026-04-24"
+#   removed_in_commit: <sha>     # git SHA of the 1a removal commit
+#   rationale: ...               # 1-2 lines: editorial intent + candidate future feature
+#   proposed_canonical_field: null  # Step 2 fills in — see §forward-compat below
+#
+# §forward-compat (Day-5b addition, 2026-04-24):
+#   Step 2 will introduce a canonical-field registry with multiple views
+#   ("workbook canonical" + "site-preserved alt"). To let the registry seed
+#   from this archive without re-sorting entries by hand, every entry carries
+#   two forward-compat fields:
+#
+#     - `id`: a stable immutable slug (e.g. "archive-1-12-mutual-aid-tenet-01",
+#       "archive-1-8-chw-url-substitution"). NEVER a human label — if Step 2
+#       promotes the entry to a canonical field with multiple views, this id
+#       becomes the registry key. Once assigned, never renamed.
+#
+#     - `proposed_canonical_field`: null during 1a. Step 2 fills in a
+#       dotted field path on the canonical-field registry, e.g.
+#         "resource.community_health_worker.alt_urls"
+#             — for the 1-8 CHW workbook→healthvermont.gov substitution.
+#         "module.1-12.mutual_aid_tenets"
+#             — for the Dean Spade replacement.
+#       A null value means the entry has not yet been triaged for Step 2.
+#
+#   Rationale: the "canonical fields + multiple views" proposal was evaluated
+#   on 2026-04-24 and deferred to Step 2. Adding these two fields is the
+#   single Day-5 concession that lets the Step 2 registry inherit this
+#   archive as usable seed data without a re-sort migration.
+#
+# Category index (populated during 1a bulk archive pass — day 8):
+
+categories:
+
+  # 1-12 Mutual Aid canonical Dean-Spade-style movement tenets that replaced
+  # the workbook's narrative tenets. Candidate future feature: movement-canon
+  # supplement alongside workbook-fidelity primary content.
+  invented_tenets:
+    - id: archive-1-12-mutual-aid-tenet-01
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-solidarity" (line 47 pre-day-24)
+      type: invented_tenets
+      content: |
+        Solidarity, not charity
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site authors replaced the workbook's 5-tenet narrative with 6
+        canonical Dean-Spade movement principles. Per inventory decision
+        1a_strict_restore_workbook_AND_archive_site_content (catastrophic
+        content divergence — wholesale replacement of Mutual Aid Tenets
+        column). Restored to workbook tenets in 1-12.astro this commit;
+        archived as the first member of the movement-canon supplement
+        candidate set. Pattern name: "movement-canon content replacement"
+        — likely to recur in 2-x baseline-resilience modules.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-02
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-cooperation" (line 50 pre-day-24)
+      type: invented_tenets
+      content: |
+        Cooperation, not competition
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        second of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-03
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-urgency" (line 53 pre-day-24)
+      type: invented_tenets
+      content: |
+        Urgency, not waiting for the state or other officials to save us
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        third of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-04
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-direct-action" (line 56 pre-day-24)
+      type: invented_tenets
+      content: |
+        Direct action and community self-determination, not passivity and paternalism
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        fourth of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-05
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-voluntary" (line 59 pre-day-24)
+      type: invented_tenets
+      content: |
+        Voluntary, mutual, and reciprocal
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        fifth of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-tenet-06
+      module: 1-12
+      location: 1-12.astro Mutual Aid Tenets column (Systems), Todo id="ma-tied-together" (line 62 pre-day-24)
+      type: invented_tenets
+      content: |
+        Our liberation is tied together
+      inferred_source: 'Dean Spade, "Mutual Aid: Building Solidarity During This Crisis (And the Next)" (2020) — canonical MA movement principle'
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-tenet-01 for the full rationale —
+        sixth of 6 Dean-Spade tenets removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+
+  # 1-12 + others — checklist bullets the site authored that do not trace
+  # to any workbook/template PDF. Candidate future feature: community-contributed
+  # checklist additions with review workflow.
+  invented_checklist_items:
+    - id: archive-1-12-mutual-aid-checklist-01
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-identify-groups" (line 70 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Identify existing mutual aid and N2N groups to connect with (ask
+        around at a General Store, Town Hall, community centers, etc.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site authors replaced the workbook's 10-item checklist (Find a
+        buddy / Build a pod map / Connect with folks / Identify who and
+        where / Start small / Establish communications / Get the
+        conversation started / Offer help) with 8 different items.
+        Per inventory decision 1a_strict_restore_workbook_AND_archive_site_content
+        (catastrophic content divergence — wholesale replacement of
+        Mutual Aid Checklist column). Restored to workbook items in
+        1-12.astro this commit; archived as first of 8 candidate
+        community-contributed-checklist supplements.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-02
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-contact-info" (line 73 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Create a contact list of names, phone numbers, and addresses of
+        households in your community (physical or social)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — second of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-03
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-identify-needs" (line 76 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Identify who in your network has specific needs or abilities to
+        offer. Reach out and check in. Hold a gathering or forum to talk
+        about this as a group.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — third of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-04
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-communication" (line 79 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Choose a communications plan (e.g. FrontPorchForum, phone tree,
+        text chain, paper fliers and mail) so that you can let your
+        network know when something is happening
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — fourth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-05
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-practice" (line 82 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Practice! Engage in low-stakes mutual aid activities during calm
+        times (e.g. a meal share, a tool share, a community fridge)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — fifth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-06
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-decide-roles" (line 85 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Decide what kind of mutual aid or N2N work you want to do and
+        what roles you want to fill. You might decide to collect
+        donations, move donations, or track needs and resources. Check
+        out the "Knowing Your Community" section to think about your
+        interests and capacity.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — sixth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-07
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-coordination" (line 88 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Coordinate with existing Long-Term Recovery Groups and coalitions
+        of organizations active in disaster (Vermont Community Foundation,
+        GOCROS, etc.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — seventh of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-checklist-08
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-resources" (line 91 pre-day-24)
+      type: invented_checklist_items
+      content: |
+        Check out [Mutual Aid Disaster Relief's resources] and the [Big
+        Door Brigade Mutual Aid Toolkit].
+        (Two embedded ExternalLinks — see archive-1-12-mutual-aid-disaster-relief-link
+        and archive-1-12-big-door-brigade-link in invented_items for the
+        URL specifics.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        See archive-1-12-mutual-aid-checklist-01 — eighth of 8
+        site-invented checklist items removed under
+        1a_strict_restore_workbook_AND_archive_site_content. This item
+        embedded the 2 site-invented ExternalLinks (Mutual Aid Disaster
+        Relief + Big Door Brigade) — those are also archived separately
+        under invented_items so a future movement-canon supplement view
+        can re-expose the resource links independent of the prose item.
+      proposed_canonical_field: null
+
+  # 1-5 "Activate, staff...", 1-12 "Mutual Aid Tenets & Checklist",
+  # 1-13, 2-1 — site-invented h2/h3/row-header strings with no workbook anchor.
+  invented_h2_headers:
+    - id: archive-1-13-financial-support-directory-h2
+      module: 1-13
+      location: top of <ModuleLayout> (above the 4-bullet <ul>, line 17 pre-removal)
+      type: invented_h2_headers
+      content: |
+        <h2 class="text-title font-semibold mb-4">Financial support directory</h2>
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-6 + 1-13): paired clean modules (day 19, second commit)'
+      rationale: |
+        Site-authored h2 "Financial support directory" sat above the 4
+        workbook-verbatim bullets. Workbook page 78 (displayed page 39)
+        labels this section "1.13 Financial resources" — which the
+        ModuleLayout already renders via sectionData.title. The extra
+        on-site h2 was an editorial/style addition with no workbook
+        anchor (and a substantive title rephrase, not just a styling
+        wrapper). Class-c per inventory; removed under
+        Source Fidelity HARD INVARIANT class-c firewall + decision a
+        (1a_remove_AND_archive). Archived as a candidate "Step 2 alt
+        section title" — if the registry surfaces a short directory-
+        focused alt title view, the "Financial support directory" string
+        can be re-exposed alongside the workbook canonical without
+        re-editing source.
+      proposed_canonical_field: null
+    - id: archive-1-8-disabilities-section-split-h3
+      module: 1-8
+      location: 1-8.astro line 277 (duplicated h3 + meta-note paragraph + 33-Todo near-duplicate <table class="guide-table">)
+      type: invented_h2_headers
+      content: |
+        <h3 class="text-title font-semibold">People with mobility challenges and other disabilities</h3>
+        <p>Note: Much of the guidance for seniors also applies to people
+        with mobility challenges and other disabilities. See the "Senior
+        citizens and elders" section above for additional information on
+        communication, preparedness, shelter support, and community
+        connection.</p>
+        (followed by a near-duplicated table mirroring the Seniors table
+        with moduleKey="people-with-disabilities" — Communication and
+        Coordination + Preparedness and Supplies + Shelter and Mobility
+        Support + Community Connection and Well-Being.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Site split the workbook's ONE combined section "Senior citizens;
+        people with mobility challenges and other disabilities" (PDF
+        pp55-56, displayed pp27-28) into TWO separate h3 sections with
+        near-duplicated tables (one moduleKey="senior-citizens", one
+        moduleKey="people-with-disabilities"). Reunified per inventory
+        decision: 1a_restore_combined_with_indexeddb_migration (user
+        decision 2026-04-24) — single h3 with workbook title, single
+        moduleKey "seniors-and-disabilities" (new). Old keys remain in
+        canonical set as read-only until day-22 IndexedDB migration ships.
+        The duplicated h3 + meta-note + Disabilities Todos archived here
+        (data preserved); the merged section uses the Seniors Todos as
+        base since they more closely match workbook structure.
+      proposed_canonical_field: null
+    - id: archive-1-12-row-header-mutual-aid-tenets-and-checklist
+      module: 1-12
+      location: 1-12.astro guide-table colspan="2" row above the Tenets/Checklist columns (line 38-40 pre-day-24)
+      type: invented_h2_headers
+      content: |
+        <tr>
+          <td colspan="2">
+            <strong>Mutual Aid Tenets &amp; Checklist</strong>
+          </td>
+        </tr>
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site-authored row-header <strong>Mutual Aid Tenets & Checklist</strong>
+        spanning both columns of the guide-table. Workbook page 78 has
+        no equivalent row-header — the two-column table is rendered
+        directly with column headers "Mutual Aid Tenets" and "Mutual Aid
+        Checklist" (already present as the per-column <strong> labels in
+        each <td>). Same invented row-header pattern as 1-5 "Activate,
+        staff…" (referenced in inventory line 64-65). Removed under
+        decision 1a_remove (per inventory line 2303). Class-c per
+        Source Fidelity firewall.
+      proposed_canonical_field: null
+    - id: archive-1-3-invented-h2-first-aid-preparedness
+      module: 1-3
+      location: top of <ModuleLayout> (above InfoCallout, line 18 pre-day-9)
+      type: invented_h2_headers
+      content: |
+        <h2 class="text-title font-semibold mb-4">First aid preparedness</h2>
+      inferred_source: null
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Site-authored h2 "First aid preparedness" sat above the InfoCallout
+        on workbook page 42. ModuleLayout already renders the section title
+        from sectionData.title; the extra on-site h2 was an editorial
+        rephrase with no workbook anchor. Per inventory class_c
+        decision: 1a_remove_all_invented_h2 (recurring family with the
+        KYC tableName invented headers and 1-13 "Financial support directory"
+        h2). Backfilled day 27 — the day-9 commit removed this h2 without
+        appending an archive entry; this entry restores the archive-then-
+        remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-invented-row-header-activate-staff-supply
+      module: 1-5
+      location: 1-5.astro guide-table colspan="2" row above the Systems/Stuff content (lines 33-37 pre-day-11)
+      type: invented_h2_headers
+      content: |
+        <tr>
+          <td colspan="2">
+            <strong>Activate, staff, and supply local shelters</strong>
+          </td>
+        </tr>
+      inferred_source: null
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Site-authored colspan=2 row-header above the workbook's Systems/Stuff
+        content. Workbook page 23/45 has no equivalent row-header — the
+        guide-table renders directly with column headers Systems and Stuff.
+        Same invented row-header pattern as 1-12 "Mutual Aid Tenets &
+        Checklist" (day-24) and the parent family of invented h2/h3 headers
+        (1-3, 1-13, KYC tableName props). Removed per inventory innovation
+        decision: 1a_remove (line 1029-1030). Class-c per Source Fidelity
+        firewall. Backfilled day 27 — the day-11 commit removed this
+        row-header without appending an archive entry; this entry restores
+        the archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+
+  # 1-8 CHW/CHC/Free Clinic topic-branches (healthvermont.gov endpoints
+  # vs workbook humanservices.vermont.gov); 1-10 AHS/VDH substitutions;
+  # 2-1 SAMHSA → VTSOS. Candidate future feature: topic-branch alt-URLs with
+  # workbook canonical + site-preserved alts per topic node.
+  alt_urls:
+    - id: archive-kyc-batjc-url-substitution
+      module: knowing-your-community
+      location: Pod mapping section (knowing-your-community.astro line 196, "Bay Area Transformative Justice Center" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Bay Area Transformative Justice Center"
+        Site URL pre-day-17: https://batjc.org/
+        Workbook URL (page 17): https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link
+        Workbook context: anchor wraps "Bay Area Transformative Justice Center"
+        and links to the BATJC Pod Mapping Worksheet PDF (the very file the
+        site already exposes via the "Download Pod Mapping Worksheet" callout).
+      inferred_source: workbook p17 BATJC anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Pure URL substitution: site preserves workbook anchor text but swaps
+        the Drive-hosted Pod Mapping Worksheet file for the BATJC organizational
+        homepage. Per inventory `decision: 1a_restore_workbook_link` —
+        restored to the worksheet file. Archived as alt_url so a future
+        topic-branch view can re-expose batjc.org as a "movement-canon"
+        supplement alongside the workbook canonical link.
+      proposed_canonical_field: null
+    - id: archive-1-8-chw-url-substitution
+      module: 1-8
+      location: 1-8.astro pediatrician sentence (Children section line 105) AND LEP After Disaster CHW sentence (line 608) — both anchors wrap "Community Health Worker"
+      type: alt_urls
+      content: |
+        Anchor: "Community Health Worker"
+        Site URL pre-day-21 (both locations): https://www.healthvermont.gov/health-equity/community-health-workers
+        Workbook URL (PDF pp54+57, displayed pp26+29): https://www.vtassociationofcommunityhealthworkers.com/
+        Workbook context: anchor wraps "Community Health Worker" in two
+        places — Children pediatrician sentence and LEP After Disaster
+        physical+mental health sentence — both linking to the VT
+        Association of Community Health Workers homepage.
+      inferred_source: workbook PDF pp54+57 CHW anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Pure URL substitution at two locations: site preserves workbook
+        anchor text but swaps the VT Association of Community Health
+        Workers homepage for the State of Vermont Department of Health
+        equity-focused CHW page. Per inventory decision:
+        1a_restore_workbook_url_strict (user decision 2026-04-24).
+        Archived as alt_url so a future topic-branch view can re-expose
+        healthvermont.gov as a "site-curated" supplement alongside the
+        workbook canonical link (innovations.topic_branch_resource_database).
+      proposed_canonical_field: null
+    - id: archive-1-8-chc-url-substitution
+      module: 1-8
+      location: 1-8.astro pediatrician sentence (Children section line 105) AND LEP After Disaster CHC sentence (line 608) — both anchors wrap "Community Health Center"
+      type: alt_urls
+      content: |
+        Anchor: "Community Health Center"
+        Site URL pre-day-21 (both locations): https://www.vt211.org/search/community-health-centers
+        Workbook URL (PDF pp54+57, displayed pp26+29): https://bistatepca.org/centers/
+        Workbook context: anchor wraps "Community Health Center" in two
+        places — Children pediatrician sentence and LEP After Disaster
+        physical+mental health sentence — both linking to the Bi-State
+        Primary Care Association VT centers directory.
+      inferred_source: workbook PDF pp54+57 CHC anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Pure URL substitution at two locations: site swaps Bi-State Primary
+        Care for VT211 community-health-centers search. Per inventory
+        decision: 1a_restore_workbook_url_strict (user decision 2026-04-24).
+        Archived for forward-compat topic-branch resurfacing.
+      proposed_canonical_field: null
+    - id: archive-1-8-free-clinic-url-substitution
+      module: 1-8
+      location: 1-8.astro pediatrician sentence (Children section line 105) AND LEP After Disaster Free Clinic sentence (line 608) — both anchors wrap "Free Clinic"
+      type: alt_urls
+      content: |
+        Anchor: "Free Clinic"
+        Site URL pre-day-21 (both locations): https://vtfreeclinics.org/
+        Workbook URL (PDF pp54+57, displayed pp26+29): https://vtfreeclinics.org/find-a-clinic/
+        Workbook context: anchor wraps "Free Clinic" in two places —
+        Children pediatrician sentence and LEP After Disaster physical+
+        mental health sentence — both linking to the VT Free Clinics
+        find-a-clinic page.
+      inferred_source: workbook PDF pp54+57 Free Clinic anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Path-level URL drift at two locations: site dropped /find-a-clinic/
+        from workbook URL. Per inventory decision: 1a_restore_workbook_url_strict.
+        Archived for forward-compat (the site root URL is functionally
+        equivalent but not workbook-canonical).
+      proposed_canonical_field: null
+    - id: archive-1-10-ahs-vdh-url-substitution
+      module: 1-10
+      location: 1-10.astro Recruiting volunteers sub-list, AHS/VDH bullet (line 30 pre-day-23)
+      type: alt_urls
+      content: |
+        Anchor: "AHS / VDH regional field Directors can be a conduit to local organizations"
+        Site URL pre-day-23: https://www.healthvermont.gov/about-us/contact-us
+        Workbook URL (PDF p69, displayed p34): https://humanservices.vermont.gov/about-us/field-services
+        Workbook context: anchor wraps the full sentence about AHS/VDH regional
+        field directors and links to the VT Agency of Human Services field-services
+        directory. Site swapped that for the VT Department of Health contact-us page.
+      inferred_source: workbook PDF p69 AHS/VDH anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Pure URL substitution. Same topic-branch pattern as 1-8 CHW/CHC/Free Clinic
+        (healthvermont.gov picked over the workbook's other VT-gov sub-domain).
+        Per inventory `decision: 1a_restore_workbook_url_strict`. Archived as
+        alt_url so a future topic-branch view can re-expose healthvermont.gov as
+        a "site-curated" supplement alongside the workbook canonical link
+        (innovations.topic_branch_vt_resource_another_instance — second member
+        of the 1-8 cluster).
+      proposed_canonical_field: null
+    - id: archive-2-3-business-directory-url-substitution
+      module: 2-3
+      location: 2-3.astro Business directory section, Todo id="business-directory" (line 91-93 pre-day-25, "Create a directory of this information." anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Create a directory of this information." (within "Connect with
+        local businesses to learn about what services they offer, and how
+        they can help people in your community. Create a directory of this
+        information.")
+        Site URL pre-day-25: https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4
+        Workbook URL (PDF p88, displayed p43): https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link
+        Workbook context: anchor wraps "Create a directory" within the
+        Business directory section's first Todo, linking to a specific
+        Business Directory template file. Site swapped that for the parent
+        2.3 Community Building folder URL (the same URL used for 5 other
+        anchors in this section).
+      inferred_source: workbook PDF p88 Business directory anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Pure URL substitution. Site swapped the workbook-cited specific
+        Business Directory template file for the parent 2.3 Community
+        Building folder URL (which the site already reuses for Institutional
+        allies + Community spokespeople + de-escalation training-how-to-
+        intervene). Per inventory `decision: 1a_restore_workbook_url_strict`.
+        Restored to the workbook-canonical specific file URL. Archived as
+        alt_url so a future topic-branch view can re-expose the parent
+        folder URL as a "browse all 2.3 templates" supplement alongside the
+        workbook canonical link.
+      proposed_canonical_field: null
+    - id: archive-2-1-samhsa-vtsos-url-and-anchor-substitution
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section, Todo id="mental-health-examples" (line 153 pre-day-26, third ExternalLink in "Examples:" list)
+      type: alt_urls
+      content: |
+        Anchor (workbook): "SAMHSA Disaster Distress Helpline"
+        Anchor (site pre-day-26): "VTSOS - VT Starting over Strong"
+        Site URL pre-day-26: https://mentalhealth.vermont.gov/sosvt
+        Workbook URL (PDF p81, displayed p41): https://mentalhealth.vermont.gov/flood
+        Workbook context: third anchor in the "Examples:" inline list at the
+        end of the trauma-informed mental-health-worker directory Todo —
+        sequence is "Examples: KURRVE mental health, Vermont Care Partners,
+        SAMHSA Disaster Distress Helpline". Site replaced both the anchor
+        text AND the URL: anchor swapped from "SAMHSA Disaster Distress
+        Helpline" to "VTSOS - VT Starting over Strong", URL swapped from
+        the VT-flood mental-health page to the VT-SOS page on the same host.
+      inferred_source: workbook PDF p81 mental-health Examples anchor 3
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Combined URL+anchor substitution with topic-branch flag (third member
+        of the topic-branch alt-URL family after 1-8 VT resources cluster
+        and 1-10 AHS/VDH). Per inventory line 2563-2569 `decision:
+        1a_restore_workbook_url_strict_AND_archive` + `topic_branch_candidate:
+        true`. Site replaced the federal SAMHSA Disaster Distress Helpline
+        with the VT-specific VTSOS (VT Starting over Strong) program — both
+        valid disaster-mental-health resources, but the site's choice diverges
+        from the workbook canonical at both anchor text and URL. Restored to
+        workbook canonical. Archived as alt_url so a future topic-branch view
+        can re-expose VTSOS as a VT-specific supplement alongside the
+        workbook-canonical SAMHSA federal resource.
+      proposed_canonical_field: null
+    - id: archive-2-1-drift-dusters-url-substitution
+      module: 2-1
+      location: 2-1.astro Ridesharing and carpooling section, Todo id="transportation-maps" (line 127 pre-day-26, "Drift Dusters in Derby, VT" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Drift Dusters in Derby, VT"
+        Site URL pre-day-26: https://driftdusters.org/
+        Workbook URL (PDF p81, displayed p41): https://www.driftdusters.com/
+        Workbook context: anchor wraps "Drift Dusters in Derby, VT" within
+        the "Creating and disseminating maps... Example: Trails maintained
+        by snowmobile clubs such as Drift Dusters in Derby, VT" Todo. Site
+        swapped the .com TLD for .org (host "driftdusters.org" instead of
+        "www.driftdusters.com").
+      inferred_source: workbook PDF p81 Ridesharing transportation-maps anchor
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        TLD-level URL drift. Per inventory line 2546-2551 `decision:
+        1a_verify_live_and_restore_correct_url`. The site's .org host may
+        reflect a domain change over time, but the workbook canonical is the
+        .com host. Restored to workbook canonical .com URL. Archived as
+        alt_url so a future topic-branch view can re-expose .org as a
+        movement-canon supplement alongside the workbook-canonical .com link.
+        Note: site form drops the leading "www." prefix vs the workbook URL;
+        restoration uses the full "https://www.driftdusters.com/" string.
+      proposed_canonical_field: null
+    - id: archive-2-1-vermont-care-partners-url-substitution
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section, Todo id="mental-health-examples" (line 153 pre-day-26, second ExternalLink in "Examples:" list)
+      type: alt_urls
+      content: |
+        Anchor: "Vermont Care Partners"
+        Site URL pre-day-26: https://vermontcarepartners.org/
+        Workbook URL (PDF p81, displayed p41): https://vermontcarepartners.org/intake-and-crisis-lines/
+        Workbook context: second anchor in the "Examples:" inline list at
+        the end of the trauma-informed mental-health-worker directory Todo
+        — sequence is "Examples: KURRVE mental health, Vermont Care Partners,
+        SAMHSA Disaster Distress Helpline". Site dropped the workbook URL
+        path /intake-and-crisis-lines/, linking to the org homepage instead
+        of the specific intake-and-crisis-lines directory page.
+      inferred_source: workbook PDF p81 mental-health Examples anchor 2
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Path-level URL drift (same shape as archive-1-8-free-clinic-url-substitution
+        — site dropped /find-a-clinic/ path). Per inventory line 2558-2562
+        `decision: 1a_restore_workbook_url_strict`. Workbook URL points at
+        the specific intake-and-crisis-lines page (the operational entry
+        point for Vermont Care Partners' member-org crisis lines); site
+        homepage URL is functionally a parent of that page. Restored to
+        workbook-canonical path. Archived for forward-compat (the homepage
+        URL is functionally equivalent but not workbook-canonical).
+      proposed_canonical_field: null
+    - id: archive-1-2-cdc-gov-url-substitution
+      module: 1-2
+      location: 1-2.astro Community meals Stuff col, Todo id="safe-food-handling" (line 213-215 pre-day-8, "safe food handling" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "safe food handling"
+        Site URL pre-day-8: https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html
+        Workbook URL (page 35): https://drive.google.com/file/d/1C5a0Sf1NWRU0XnMkHayw_vjwpuzqVZzJ/view
+        Workbook context: anchor wraps "safe food handling" within the
+        Community meals distribution Todo, linking to the workbook's
+        canonical Drive-hosted safe food handling Drive file.
+      inferred_source: workbook page 35 safe-food-handling anchor
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Pure URL substitution: site preserves workbook anchor text but swaps
+        the Drive-hosted safe food handling file for the CDC food-safety
+        external URL. Per inventory line 593-594 / innovations.link_substitution_pattern
+        decision: 1a_restore_workbook_link (status RESOLVED day 8). Archived
+        as alt_url so a future topic-branch view can re-expose
+        cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html
+        as a "movement-canon" supplement alongside the workbook-canonical
+        Drive file. First occurrence of pure URL substitution drift in the
+        walk (per inventory line 650-654). Backfilled day 27 — the day-8
+        commit removed this URL substitution without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-identify-internal-anchor-substitution
+      module: 1-5
+      location: 1-5.astro Systems col, Todo id="identify-meal-sources" (line 51 pre-day-11, "Identify" anchor)
+      type: alt_urls
+      content: |
+        Anchor: "Identify" (within "Identify local restaurants or people to
+        bring meals to the shelter")
+        Site URL pre-day-11: https://docs.google.com/document/d/14BP-QH2db38sJuVMp2Rs2AxfepnuEIUcJASnewGmioU/edit?tab=t.0#heading=h.kr2z9mn98cbm
+        Workbook URL (page 23/45): 2025 Resilience Hub Toolkit_V1 final.html#20
+          (internal PDF page anchor → workbook page 20 = Section 1.2 Food
+           and water; master-PDF equivalent is .html#35)
+        Workbook context: anchor wraps "Identify" in a workbook intra-PDF
+        page anchor that cross-references Section 1.2 Food and water.
+        Restored on site as <a href="/modules/emergency-preparedness/1-2">
+        per the locked feedback_internal_anchor_to_site_route translation
+        rule.
+      inferred_source: workbook page 23/45 internal PDF anchor → 1.2 page
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Link-type substitution: site rendered a workbook intra-PDF page
+        anchor as an ExternalLink to the 14BP-QH2d Local Resilience master
+        Google Doc instead of as a site-internal /modules/emergency-preparedness/1-2
+        route. Per inventory line 1004-1014 + feedback_internal_anchor_to_site_route
+        decision: 1a_replace_with_site_internal_link. The 14BP-QH2d doc is
+        the Local Resilience master Google Doc cited 39× in master-workbook
+        TOC and used in src/data/downloads.ts for the Downloads page; site
+        preserved that doc as the pivot but in-prose references to workbook
+        internal page anchors must stay in-site, not bounce out. First
+        occurrence of internal-anchor-to-GDoc substitution in the walk
+        (precedent for 1-9 day-14 14-anchor sweep). Distinct from pure URL
+        substitution (same anchor, different external URL) and link drop
+        (anchor wrapper missing). Archived as alt_url so a future topic-
+        branch view can re-expose the 14BP-QH2d GDoc as a "site-curated"
+        deep-link alongside the canonical site-internal route. Backfilled
+        day 27 — the day-11 commit replaced this link-type substitution
+        without appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+
+  # 1-8 "Note: Much of the guidance for seniors..." meta-note; any other
+  # site-authored paragraphs/sentences not in the workbook.
+  invented_prose:
+    - id: archive-1-1-info-callout
+      module: 1-1
+      location: top of <ModuleLayout> (above guide-table, lines 18-20)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into the 1-1 module day. Same InfoCallout
+        pattern was removed from 1-2/1-3/1-4/1-5 in days 8-11.
+      proposed_canonical_field: null
+    - id: archive-1-1-paragraph-drift-period-add
+      module: 1-1
+      location: Systems col, Household subsection (1-1.astro line 43, inside <p>)
+      type: invented_prose
+      content: |
+        Food and water will need to be refreshed on a regular basis.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site form ends with a period; workbook p30 does not. Drift type
+        punctuation_add per inventory paragraph_drift. Restored verbatim to
+        workbook ("on a regular basis" — no terminal period). Archived to
+        document the site form for forward-compat tracking.
+      proposed_canonical_field: null
+    - id: archive-1-1-paragraph-drift-quote-drop
+      module: 1-1
+      location: Systems col, Individual subsection (1-1.astro line 91, inside <td>)
+      type: invented_prose
+      content: |
+        Individuals in a household can prepare go bags, which are easy to grab
+        in case you need to leave quickly.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site dropped curly single quotes around "go bags," that workbook p30
+        uses ("prepare ‘go bags,’"). Drift type quote_drop per inventory.
+        Restored verbatim with U+2018/U+2019. Archived to document the
+        unquoted site form.
+      proposed_canonical_field: null
+    - id: archive-1-1-paragraph-drift-oxford-comma-add
+      module: 1-1
+      location: Household checkbox "Personal sanitation supplies" (1-1.astro Todo id="kit-sanitation")
+      type: invented_prose
+      content: |
+        Personal sanitation supplies (incl. moist towelettes, garbage bags,
+        and plastic ties)
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site adds an Oxford comma before "and plastic ties"; workbook p30
+        omits it. Drift type oxford_comma_add per inventory. Restored verbatim
+        ("garbage bags and plastic ties"). Archived to document the
+        Oxford-comma site form.
+      proposed_canonical_field: null
+    - id: archive-kyc-info-callout-flag
+      module: knowing-your-community
+      location: Mapping your community DataTable showInfoCallout prop (knowing-your-community.astro line 50)
+      type: invented_prose
+      content: |
+        showInfoCallout={true}
+        (DataTable prop renders the same site-authored "How this works…" UX
+        meta-instruction as 1-1/1-2/1-3/1-4/1-5: "Fill out the forms and
+        checklists below online—your answers save automatically to your
+        device and work offline. Your information never leaves your browser
+        and stays completely private.")
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into KYC's module day. Pairs with day-16's
+        1-1 InfoCallout removal. The DataTable component is preserved;
+        only the showInfoCallout boolean prop is dropped.
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-lead
+      module: knowing-your-community
+      location: Lead paragraph under "Organizing your community" (knowing-your-community.astro line 41)
+      type: invented_prose
+      content: |
+        The first step of organizing your community is thinking about who is
+        in your community and the place where you live. You can do this
+        activity alone, but it's best to do it with a few other people. They
+        could be your friends, colleagues, neighbors, or someone else you
+        just met who's excited about organizing your community to be more
+        resilient.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        rephrase_plus_invention drift per inventory. Workbook p10 reads
+        "thinking about who is in in it, and the place where you live. You
+        can do this activity alone, but best to do it with a few other
+        people—friends, colleagues, neighbors." Site rewrites + adds an
+        invented "or someone else you just met who's excited about organizing
+        your community to be more resilient" tail. Restored verbatim to
+        workbook (typo "in in it" preserved per master-PDF source-of-truth).
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-bringing-people-together-opener
+      module: knowing-your-community
+      location: Bringing people together opener (knowing-your-community.astro line 307)
+      type: invented_prose
+      content: |
+        Once you have a few people - it can just be four or ten people! - you
+        can get together and look at this toolkit. In order to have a meeting,
+        you'll need
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        invention drift per inventory. Workbook p13 reads "Once you have a
+        few people - it can just be four or ten people! - you can meet.
+        You'll need:" Site adds "get together and look at this toolkit. In
+        order to have a meeting," tail. Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-dynamics-newest
+      module: knowing-your-community
+      location: Community Dynamics DataTable initialRow row-4 (knowing-your-community.astro line 114)
+      type: invented_prose
+      content: |
+        Who is newest in your place?
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        drop_word drift per inventory. Workbook p11 reads "Who is the newest
+        in your place?" Site drops "the". Restored verbatim. (Sits inside
+        DataTable initialRows[] not <p>/<li>; proseMatches won't catch it
+        but Source Fidelity HARD INVARIANT requires verbatim restoration.)
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-going-deeper-q2
+      module: knowing-your-community
+      location: Going Deeper DataTable initialRow row-1 (knowing-your-community.astro line 221)
+      type: invented_prose
+      content: |
+        What activities/work do you find rewarding? Think about things you do
+        that other people consider difficult, but that you enjoy.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        rephrase drift per inventory. Workbook p16 reads "Think about things
+        you do that other people find difficult, but that you enjoy." Site
+        substitutes "consider" for "find". Restored verbatim. (DataTable
+        initialRow — same proseMatches caveat as dynamics-newest above.)
+      proposed_canonical_field: null
+    - id: archive-kyc-paragraph-drift-pod-mapping-first
+      module: knowing-your-community
+      location: Pod mapping first paragraph (knowing-your-community.astro line 198)
+      type: invented_prose
+      content: |
+        To start, write your name in the middle grey circle. The surrounding
+        bold-outlined circles are your pod. Write the names of the people who
+        are in your pod. We encourage people to write the names of actual
+        individuals, instead of things such as "my church group" or "my
+        neighbors."
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        drop drift per inventory. Workbook p17 opens with "Use the diagram on
+        the next page to do this activity. To start, write your name in the
+        middle grey circle…" Site drops the diagram-reference sentence.
+        Restored verbatim — the workbook reference to "next page" survives in
+        the digital rendering since the Pods appendix is now adjacent to the
+        Pod mapping section after the day-17 reorder, and the Pod Mapping
+        Worksheet callout (with the diagram in the linked PDF) sits directly
+        above this paragraph.
+      proposed_canonical_field: null
+    - id: archive-kyc-going-deeper-roles-list-takeaway-link-drop
+      module: knowing-your-community
+      location: Going deeper roles-list intro (knowing-your-community.astro line 230)
+      type: invented_prose
+      content: |
+        Look at this (incomplete!) list of roles to play in a community, and
+        check out the corresponding toolkit sections to see if any of this
+        work appeals to you. Check out this list for more ideas.
+      inferred_source: workbook p16 prose intro (text matches; "this list" was a link)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Prose itself matches workbook verbatim, but workbook p16 wraps "this
+        list" in an anchor pointing to a Drive-hosted roles-to-modules PDF
+        (1RevfSVj…). Site renders it as plain text. Archived as the no-link
+        site form alongside the corresponding `dropped_workbook_links` entry
+        (archive-kyc-link-drop-roles-list).
+      proposed_canonical_field: null
+    - id: archive-kyc-going-deeper-zine-link-drop
+      module: knowing-your-community
+      location: Going deeper intro paragraph (knowing-your-community.astro line 208)
+      type: invented_prose
+      content: |
+        There are so many ways to support community resilience, and each
+        person has a unique set of skills and interests to contribute. It can
+        feel and be isolating to find yourself in a moment of disaster, not
+        knowing who to turn to or how to help. The activities below can guide
+        some of your personal preparedness for difficult times. Respond to
+        the reflection questions below to spur your thinking. Check out this
+        zine for more ideas.
+      inferred_source: workbook p16 prose intro (text matches; "this zine" was a link)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Prose itself matches workbook verbatim, but workbook p16 wraps "this
+        zine" in an anchor pointing to a Drive-hosted zine PDF
+        (1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV). Site renders it as plain text.
+        Archived as the no-link site form alongside the corresponding
+        `dropped_workbook_links` entry (archive-kyc-link-drop-zine).
+      proposed_canonical_field: null
+    - id: archive-kyc-legislators-link-drop-prose
+      module: knowing-your-community
+      location: Community Roles legislators footnote (knowing-your-community.astro line 94)
+      type: invented_prose
+      content: |
+        *Find your legislators at legislature.vermont.gov/people/
+      inferred_source: workbook p10 footnote (text matches; URL is plain text)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p10 footnote presents the URL as a clickable hyperlink (the
+        anchor IS the URL text). Site renders as plain text inside an italic
+        footnote. Archived as the no-link site form alongside the
+        corresponding `dropped_workbook_links` entry
+        (archive-kyc-link-drop-legislators).
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-take-a-look-toolkit-drift
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 4 (knowing-your-community.astro line 332)
+      type: invented_prose
+      content: |
+        Take a look at the toolkit - share printed copies. Give people some
+        time to read the introductory section and look through the toolkit.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Rephrase drift on workbook agenda item. Workbook p13 reads "Share
+        printed copies of the toolkit. Invite people to read the introduction
+        and look through the sections. If you like, have people take turns
+        reading parts of the introduction aloud." Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-revisit-mapping-drift
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 6 (knowing-your-community.astro line 334)
+      type: invented_prose
+      content: |
+        Revisit the 'mapping your community' exercise, or have a conversation
+        about who is doing this work already in your community.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Conflated rephrase: workbook p13 has TWO separate items here — a
+        "Reconvene and discuss…" block with three sub-questions, and the
+        "Do one or more of the activities in the toolkit" block. Site
+        collapses them into a single invented bullet. Restored verbatim with
+        full nesting.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-determine-meeting-drift
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 7 (knowing-your-community.astro line 335)
+      type: invented_prose
+      content: |
+        Determine if the group is interested in meeting again, and set a
+        meeting time. Think about who else you want to invite.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Site appends "Think about who else you want to invite." to a
+        workbook-verbatim sentence. Workbook p13 ends "Determine if the group
+        is interested in meeting again, and set a meeting time." Restored
+        verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-place-characteristics
+      module: knowing-your-community
+      location: Mapping your community DataTable tableName prop (knowing-your-community.astro line 51)
+      type: invented_prose
+      content: |
+        DataTable tableName="Place Characteristics"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Place Characteristics" — wholly
+        site-invented label that does not exist in the workbook. The workbook
+        section heading is "Mapping your community" (p10). Renamed on day 18
+        to the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision: tables are self-describing
+        for export contexts (Drive-linked, exported, standalone), so the
+        owned title MUST be the workbook heading. Spec
+        docs/source-specs/0-1-place-characteristics.md cites workbook p10.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-community-roles
+      module: knowing-your-community
+      location: Who is in your community/place? DataTable tableName prop (knowing-your-community.astro line 73)
+      type: invented_prose
+      content: |
+        DataTable tableName="Community Roles"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Community Roles" — site-invented
+        shorthand that does not match the workbook section heading
+        "Who is in your community/place?" (p10). Renamed on day 18 to the
+        workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-community-roles.md cites workbook p10-11.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-community-dynamics
+      module: knowing-your-community
+      location: What other dynamics DataTable tableName prop (knowing-your-community.astro line 105)
+      type: invented_prose
+      content: |
+        DataTable tableName="Community Dynamics"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Community Dynamics" — site-invented
+        shorthand that does not match the workbook section heading
+        "What other dynamics are present in your place?" (p11). Renamed on
+        day 18 to the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-community-dynamics.md cites workbook p11.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-stuff-and-systems
+      module: knowing-your-community
+      location: Stuff and systems DataTable tableName prop (knowing-your-community.astro line 131)
+      type: invented_prose
+      content: |
+        DataTable tableName="Stuff and Systems"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Stuff and Systems" — site-truncated
+        and capitalized shorthand of the workbook section heading
+        "Stuff and systems in your community" (p11). Renamed on day 18 to
+        the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-systems.md cites workbook p11-12.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-knowing-your-ecosystem
+      module: knowing-your-community
+      location: Knowing your ecosystem DataTable tableName prop (knowing-your-community.astro line 164)
+      type: invented_prose
+      content: |
+        DataTable tableName="Knowing Your Ecosystem"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Knowing Your Ecosystem" — site-
+        capitalized variant of the workbook section heading
+        "Knowing your ecosystem" (p12). Renamed on day 18 to the workbook-
+        verbatim heading (lowercase 'your ecosystem') per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-ecosystem.md cites workbook p12.
+      proposed_canonical_field: null
+    - id: archive-kyc-tablename-going-deeper
+      module: knowing-your-community
+      location: Going deeper DataTable tableName prop (knowing-your-community.astro line 342)
+      type: invented_prose
+      content: |
+        DataTable tableName="Going Deeper"
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): 6 DataTable title corrections + remaining drift restoration (day 18)'
+      rationale: |
+        Site authored the tableName prop "Going Deeper" — site-truncated and
+        capitalized shorthand of the workbook section heading
+        "Going deeper: finding the community work you want to do" (p16).
+        Renamed on day 18 to the workbook-verbatim heading per the inventory
+        `invented_table_titles_pattern` decision. Spec
+        docs/source-specs/0-1-going-deeper.md cites workbook p16.
+      proposed_canonical_field: null
+    - id: archive-1-6-info-callout
+      module: 1-6
+      location: top of <ModuleLayout> (above guide-table, lines 18-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-6 + 1-13): paired clean modules (day 19, second commit)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into the per-module day. Same InfoCallout
+        pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5 (days 8-11),
+        and KYC (day 17). Identical text to the archive-1-1-info-callout
+        entry above.
+      proposed_canonical_field: null
+    - id: archive-1-7-info-callout
+      module: 1-7
+      location: top of <ModuleLayout> (above guide-table, lines 18-20 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-7): 6 in-prose link drops + InfoCallout removal (day 20)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into the per-module day. Same InfoCallout
+        pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5 (days 8-11),
+        1-6 (day 19 second commit), and KYC (day 17). Identical text to
+        the archive-1-1-info-callout and archive-1-6-info-callout entries
+        above.
+      proposed_canonical_field: null
+    - id: archive-1-8-info-callout
+      module: 1-8
+      location: top of <ModuleLayout> (above the Children h3, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), and KYC
+        (day 17). Identical text to archive-1-1-info-callout,
+        archive-1-6-info-callout, archive-1-7-info-callout entries above.
+      proposed_canonical_field: null
+    - id: archive-1-8-disabilities-section-meta-note
+      module: 1-8
+      location: 1-8.astro line 278 (paragraph below the duplicated h3 "People with mobility challenges and other disabilities")
+      type: invented_prose
+      content: |
+        Note: Much of the guidance for seniors also applies to people with
+        mobility challenges and other disabilities. See the "Senior citizens
+        and elders" section above for additional information on
+        communication, preparedness, shelter support, and community
+        connection.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Site-authored editorial meta-note explaining the section split.
+        Becomes obsolete when the section is reunified per inventory
+        decision: 1a_remove. No workbook anchor. Archived to document
+        the site form that bridged the split structure pre-reunification.
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-glasses-etc-add
+      module: 1-8
+      location: 1-8.astro Seniors Essential Items for Go Bags Todo id="senior-glasses" (line 190)
+      type: invented_prose
+      content: |
+        Glasses, hearing aid batteries, mobility aids (cane, walker, etc.)
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Site appended ", etc." to workbook prose. Workbook PDF p55
+        (displayed p27) reads "Glasses, hearing aid batteries, mobility
+        aids (cane, walker)" — no terminal ", etc." Drift type added_etc
+        per inventory paragraph_drift item 3. Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-prioritize-safety-added-words
+      module: 1-8
+      location: 1-8.astro Farm During Disaster Todo id="farm-prioritize-safety" (lines 705-707)
+      type: invented_prose
+      content: |
+        Prioritize Safety - Checking on/moving/handling livestock during the
+        height of disaster can be extremely dangerous. Take every precaution
+        possible to limit human exposure to peak disaster conditions.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Site added "/handling" to "Checking on/moving" and "possible" after
+        "every precaution"; site also rendered "Prioritize Safety -" with a
+        hyphen separator while workbook uses sentence-final period after
+        the bold "Prioritize Safety." Workbook PDF p58 (displayed p30)
+        reads "Prioritize Safety. Checking on/moving livestock in the
+        height of disaster can be extremely dangerous. Take every
+        precaution to limit human exposure to peak disaster conditions."
+        Drift type added_words per inventory paragraph_drift item 2.
+        Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-after-access-item-merging
+      module: 1-8
+      location: 1-8.astro LEP After Disaster Todo id="lep-after-access" (line 431)
+      type: invented_prose
+      content: |
+        Site form pre-day-21b (single Todo): "Ensure individuals have access
+        to appropriate needs. Do individuals have healthcare needs?"
+        Workbook PDF p57 has these as TWO SEPARATE list items (After Disaster
+        column 1):
+          - "Ensure individuals have access to appropriate needs"
+          - "Do individuals have healthcare needs?"
+      inferred_source: workbook PDF p57 (displayed p29) After Disaster col 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Drift type two_workbook_items_merged_into_one_site_todo per inventory
+        paragraph_drift item 4. Per decision 1a_split_back_into_2_Todos. The
+        single merged Todo is split back into 2 separate <Todo> elements
+        preserving the workbook's column-1 list ordering. Original site
+        composite key `lep-populations-lep-after-access` keeps the FIRST item
+        ("Ensure individuals have access to appropriate needs.") so existing
+        user check-state for that prompt is preserved; the SECOND item
+        ("Do individuals have healthcare needs?") gets a new id
+        `lep-after-healthcare` (composite key
+        `lep-populations-lep-after-healthcare` — verified non-colliding with
+        existing canonical keys + fixtures).
+      proposed_canonical_field: null
+    - id: archive-1-11-info-callout
+      module: 1-11
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        and KYC (day 17). Identical text to the archive-1-1-info-callout,
+        archive-1-6-info-callout, archive-1-7-info-callout, archive-1-8-info-callout
+        entries above.
+      proposed_canonical_field: null
+    - id: archive-1-12-info-callout
+      module: 1-12
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        1-10 + 1-11 (day 23), and KYC (day 17). Identical text to the
+        archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout,
+        archive-1-11-info-callout entries above.
+      proposed_canonical_field: null
+    - id: archive-2-2-info-callout
+      module: 2-2
+      location: top of <ModuleLayout> (above first <section>, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        1-10 + 1-11 (day 23), 1-12 (day 24), and KYC (day 17). Identical text
+        to the archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout,
+        archive-1-11-info-callout, archive-1-12-info-callout entries above.
+        Day-25 first 2-x ("baseline-resilience") namespace InfoCallout removal.
+      proposed_canonical_field: null
+    - id: archive-2-2-tool-library-research-flatten
+      module: 2-2
+      location: 2-2.astro Tool lending library section, Todo id="tool-library-research" (line 35-37 pre-day-25)
+      type: invented_prose
+      content: |
+        Read up on best practices and existing ways of doing this. New Suns
+        Community Center (Thetford) and Cooperation Vermont (Marshfield) have
+        tool libraries. See also: <ExternalLink>Library of Things toolkit from
+        Shareable</ExternalLink>, <ExternalLink>myTurn</ExternalLink> (online
+        tool for managing tool sharing), and <ExternalLink>Tool Library
+        Alliance</ExternalLink> for lots of resources.
+      inferred_source: workbook PDF p86 (displayed p42) Tool lending library "Read up on best practices..." parent + 4 sub-bullets
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Workbook PDF p86 has a parent bullet "Read up on best practices and
+        existing ways of doing this." with 4 sub-bullets:
+          1. New Suns Community Center (Thetford) and Cooperation Vermont
+             (Marshfield) have tool libraries.
+          2. Library of Things toolkit from Shareable
+          3. myTurn, online tool for managing tool sharing
+          4. Tool Library Alliance - lots of resources here
+        Site flattened these into a single Todo joining the 4 sub-bullets in
+        prose with editorial glue ("See also:" before sub-bullet 2, comma-and
+        join, "for lots of resources" replacing workbook's "- lots of
+        resources here"). Per inventory `decision: 1a_restore_4_sub_bullets`.
+        Day-25 restores the parent + 4 sub-bullets as separate Todos.
+        Archived to document the editorial-flattening site form. The 3
+        ExternalLinks (Library of Things, myTurn, Tool Library Alliance)
+        are preserved verbatim in the restored sub-bullets — only the
+        editorial-prose glue is removed.
+      proposed_canonical_field: null
+    - id: archive-2-3-info-callout
+      module: 2-3
+      location: top of <ModuleLayout> (above first <section>, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern as archive-2-2-info-callout (this commit) and
+        all prior InfoCallout removals from 1-1/1-2/1-3/1-4/1-5/1-6/1-7/1-8/
+        1-10/1-11/1-12 + KYC. Day-25 second 2-x ("baseline-resilience")
+        namespace InfoCallout removal — paired with archive-2-2-info-callout.
+      proposed_canonical_field: null
+    - id: archive-baseline-resilience-chapter-intro-invented-summary
+      module: baseline-resilience
+      location: src/pages/modules/baseline-resilience/index.astro moduleData.summary (lines 6-7 pre-day-25)
+      type: invented_prose
+      content: |
+        Build everyday resilience through shared resources, community care,
+        and organizing practices that keep people safe before disaster strikes.
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Decision-m carve-out (roadmap §7 line 476): chapter-intro drift on
+        baseline-resilience/index.astro. Site rendered an invented one-line
+        editorial summary ("Build everyday resilience through shared
+        resources...") instead of the workbook chapter intro paragraph from
+        PDF page 80 (displayed page 40). Workbook canonical:
+          "The material in this section builds on systems and stuff outlined
+          in the Emergency Preparedness and Response section to deepen
+          resilience in the day-to-day. Many people in our communities are
+          in crisis all the time, and working towards a reality in which
+          everyone is safe and has their needs met as a baseline means we
+          can all be more resilient when acute disaster strikes."
+        Per inventory line 2655 + roadmap §7 line 476 + closeout doc §2
+        row-25 decision-m carve-out. Day-25 restores the workbook chapter
+        intro verbatim as moduleData.summary. Archived to document the
+        editorial site-form summary as a candidate movement-canon supplement.
+        Companion retro-audit on emergency-preparedness/index.astro (day-25
+        same commit) confirmed CLEAN — site summary already matches workbook
+        PDF p1145 verbatim ("Emergency systems often spring into existence...
+        builds baseline resilience.").
+      proposed_canonical_field: null
+    - id: archive-2-1-info-callout
+      module: 2-1
+      location: top of <ModuleLayout> (above first <section>, lines 19-21 pre-removal)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the recurring InfoCallout sweep into each per-module day. Same
+        InfoCallout pattern was removed from 1-1 (day 16), 1-2/1-3/1-4/1-5
+        (days 8-11), 1-6 (day 19 second commit), 1-7 (day 20), 1-8 (day 21),
+        1-10 + 1-11 (day 23), 1-12 (day 24), 2-2 + 2-3 (day 25), and KYC (day 17).
+        Identical text to the archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout, archive-1-11-info-callout,
+        archive-1-12-info-callout, archive-2-2-info-callout, archive-2-3-info-callout
+        entries above. Day-26 third 2-x ("baseline-resilience") namespace
+        InfoCallout removal (after 2-2 and 2-3 day-25); closes the recurring
+        sweep across all 17 modules.
+      proposed_canonical_field: null
+    - id: archive-2-1-mental-health-section-title-drift
+      module: 2-1
+      location: 2-1.astro Mental Health <section> heading (h2 line 133 pre-day-26)
+      type: invented_prose
+      content: |
+        Network of mental health workers
+      inferred_source: null
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Site shortened the workbook PDF p81 (displayed p41) section heading
+        "Network of community physical and mental health workers" to
+        "Network of mental health workers" — dropping "community physical and"
+        from the heading. Per inventory line 2600-2604 `decision:
+        1a_restore_workbook_title`. The dropped phrase "community physical
+        and" is what justifies the section's 4 dropped Mental Health items
+        (CHW, Free Clinics, CHC, VHC Assister) — the workbook scope is
+        BOTH physical and mental health workers; site narrowed scope to
+        mental health alone. Restored to workbook-canonical full heading.
+        Archived as invented_prose because the site re-titled the heading
+        with editorial intent (narrowing scope rather than dropping content
+        outright). Closes the section-title-drift class-c unit on this page.
+      proposed_canonical_field: null
+    - id: archive-2-1-mental-health-can-prefix-and-parent-drop-drift
+      module: 2-1
+      location: 2-1.astro Mental Health <section>, Todo id="affordable-sessions" + Todo id="group-sessions" + Todo id="disaster-site-support" (lines 140-150 pre-day-26)
+      type: invented_prose
+      content: |
+        Site form (3 sibling Todos, no parent prefix):
+          - "Can offer free, low-cost or sliding scale sessions as a part of their practice"
+          - "Offer group sessions"
+          - "Can show up near disaster sites to offer emotional support and counseling"
+        Workbook PDF p81 form (parent + 3 children):
+          parent: "Take note if they can:"
+            - "Offer free, low-cost or sliding scale sessions as a part of their practice"
+            - "Offer group sessions"
+            - "Show up near disaster sites to offer emotional support and counseling"
+      inferred_source: workbook PDF p81 mental-health-worker directory Todo (parent + 3 nested children at end of "Create a directory of people in your community..." Todo)
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Two-sided structural drift. Site dropped the workbook parent prefix
+        "Take note if they can:" AND prefixed 2 of 3 children with "Can"
+        ("Can offer..." / "Can show up...") to compensate for the missing
+        parent's grammatical hook. The middle child ("Offer group sessions")
+        was left without a "Can" prefix, leaving inconsistent treatment.
+        Per inventory line 2622-2629 `decision: 1a_restore_workbook_structure`.
+        Restored as: parent Todo "Take note if they can:" with 3 nested
+        children (workbook-canonical wording, all without "Can" prefix).
+        Archived as invented_prose because the "Can" prefixes are
+        site-authored editorial additions (compensating for the dropped
+        parent), not workbook content. Same shape as archive-2-2-tool-library-research-flatten
+        (parent+children flatten/un-flatten pattern, day-25). Closes both
+        the parent-drop and the 2 "Can" prefix drifts as a single structural
+        unit.
+      proposed_canonical_field: null
+    - id: archive-1-2-info-callout
+      module: 1-2
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-day-8)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. First occurrence
+        of the recurring InfoCallout removal pattern (day 8 was earliest
+        in the sweep — same pattern subsequently removed from 1-3/1-4/1-5
+        (days 9-11), 1-1 (day 16), KYC (day 17), 1-6 (day 19 second commit),
+        1-7 (day 20), 1-8 (day 21), 2-2/2-3 (day 25), 2-1 (day 26)).
+        Identical text to archive-1-1-info-callout, archive-1-6-info-callout,
+        archive-1-7-info-callout, archive-1-8-info-callout, archive-1-3-info-callout,
+        archive-1-4-info-callout, archive-1-5-info-callout. Backfilled day 27
+        — the day-8 commit removed the InfoCallout without appending an
+        archive entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-3-info-callout
+      module: 1-3
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-day-9)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. Identical text to
+        archive-1-2-info-callout (day 8 sibling), and downstream
+        archive-1-1-info-callout (day 16) etc. Backfilled day 27 — the
+        day-9 commit removed the InfoCallout without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-3-rescue-squad-plural-drop
+      module: 1-3
+      location: 1-3.astro Systems col, Todo id="connect-first-responders" (line 37 pre-day-9)
+      type: invented_prose
+      content: |
+        Connect with First Responders and/or rescue squad that serve your area. Types of
+        services: fire departments, first responders (EMTs, back country rescue, etc), ambulance
+        transport
+      inferred_source: null
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Site dropped the plural on "rescue squads" — workbook page 42 reads
+        "rescue squads" (plural). Drift type plural_drop per inventory
+        paragraph_drift (line 760-767), classification c, decision
+        1a_restore_verbatim. Restored to plural in day-9 wiring commit.
+        Archived to document the singular site form for forward-compat
+        tracking. Backfilled day 27 — the day-9 commit restored the plural
+        without appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-4-info-callout
+      module: 1-4
+      location: top of <ModuleLayout> (above guide-table, lines 17-19 pre-day-10)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-4): source spec + wiring (day 10)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. Identical text to
+        archive-1-2-info-callout, archive-1-3-info-callout (day-8/9 siblings)
+        and downstream archive-1-1-info-callout (day 16) etc. Backfilled
+        day 27 — the day-10 commit removed the InfoCallout without
+        appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-info-callout
+      module: 1-5
+      location: top of <ModuleLayout> (above guide-table, lines 19-21 pre-day-11)
+      type: invented_prose
+      content: |
+        How this works: Fill out the forms and checklists below online—your
+        answers save automatically to your device and work offline. Your
+        information never leaves your browser and stays completely private.
+      inferred_source: null
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Site-authored UX meta-instruction not in workbook. Class-c per
+        inventory; removed under decision o (closeout doc §1) which folds
+        the InfoCallout sweep into each per-module day. Identical text to
+        archive-1-2-info-callout, archive-1-3-info-callout, archive-1-4-info-callout
+        (day-8/9/10 siblings) and downstream archive-1-1-info-callout
+        (day 16) etc. Backfilled day 27 — the day-11 commit removed the
+        InfoCallout without appending an archive entry; this entry restores
+        the archive-then-remove invariant retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-2-critter-containers-period-drop
+      module: 1-2
+      location: 1-2.astro Backup food supply Systems col, Todo id="critter-safe-containers" (line 48 pre-day-8)
+      type: invented_prose
+      content: |
+        Use critter and humidity safe containers
+      inferred_source: null
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Site form dropped the terminal period; workbook page 35 reads
+        "Use critter and humidity safe containers." (with period). Drift
+        type punctuation_drop per inventory paragraph_drift (line 628-636),
+        classification a after restoration, decision 1a_restore_verbatim
+        (status closed_day_8). Restored verbatim with terminal period in
+        the day-8 wiring commit. Same shape as archive-1-1-paragraph-drift-period-add
+        (inverse direction — 1-1 had a site-added period; 1-2 had a
+        site-dropped period). Archived to document the dropped-period
+        site form for forward-compat tracking. Backfilled day 27 — the
+        day-8 commit restored the period without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+
+  # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
+  # extend or substitute workbook items.
+  invented_items:
+    - id: archive-kyc-agenda-invented-bullet-discuss-sections
+      module: knowing-your-community
+      location: Bringing people together agenda Todo, sub-bullet 5 (knowing-your-community.astro line 333)
+      type: invented_items
+      content: |
+        Discuss what sections jump out as important or priorities in your
+        community.
+      inferred_source: null
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Wholly site-invented agenda bullet. No workbook anchor. Removed under
+        Source Fidelity HARD INVARIANT class-c firewall. Archived as movement-
+        flavored editorial supplement candidate for Step 2 community-canon
+        view.
+      proposed_canonical_field: null
+    - id: archive-1-8-service-animals
+      module: 1-8
+      location: 1-8.astro pre-reunify Disabilities Communication and Coordination, Todo id="disability-service-animals" (lines 312-314)
+      type: invented_items
+      content: |
+        Plan for service animals, sight and hearing accommodations
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        Wholly site-invented Todo in the Disabilities Communication and
+        Coordination Systems column. No workbook anchor at PDF pp55-56.
+        Removed under inventory decision: 1a_remove_strict (user decision
+        2026-04-24). Archived as a candidate Step 2 community-canon
+        supplement — service-animal accommodation guidance is a real
+        accessibility concern that a future site-curated supplement could
+        reintroduce alongside the workbook canonical content.
+      proposed_canonical_field: null
+    - id: archive-1-12-mutual-aid-disaster-relief-link
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-resources" (line 91 pre-day-24, embedded ExternalLink)
+      type: invented_items
+      content: |
+        Anchor: "Mutual Aid Disaster Relief's resources"
+        URL: https://mutualaiddisasterrelief.org/collective-care/
+        Workbook context: workbook page 78 has no equivalent link — site
+        authored this resource pointer as part of the invented checklist
+        item 8 (archive-1-12-mutual-aid-checklist-08).
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Wholly site-invented ExternalLink (no workbook URL substitution —
+        this is net-new resource pointer not present in workbook page 78).
+        Removed under inventory decision: 1a_remove_AND_archive (line
+        2334-2337). Archived as candidate Step 2 movement-canon
+        supplement — Mutual Aid Disaster Relief is a recognized national
+        MA organization whose collective-care resources could re-emerge
+        as a "site-curated" supplement alongside workbook-fidelity
+        primary content. First member of the 1-12 movement-canon
+        ExternalLink cluster (paired with
+        archive-1-12-big-door-brigade-link).
+      proposed_canonical_field: null
+    - id: archive-1-12-big-door-brigade-link
+      module: 1-12
+      location: 1-12.astro Mutual Aid Checklist column (Stuff), Todo id="ma-resources" (line 91 pre-day-24, embedded ExternalLink)
+      type: invented_items
+      content: |
+        Anchor: "Big Door Brigade Mutual Aid Toolkit"
+        URL: https://docs.google.com/document/d/1dpMzMzsA83jbVEXS8m7QKOtK4nj6gIUk1U1t6P4wwiQ/edit
+        Workbook context: workbook page 78 has no equivalent link — site
+        authored this resource pointer as part of the invented checklist
+        item 8 (archive-1-12-mutual-aid-checklist-08).
+      inferred_source: null
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-12): catastrophic content restoration (day 24)'
+      rationale: |
+        Wholly site-invented ExternalLink. Removed under inventory
+        decision: 1a_remove_AND_archive (line 2338-2341). Archived as
+        candidate Step 2 movement-canon supplement — Big Door Brigade's
+        Mutual Aid Toolkit is a recognized movement-curated resource
+        document. Second member of the 1-12 movement-canon ExternalLink
+        cluster (paired with archive-1-12-mutual-aid-disaster-relief-link).
+      proposed_canonical_field: null
+
+  # Workbook items dropped from site (opposite direction — workbook-authored
+  # content that the site chose to omit). Tracked so restoration work can
+  # confirm we pick them back up in days 9-13.
+  dropped_workbook_items_flagged_for_restore:
+    - id: archive-kyc-bringing-people-together-bullet-2-drop
+      module: knowing-your-community
+      location: Bringing people together "things to consider" bullet 2 (knowing-your-community.astro line 301)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 bullet 2: "Of the people you mapped, how many do you
+        know? Where can you go to know them better or introduce yourself?
+        Who is missing?"
+        Site form pre-day-17: "Of the people you mapped, how many do you
+        know? Where can you go to know them better or introduce yourself?"
+        (drops "Who is missing?")
+      inferred_source: workbook p13 bullet 2
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Drop drift per inventory paragraph_drift item 3. "Who is missing?"
+        is the explicit prompt the workbook uses to surface who has been
+        excluded from the organizing group. Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-do-activities
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda nested item:
+          - Do one or more of the activities in the toolkit:
+              - Organizing your community activities (pages 9-11)
+              - Get to know the toolkit interactive activity (facilitation
+                guide below)
+        Site dropped both the parent bullet and its 2 sub-items.
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim with nested sub-items. The "facilitation guide
+        below" reference is honored by the day-17 Facilitation guides
+        section restoration (workbook p14).
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-reconvene-discuss
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda nested item:
+          - Reconvene and discuss one or more of these questions:
+              - Who is doing related work already in your community? Are they
+                in this conversation?
+              - Who is missing from this group? Are they people you know, or
+                need to meet for the first time?
+              - Is there more information you need before continuing your
+                organizing? How can you get it?
+        Site dropped both the parent bullet and its 3 sub-questions.
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim with nested sub-questions.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-make-plan
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "Make a plan for who will find the space to
+        meet, if someone is able to bring food, who will invite the new
+        people you've identified to your group, and any other planning."
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim under the "Determine if the group is interested in
+        meeting again" parent.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-consider-posting
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "Consider posting about your next meeting
+        publicly on local social media, and/or putting up flyers at the
+        grocery store or school."
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-small-group
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "It makes sense to start with a small group
+        of people, but the more buy-in you have in your community about this
+        project, the more possible it will be."
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim.
+      proposed_canonical_field: null
+    - id: archive-kyc-agenda-dropped-needs-assessment
+      module: knowing-your-community
+      location: Bringing people together agenda Todo (knowing-your-community.astro lines 326-337)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p13 agenda item: "Plan to conduct the community needs
+        assessment activity (facilitation guide below) at your next meeting!"
+      inferred_source: workbook p13 agenda
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim. The "facilitation guide below" reference is
+        honored by the day-17 Facilitation guides section restoration
+        (workbook p14, "Conduct a Community Needs Assessment" block).
+      proposed_canonical_field: null
+    - id: archive-kyc-missing-section-facilitation-guides
+      module: knowing-your-community
+      location: NEW section between "Bringing people together" and "We started organizing" per workbook order (knowing-your-community.astro post-day-17)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p14 — entire "Facilitation guides" section. Two activity
+        blocks:
+
+        (1) Get to know the toolkit: interactive activity (45 minutes to
+            1 hour) — 5-step facilitator guide:
+              1. Print out the interactive toolkit activity *page of prompts*,
+                 or edit the prompts to best fit the non-flooding disaster
+                 you want people to think about. Cut the prompts up along
+                 the dotted line.
+              2. Set the scene… (a/b/c sub-bullets)
+              3. Split your group into smaller groups of 2-5 people each…
+              4. Instruct groups to spend about 20 minutes discussing…
+              5. Reconvene as a group and hear from people about what they
+                 learned…
+
+        (2) Conduct a Community Needs Assessment — 6-step guide:
+              1. Print out copies of the *Community Needs Assessment*…
+              2. Give people 15-20 minutes to complete the assessment.
+              3. Break into small groups or pairs to discuss…
+              4. Make some notes about which questions… (a/b sub-bullets)
+              5. Make a plan to connect with people who can help…
+              6. Make a plan to share results of the assessment…
+
+        Both *page of prompts* and *Community Needs Assessment* anchors link
+        to the Section 0 Drive folder
+        (https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8).
+
+        Pre-day-17 site state: section did not exist.
+      inferred_source: workbook p14
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Entire workbook section was missing pre-day-17. Rebuilt verbatim per
+        inventory `missing_sections[0].action: rebuild_full_content`. Two
+        embedded link anchors (page of prompts, Community Needs Assessment)
+        each gain ExternalLink wrappers.
+      proposed_canonical_field: null
+    - id: archive-kyc-missing-section-readiness-and-cros-block
+      module: knowing-your-community
+      location: '"We started organizing" section — readiness checklist + kinds of assistance + CROs contact paragraph (post-day-17)'
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook p15 — content following the "How do we know it's working"
+        signs-of-effectiveness list:
+
+        - Title (corrected): "We started organizing. How do we know it's
+          working, and when to ask for more help?" (site dropped second half)
+
+        - Readiness-checklist intro: "Here are some signs you might be ready
+          to ask for more help and move ahead with plans to launch a
+          resilience hub."
+
+        - Readiness checklist (5 bullets):
+            • Have you met two or more times?
+            • Do you have a group of 2-5 people excited about launching a
+              resilience hub?
+            • Have you talked to 10+ neighbors to see if they think this is
+              a good idea?
+            • Have you used the community needs assessment (above) and begun
+              to identify what your priorities are as a community?
+            • Can you identify three sections of the toolkit where you would
+              like support?
+
+        - Kinds-of-assistance intro: "Here are some different kinds of
+          assistance to seek out:"
+
+        - Kinds of assistance (5 bullets, 3 sub-bullets under "Technical
+          assistance using the toolkit"):
+            • Fiscal sponsorship: access to nonprofit status so you can
+              raise funds and pay stipends without creating a new
+              organization
+            • Fundraising to support your work
+            • Technical assistance using the toolkit
+                ◦ Help facilitating group meetings
+                ◦ Visioning for how to best use the toolkit in your community
+                ◦ Subject matter expertise on sections you want to work on
+            • Relationships with existing institutions like libraries and
+              schools, places of worship, food pantries, community spaces
+              to see if they are interested in participating in your work
+              to launch a resilience hub.
+            • Connection with elected officials or local committees to
+              advocate for and share about your work
+
+        - CROs contact paragraph (FUNNEL CRITICAL): "Think about if you can
+          get this kind of help in your community, from people you already
+          know. If not, *reach out to Community Resilience Organizations
+          (CROs)* — *resiliencetoolkit@gocros.org* — and we'll do our best
+          to connect you with people and organizations who can assist."
+
+        Pre-day-17 site state: section title was truncated to "We started
+        organizing. How do we know it's working?" and all of the above
+        readiness/assistance/CROs content was dropped.
+      inferred_source: workbook p15
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Funnel-critical restoration per inventory innovations.cros_referral_funnel_dropped:
+        Fern Lickfield inbound via the RT contact form demonstrates this
+        pathway works; dropping the CTA degrades the RT-to-CROs
+        consultancy referral funnel. Title truncation also restored.
+      proposed_canonical_field: null
+    - id: archive-kyc-missing-section-pods-appendix
+      module: knowing-your-community
+      location: Pod mapping section — full Mia Mingus / BATJC narrative + diagram reference (post-day-17)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook pp19-22 (Pods appendix) — "Pods and Pod Mapping Worksheet,
+        Written by Mia Mingus for the BATJC, June 2016". Full narrative
+        across 4 pages explaining:
+          - Origin of the term "pod" within transformative justice work
+          - Why "community" was insufficient terminology
+          - Definition: POD — "Your pod is made up of the people that you
+            would call on if violence, harm or abuse happened to you; or
+            the people that you would call on if you wanted support in
+            taking accountability for violence, harm or abuse that you've
+            done; or if you witnessed violence or if someone you care about
+            was being violent or being abused."
+          - 7-bullet observations on what mapping pods reveals
+          - Caveats around relational versus political-analysis criteria
+          - Note that many people do not have any pod people
+
+        Pre-day-17 site state: a "Pod Mapping Worksheet" callout (file
+        download) and 4 short paragraphs. Full Mia Mingus narrative was
+        absent — users who can't or won't download the PDF saw none of the
+        rationale.
+      inferred_source: workbook pp19-22 (Pods appendix)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Restored verbatim per inventory innovations.pods_appendix_content_loss
+        and missing_sections[2]. The Pods appendix is the conceptual ground
+        of the Pod mapping activity; without it, the activity reads as
+        decontextualized worksheet chrome. Section moved to end of module
+        per inventory order_drift workbook order.
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-partners-aaa-sentence-drop
+      module: 1-8
+      location: 1-8.astro Seniors Communication and Coordination Todo id="senior-partners" (lines 138-140 pre-reunify) — same sentence appears as workbook anchor on disability-partners (line 304) where the URL was preserved
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Senior+Disabilities Communication
+        and Coordination row 2:
+          "Partner with senior centers, councils on aging, and home health
+          agencies. Find your local council on aging at
+          https://dcf.vermont.gov/doc/contacts/partners/aaa."
+        Site form pre-day-21 senior-partners (Senior section):
+          "Partner with senior centers, councils on aging, and home health
+          agencies."
+          (drops the second sentence + the dcf-aaa URL)
+        Site form pre-day-21 disability-partners (Disabilities section):
+          "Partner with senior centers, councils on aging, and home health
+          agencies. Find your local council on aging at
+          https://dcf.vermont.gov/doc/contacts/partners/aaa."
+          (kept full workbook sentence + URL)
+      inferred_source: workbook PDF p55 row 2 dcf-aaa anchor
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1: section split unmerge + URL-substitution corrections + content drifts (day 21)'
+      rationale: |
+        The site dropped the workbook's second sentence + dcf-aaa URL on
+        the Senior version of the same workbook row, while preserving it
+        on the Disability duplicate. Per inventory paragraph_drift item 1
+        + decision 1a_restore_on_senior_partners (asymmetric drop in a
+        site-duplicated section). Restored verbatim on the merged
+        seniors-and-disabilities section after reunification (the merged
+        section uses the Seniors Todos as base, so the drop bites; the
+        full workbook sentence + URL is restored on the merged Todo).
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-asl-drop
+      module: 1-8
+      location: 1-8.astro merged seniors-and-disabilities Communication and Coordination col 1 (after senior-coordinate)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Communication and Coordination col 1
+        item 5: "Have first responders learn basics of American Sign Language"
+      inferred_source: workbook PDF p55 col 1 row 5
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Site Seniors Communication col 1 dropped 3 workbook items entirely
+        (workbook col 1 has 7 items pre-day-21b; site had 4). Per decision
+        1a_restore_as_Todos. Restored verbatim as <Todo> with new id
+        `senior-asl` under moduleKey `seniors-and-disabilities`. Composite
+        key `seniors-and-disabilities-senior-asl` is new (no fixture
+        collision; data-preservation invariant intact).
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-visual-aids-drop
+      module: 1-8
+      location: 1-8.astro merged seniors-and-disabilities Communication and Coordination col 1 (after senior-asl)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Communication and Coordination col 1
+        item 6: "Include visual aids on important informational resources"
+      inferred_source: workbook PDF p55 col 1 row 6
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Per decision 1a_restore_as_Todos. Restored verbatim as <Todo> with
+        new id `senior-visual-aids` under moduleKey `seniors-and-disabilities`.
+        Composite key `seniors-and-disabilities-senior-visual-aids` is new.
+      proposed_canonical_field: null
+    - id: archive-1-8-senior-vcil-drop
+      module: 1-8
+      location: 1-8.astro merged seniors-and-disabilities Communication and Coordination col 1 (after senior-visual-aids)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p55 (displayed p27) Communication and Coordination col 1
+        item 7: "Consult with the Vermont Center for Independent Living when
+        creating emergency plans"
+      inferred_source: workbook PDF p55 col 1 row 7
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Per decision 1a_restore_as_Todos. Restored verbatim as <Todo> with
+        new id `senior-vcil` under moduleKey `seniors-and-disabilities`.
+        Composite key `seniors-and-disabilities-senior-vcil` is new.
+      proposed_canonical_field: null
+    - id: archive-1-10-youth-organizations-drop
+      module: 1-10
+      location: 1-10.astro Recruiting volunteers sub-list (between Schools and American Legion, line 27 pre-day-23)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p69 (displayed p34) Recruiting volunteers sub-list
+        item 5 (between Schools and American Legion): "Youth organizations"
+      inferred_source: workbook PDF p69 Recruiting volunteers sub-list row 5
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site Recruiting volunteers sub-list dropped this single item entirely
+        (workbook has 9 items, site had 8 — Mutual aid, Local companies, Faith
+        communities, Schools, American Legion, Elks Club, Rotary Club, AHS/VDH).
+        Per inventory `decision: 1a_restore_as_list_item`. Restored verbatim as
+        a <li> in the existing nested <ul> at workbook-correct position
+        (between Schools and American Legion). Sub-list is plain prose (no
+        Todo / no moduleKey), so no fixture or canonical-set impact.
+      proposed_canonical_field: null
+    - id: archive-1-10-youth-engagement-sentence-drop
+      module: 1-10
+      location: 1-10.astro Managing volunteers, first bullet "People will want to bring children..." tail (line 64 pre-day-23)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p70 (displayed p35) Managing volunteers col 1 row 1 tail:
+        "See Youth engagement in flood recovery for more information about
+        involving young people in helpful, safe ways."
+        Anchor "Youth engagement in flood recovery" wraps a Drive file URL:
+        https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open
+      inferred_source: workbook PDF p70 Managing volunteers row 1 tail sentence
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site dropped the workbook's tail sentence + ExternalLink entirely.
+        Per inventory `decision: 1a_restore_full_workbook_sentence_with_link` /
+        `1a_restore_sentence_with_ExternalLink`. Restored verbatim as appended
+        sentence on the existing children bullet, with <ExternalLink> wrapping
+        "Youth engagement in flood recovery" anchor text. Plain prose (no Todo /
+        no moduleKey), so no fixture or canonical-set impact.
+      proposed_canonical_field: null
+    - id: archive-1-10-count-volunteer-hours-bullet-drop
+      module: 1-10
+      location: 1-10.astro Managing volunteers list (between organize-into-work-crews and feed-volunteers bullets, line 71 pre-day-23)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p70 (displayed p35) Managing volunteers col 1 row 9:
+        "Count volunteer hours, even if a rough estimate. This can be tracked
+        through collecting work sheets from volunteer crews or through SignUp
+        Genius. Municipalities will apply for grants that require volunteer
+        hours as part of the application. Rough estimates are okay!"
+      inferred_source: workbook PDF p70 Managing volunteers row 9
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Site dropped this entire bullet. Workbook lists 10 Managing volunteers
+        items; site had 9. Per inventory `decision: 1a_restore_bullet`. Restored
+        verbatim as a new <li> at workbook-correct position (between work-crews
+        and feed-volunteers bullets). Plain prose (no Todo / no moduleKey),
+        so no fixture or canonical-set impact.
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-mental-health-primary-care-provider
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (between community-clinic Todo and herbal-support h2; was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 1 of 4),
+        no embedded ExternalLink:
+        "If individuals have a primary care provider, it is important to
+        connect them to that same provider for continuity of care. Add
+        community health centers and other similar resources/sites to your
+        directory."
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 1
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        First of 4 dropped Mental Health bullets. Site dropped the entire
+        bullet (sentence has no embedded ExternalLink to track). Per inventory
+        line 2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-primary-care-provider"
+        and moduleKey="basic-needs", placed within the Mental Health section
+        at workbook-correct position (after community-clinic Todo, before
+        items 2-4 in workbook order). New moduleKey-todoId composite — no
+        fixture impact (additive only).
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-community-health-worker
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 2 of 4),
+        with embedded ExternalLink "Community Health Worker" →
+        https://www.vtassociationofcommunityhealthworkers.com/:
+        "For those still needing assistance accessing in clinic healthcare
+        services, connect individuals with a Community Health Worker"
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 2
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Second of 4 dropped Mental Health bullets. Site dropped both the
+        sentence AND the embedded ExternalLink. Same workbook URL as
+        archive-1-8-chw-url-substitution (1-8 paired-section CHW anchor) —
+        the 1-8 day-21 commit restored to this URL there. Per inventory
+        line 2570-2572 + 2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-chw" and
+        moduleKey="basic-needs". The ExternalLink wraps "Community Health
+        Worker" verbatim. New moduleKey-todoId composite — no fixture impact.
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-free-clinics-and-community-health-centers
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 3 of 4),
+        with TWO embedded ExternalLinks:
+          - "Free Clinics" → https://vtfreeclinics.org/find-a-clinic/
+          - "Community Health Centers" → https://bistatepca.org/centers/
+        "Free Clinics and Community Health Centers are great resources for
+        those who need sliding scale and financial assistance options"
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 3
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Third of 4 dropped Mental Health bullets. Site dropped the sentence
+        AND its 2 embedded ExternalLinks (Free Clinics + Community Health
+        Centers). Both URLs match the 1-8 paired-section anchors (workbook
+        canonical pp54+57 + p81 — same VT Free Clinics directory + same
+        Bi-State Primary Care VT centers directory). Per inventory line
+        2573-2577 + 2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-free-clinics-chc"
+        and moduleKey="basic-needs". Both ExternalLinks restored verbatim
+        within the Todo prose. New moduleKey-todoId composite — no fixture
+        impact (additive only).
+      proposed_canonical_field: null
+    - id: archive-2-1-dropped-vermont-health-connect-assister
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section (was missing pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) Mental Health 4-item drop (item 4 of 4),
+        with embedded ExternalLink "Vermont Health Connect Assister" →
+        https://info.healthconnect.vermont.gov/find-local-help/find:
+        "If individuals need help applying to health insurance, adjusting
+        information due to disaster (i.e. income) they can connect with a
+        Vermont Health Connect Assister, who is trained to help community
+        members navigate the Vermont health insurance marketplace"
+      inferred_source: workbook PDF p81 mental-health 4-item drop bullet 4
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Fourth of 4 dropped Mental Health bullets. Site dropped the sentence
+        AND its embedded ExternalLink. Per inventory line 2579-2581 +
+        2605-2615 `decision: 1a_restore_as_Todos_with_workbook_ExternalLinks`.
+        Restored as a new Todo with id="mental-health-vhc-assister" and
+        moduleKey="basic-needs". The ExternalLink wraps "Vermont Health
+        Connect Assister" verbatim. New moduleKey-todoId composite — no
+        fixture impact (additive only).
+      proposed_canonical_field: null
+    - id: archive-2-1-community-clinic-partial-sentence-drop
+      module: 2-1
+      location: 2-1.astro Network of community physical and mental health workers section, Todo id="community-clinic" (line 156-158 pre-day-26)
+      type: dropped_workbook_items_flagged_for_restore
+      content: |
+        Workbook PDF p81 (displayed p41) community-clinic Todo verbatim:
+        "Consider setting up a recurring community health clinic day with
+        local practitioners and partner with your local Department of Health
+        office"
+        Site form pre-day-26: "Consider setting up a recurring community
+        health clinic day with local practitioners." (drops "and partner
+        with your local Department of Health office" — 9 words including
+        the closing sentence period; site terminates after "practitioners.")
+      inferred_source: workbook PDF p81 community-clinic Todo
+      date_removed: '2026-04-30'
+      removed_in_commit: 'feat(2-1): Mental Health restoration + 3 URL subs + 4 dropped items + chapter-level summary drift (day 26)'
+      rationale: |
+        Partial-sentence drop on existing site Todo (same shape as
+        archive-kyc-bringing-people-together-bullet-2-drop dropping "Who is
+        missing?"). Per inventory line 2616-2621 + 2645-2648 `decision:
+        1a_restore_verbatim`. Site's editorial choice was to truncate the
+        sentence at "local practitioners.", which leaves out the workbook's
+        explicit pointer to the local Department of Health office as a
+        partnership channel. Restored verbatim. Todo id and moduleKey
+        unchanged — no fixture impact.
+      proposed_canonical_field: null
+
+  # Workbook section orderings the site reshuffled away from. Tracked so
+  # the restored ordering can be verified post-day-17.
+  reordered_sections_flagged_for_restore:
+    - id: archive-kyc-section-order-drift
+      module: knowing-your-community
+      location: knowing-your-community.astro section order (pre-day-17)
+      type: reordered_sections_flagged_for_restore
+      content: |
+        Pre-day-17 site order:
+          1. Vermont Town Directory (site-added editorial)
+          2. Organizing your community (intro) + Mapping your community
+          3. Who is in your community/place?
+          4. What other dynamics
+          5. Stuff and systems
+          6. Knowing your ecosystem
+          7. Pod mapping (⬆ moved from end)
+          8. Going deeper
+          9. Bringing people together
+          10. We started organizing. How do we know it's working? (title truncated)
+
+        Workbook order (pp10-17 + 19-22):
+          1. Organizing your community (intro)
+          2. Mapping your community
+          3. Who is in your community/place?
+          4. What other dynamics
+          5. Stuff and systems
+          6. Knowing your ecosystem
+          7. Bringing people together
+          8. Facilitation guides (workbook p14)
+          9. We started organizing. How do we know it's working, and when
+             to ask for more help? (workbook p15, full title)
+          10. Going deeper (workbook p16)
+          11. Pod mapping (workbook p17 + Pods appendix pp19-22)
+
+        Day-17 restored order matches workbook with one exception: the
+        site-added Vermont Town Directory callout is preserved at the top
+        as an editorial supplement (per inventory site_added_links decision
+        `promote_as_editorial_supplement`).
+      inferred_source: workbook order pp10-22
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Section order is class-c structural drift per inventory. The four
+        out-of-order sections (Pod mapping, Going deeper, Bringing people
+        together, We started organizing) were reshuffled apparently to
+        front-load the more activity-heavy material. Day-17 restoration
+        matches workbook reading order; Pods appendix narrative now
+        immediately follows Pod mapping activity (workbook p17 + pp19-22
+        contiguity preserved).
+      proposed_canonical_field: null
+    - id: archive-1-5-low-stimulation-areas-placement
+      module: 1-5
+      location: 1-5.astro Stuff col, Todo id="low-stimulation-areas" (line 96 pre-day-11)
+      type: reordered_sections_flagged_for_restore
+      content: |
+        Pre-day-11 site placement:
+          Stuff col → "For cooling/warming shelters" sub-section
+            ...
+            backup-power-available
+            low-stimulation-areas    ← misplaced under cooling/warming sub-section
+          Stuff col → "Additional supplies for overnight shelters" sub-section
+            cots-mats-blankets
+        Workbook order (page 23/45):
+          Stuff col → "For cooling/warming shelters" sub-section
+            ...
+            backup-power-available
+          Stuff col → "Additional supplies for overnight shelters" sub-section
+            cots-mats-blankets
+            low-stimulation-areas    ← belongs under overnight sub-section
+        Todo id "low-stimulation-areas" preserved across the move so
+        IndexedDB user data is retained.
+      inferred_source: workbook page 23/45 Stuff col sub-section ordering
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Sub-section placement drift per inventory paragraph_drift line
+        987-994 (drift_type sub_section_placement, classification c,
+        decision 1a_restore). The Todo "As is possible, create
+        low-stimulation areas with minimal sound, soft seating, and low
+        light" was placed in the wrong sub-section on site (For
+        cooling/warming shelters) when it belongs under Additional
+        supplies for overnight shelters per workbook ordering. Moved in
+        the day-11 commit; Todo id preserved for IndexedDB invariant.
+        Distinct from KYC-style whole-section reordering (archive-kyc-
+        section-order-drift) — this is item-level mis-placement between
+        two adjacent sub-sections within a single column. Backfilled day
+        27 — the day-11 commit moved the Todo without appending an
+        archive entry; this entry restores the archive-then-remove
+        invariant retroactively.
+      proposed_canonical_field: null
+
+  # Bulk link drops — workbook had a link that the site dropped without
+  # substitution. 6 in 1-7, more in 1-8, etc.
+  dropped_workbook_links:
+    - id: archive-1-1-folder-header-link
+      module: 1-1
+      location: top of page (above guide-table); was missing pre-day-16
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.1 Emergency preparedness kits"
+        URL:    https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F
+        Workbook context: "Folder with resources and templates: 1.1 Emergency
+        preparedness kits" — workbook p30 folder header.
+      inferred_source: workbook p30 folder header
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Workbook p30 opens with a "Folder with resources and templates:" line
+        linking the 13eSjal Drive folder. Site never surfaced this header.
+        Restored on day 16 as a leading <p>Folder with resources and templates:
+        <ExternalLink ...>1.1 Emergency preparedness kits</ExternalLink></p>
+        line — same shape as 1-2's day-8 wiring.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        13eSjal folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134); no fidelity loss.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-emergency-plans
+      module: 1-1
+      location: Systems col, Household subsection prose (1-1.astro line 41)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "emergency plans"
+        Site state pre-day-16: <a href="#">emergency plans</a> (dead anchor)
+        Workbook URL: https://docs.google.com/document/d/154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto/edit?tab=t.0
+      inferred_source: workbook p30 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "emergency plans" inline anchor; workbook
+        page 30 links it to a Google Doc on emergency plans. Restored on day 16
+        via <ExternalLink href="...154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto...">.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-emergency-kits
+      module: 1-1
+      location: Systems col, Household subsection prose (1-1.astro line 41)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "emergency kits"
+        Site state pre-day-16: <a href="#">emergency kits</a> (dead anchor)
+        Workbook URL: https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F
+      inferred_source: workbook p30 inline anchor (reuses folder URL)
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "emergency kits" inline anchor; workbook
+        page 30 links it back to the 13eSjal Drive folder (same as the folder
+        header). Restored on day 16 via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-storing-backup-food
+      module: 1-1
+      location: Systems col, Household subsection prose (1-1.astro line 42)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "storing backup food"
+        Site state pre-day-16: <a href="#">storing backup food</a> (dead anchor)
+        Workbook URL: https://docs.google.com/spreadsheets/d/1RaYyavdAbn43b3EH9zMzQir6G6gxnQE0XxMBxMH5iTQ/edit?usp=drive_link
+      inferred_source: workbook p30 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "storing backup food" inline anchor;
+        workbook page 30 links it to a Google Sheet. Restored on day 16 via
+        <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-1-anchor-go-bags
+      module: 1-1
+      location: Systems col, Individual subsection prose (1-1.astro line 91)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "go bags"
+        Site state pre-day-16: <a href="#">go bags</a> (dead anchor)
+        Workbook URL: https://drive.google.com/file/d/1Ea1zc8wSbvVoMqcLqNz19sNJTsuThQIM/view?usp=drive_link
+      inferred_source: workbook p30 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(1-1): source spec + wiring + InfoCallout removal + 9 class-c restorations (day 16)'
+      rationale: |
+        Site rendered href="#" on the "go bags" inline anchor; workbook page
+        30 links it to a Drive file. Restored on day 16 via <ExternalLink>
+        with the curly-single-quoted "‘go bags,’" verbatim restoration around
+        the anchor (paragraph drift quote_drop fix).
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-folder-header
+      module: knowing-your-community
+      location: top of page (above first section); was missing pre-day-17
+      type: dropped_workbook_links
+      content: |
+        Anchor: "0. Organizing your community"
+        URL:    https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link
+        Workbook context: "Folder with resources here: 0. Organizing your
+        community" — workbook p10 folder header.
+      inferred_source: workbook p10 folder header
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p10 opens with a "Folder with resources here:" line linking
+        the 161QG8b Drive folder. Site never surfaced this header. Restored
+        on day 17 as a leading <p>Folder with resources here:
+        <ExternalLink ...>0. Organizing your community</ExternalLink></p>
+        line — same shape as 1-1's day-16 wiring.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        161QG8b folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134). The folder is also reached
+        from the inline "page of prompts" and "Community Needs Assessment"
+        anchors in the Facilitation guides section.
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-legislators
+      module: knowing-your-community
+      location: Community Roles legislators footnote (knowing-your-community.astro line 94)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "legislature.vermont.gov/people/" (the URL text IS the anchor)
+        URL:    http://legislature.vermont.gov/people/
+        Site state pre-day-17: plain italic text "*Find your legislators at
+        legislature.vermont.gov/people/" — no <a> wrapper.
+      inferred_source: workbook p10 footnote
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p10 renders the URL as a clickable hyperlink (anchor IS
+        URL text). Site renders as plain text. Restored on day 17 via
+        <ExternalLink href="http://legislature.vermont.gov/people/">.
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-zine
+      module: knowing-your-community
+      location: Going deeper section intro paragraph (knowing-your-community.astro line 208)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "this zine"
+        URL:    https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view
+        Site state pre-day-17: plain text "Check out this zine for more ideas." (no link)
+      inferred_source: workbook p16 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p16 wraps "this zine" in a Drive-file anchor. Site renders
+        as plain text. Restored on day 17 via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-kyc-link-drop-roles-list
+      module: knowing-your-community
+      location: Going deeper roles-list intro paragraph (knowing-your-community.astro line 230)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "this list"
+        URL:    https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view
+        Site state pre-day-17: plain text "Check out this list for more ideas." (no link)
+      inferred_source: workbook p16 inline anchor
+      date_removed: '2026-04-28'
+      removed_in_commit: 'feat(kyc): facilitation guides rebuild + Pods appendix + section reorder + InfoCallout removal (day 17)'
+      rationale: |
+        Workbook p16 wraps "this list" (the roles-to-modules PDF) in a
+        Drive-file anchor. Site renders as plain text. Restored on day 17
+        via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-folder-header-link-drop
+      module: 1-8
+      location: 1-8.astro LEP h3 leading <p> "Folder with resources and templates: Limited English Proficiency Documents" (line 274)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Limited English Proficiency Documents"
+        URL:    https://drive.google.com/drive/folders/1if3D-wTHEf1hYUKyJk9w0EeX5ZSUi3Q-?usp=drive_link
+        Site state pre-day-21b: plain <p>Folder with resources and templates:
+        Limited English Proficiency Documents</p> — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP folder header
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "Limited English Proficiency Documents" as a Drive
+        folder anchor on the section's leading "Folder with resources and
+        templates:" line. Site rendered as plain text. Per decision
+        1a_restore_as_inline_link_or_layout_button — user choice 2026-04-29:
+        inline link (matches workbook's in-prose treatment; only the 1.8
+        top-level folder is pinned via ModuleLayout button). Restored via
+        <ExternalLink> wrapping the "Limited English Proficiency Documents"
+        text in the existing <p>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-organizations-and-groups-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-partner-orgs" (line 299)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "organizations and groups" (within "Partner with organizations
+        and groups that work with (im)migrant individuals…")
+        URL:    https://docs.google.com/document/d/1Is0po3dbNMNl56RA0zm1ARid5JoWtv-ZUnPgr__oGOM/edit?usp=sharing
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 1 row 2
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "organizations and groups" in a Google Doc anchor
+        (LEP partner organizations doc). Site renders as plain text inside
+        the Todo. Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink> wrapping the anchor phrase inside the existing
+        <Todo>. Todo id and moduleKey unchanged.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-list-of-organizations-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-directory-orgs" (line 305)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "list of organizations and people" (within "Make a list of
+        organizations and people who can support…")
+        URL:    https://drive.google.com/file/d/1NWSRoDXt7IR8wDNnoC1lyebI9vkCJZ4R/view?usp=drive_link
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 1 row 4
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "list of organizations and people" in a Drive-file
+        anchor (LEP org+people list template). Per decision
+        1a_restore_as_Todo_plus_ExternalLink. Restored via <ExternalLink>
+        wrapping the anchor phrase inside the existing <Todo>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-list-of-resources-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-compile-resources" (line 311)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "list of resources" (within "Compile a list of resources in
+        other languages around disasters…")
+        URL:    https://docs.google.com/document/d/1JwdvySyIuOi1SlBlFE7KF3Eh09IAmzPp289-Zlqu-O0/edit?usp=sharing
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 1 row 6
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "list of resources" in a Google Doc anchor (LEP
+        resources-in-other-languages doc). Per decision
+        1a_restore_as_Todo_plus_ExternalLink. Restored via <ExternalLink>
+        wrapping the anchor phrase inside the existing <Todo>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-aalv-link-drop
+      module: 1-8
+      location: 1-8.astro LEP Plan Ahead Todo id="lep-interpreter-money" (line 314)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "AALV" (within "you can contact someone from AALV for in-person
+        interpreter services…")
+        URL:    https://www.aalv-vt.org/interpreter
+        Site state pre-day-21b: plain text "AALV" — no <a> wrapper. The
+        adjacent "LanguageLine" anchor in the same Todo IS already wrapped.
+      inferred_source: workbook PDF p56 (displayed p28) LEP Plan Ahead col 2 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p56 wraps "AALV" in an external anchor (Association of Africans
+        Living in Vermont — interpreter services). Site renders as plain text
+        despite wrapping the adjacent LanguageLine anchor in the same prose.
+        Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored via
+        <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-procedure-link-drop
+      module: 1-8
+      location: 1-8.astro LEP During Disaster Todo id="lep-during-train" (line 393)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "procedure" (within "Train volunteers on the procedure for
+        interacting with LEP individuals, from start to finish")
+        URL:    https://docs.google.com/document/d/135iBbFYDUUojTu9_irbQbnm_s5woAnX5TniHpGRedsY/edit?usp=sharing
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p57 (displayed p29) LEP During Disaster col 1 row 3
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p57 wraps "procedure" in a Google Doc anchor (LEP procedure
+        template). Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-parent-child-centers-link-drop
+      module: 1-8
+      location: 1-8.astro LEP After Disaster Todo id="lep-parent-child-centers" (line 437)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Parent Child Centers" (within "Parent Child Centers and food
+        shelves can support with access to food and other concrete supports")
+        URL:    https://dcf.vermont.gov/contacts/partners/pcc
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p57 (displayed p29) LEP After Disaster col 2 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p57 wraps "Parent Child Centers" in a VT DCF directory
+        anchor. Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-lep-food-shelves-link-drop
+      module: 1-8
+      location: 1-8.astro LEP After Disaster Todo id="lep-parent-child-centers" (line 437)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "food shelves" (within "Parent Child Centers and food shelves
+        can support with access to food and other concrete supports")
+        URL:    https://www.vtfoodbank.org/access-food/find-a-food-shelf/
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p57 (displayed p29) LEP After Disaster col 2 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p57 wraps "food shelves" in a VT Foodbank find-a-food-shelf
+        anchor. Per decision 1a_restore_as_Todo_plus_ExternalLink. Restored
+        via <ExternalLink> in the SAME Todo as Parent Child Centers (workbook
+        prose has both anchors in one sentence, so they share a Todo).
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-create-a-plan-link-drop
+      module: 1-8
+      location: 1-8.astro Farm Before Disaster Todo id="farm-plan" (line 479)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Create a Plan" (within "Create a Plan [Another Plan Template]
+        (With daily feed & water requirements for most livestock)")
+        URL:    https://www.usda.gov/sites/default/files/documents/usda-livestock-preparedness-fact-sheet.pdf
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p58 (displayed p30) Farm Before Disaster col 1 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p58 wraps "Create a Plan" in a USDA Livestock Preparedness
+        fact-sheet PDF anchor. Per decision 1a_restore_as_Todo_plus_ExternalLink.
+        Restored via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-another-plan-template-link-drop
+      module: 1-8
+      location: 1-8.astro Farm Before Disaster Todo id="farm-plan" (line 479)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Another Plan Template" (within "Create a Plan [Another Plan
+        Template] (With daily feed & water requirements for most livestock)")
+        URL:    https://www.prep4agthreats.org/Assets/Factsheets/livestock-emergency-preparedness-plan.pdf
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p58 (displayed p30) Farm Before Disaster col 1 row 1
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p58 wraps "Another Plan Template" in a Prep4AgThreats Livestock
+        Emergency Plan template PDF anchor. Per decision
+        1a_restore_as_Todo_plus_ExternalLink. Restored via <ExternalLink> in
+        the SAME Todo as "Create a Plan" (workbook bracket form shares one
+        Todo).
+      proposed_canonical_field: null
+    - id: archive-1-8-farm-fsa-nrcs-offices-link-drop
+      module: 1-8
+      location: 1-8.astro Farm Before Disaster Todo id="farm-fsa-nrcs" (line 487)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "FSA & NRCS Offices" (within "Consider Connecting with your
+        local FSA & NRCS Offices…")
+        URL:    https://www.farmers.gov/
+        Site state pre-day-21b: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p58 (displayed p30) Farm Before Disaster col 1 row 3
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-8) part 1b: 14 residual class-c restorations (day 21b)'
+      rationale: |
+        Workbook p58 wraps "FSA & NRCS Offices" in a USDA Farmers.gov anchor
+        (FSA + NRCS portal). Per decision 1a_restore_as_Todo_plus_ExternalLink.
+        Restored via <ExternalLink>.
+      proposed_canonical_field: null
+    - id: archive-1-11-house-gutting-link-drop
+      module: 1-11
+      location: 1-11.astro Gutting subsection definition paragraph (line 257 pre-day-23, "<strong>House Gutting</strong> is the process of removing sheetrock...")
+      type: dropped_workbook_links
+      content: |
+        Anchor: "House Gutting" (within "House Gutting is the process of removing
+        sheetrock, insulation and water-logged permeable materials in order to
+        expose joists, studs, subfloor, etc.")
+        URL:    https://drive.google.com/file/d/1EYIHSzBZjEisON-7tjwueVQ1OS1EcCqs/view?usp=drive_link
+        Site state pre-day-23: <strong>House Gutting</strong> rendered as plain
+        bold text — no <a> wrapper.
+      inferred_source: workbook PDF p74 (displayed p37) Gutting subsection definition paragraph
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(1-10 + 1-11): paired modules (day 23)'
+      rationale: |
+        Workbook p74 wraps the "House Gutting" subsection-label phrase (the
+        bold lead-in of the Gutting subsection definition paragraph) in a
+        Drive-file anchor pointing at the House Gutting specific template
+        — distinct from the section folder URL. Per inventory `decision:
+        1a_restore_as_inline_ExternalLink_on_subsection_label`. Restored via
+        <ExternalLink> wrapping the existing <strong>House Gutting</strong>
+        markup. Note: 3 of the 4 subsection re-links (Pumping, Mucking, Mold
+        remediation) all point at the SAME 1.11 folder URL and remain
+        deferred under `pin_with_folder_header` — only the House Gutting
+        subsection label re-links to a distinct file URL, which is why it
+        alone surfaces in this commit.
+      proposed_canonical_field: null
+    - id: archive-2-3-tradesfolk-directory-link-drop
+      module: 2-3
+      location: 2-3.astro Tradesfolk directory section, Todo id="tradesfolk-directory" (line 105-107 pre-day-25, "Create a directory" phrase)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Create a directory" (within "Create a directory of trusted
+        local (or almost local) contractors, electricians, plumbers, land
+        movers, haulers, structural engineers, etc. that could be called
+        any day or during disasters.")
+        URL: https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link
+        Site state pre-day-25: plain text — no <a> wrapper.
+      inferred_source: workbook PDF p88 (displayed p43) Tradesfolk directory section first Todo
+      date_removed: '2026-04-29'
+      removed_in_commit: 'feat(2-2 + 2-3): paired-light Step-2 namespace modules + chapter-intro restore + emergency-preparedness retro-audit (day 25)'
+      rationale: |
+        Workbook PDF p88 wraps "Create a directory" within the Tradesfolk
+        directory section's first Todo in a Drive-file anchor pointing at a
+        specific Tradesfolk Directory template file. Site dropped the link,
+        rendering "Create a directory" as plain text. Per inventory
+        `decision: 1a_restore_as_ExternalLink`. Restored via <ExternalLink>
+        wrapping the "Create a directory" phrase. Archived to document the
+        dropped-link site form.
+      proposed_canonical_field: null
+    - id: archive-1-2-folder-header-link-drop
+      module: 1-2
+      location: top of 1-2.astro <ModuleLayout> (above guide-table); was missing pre-day-8
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.2 Food and water"
+        URL:    https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu
+        Workbook context: workbook page 35 opens with "Folder with resources
+        and templates: 1.2 Food and water" — folder header line linking
+        the 1HZSXmTaX Drive folder. Site never surfaced this header.
+      inferred_source: workbook page 35 folder header
+      date_removed: '2026-04-24'
+      removed_in_commit: 'feat(1-2): source spec + wiring (day 8)'
+      rationale: |
+        Workbook p35 opens with a "Folder with resources and templates:" line
+        linking the 1HZSXmTaX Drive folder (1.2 Food and water). Site never
+        surfaced this header inline. Per inventory innovations.folder_header_missing_recurs
+        decision: restore_via_spec_links (status RESOLVED day 8). Restored
+        on day 8 as a leading <p>Folder with resources and templates:
+        <ExternalLink ...>1.2 Food and water</ExternalLink></p> line — the
+        first occurrence of the recurring folder-header-missing pattern
+        (later observed on 1-1, 1-3, 1-4, 1-5, KYC). Same shape as
+        archive-1-1-folder-header-link (day 16 sibling). Backfilled day 27
+        — the day-8 commit restored this folder header without appending
+        an archive entry; this entry restores the archive-then-remove
+        invariant retroactively.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        1HZSXmTaX folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134); also reachable via the
+        inline "community backup stores", "community-scale equipment and
+        infrastructure", "set up kitchens", and "Create a directory of
+        food access points" anchors.
+      proposed_canonical_field: null
+    - id: archive-1-3-folder-header-link-drop
+      module: 1-3
+      location: top of 1-3.astro <ModuleLayout> (above guide-table); was missing pre-day-9
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.4 First aid and medical"   # workbook typo; section is 1.3
+        URL:    https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH
+        Workbook context: workbook page 42 opens with "Folder with resources
+        and templates: 1.4 First aid and medical" — folder header line
+        linking the 1HI-sf3 Drive folder. Workbook anchor text reads "1.4
+        First aid and medical" (upstream off-by-one typo — section is
+        actually 1.3). Site never surfaced this header.
+      inferred_source: workbook page 42 folder header (with upstream "1.4" typo)
+      date_removed: '2026-04-25'
+      removed_in_commit: 'feat(1-3): source spec + wiring (day 9)'
+      rationale: |
+        Workbook p42 opens with a "Folder with resources and templates:" line
+        linking the 1HI-sf3 Drive folder. Site never surfaced this header
+        inline. Per inventory folder_header_pattern decision pinned for
+        design review (innovations.folder_header_pattern_pinned_for_design_review)
+        AND per workbook fidelity restored inline on day 9 (1-2 day-8
+        precedent followed for cross-module consistency). Anchor text
+        preserves workbook upstream typo "1.4 First aid and medical" verbatim.
+        Same shape as archive-1-2-folder-header-link-drop (day-8 sibling)
+        and archive-1-1-folder-header-link (day-16 downstream). Backfilled
+        day 27 — the day-9 commit restored this folder header without
+        appending an archive entry; this entry restores the archive-then-
+        remove invariant retroactively.
+
+        Day 30 (this commit) removed the inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        1HI-sf3 folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134). Side benefit: the
+        workbook upstream typo "1.4" anchor text is no longer rendered
+        to users (only the canonical section title "First aid and medical"
+        remains, surfaced through ModuleLayout's page header).
+      proposed_canonical_field: null
+    - id: archive-1-4-folder-header-link-drop
+      module: 1-4
+      location: top of 1-4.astro <ModuleLayout> (above guide-table); was missing pre-day-10
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.3 Power supply"            # workbook typo; section is 1.4
+        URL:    https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU
+        Workbook context: workbook page 45 opens with "Folder with resources
+        and templates: 1.3 Power supply" — folder header line linking
+        the 1Bl9xBYa Drive folder. Workbook anchor text reads "1.3 Power
+        supply" (upstream off-by-one typo — section is actually 1.4).
+        Site never surfaced this header.
+      inferred_source: workbook page 45 folder header (with upstream "1.3" typo)
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-4): source spec + wiring (day 10)'
+      rationale: |
+        Workbook p45 opens with a "Folder with resources and templates:" line
+        linking the 1Bl9xBYa Drive folder. Site never surfaced this header
+        inline. Restored inline on day 10 with workbook label verbatim
+        ("1.3 Power supply" — upstream typo preserved per inventory
+        workbook_typo_note). Same shape as archive-1-2-folder-header-link-drop
+        (day-8 sibling) and archive-1-3-folder-header-link-drop (day-9 sibling
+        — same off-by-one workbook typo pattern). Backfilled day 27 — the
+        day-10 commit restored this folder header without appending an
+        archive entry; this entry restores the archive-then-remove invariant
+        retroactively.
+
+        Day 30 (this commit) removed the inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        1Bl9xBYa folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134). Side benefit: the
+        workbook upstream typo "1.3" anchor text is no longer rendered
+        to users (only the canonical section title "Power supply" remains,
+        surfaced through ModuleLayout's page header).
+      proposed_canonical_field: null
+    - id: archive-1-4-power-supply-inventory-link-drop
+      module: 1-4
+      location: 1-4.astro Power supply Stuff col, Todo id="power-inventory" (line 46 pre-day-10)
+      type: dropped_workbook_links
+      content: |
+        Anchor: "Power Supply inventory" (within "Keep track of your power
+        sources with the Power Supply inventory template.")
+        URL:    https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit
+          (workbook anchor target is cell-level:
+           ?gid=1882137661#gid=1882137661&range=A1:C1 — restored as
+           sheet-level URL per innovations.cell_level_spreadsheet_link
+           decision drop_range_use_sheet_level_url, sheet-level URL is
+           visually equivalent in browser and keeps normalizeUrl scope simpler)
+        Site state pre-day-10: plain text — no <a> wrapper around "Power
+        Supply inventory" phrase.
+      inferred_source: workbook page 45 Power Supply inventory anchor (cell-level target in master Templates Directory sheet)
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-4): source spec + wiring (day 10)'
+      rationale: |
+        Workbook page 45 wraps "Power Supply inventory" in an anchor pointing
+        at a specific row in the Templates Directory master sheet via
+        ?gid=1882137661&range=A1:C1 cell-level targeting. Site rendered
+        the phrase as plain text. Per inventory plain_text_dropped_link
+        decision: 1a_restore_as_ExternalLink_sheet_level. Restored via
+        <ExternalLink> wrapping the "Power Supply inventory" phrase using
+        sheet-level URL (cell-level range dropped per the
+        innovations.cell_level_spreadsheet_link decision —
+        drop_range_use_sheet_level_url). First occurrence of cell-level
+        spreadsheet targeting in the walk; sheet-level restoration is
+        visually equivalent in the browser. Backfilled day 27 — the
+        day-10 commit restored this anchor without appending an archive
+        entry; this entry restores the archive-then-remove invariant
+        retroactively.
+      proposed_canonical_field: null
+    - id: archive-1-5-folder-header-link-drop
+      module: 1-5
+      location: top of 1-5.astro <ModuleLayout> (above guide-table); was missing pre-day-11
+      type: dropped_workbook_links
+      content: |
+        Anchor: "1.5 Warming/cooling/emergency shelter"
+        URL:    https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF
+        Workbook context: workbook page 23/45 opens with "Folder with
+        resources and templates: 1.5 Warming/cooling/emergency shelter"
+        — folder header line linking the 1GAq4V6y Drive folder. No
+        upstream typo on this one (1.5 is the correct section number).
+        Site never surfaced this header.
+      inferred_source: workbook page 23/45 folder header
+      date_removed: '2026-04-26'
+      removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
+      rationale: |
+        Workbook p23/45 opens with a "Folder with resources and templates:"
+        line linking the 1GAq4V6y Drive folder (1.5 Warming/cooling/emergency
+        shelter). Site never surfaced this header inline. Restored inline
+        on day 11 with workbook label verbatim. Same shape as
+        archive-1-2/1-3/1-4-folder-header-link-drop (days 8/9/10 siblings)
+        — first folder-header restoration without an upstream typo (1.5 is
+        the correct section number, unlike 1-3's "1.4" and 1-4's "1.3"
+        typos). Backfilled day 27 — the day-11 commit restored this folder
+        header without appending an archive entry; this entry restores the
+        archive-then-remove invariant retroactively.
+
+        Day 30 (commit a556954) removed that inline <p> as a duplicate of the
+        ModuleLayout "See Additional Resources" button affordance. The
+        1GAq4V6y folder URL is now sourced from src/data/downloads.ts via
+        getResourcesUrlForSection() and recognized by the verifier's
+        layout-aware link check (commit 4a9c134); also reachable via the
+        Systems column's "Create a system" inline anchor.
+      proposed_canonical_field: null

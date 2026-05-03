@@ -34,5 +34,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run vitest
+        run: pnpm vitest run
+
+      - name: Run astro check
+        run: pnpm astro check
+
       - name: Run verify-against-source
         run: pnpm verify --since HEAD~1

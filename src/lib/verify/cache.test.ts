@@ -19,11 +19,13 @@ import {
   setCachedExtraction,
   getSourceEntry,
   setSourceEntry,
+  setSourceContentHash,
   checkSourceFreshness,
   CacheCorruptedError,
   SOURCES_YAML,
   CACHE_YAML,
 } from './cache';
+import { SOURCE_REGISTRY_ALL_PAGES_KEY } from './schemas';
 
 describe('cache: hashing', () => {
   it('sha256 is deterministic', () => {
@@ -103,7 +105,7 @@ describe('cache: source registry', () => {
   it('save + load roundtrip', async () => {
     const entry = {
       source_hash: 'a'.repeat(64),
-      content_hash: 'b'.repeat(64),
+      content_hashes: { '14-15': 'b'.repeat(64) },
       last_verified: '2026-04-16T00:00:00.000Z',
     };
     const reg = { sources: { 'public/toolkit/x.pdf': entry } };
@@ -116,7 +118,7 @@ describe('cache: source registry', () => {
   it('save + load tolerates explicit undefined optional field (no false quarantine)', async () => {
     const entry = {
       source_hash: 'a'.repeat(64),
-      content_hash: 'b'.repeat(64),
+      content_hashes: { [SOURCE_REGISTRY_ALL_PAGES_KEY]: 'b'.repeat(64) },
       drive_file_id: undefined,
       last_verified: '2026-04-16T00:00:00.000Z',
     };
@@ -128,7 +130,7 @@ describe('cache: source registry', () => {
   it('save → load → save → load meta_hash stable across cycles', async () => {
     const entry = {
       source_hash: 'a'.repeat(64),
-      content_hash: 'b'.repeat(64),
+      content_hashes: { '1': 'b'.repeat(64) },
       last_verified: '2026-04-16T00:00:00.000Z',
     };
     await saveSourceRegistry({ sources: { 'x.pdf': entry } }, tmp);
@@ -164,7 +166,7 @@ describe('cache: source registry', () => {
     await mkdir(join(tmp, 'docs/source-specs'), { recursive: true });
     const entry = {
       source_hash: 'a'.repeat(64),
-      content_hash: 'b'.repeat(64),
+      content_hashes: { '1': 'b'.repeat(64) },
       last_verified: '2026-04-16T00:00:00.000Z',
     };
     await writeFile(
@@ -177,7 +179,7 @@ describe('cache: source registry', () => {
   it('getSourceEntry returns null for missing, entry for present', () => {
     const entry = {
       source_hash: 'a'.repeat(64),
-      content_hash: 'b'.repeat(64),
+      content_hashes: { '1': 'b'.repeat(64) },
       last_verified: '2026-04-16T00:00:00.000Z',
     };
     const reg = { sources: { 'x.pdf': entry } };
@@ -188,13 +190,84 @@ describe('cache: source registry', () => {
   it('setSourceEntry is immutable add', () => {
     const entry = {
       source_hash: 'a'.repeat(64),
-      content_hash: 'b'.repeat(64),
+      content_hashes: { '1': 'b'.repeat(64) },
       last_verified: '2026-04-16T00:00:00.000Z',
     };
     const reg = { sources: {} };
     const next = setSourceEntry(reg, 'x.pdf', entry);
     expect(next.sources['x.pdf']).toEqual(entry);
     expect(reg.sources).toEqual({});
+  });
+
+  describe('setSourceContentHash', () => {
+    const ts = '2026-04-24T00:00:00.000Z';
+
+    it('creates entry when PDF is absent', () => {
+      const next = setSourceContentHash({ sources: {} }, 'x.pdf', '66', 'a'.repeat(64), 'b'.repeat(64), ts);
+      expect(next.sources['x.pdf']).toEqual({
+        source_hash: 'a'.repeat(64),
+        content_hashes: { '66': 'b'.repeat(64) },
+        last_verified: ts,
+      });
+    });
+
+    it('uses __all__ key when page is undefined', () => {
+      const next = setSourceContentHash({ sources: {} }, 'x.pdf', undefined, 'a'.repeat(64), 'b'.repeat(64), ts);
+      expect(next.sources['x.pdf'].content_hashes).toEqual({
+        [SOURCE_REGISTRY_ALL_PAGES_KEY]: 'b'.repeat(64),
+      });
+    });
+
+    it('merges new page hash into existing entry when source_hash unchanged', () => {
+      const reg = setSourceContentHash({ sources: {} }, 'x.pdf', '66', 'a'.repeat(64), 'b'.repeat(64), ts);
+      const next = setSourceContentHash(reg, 'x.pdf', '35-36', 'a'.repeat(64), 'c'.repeat(64), ts);
+      expect(next.sources['x.pdf'].content_hashes).toEqual({
+        '66': 'b'.repeat(64),
+        '35-36': 'c'.repeat(64),
+      });
+    });
+
+    it('overwrites the same page hash on re-scaffold', () => {
+      const reg = setSourceContentHash({ sources: {} }, 'x.pdf', '66', 'a'.repeat(64), 'b'.repeat(64), ts);
+      const next = setSourceContentHash(reg, 'x.pdf', '66', 'a'.repeat(64), 'd'.repeat(64), ts);
+      expect(next.sources['x.pdf'].content_hashes).toEqual({ '66': 'd'.repeat(64) });
+    });
+
+    it('drops stale content_hashes when source_hash changes', () => {
+      const reg = setSourceContentHash({ sources: {} }, 'x.pdf', '66', 'a'.repeat(64), 'b'.repeat(64), ts);
+      const next = setSourceContentHash(reg, 'x.pdf', '66', 'e'.repeat(64), 'f'.repeat(64), ts);
+      expect(next.sources['x.pdf']).toEqual({
+        source_hash: 'e'.repeat(64),
+        content_hashes: { '66': 'f'.repeat(64) },
+        last_verified: ts,
+      });
+    });
+
+    it('preserves drive_file_id across merges', () => {
+      const reg: { sources: Record<string, unknown> } = {
+        sources: {
+          'x.pdf': {
+            source_hash: 'a'.repeat(64),
+            content_hashes: { '66': 'b'.repeat(64) },
+            drive_file_id: 'abc123',
+            last_verified: ts,
+          },
+        },
+      };
+      const next = setSourceContentHash(reg as never, 'x.pdf', '35-36', 'a'.repeat(64), 'c'.repeat(64), ts);
+      expect(next.sources['x.pdf'].drive_file_id).toBe('abc123');
+      expect(next.sources['x.pdf'].content_hashes).toEqual({
+        '66': 'b'.repeat(64),
+        '35-36': 'c'.repeat(64),
+      });
+    });
+
+    it('immutable — returns new registry, leaves original untouched', () => {
+      const reg = { sources: {} };
+      const next = setSourceContentHash(reg, 'x.pdf', '66', 'a'.repeat(64), 'b'.repeat(64), ts);
+      expect(reg.sources).toEqual({});
+      expect(next).not.toBe(reg);
+    });
   });
 });
 
@@ -271,20 +344,58 @@ describe('cache: checkSourceFreshness', () => {
     }
   });
 
-  it('fresh when source_hash matches', async () => {
+  it('fresh when source_hash and per-page content_hash both registered', async () => {
     const path = join(tmp, 'a.pdf');
     await writeFile(path, 'hello');
     const reg = {
       sources: {
         'a.pdf': {
           source_hash: sha256('hello'),
-          content_hash: 'c'.repeat(64),
+          content_hashes: { '66': 'c'.repeat(64) },
+          last_verified: '2026-04-16T00:00:00.000Z',
+        },
+      },
+    };
+    const result = await checkSourceFreshness(reg, path, 'a.pdf', '66');
+    expect(result.state).toBe('fresh');
+    if (result.state === 'fresh') {
+      expect(result.pageContentHash).toBe('c'.repeat(64));
+    }
+  });
+
+  it('unregistered when source_hash matches but page is unknown', async () => {
+    const path = join(tmp, 'a.pdf');
+    await writeFile(path, 'hello');
+    const reg = {
+      sources: {
+        'a.pdf': {
+          source_hash: sha256('hello'),
+          content_hashes: { '66': 'c'.repeat(64) },
+          last_verified: '2026-04-16T00:00:00.000Z',
+        },
+      },
+    };
+    const result = await checkSourceFreshness(reg, path, 'a.pdf', '35-36');
+    expect(result.state).toBe('unregistered');
+  });
+
+  it('uses __all__ key when no page is provided', async () => {
+    const path = join(tmp, 'a.pdf');
+    await writeFile(path, 'hello');
+    const reg = {
+      sources: {
+        'a.pdf': {
+          source_hash: sha256('hello'),
+          content_hashes: { [SOURCE_REGISTRY_ALL_PAGES_KEY]: 'c'.repeat(64) },
           last_verified: '2026-04-16T00:00:00.000Z',
         },
       },
     };
     const result = await checkSourceFreshness(reg, path, 'a.pdf');
     expect(result.state).toBe('fresh');
+    if (result.state === 'fresh') {
+      expect(result.pageContentHash).toBe('c'.repeat(64));
+    }
   });
 
   it('source_drift when bytes changed', async () => {
@@ -294,12 +405,12 @@ describe('cache: checkSourceFreshness', () => {
       sources: {
         'a.pdf': {
           source_hash: sha256('old bytes'),
-          content_hash: 'c'.repeat(64),
+          content_hashes: { '66': 'c'.repeat(64) },
           last_verified: '2026-04-16T00:00:00.000Z',
         },
       },
     };
-    const result = await checkSourceFreshness(reg, path, 'a.pdf');
+    const result = await checkSourceFreshness(reg, path, 'a.pdf', '66');
     expect(result.state).toBe('source_drift');
   });
 });

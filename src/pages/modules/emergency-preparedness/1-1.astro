@@ -1,7 +1,7 @@
 ---
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
-import InfoCallout from '@/components/InfoCallout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -14,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-1-emergency-preparedness-kits.md page: 30 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <table class="guide-table">
         <thead>
           <tr>
@@ -38,9 +35,9 @@ const sectionData: SectionData = {
           </tr>
           <tr>
             <td>
-              Households can prepare <a href="#">emergency plans</a> and <a href="#">emergency kits</a>,
-              as well as <a href="#">storing backup food</a> and water supplies.
-              <p>Food and water will need to be refreshed on a regular basis.</p>
+              Households can prepare <ExternalLink href="https://docs.google.com/document/d/154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto/edit?tab=t.0">emergency plans</ExternalLink> and <ExternalLink href="https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F">emergency kits</ExternalLink>,
+              as well as <ExternalLink href="https://docs.google.com/spreadsheets/d/1RaYyavdAbn43b3EH9zMzQir6G6gxnQE0XxMBxMH5iTQ/edit?usp=drive_link">storing backup food</ExternalLink> and water supplies.
+              <p>Food and water will need to be refreshed on a regular basis</p>
             </td>
             <td>
               <strong>Emergency Kit: keep this in your home</strong>
@@ -70,7 +67,7 @@ const sectionData: SectionData = {
                   Sheeting and duct tape to shelter-in-place
                 </Todo>
                 <Todo id="kit-sanitation" moduleKey="emergency-preparedness-kits" client:load>
-                  Personal sanitation supplies (incl. moist towelettes, garbage bags, and plastic ties)
+                  Personal sanitation supplies (incl. moist towelettes, garbage bags and plastic ties)
                 </Todo>
                 <Todo id="kit-wrench" moduleKey="emergency-preparedness-kits" client:load>
                   Non-sparking wrench or pliers to turn off utilities
@@ -88,7 +85,7 @@ const sectionData: SectionData = {
           </tr>
           <tr>
             <td>
-              Individuals in a household can prepare <a href="#">go bags</a>, which are easy to grab in
+              Individuals in a household can prepare ‘<ExternalLink href="https://drive.google.com/file/d/1Ea1zc8wSbvVoMqcLqNz19sNJTsuThQIM/view?usp=drive_link">go bags</ExternalLink>,’ which are easy to grab in
               case you need to leave quickly.
             </td>
             <td>

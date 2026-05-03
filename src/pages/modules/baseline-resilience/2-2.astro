@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/2-2-shared-tools.md page: 86 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <section>
         <h2 class="text-title font-semibold mb-4">Tool lending library</h2>
 
@@ -33,8 +29,26 @@ const sectionData: SectionData = {
           </Todo>
 
           <Todo id="tool-library-research" moduleKey="shared-tools" client:load>
-            Read up on best practices and existing ways of doing this. New Suns Community Center (Thetford) and Cooperation Vermont (Marshfield) have tool libraries. See also: <ExternalLink href="https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes">Library of Things toolkit from Shareable</ExternalLink>, <ExternalLink href="https://myturn.com/">myTurn</ExternalLink> (online tool for managing tool sharing), and <ExternalLink href="https://www.toollibraryalliance.org/">Tool Library Alliance</ExternalLink> for lots of resources.
+            Read up on best practices and existing ways of doing this.
           </Todo>
+
+          <div class="ml-6 space-y-4">
+            <Todo id="tool-library-new-suns" moduleKey="shared-tools" client:load>
+              New Suns Community Center (Thetford) and Cooperation Vermont (Marshfield) have tool libraries.
+            </Todo>
+
+            <Todo id="tool-library-shareable" moduleKey="shared-tools" client:load>
+              <ExternalLink href="https://www.shareable.net/library-of-things-toolkit/#anchor_Section%2011:%20Workshops%20and%20classes">Library of Things toolkit from Shareable</ExternalLink>
+            </Todo>
+
+            <Todo id="tool-library-myturn" moduleKey="shared-tools" client:load>
+              <ExternalLink href="https://myturn.com/">myTurn</ExternalLink>, online tool for managing tool sharing
+            </Todo>
+
+            <Todo id="tool-library-alliance" moduleKey="shared-tools" client:load>
+              <ExternalLink href="https://www.toollibraryalliance.org/">Tool Library Alliance</ExternalLink> - lots of resources here
+            </Todo>
+          </div>
         </div>
       </section>
 

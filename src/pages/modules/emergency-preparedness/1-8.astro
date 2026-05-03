@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-8-populations-with-specific-needs.md page: 54-59 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <h3 class="text-title font-semibold">Children, childcare, and youth engagement with disaster</h3>
       <p>Consider engaging older youth in recovery work—which can build a sense of belonging and connectedness with community in what can be an isolating time. See Section 1.10 on Volunteer Management for more.</p>
 
@@ -102,7 +98,7 @@ const sectionData: SectionData = {
                   Make time and space to talk with young people about their experience of disaster. Ask questions like 'how has this disaster affected you?' and 'what is sticking in your mind about this experience,' and generally, what questions they might have about the situation.
                 </Todo>
                 <Todo id="children-pediatrician" moduleKey="children-disaster" client:load>
-                  If a child has a pediatrician, it is important to connect them to that same doctor for continuity of care. If they do not, you can reach out to a <ExternalLink href="https://www.healthvermont.gov/health-equity/community-health-workers">Community Health Worker</ExternalLink> to connect them with the nearest <ExternalLink href="https://www.vt211.org/search/community-health-centers">Community Health Center</ExternalLink> or <ExternalLink href="https://vtfreeclinics.org/">Free Clinic</ExternalLink>
+                  If a child has a pediatrician, it is important to connect them to that same doctor for continuity of care. If they do not, you can reach out to a <ExternalLink href="https://www.vtassociationofcommunityhealthworkers.com/">Community Health Worker</ExternalLink> to connect them with the nearest <ExternalLink href="https://bistatepca.org/centers/">Community Health Center</ExternalLink> or <ExternalLink href="https://vtfreeclinics.org/find-a-clinic/">Free Clinic</ExternalLink>
                 </Todo>
               </div>
             </td>
@@ -110,7 +106,7 @@ const sectionData: SectionData = {
         </tbody>
       </table>
 
-      <h3 class="text-title font-semibold">Senior citizens and elders</h3>
+      <h3 class="text-title font-semibold">Senior citizens; people with mobility challenges and other disabilities</h3>
       <table class="guide-table">
         <thead>
           <tr>
@@ -131,30 +127,39 @@ const sectionData: SectionData = {
           <tr>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-directory" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-directory" moduleKey="seniors-and-disabilities" client:load>
                   Create a directory of seniors in your town, noting addresses, phone numbers, mobility or
                   health needs, and emergency contacts.
                 </Todo>
-                <Todo id="senior-partners" moduleKey="senior-citizens" client:load>
-                  Partner with senior centers, councils on aging, and home health agencies.
+                <Todo id="senior-partners" moduleKey="seniors-and-disabilities" client:load>
+                  Partner with senior centers, councils on aging, and home health agencies. Find your local council on aging at <ExternalLink href="https://dcf.vermont.gov/doc/contacts/partners/aaa">https://dcf.vermont.gov/doc/contacts/partners/aaa</ExternalLink>.
                 </Todo>
-                <Todo id="senior-buddy" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-buddy" moduleKey="seniors-and-disabilities" client:load>
                   Set up a "buddy system" or neighborhood pod where each elder has a designated check-in partner.
                 </Todo>
-                <Todo id="senior-coordinate" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-coordinate" moduleKey="seniors-and-disabilities" client:load>
                   Coordinate with municipal emergency managers for welfare checks and transport plans.
+                </Todo>
+                <Todo id="senior-asl" moduleKey="seniors-and-disabilities" client:load>
+                  Have first responders learn basics of American Sign Language
+                </Todo>
+                <Todo id="senior-visual-aids" moduleKey="seniors-and-disabilities" client:load>
+                  Include visual aids on important informational resources
+                </Todo>
+                <Todo id="senior-vcil" moduleKey="seniors-and-disabilities" client:load>
+                  Consult with the Vermont Center for Independent Living when creating emergency plans
                 </Todo>
               </div>
             </td>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-contact-sheets" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-contact-sheets" moduleKey="seniors-and-disabilities" client:load>
                   Printed contact sheets with emergency info
                 </Todo>
-                <Todo id="senior-large-print" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-large-print" moduleKey="seniors-and-disabilities" client:load>
                   Large-print flyers and phone tree templates
                 </Todo>
-                <Todo id="senior-radios" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-radios" moduleKey="seniors-and-disabilities" client:load>
                   Radios, landlines, or simple communication devices that work without internet
                 </Todo>
               </div>
@@ -168,13 +173,13 @@ const sectionData: SectionData = {
           <tr>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-kits" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-kits" moduleKey="seniors-and-disabilities" client:load>
                   Help elders assemble emergency kits with labeled containers and easy-open packaging.
                 </Todo>
-                <Todo id="senior-medication" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-medication" moduleKey="seniors-and-disabilities" client:load>
                   Identify medication refill and delivery systems (pharmacies, mutual aid networks)
                 </Todo>
-                <Todo id="senior-power" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-power" moduleKey="seniors-and-disabilities" client:load>
                   Connect with local electricians or solar installers about powering medical devices
                   (oxygen, CPAPs, mobility aids).
                 </Todo>
@@ -183,19 +188,19 @@ const sectionData: SectionData = {
             <td>
               <strong>Essential Items for Go Bags</strong>
               <div class="guide-table__checklist">
-                <Todo id="senior-medications" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-medications" moduleKey="seniors-and-disabilities" client:load>
                   7-day supply of medications and a printed medication list.
                 </Todo>
-                <Todo id="senior-glasses" moduleKey="senior-citizens" client:load>
-                  Glasses, hearing aid batteries, mobility aids (cane, walker, etc.)
+                <Todo id="senior-glasses" moduleKey="seniors-and-disabilities" client:load>
+                  Glasses, hearing aid batteries, mobility aids (cane, walker)
                 </Todo>
-                <Todo id="senior-chargers" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-chargers" moduleKey="seniors-and-disabilities" client:load>
                   Spare phone chargers and battery bank.
                 </Todo>
-                <Todo id="senior-comfort" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-comfort" moduleKey="seniors-and-disabilities" client:load>
                   Comfort items (blanket, family photos).
                 </Todo>
-                <Todo id="senior-id" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-id" moduleKey="seniors-and-disabilities" client:load>
                   Emergency ID and medical info card.
                 </Todo>
               </div>
@@ -209,28 +214,28 @@ const sectionData: SectionData = {
           <tr>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-shelters" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-shelters" moduleKey="seniors-and-disabilities" client:load>
                   Identify accessible warming/cooling shelters with ramps, restrooms, seating, and quiet
                   spaces.
                 </Todo>
-                <Todo id="senior-transport" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-transport" moduleKey="seniors-and-disabilities" client:load>
                   Develop local transport plans with volunteers or community shuttles for evacuations or
                   appointments.
                 </Todo>
-                <Todo id="senior-training" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-training" moduleKey="seniors-and-disabilities" client:load>
                   Train volunteers in safe transfer assistance and trauma-informed communication
                 </Todo>
               </div>
             </td>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-ramps" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-ramps" moduleKey="seniors-and-disabilities" client:load>
                   Portable ramps or folding mobility aids.
                 </Todo>
-                <Todo id="senior-cots" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-cots" moduleKey="seniors-and-disabilities" client:load>
                   Cots with raised legs, pillows, and blankets.
                 </Todo>
-                <Todo id="senior-transport-aids" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-transport-aids" moduleKey="seniors-and-disabilities" client:load>
                   Transport aids (wheelchairs, folding chairs, lifts).
                 </Todo>
               </div>
@@ -244,14 +249,14 @@ const sectionData: SectionData = {
           <tr>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-involve" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-involve" moduleKey="seniors-and-disabilities" client:load>
                   Involve elders in resilience planning and intergenerational knowledge-sharing
                 </Todo>
-                <Todo id="senior-meals" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-meals" moduleKey="seniors-and-disabilities" client:load>
                   Host community meals, storytelling circles, or skill exchanges where seniors share local
                   history and survival knowledge.
                 </Todo>
-                <Todo id="senior-support" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-support" moduleKey="seniors-and-disabilities" client:load>
                   Provide emotional support after disasters – partner with counselors, churches, or peer
                   networks.
                 </Todo>
@@ -259,176 +264,13 @@ const sectionData: SectionData = {
             </td>
             <td>
               <div class="guide-table__checklist">
-                <Todo id="senior-directories" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-directories" moduleKey="seniors-and-disabilities" client:load>
                   Printed resources directories (Meals on Wheels, Council on Aging, libraries)
                 </Todo>
-                <Todo id="senior-grants" moduleKey="senior-citizens" client:load>
+                <Todo id="senior-grants" moduleKey="seniors-and-disabilities" client:load>
                   Small grants or stipends for elder volunteers.
                 </Todo>
-                <Todo id="senior-bulletins" moduleKey="senior-citizens" client:load>
-                  Community bulletin boards and radio announcements for offline updates.
-                </Todo>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3 class="text-title font-semibold">People with mobility challenges and other disabilities</h3>
-      <p>Note: Much of the guidance for seniors also applies to people with mobility challenges and other disabilities. See the "Senior citizens and elders" section above for additional information on communication, preparedness, shelter support, and community connection.</p>
-
-      <table class="guide-table">
-        <thead>
-          <tr>
-            <th style="width: 30%">
-              <strong>Systems</strong>
-            </th>
-            <th style="width: 70%">
-              <strong>Stuff</strong>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="2">
-              <strong>Communication and Coordination</strong>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-directory" moduleKey="people-with-disabilities" client:load>
-                  Create a directory of people with disabilities in your town, noting addresses, phone numbers, mobility or health needs, and emergency contacts.
-                </Todo>
-                <Todo id="disability-partners" moduleKey="people-with-disabilities" client:load>
-                  Partner with senior centers, councils on aging, and home health agencies. Find your local council on aging at <ExternalLink href="https://dcf.vermont.gov/doc/contacts/partners/aaa">https://dcf.vermont.gov/doc/contacts/partners/aaa</ExternalLink>.
-                </Todo>
-                <Todo id="disability-buddy" moduleKey="people-with-disabilities" client:load>
-                  Set up a "buddy system" or neighborhood pod where each person has a designated check-in partner.
-                </Todo>
-                <Todo id="disability-coordinate" moduleKey="people-with-disabilities" client:load>
-                  Coordinate with municipal emergency managers for welfare checks and transport plans.
-                </Todo>
-                <Todo id="disability-service-animals" moduleKey="people-with-disabilities" client:load>
-                  Plan for service animals, sight and hearing accommodations
-                </Todo>
-              </div>
-            </td>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-contact-sheets" moduleKey="people-with-disabilities" client:load>
-                  Printed contact sheets with emergency info
-                </Todo>
-                <Todo id="disability-large-print" moduleKey="people-with-disabilities" client:load>
-                  Large-print flyers and phone tree templates
-                </Todo>
-                <Todo id="disability-radios" moduleKey="people-with-disabilities" client:load>
-                  Radios, landlines, or simple communication devices that work without internet
-                </Todo>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Preparedness and Supplies</strong>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-kits" moduleKey="people-with-disabilities" client:load>
-                  Help people assemble emergency kits with labeled containers and easy-open packaging.
-                </Todo>
-                <Todo id="disability-medication" moduleKey="people-with-disabilities" client:load>
-                  Identify medication refill and delivery systems (pharmacies, mutual aid networks)
-                </Todo>
-                <Todo id="disability-power" moduleKey="people-with-disabilities" client:load>
-                  Connect with local electricians or solar installers about powering medical devices (oxygen, CPAPs, mobility aids).
-                </Todo>
-              </div>
-            </td>
-            <td>
-              <strong>Essential Items for Go Bags</strong>
-              <div class="guide-table__checklist">
-                <Todo id="disability-medications" moduleKey="people-with-disabilities" client:load>
-                  7-day supply of medications and a printed medication list.
-                </Todo>
-                <Todo id="disability-aids" moduleKey="people-with-disabilities" client:load>
-                  Glasses, hearing aid batteries, mobility aids (cane, walker, wheelchair)
-                </Todo>
-                <Todo id="disability-chargers" moduleKey="people-with-disabilities" client:load>
-                  Spare phone chargers and battery bank.
-                </Todo>
-                <Todo id="disability-comfort" moduleKey="people-with-disabilities" client:load>
-                  Comfort items (blanket, family photos).
-                </Todo>
-                <Todo id="disability-id" moduleKey="people-with-disabilities" client:load>
-                  Emergency ID and medical info card.
-                </Todo>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Shelter and Mobility Support</strong>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-shelters" moduleKey="people-with-disabilities" client:load>
-                  Identify accessible warming/cooling shelters with ramps, restrooms, seating, and quiet spaces.
-                </Todo>
-                <Todo id="disability-transport" moduleKey="people-with-disabilities" client:load>
-                  Develop local transport plans with volunteers or community shuttles for evacuations or appointments.
-                </Todo>
-                <Todo id="disability-training" moduleKey="people-with-disabilities" client:load>
-                  Train volunteers in safe transfer assistance and trauma-informed communication
-                </Todo>
-              </div>
-            </td>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-ramps" moduleKey="people-with-disabilities" client:load>
-                  Portable ramps or folding mobility aids.
-                </Todo>
-                <Todo id="disability-cots" moduleKey="people-with-disabilities" client:load>
-                  Cots with raised legs, pillows, and blankets.
-                </Todo>
-                <Todo id="disability-transport-aids" moduleKey="people-with-disabilities" client:load>
-                  Transport aids (wheelchairs, folding chairs, lifts).
-                </Todo>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <strong>Community Connection and Well-Being</strong>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-involve" moduleKey="people-with-disabilities" client:load>
-                  Involve people with disabilities in resilience planning and intergenerational knowledge-sharing
-                </Todo>
-                <Todo id="disability-meals" moduleKey="people-with-disabilities" client:load>
-                  Host community meals, storytelling circles, or skill exchanges
-                </Todo>
-                <Todo id="disability-support" moduleKey="people-with-disabilities" client:load>
-                  Provide emotional support after disasters – partner with counselors, churches, or peer networks.
-                </Todo>
-              </div>
-            </td>
-            <td>
-              <div class="guide-table__checklist">
-                <Todo id="disability-directories" moduleKey="people-with-disabilities" client:load>
-                  Printed resources directories (Meals on Wheels, Council on Aging, libraries)
-                </Todo>
-                <Todo id="disability-grants" moduleKey="people-with-disabilities" client:load>
-                  Small grants or stipends for volunteers.
-                </Todo>
-                <Todo id="disability-bulletins" moduleKey="people-with-disabilities" client:load>
+                <Todo id="senior-bulletins" moduleKey="seniors-and-disabilities" client:load>
                   Community bulletin boards and radio announcements for offline updates.
                 </Todo>
               </div>
@@ -438,7 +280,7 @@ const sectionData: SectionData = {
       </table>
 
       <h3 class="text-title font-semibold">(Im)migrant populations with Limited English Proficiency (LEP)</h3>
-      <p>Folder with resources and templates: Limited English Proficiency Documents</p>
+      <p>Folder with resources and templates: <ExternalLink href="https://drive.google.com/drive/folders/1if3D-wTHEf1hYUKyJk9w0EeX5ZSUi3Q-?usp=drive_link">Limited English Proficiency Documents</ExternalLink></p>
 
       <table class="guide-table">
         <thead>
@@ -464,22 +306,22 @@ const sectionData: SectionData = {
                   Gather information on the language access needs in your area. Other than English, are there mostly Spanish speakers in your area? Individuals who speak Nepali?
                 </Todo>
                 <Todo id="lep-partner-orgs" moduleKey="lep-populations" client:load>
-                  Partner with organizations and groups that work with (im)migrant individuals who speak other languages. Connecting with schools is a great place to start.
+                  Partner with <ExternalLink href="https://docs.google.com/document/d/1Is0po3dbNMNl56RA0zm1ARid5JoWtv-ZUnPgr__oGOM/edit?usp=sharing">organizations and groups</ExternalLink> that work with (im)migrant individuals who speak other languages. Connecting with schools is a great place to start.
                 </Todo>
                 <Todo id="lep-bilingual" moduleKey="lep-populations" client:load>
                   Connect with community members who are bilingual
                 </Todo>
                 <Todo id="lep-directory-orgs" moduleKey="lep-populations" client:load>
-                  Make a list of organizations and people who can support and connect with LEP individuals
+                  Make a <ExternalLink href="https://drive.google.com/file/d/1NWSRoDXt7IR8wDNnoC1lyebI9vkCJZ4R/view?usp=drive_link">list of organizations and people</ExternalLink> who can support and connect with LEP individuals
                 </Todo>
                 <Todo id="lep-communication-modes" moduleKey="lep-populations" client:load>
                   Learn and use modes of communication that (im)migrant communities frequently use
                 </Todo>
                 <Todo id="lep-compile-resources" moduleKey="lep-populations" client:load>
-                  Compile a list of resources in other languages around disasters for LEP individuals
+                  Compile a <ExternalLink href="https://docs.google.com/document/d/1JwdvySyIuOi1SlBlFE7KF3Eh09IAmzPp289-Zlqu-O0/edit?usp=sharing">list of resources</ExternalLink> in other languages around disasters for LEP individuals
                 </Todo>
                 <Todo id="lep-interpreter-money" moduleKey="lep-populations" client:load>
-                  Will your hub have money that could pay for an interpreter? If so, you can contact someone from AALV for in-person interpreter services (for events planned ahead) or set up an account with <ExternalLink href="https://www.languageline.com/">LanguageLine</ExternalLink>, a company that offers professional interpretation services on the go.
+                  Will your hub have money that could pay for an interpreter? If so, you can contact someone from <ExternalLink href="https://www.aalv-vt.org/interpreter">AALV</ExternalLink> for in-person interpreter services (for events planned ahead) or set up an account with <ExternalLink href="https://www.languageline.com/">LanguageLine</ExternalLink>, a company that offers professional interpretation services on the go.
                 </Todo>
                 <Todo id="lep-pinch-interpreters" moduleKey="lep-populations" client:load>
                   Create a list of people in your community who can be called upon for interpretation in a pinch
@@ -558,7 +400,7 @@ const sectionData: SectionData = {
                   Develop local transport plans with volunteers
                 </Todo>
                 <Todo id="lep-during-train" moduleKey="lep-populations" client:load>
-                  Train volunteers on the procedure for interacting with LEP individuals, from start to finish
+                  Train volunteers on the <ExternalLink href="https://docs.google.com/document/d/135iBbFYDUUojTu9_irbQbnm_s5woAnX5TniHpGRedsY/edit?usp=sharing">procedure</ExternalLink> for interacting with LEP individuals, from start to finish
                 </Todo>
                 <Todo id="lep-during-access" moduleKey="lep-populations" client:load>
                   Access to services
@@ -596,16 +438,19 @@ const sectionData: SectionData = {
             <td colspan="2">
               <div class="guide-table__checklist">
                 <Todo id="lep-after-access" moduleKey="lep-populations" client:load>
-                  Ensure individuals have access to appropriate needs. Do individuals have healthcare needs?
+                  Ensure individuals have access to appropriate needs.
+                </Todo>
+                <Todo id="lep-after-healthcare" moduleKey="lep-populations" client:load>
+                  Do individuals have healthcare needs?
                 </Todo>
                 <Todo id="lep-after-support" moduleKey="lep-populations" client:load>
                   Provide emotional support after disasters – partner with counselors, churches, or peer networks.
                 </Todo>
                 <Todo id="lep-parent-child-centers" moduleKey="lep-populations" client:load>
-                  Parent Child Centers and food shelves can support with access to food and other concrete supports
+                  <ExternalLink href="https://dcf.vermont.gov/contacts/partners/pcc">Parent Child Centers</ExternalLink> and <ExternalLink href="https://www.vtfoodbank.org/access-food/find-a-food-shelf/">food shelves</ExternalLink> can support with access to food and other concrete supports
                 </Todo>
                 <Todo id="lep-community-health-worker" moduleKey="lep-populations" client:load>
-                  Connect individuals with a <ExternalLink href="https://www.healthvermont.gov/health-equity/community-health-workers">Community Health Worker</ExternalLink> if there are additional physical and mental health needs to connect individuals with the nearest <ExternalLink href="https://www.vt211.org/search/community-health-centers">Community Health Center</ExternalLink> or <ExternalLink href="https://vtfreeclinics.org/">Free Clinic</ExternalLink>
+                  Connect individuals with a <ExternalLink href="https://www.vtassociationofcommunityhealthworkers.com/">Community Health Worker</ExternalLink> if there are additional physical and mental health needs to connect individuals with the nearest <ExternalLink href="https://bistatepca.org/centers/">Community Health Center</ExternalLink> or <ExternalLink href="https://vtfreeclinics.org/find-a-clinic/">Free Clinic</ExternalLink>
                 </Todo>
               </div>
             </td>
@@ -644,14 +489,14 @@ const sectionData: SectionData = {
             <td>
               <div class="guide-table__checklist">
                 <Todo id="farm-plan" moduleKey="farm-animals" client:load>
-                  Create a Plan [Another Plan Template] (With daily feed &
+                  <ExternalLink href="https://www.usda.gov/sites/default/files/documents/usda-livestock-preparedness-fact-sheet.pdf">Create a Plan</ExternalLink> [<ExternalLink href="https://www.prep4agthreats.org/Assets/Factsheets/livestock-emergency-preparedness-plan.pdf">Another Plan Template</ExternalLink>] (With daily feed &
                   water requirements for most livestock)
                 </Todo>
                 <Todo id="farm-safe-housing" moduleKey="farm-animals" client:load>
                   Site Safe Housing for Livestock - Ideally high & dry!
                 </Todo>
                 <Todo id="farm-fsa-nrcs" moduleKey="farm-animals" client:load>
-                  Consider Connecting with your local FSA & NRCS Offices - While not essential, your local FSA (Farm Service
+                  Consider Connecting with your local <ExternalLink href="https://www.farmers.gov/">FSA & NRCS Offices</ExternalLink> - While not essential, your local FSA (Farm Service
                   Agency) and NRCS (Natural Resource Conservation Services) agents are valuable resources
                   in times of emergency. Whether applying for disaster insurance, relief programs, or
                   conservation planning to promote on-farm resilience, these offices offer a variety of
@@ -702,8 +547,8 @@ const sectionData: SectionData = {
                   Act Early & Conservatively
                 </Todo>
                 <Todo id="farm-prioritize-safety" moduleKey="farm-animals" client:load>
-                  Prioritize Safety - Checking on/moving/handling livestock during the height of disaster
-                  can be extremely dangerous. Take every precaution possible to limit human exposure to
+                  Prioritize Safety. Checking on/moving livestock in the height of disaster
+                  can be extremely dangerous. Take every precaution to limit human exposure to
                   peak disaster conditions.
                 </Todo>
                 <Todo id="farm-turn-off-fence" moduleKey="farm-animals" client:load>

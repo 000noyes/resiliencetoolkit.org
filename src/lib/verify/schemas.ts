@@ -37,6 +37,27 @@ export const sectionSchema = z.object({
 });
 export type Section = z.infer<typeof sectionSchema>;
 
+/**
+ * Per-spec opt-out hooks for the runner's content-extraction matchers.
+ * Defaults are tuned for single-page citations whose template column
+ * headers cluster within the first 50 extracted lines of the cited page.
+ * See `docs/source-specs/README.md` for the spec-author guide on when
+ * each field needs to be set.
+ *
+ * `require_cluster` (day-15-k LOCKED documentation):
+ *   When `false`, the runner skips the short-label cluster heuristic for
+ *   this spec. Set it ONLY when the citation covers a page range that
+ *   includes BOTH prose pages and a template page — short column labels
+ *   ("Name", "Phone", "Email") then fall past the 50-line
+ *   `extractCandidateLines` cap and would false-fail. The spec's `notes`
+ *   block MUST include a one-liner explaining why the cluster check is
+ *   bypassed for that spec (e.g. "page range covers Section 1.9 prose
+ *   pp. 62-63 + Leader template p. 66").
+ *
+ *   Do NOT raise `extractCandidateLines` globally as a workaround — it
+ *   inflates verify runtime and masks real bugs in other specs. Per-spec
+ *   opt-out is the surgical fix.
+ */
 export const matchingConfigSchema = z.object({
   require_cluster: z.boolean().optional(),
   cluster_min_labels: z.number().int().min(1).max(10).optional(),
@@ -45,14 +66,123 @@ export const matchingConfigSchema = z.object({
 });
 export type MatchingConfig = z.infer<typeof matchingConfigSchema>;
 
+/**
+ * A single workbook-authoritative link discovered during 1a inventory.
+ *
+ * `kind` captures the Step 1a finding that the workbook sometimes uses an
+ * internal PDF anchor (`*.html#N`) which MUST be rendered as a site-internal
+ * route (e.g. `/modules/emergency-preparedness/1-5`), not as an external
+ * link back to the Drive-hosted PDF. Violating that mapping is a
+ * `link_type_mismatch`. See memory `feedback_internal_anchor_to_site_route.md`.
+ */
+export const specLinkSchema = z.object({
+  url: z.string().min(1),
+  label: z.string().optional(),
+  page: z.string().optional(),
+  /**
+   * `external_url` — expected to appear in site output as an absolute URL;
+   *                  compared via normalizeUrl.
+   * `internal_route` — expected to appear as a site-internal `/modules/...`
+   *                    path; compared as a prefix match on the href.
+   * Defaults to `external_url` when absent (preserves day-1.5 behavior).
+   */
+  kind: z.enum(['external_url', 'internal_route']).optional(),
+});
+export type SpecLink = z.infer<typeof specLinkSchema>;
+
+/**
+ * Expected headings the workbook authors at this location — section title(s)
+ * and any h2/h3 sub-headings rendered on the site. Compared against h1/h2/h3
+ * tag contents in the wired .astro/.tsx component by `titleMatches`.
+ *
+ * The top-level `title` field remains the primary (h1/section heading).
+ * `subheadings` holds workbook h2/h3 in document order; `titleMatches` fails
+ * as `title_drift` when the site emits an invented heading that is not in
+ * either list (walk-observed: 1-5, 1-12, 1-13, 2-1).
+ */
+export const specSubheadingSchema = z.object({
+  text: z.string().min(1),
+  level: z.number().int().min(2).max(4).optional(),
+});
+export type SpecSubheading = z.infer<typeof specSubheadingSchema>;
+
+/**
+ * Structural-fidelity assertion: the workbook authors N tables/forms at this
+ * location; the site MUST render exactly N matching components. Violating
+ * this is `structural_fidelity_failed` (walk-observed: 1-8 Seniors+Disabilities
+ * section split — 1 workbook table rendered as 2 site sections).
+ */
+export const structuralFidelitySchema = z.object({
+  /**
+   * Expected count of primary data-bearing components (DataTable, PlanForm,
+   * directory tables) that descend from the cited workbook location. The
+   * runner checks this as a hard-equality: count(site components) === table_count.
+   */
+  table_count: z.number().int().min(1),
+  /**
+   * Human-readable note on what the tables correspond to (optional audit trail).
+   */
+  description: z.string().optional(),
+});
+export type StructuralFidelity = z.infer<typeof structuralFidelitySchema>;
+
+/**
+ * Day-15-j: spec-local scoping window for `proseMatches`.
+ *
+ * Multi-citation files (e.g. 1-9.astro carries Leader + Neighbor + First
+ * Responder specs, each citing a slightly different page range) used to
+ * triple-count the same drifted paragraph because `proseMatches` ran
+ * against every paragraph in the file for every spec. `prose_scope`
+ * narrows the check to a 1-indexed line range in the wired component
+ * file — paragraphs outside the window are skipped for that spec.
+ *
+ * When absent (the day-1.5 default for 1-2/1-3/1-4/1-5/single-citation
+ * files), `proseMatches` runs file-global as before.
+ */
+export const proseScopeSchema = z
+  .object({
+    start_line: z.number().int().min(1).optional(),
+    end_line: z.number().int().min(1).optional(),
+  })
+  .refine(
+    (s) =>
+      s.start_line === undefined ||
+      s.end_line === undefined ||
+      s.end_line >= s.start_line,
+    { message: 'prose_scope.end_line must be >= start_line when both set' },
+  );
+export type ProseScope = z.infer<typeof proseScopeSchema>;
+
 export const sourceSpecSchema = z
   .object({
     module: z.string().regex(/^[0-9]+-[0-9]+$/, 'module must be like "1-9"'),
     template: z.string().regex(/^[a-z0-9-]+$/, 'template must be kebab-case'),
     title: z.string().min(1),
     citation: citationSchema,
+    /**
+     * Disambiguator for files that render multiple DataTables with the same
+     * column count (e.g. 1-9.astro renders 4-col Leader + 4-col Neighbor
+     * directories). When set, `keysMatch` filters site DataTables to the one
+     * whose authored `tableId` prop equals this value — the existing IDB
+     * scope key already authored on every shipped DataTable, no new
+     * authoring cost. When absent, `keysMatch` falls back to column-count-
+     * only matching (preserves day-1.5 behavior for the 5 shipped specs
+     * that don't carry a tableId field).
+     */
+    tableId: z.string().min(1).optional(),
+    /**
+     * 1-indexed line-range window in the wired component file. When set,
+     * `proseMatches` only checks paragraphs whose opening tag falls inside
+     * the window. Multi-citation files (e.g. 1-9.astro) declare a different
+     * window per spec so a single drifted paragraph counts once, not N
+     * times. When absent (default), proseMatches runs file-global.
+     */
+    prose_scope: proseScopeSchema.optional(),
     sections: z.array(sectionSchema).optional(),
     fields: z.array(fieldSchema).optional(),
+    links: z.array(specLinkSchema).optional(),
+    subheadings: z.array(specSubheadingSchema).optional(),
+    structural_fidelity: structuralFidelitySchema.optional(),
     notes: z.string().optional(),
     last_verified: z.string().datetime().optional(),
     matching: matchingConfigSchema.optional(),
@@ -67,13 +197,32 @@ export type SourceSpec = z.infer<typeof sourceSpecSchema>;
 
 const sha256Hex = z.string().regex(/^[a-f0-9]{64}$/, 'sha256 hex string required');
 
+/**
+ * Per-PDF registry entry. `content_hashes` is a record keyed by page string
+ * (as it appears in spec.citation.page, e.g. "66" or "35-36") to the
+ * normalized content hash for that page extraction. Whole-PDF extractions
+ * (no spec page) use the sentinel key `__all__`.
+ *
+ * Why a record instead of a single `content_hash`: multiple specs commonly
+ * cite different pages of the same workbook PDF (e.g. 1-2 page 35-36 and
+ * 1-9 page 66). A single content_hash field forces the most-recently-
+ * scaffolded spec to overwrite all others' content hashes, which makes the
+ * post-extract content_drift check fire spuriously on every spec but the
+ * latest. Per-page hashes let each spec own its own freshness state.
+ */
+export const SOURCE_REGISTRY_ALL_PAGES_KEY = '__all__';
 export const sourceRegistryEntrySchema = z.object({
   source_hash: sha256Hex,
-  content_hash: sha256Hex,
+  content_hashes: z.record(z.string().min(1), sha256Hex),
   drive_file_id: z.string().optional(),
   last_verified: z.string().datetime(),
 });
 export type SourceRegistryEntry = z.infer<typeof sourceRegistryEntrySchema>;
+
+/** Normalize a citation.page (possibly undefined) to a registry pageKey. */
+export function registryPageKey(page: string | undefined): string {
+  return page && page.length > 0 ? page : SOURCE_REGISTRY_ALL_PAGES_KEY;
+}
 
 export const sourceRegistrySchema = z.object({
   sources: z.record(z.string(), sourceRegistryEntrySchema),
@@ -124,6 +273,16 @@ export const verifyStatusSchema = z.enum([
   'spec_parse_error',
   'cache_corrupted',
   'drive_id_not_allowed',
+  // Day-5 additions — Step 1a walk-observed failure modes.
+  // See ~/.gstack/projects/000noyes-resiliencetoolkit.org/checkpoints/
+  //     step1a-inventory-walk-complete-20260424.md for the evidence set.
+  'link_drift',              // workbook URL normalizes differently than site URL (same intent)
+  'link_missing',            // workbook link absent on site (no substitution)
+  'link_type_mismatch',      // workbook internal_route rendered as external (or vice versa)
+  'title_drift',             // site h1/h2/h3 diverges from workbook title/subheading
+  'structural_fidelity_failed', // N workbook tables rendered as ≠ N site components
+  'key_drift',               // DataTable column key diverges from spec field key
+  'prose_drift',             // verbatim <p>/<li> text diverges from pdftotext extraction
 ]);
 export type VerifyStatus = z.infer<typeof verifyStatusSchema>;
 

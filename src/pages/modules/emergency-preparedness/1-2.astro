@@ -2,7 +2,6 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import InfoCallout from '@/components/InfoCallout.astro';
 import type { SectionData } from '@/types/section-navigation';
 
 const sectionData: SectionData = {
@@ -15,11 +14,8 @@ const sectionData: SectionData = {
 };
 ---
 
+<!-- source: docs/source-specs/1-2-food-and-water.md page: 35-36 -->
 <ModuleLayout sectionData={sectionData}>
-      <InfoCallout icon="lock" variant="info">
-        <p class="text-body text-foreground"><strong>How this works:</strong> Fill out the forms and checklists below online—your answers save automatically to your device and work offline. Your information never leaves your browser and stays completely private.</p>
-      </InfoCallout>
-
       <table class="guide-table">
         <thead>
           <tr>
@@ -41,13 +37,13 @@ const sectionData: SectionData = {
             <td>
               <div class="guide-table__checklist">
                 <Todo id="backup-food-community" moduleKey="food-and-water" client:load>
-                  Create household and community backup stores of food.
+                  Create household and <ExternalLink href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">community backup stores</ExternalLink> of food.
                 </Todo>
                 <Todo id="food-rotation" moduleKey="food-and-water" client:load>
                   Rotate stock, perhaps in collaboration with a store or food shelf.
                 </Todo>
                 <Todo id="critter-safe-containers" moduleKey="food-and-water" client:load>
-                  Use critter and humidity safe containers
+                  Use critter and humidity safe containers.
                 </Todo>
               </div>
               <p>
@@ -98,7 +94,7 @@ const sectionData: SectionData = {
           </tr>
           <tr>
             <td>
-              Identify community-scale equipment and infrastructure for food security.
+              Identify <ExternalLink href="https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu">community-scale equipment and infrastructure</ExternalLink> for food security.
             </td>
             <td>
               <div class="guide-table__checklist">
@@ -213,7 +209,7 @@ const sectionData: SectionData = {
                   Source food to fill in distribution dates and times
                 </Todo>
                 <Todo id="safe-food-handling" moduleKey="food-and-water" client:load>
-                  Ensure <ExternalLink href="https://www.cdc.gov/foodsafety/communication/food-safety-tips-during-emergencies.html">safe food
+                  Ensure <ExternalLink href="https://drive.google.com/file/d/1C5a0Sf1NWRU0XnMkHayw_vjwpuzqVZzJ/view">safe food
                   handling</ExternalLink> at distribution centers - refrigeration/coolers for things to stay cold vs. crock pots
                   and portable stoves to keep things warm.
                 </Todo>

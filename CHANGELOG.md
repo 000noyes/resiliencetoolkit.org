@@ -2,6 +2,109 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.10] - 2026-05-03
+
+### Source Fidelity restoration across all 17 modules
+
+This release closes the workbook-fidelity sweep. Every module section
+page on the site has been walked against the master Resilience Hub
+Toolkit workbook PDF. Approximately 134 class-c items (drifted titles,
+reworded prompts, substituted URLs, dropped sentences, invented links,
+missing sub-sections) were either restored verbatim from the workbook
+or removed and recorded for audit. Four minor text-level drifts
+surfaced in a final spot-check are deferred to a follow-up backlog
+(see "Known follow-up backlog" below) — none invalidates the
+per-module attestation.
+
+### Added
+- `docs/site-inventions-archive.yaml` preserves every removed class-c
+  item (129 entries across 9 categories) with workbook reference,
+  inferred source if any, and removal commit. Nothing was deleted
+  without an audit trail.
+- `docs/toolkit-inventory.yaml` per-module ledger now records
+  `class_c_count: 0` and a `structural_fidelity.verdict` for all 17
+  modules, with the per-day reconciliation history inline.
+- Two new DataTable source specs on 1-9: Neighbor Directory and First
+  Responder Directory, both citing the workbook page and Drive folder.
+- Source registry (`docs/source-specs/_sources.yaml`) pruned to 26
+  content-hash keys, all cited by at least one current spec.
+- 1-8 (Populations with specific needs): Seniors+Disabilities IndexedDB
+  migration with a real-fixture data-preservation test suite. Existing
+  user data on the legacy `senior-citizens` and `people-with-disabilities`
+  module keys merges cleanly into the merged `seniors-and-disabilities`
+  key with no user-visible loss.
+- 1-9 pandemics ExternalLink restored to the workbook folder anchor
+  (was substituted with a different Drive file id).
+- Internal PDF cross-references on 1-9 (Section 1.X / (N.M) anchors)
+  now render as site-internal `/modules/...` routes instead of external
+  links to GoogleDoc HTML pages.
+- Layout-aware link check in the source-fidelity verifier
+  (`src/lib/verify/runner-checks.ts` + `src/lib/verify/site-parse.ts`).
+  When a spec links entry's URL matches the section's
+  `getResourcesUrlForSection(sectionData.number)` lookup in
+  `src/data/downloads.ts`, the URL is treated as present on the page
+  via the `ModuleLayout` "See Additional Resources" button affordance.
+  Adds an `extractSectionNumber()` extractor and 8 new unit tests.
+- Fallback Table-of-Contents entry on pages with no semantic headers
+  and no table section headers. Pages 1-3, 1-5, 1-12, and 1-13 now
+  render a "Top of page" sidebar entry instead of collapsing the
+  layout column.
+- `pnpm vitest run` and `pnpm astro check` jobs added to the
+  GitHub Actions `verify-against-source` workflow so CI matches the
+  full gate set the project ships against.
+
+### Changed
+- `pnpm verify` runs in the `prebuild` hook; broken source chains fail
+  the build. CI runs verify on every push. Any merge that drifts the
+  site away from the workbook is caught before it ships.
+- Workbook structural fidelity: KYC restored to the 11-section workbook
+  order with the full Bringing People Together agenda + facilitation
+  guides + readiness checklist + pod-mapping prose recovered from the
+  earlier hardcoded reduction.
+- Chapter intros on `baseline-resilience/index.astro` and
+  `emergency-preparedness/index.astro` restored to workbook prose +
+  cross-link fidelity (closed the chapter-level summary drift surfaced
+  during the 2-1 / 2-2 / 2-3 walks).
+- Outdated April 15 webinar announcement removed from the homepage.
+- Six module pages no longer carry a redundant
+  `<p>Folder with resources and templates: ...</p>` body line
+  (knowing-your-community, 1-1, 1-2, 1-3, 1-4, 1-5). The folder URL
+  remains reachable via the `ModuleLayout` "See Additional Resources"
+  button on every section page that has a `resourcesUrl` entry in
+  `src/data/downloads.ts`. Removing the body line also retired the
+  upstream-workbook-typo labels "1.4 First aid and medical" (previously
+  rendered on the 1.3 page) and "1.3 Power supply" (previously
+  rendered on the 1.4 page).
+- Source-spec narratives, inventory entries, and archive entry
+  rationales for the six cleaned-up pages updated to describe the
+  folder URL's layout-button surface and the verifier's layout-aware
+  exemption.
+
+### Fixed
+- TOC sidebar no longer collapses the layout column on module pages
+  with no semantic headers (1-3, 1-5, 1-12, 1-13).
+- Build-output and skill-file tests skip cleanly when their
+  prerequisite files are absent, so CI passes without a build step or
+  installed skill files.
+- TODO entry for "Keep public/toolkit/sections/ PDFs in sync with
+  canonical workbook" reworded in product-maintenance terms.
+
+### Verification
+- 494 / 494 unit + integration tests passing locally; 488 + 6 skipped
+  in CI (build-output and skill-file tests skip when their prerequisite
+  files are absent).
+- `pnpm verify` clean: 25 entries, exit 0.
+- `pnpm astro check`: 0 errors, 0 warnings, 10 pre-existing hints.
+
+### Known follow-up backlog
+A targeted spot-check on the three highest-load modules (Knowing Your
+Community, 1-8, 1-9) at the close of the sweep surfaced one additional
+URL drift on 1-9, which is included in this release, plus four minor
+text-level drifts deferred to the follow-up backlog (1-8 title-case +
+punctuation; 1-9 bullet split + plain-text internal anchor). None
+invalidates the per-module attestation. A full 17-module re-walk is
+planned before the next round of verify enforcement ships.
+
 ## [0.0.9] - 2026-04-21
 
 ### Added
