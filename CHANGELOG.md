@@ -2,54 +2,7 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
-## [Unreleased]
-
-### Post-0.0.10 closeout hygiene
-
-Refinements landed on top of the 0.0.10 source-fidelity release while
-the merge to main remained on hold.
-
-### Added
-- Layout-aware link check in the source-fidelity verifier
-  (`src/lib/verify/runner-checks.ts` + `src/lib/verify/site-parse.ts`).
-  When a spec links entry's URL matches the section's
-  `getResourcesUrlForSection(sectionData.number)` lookup in
-  `src/data/downloads.ts`, the URL is treated as present on the page
-  via the `ModuleLayout` "See Additional Resources" button affordance.
-  Adds an `extractSectionNumber()` extractor and 8 new unit tests
-  (vitest now at 494 passing).
-- Fallback Table-of-Contents entry on pages with no semantic headers
-  and no table section headers. Pages 1-3, 1-5, 1-12, and 1-13 now
-  render a "Top of page" sidebar entry instead of collapsing the
-  layout column.
-- `pnpm vitest run` and `pnpm astro check` jobs added to the
-  GitHub Actions `verify-against-source` workflow so CI matches the
-  manual gate set documented in the PR.
-
-### Changed
-- Outdated webinar announcement banner removed from the homepage
-  (merge of `fix(homepage): comment out past webinar announcement`
-  from main).
-- Six module pages no longer carry the redundant
-  `<p>Folder with resources and templates: ...</p>` body line
-  (knowing-your-community, 1-1, 1-2, 1-3, 1-4, 1-5). The folder URL
-  is reachable via the `ModuleLayout` "See Additional Resources"
-  button on every section page that has a `resourcesUrl` entry in
-  `src/data/downloads.ts`. Removing the body line also retired the
-  upstream-workbook-typo labels "1.4 First aid and medical" (rendered
-  on the 1.3 page) and "1.3 Power supply" (rendered on the 1.4 page).
-- Source-spec narratives, inventory entries, and archive entry
-  rationales for the six pages updated to describe the folder URL's
-  layout-button surface and the verifier's layout-aware exemption.
-
-### Fixed
-- CHANGELOG archive-category count corrected from 8 to 9; entry
-  count "approximate" qualifier removed (the figure is exact at 129).
-- TODO entry for "Keep public/toolkit/sections/ PDFs in sync with
-  canonical workbook" reworded in product-maintenance terms (no
-  internal-tooling references).
-
-## [0.0.10] - 2026-04-30
+## [0.0.10] - 2026-05-03
 
 ### Source Fidelity restoration across all 17 modules
 
@@ -85,6 +38,20 @@ per-module attestation.
 - Internal PDF cross-references on 1-9 (Section 1.X / (N.M) anchors)
   now render as site-internal `/modules/...` routes instead of external
   links to GoogleDoc HTML pages.
+- Layout-aware link check in the source-fidelity verifier
+  (`src/lib/verify/runner-checks.ts` + `src/lib/verify/site-parse.ts`).
+  When a spec links entry's URL matches the section's
+  `getResourcesUrlForSection(sectionData.number)` lookup in
+  `src/data/downloads.ts`, the URL is treated as present on the page
+  via the `ModuleLayout` "See Additional Resources" button affordance.
+  Adds an `extractSectionNumber()` extractor and 8 new unit tests.
+- Fallback Table-of-Contents entry on pages with no semantic headers
+  and no table section headers. Pages 1-3, 1-5, 1-12, and 1-13 now
+  render a "Top of page" sidebar entry instead of collapsing the
+  layout column.
+- `pnpm vitest run` and `pnpm astro check` jobs added to the
+  GitHub Actions `verify-against-source` workflow so CI matches the
+  full gate set the project ships against.
 
 ### Changed
 - `pnpm verify` runs in the `prebuild` hook; broken source chains fail
@@ -98,11 +65,36 @@ per-module attestation.
   `emergency-preparedness/index.astro` restored to workbook prose +
   cross-link fidelity (closed the chapter-level summary drift surfaced
   during the 2-1 / 2-2 / 2-3 walks).
+- Outdated April 15 webinar announcement removed from the homepage.
+- Six module pages no longer carry a redundant
+  `<p>Folder with resources and templates: ...</p>` body line
+  (knowing-your-community, 1-1, 1-2, 1-3, 1-4, 1-5). The folder URL
+  remains reachable via the `ModuleLayout` "See Additional Resources"
+  button on every section page that has a `resourcesUrl` entry in
+  `src/data/downloads.ts`. Removing the body line also retired the
+  upstream-workbook-typo labels "1.4 First aid and medical" (previously
+  rendered on the 1.3 page) and "1.3 Power supply" (previously
+  rendered on the 1.4 page).
+- Source-spec narratives, inventory entries, and archive entry
+  rationales for the six cleaned-up pages updated to describe the
+  folder URL's layout-button surface and the verifier's layout-aware
+  exemption.
+
+### Fixed
+- TOC sidebar no longer collapses the layout column on module pages
+  with no semantic headers (1-3, 1-5, 1-12, 1-13).
+- Build-output and skill-file tests skip cleanly when their
+  prerequisite files are absent, so CI passes without a build step or
+  installed skill files.
+- TODO entry for "Keep public/toolkit/sections/ PDFs in sync with
+  canonical workbook" reworded in product-maintenance terms.
 
 ### Verification
-- 486 / 486 unit + integration tests passing.
+- 494 / 494 unit + integration tests passing locally; 488 + 6 skipped
+  in CI (build-output and skill-file tests skip when their prerequisite
+  files are absent).
 - `pnpm verify` clean: 25 entries, exit 0.
-- `pnpm astro check`: 0 errors, 0 warnings.
+- `pnpm astro check`: 0 errors, 0 warnings, 10 pre-existing hints.
 
 ### Known follow-up backlog
 A targeted spot-check on the three highest-load modules (Knowing Your
