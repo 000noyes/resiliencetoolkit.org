@@ -90,6 +90,22 @@ function stripTagsAndCollapse(s: string): string {
 }
 
 /**
+ * Extract the section number from the module page's authored sectionData
+ * object. ModuleLayout uses this number to render the automatic "See
+ * Additional Resources" link, so runner checks can use it as static context.
+ */
+export function extractSectionNumber(content: string): string | null {
+  const blockRe =
+    /const\s+sectionData(?:\s*:\s*SectionData)?\s*=\s*\{([\s\S]*?)\};/m;
+  const block = blockRe.exec(content);
+  if (!block) return null;
+
+  const numberRe = /(?:\bnumber\b|['"]number['"])\s*:\s*(['"])([^'"]+)\1/;
+  const number = numberRe.exec(block[1]);
+  return number ? number[2] : null;
+}
+
+/**
  * Extract all `<a href="..."...>...</a>` and `<ExternalLink href="...">...
  * </ExternalLink>` occurrences. Ignores self-closing `<a/>` (not a real
  * pattern on this site) and expression-form `href={expr}` (intentional —

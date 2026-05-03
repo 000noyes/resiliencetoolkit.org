@@ -26,6 +26,7 @@
  *                                   Emits prose_drift.
  */
 
+import { moduleDownloads } from '@/data/downloads';
 import type {
   SourceSpec,
   SpecLink,
@@ -40,6 +41,7 @@ import {
   extractLinks,
   extractParagraphs,
   extractPlanForms,
+  extractSectionNumber,
   type SiteColumn,
   type SiteLink,
 } from './site-parse';
@@ -185,6 +187,9 @@ function checkExternalUrlLink(
       ];
     }
   }
+
+  if (matchesModuleResourcesUrl(ctx, expected)) return [];
+
   return [
     entry(
       ctx,
@@ -192,6 +197,17 @@ function checkExternalUrlLink(
       `spec link "${specLink.url}"${specLink.label ? ` ("${specLink.label}")` : ''} not present in ${ctx.file}`,
     ),
   ];
+}
+
+function matchesModuleResourcesUrl(ctx: CheckContext, expected: string): boolean {
+  const sectionNumber = extractSectionNumber(ctx.siteContent);
+  if (!sectionNumber) return false;
+
+  const module = moduleDownloads.find((m) => m.number === sectionNumber);
+  const resourcesUrl = module?.resourcesUrl;
+  if (!resourcesUrl) return false;
+
+  return normalizeUrl(resourcesUrl) === expected;
 }
 
 const DRIVE_HOST_RE = /\b(?:drive|docs)\.google\.com\b/i;

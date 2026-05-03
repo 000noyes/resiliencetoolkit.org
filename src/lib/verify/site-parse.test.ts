@@ -6,7 +6,42 @@ import {
   extractColumnsProp,
   extractPlanForms,
   extractParagraphs,
+  extractSectionNumber,
 } from './site-parse';
+
+describe('site-parse: extractSectionNumber', () => {
+  it('extracts the number from a typed sectionData block', () => {
+    const src = `
+const sectionData: SectionData = {
+  number: "1.3",
+  title: "First aid and medical",
+};
+---`;
+    expect(extractSectionNumber(src)).toBe('1.3');
+  });
+
+  it('extracts single-quoted section numbers', () => {
+    const src = `
+const sectionData: SectionData = {
+  number: '1.4',
+  title: 'Power supply',
+};`;
+    expect(extractSectionNumber(src)).toBe('1.4');
+  });
+
+  it('returns null when there is no sectionData block', () => {
+    expect(extractSectionNumber(`<p>Module index page</p>`)).toBeNull();
+  });
+
+  it('returns null when sectionData has no string-literal number', () => {
+    const src = `
+const sectionData: SectionData = {
+  number: sectionNumber,
+  title: "Computed",
+};`;
+    expect(extractSectionNumber(src)).toBeNull();
+  });
+});
 
 describe('site-parse: extractLinks', () => {
   it('extracts plain <a href> links', () => {

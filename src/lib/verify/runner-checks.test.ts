@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { moduleDownloads } from '@/data/downloads';
 import type { SourceSpec } from './schemas';
 import {
   linksMatch,
@@ -63,6 +64,95 @@ describe('runner-checks: linksMatch', () => {
     });
     const site = `<a href="https://EXAMPLE.org/a/?utm_source=foo">A</a>`;
     expect(linksMatch(ctx(spec, site))).toEqual([]);
+  });
+
+  it('passes when spec URL is rendered by ModuleLayout resources button', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      links: [
+        {
+          url: 'https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH',
+        },
+      ],
+    });
+    const site = `
+const sectionData: SectionData = {
+  number: "1.3",
+  title: "First aid and medical",
+};
+---
+<ModuleLayout sectionData={sectionData}>
+  <p>No inline resources link here.</p>
+</ModuleLayout>`;
+    expect(linksMatch(ctx(spec, site))).toEqual([]);
+  });
+
+  it('does not exempt a different Drive folder for the same section', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      links: [
+        {
+          url: 'https://drive.google.com/drive/folders/not-the-1-3-resources-folder',
+        },
+      ],
+    });
+    const site = `
+const sectionData: SectionData = {
+  number: "1.3",
+  title: "First aid and medical",
+};
+---
+<ModuleLayout sectionData={sectionData}>
+  <p>No inline resources link here.</p>
+</ModuleLayout>`;
+    const out = linksMatch(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('link_missing');
+  });
+
+  it('does not exempt resources URLs when the page has no sectionData', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      links: [
+        {
+          url: 'https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH',
+        },
+      ],
+    });
+    const site = `<ModuleLayout><p>No section data here.</p></ModuleLayout>`;
+    const out = linksMatch(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('link_missing');
+  });
+
+  it('does not exempt sections with no resourcesUrl', () => {
+    moduleDownloads.push({
+      number: '9.9',
+      name: 'No resources test module',
+      section: 'Section 9',
+      onlineUrl: '/modules/test/9-9',
+      pdfFilename: 'Section 9.9.pdf',
+    });
+    try {
+      const spec = baseSpec({
+        fields: [{ key: 'x', label: 'X', type: 'text' }],
+        links: [{ url: 'https://drive.google.com/drive/folders/missing-resources' }],
+      });
+      const site = `
+const sectionData: SectionData = {
+  number: "9.9",
+  title: "No resources test module",
+};
+---
+<ModuleLayout sectionData={sectionData}>
+  <p>No inline resources link here.</p>
+</ModuleLayout>`;
+      const out = linksMatch(ctx(spec, site));
+      expect(out).toHaveLength(1);
+      expect(out[0].status).toBe('link_missing');
+    } finally {
+      moduleDownloads.pop();
+    }
   });
 
   it('1-7 public-bathrooms-directory drop: link_missing when no matching URL', () => {
