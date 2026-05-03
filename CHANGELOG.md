@@ -18,7 +18,7 @@ per-module attestation.
 
 ### Added
 - `docs/site-inventions-archive.yaml` preserves every removed class-c
-  item (~129 entries across 8 categories) with workbook reference,
+  item (129 entries across 9 categories) with workbook reference,
   inferred source if any, and removal commit. Nothing was deleted
   without an audit trail.
 - `docs/toolkit-inventory.yaml` per-module ledger now records
