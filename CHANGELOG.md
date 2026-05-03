@@ -2,6 +2,53 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [Unreleased]
+
+### Post-0.0.10 closeout hygiene
+
+Refinements landed on top of the 0.0.10 source-fidelity release while
+the merge to main remained on hold.
+
+### Added
+- Layout-aware link check in the source-fidelity verifier
+  (`src/lib/verify/runner-checks.ts` + `src/lib/verify/site-parse.ts`).
+  When a spec links entry's URL matches the section's
+  `getResourcesUrlForSection(sectionData.number)` lookup in
+  `src/data/downloads.ts`, the URL is treated as present on the page
+  via the `ModuleLayout` "See Additional Resources" button affordance.
+  Adds an `extractSectionNumber()` extractor and 8 new unit tests
+  (vitest now at 494 passing).
+- Fallback Table-of-Contents entry on pages with no semantic headers
+  and no table section headers. Pages 1-3, 1-5, 1-12, and 1-13 now
+  render a "Top of page" sidebar entry instead of collapsing the
+  layout column.
+- `pnpm vitest run` and `pnpm astro check` jobs added to the
+  GitHub Actions `verify-against-source` workflow so CI matches the
+  manual gate set documented in the PR.
+
+### Changed
+- Outdated webinar announcement banner removed from the homepage
+  (merge of `fix(homepage): comment out past webinar announcement`
+  from main).
+- Six module pages no longer carry the redundant
+  `<p>Folder with resources and templates: ...</p>` body line
+  (knowing-your-community, 1-1, 1-2, 1-3, 1-4, 1-5). The folder URL
+  is reachable via the `ModuleLayout` "See Additional Resources"
+  button on every section page that has a `resourcesUrl` entry in
+  `src/data/downloads.ts`. Removing the body line also retired the
+  upstream-workbook-typo labels "1.4 First aid and medical" (rendered
+  on the 1.3 page) and "1.3 Power supply" (rendered on the 1.4 page).
+- Source-spec narratives, inventory entries, and archive entry
+  rationales for the six pages updated to describe the folder URL's
+  layout-button surface and the verifier's layout-aware exemption.
+
+### Fixed
+- CHANGELOG archive-category count corrected from 8 to 9; entry
+  count "approximate" qualifier removed (the figure is exact at 129).
+- TODO entry for "Keep public/toolkit/sections/ PDFs in sync with
+  canonical workbook" reworded in product-maintenance terms (no
+  internal-tooling references).
+
 ## [0.0.10] - 2026-04-30
 
 ### Source Fidelity restoration across all 17 modules
