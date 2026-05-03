@@ -41,16 +41,20 @@ notes: |
   src/pages/modules/emergency-preparedness/1-4.astro rather than a component
   prop, since no DataTable / PlanForm exists on this page.
 
-  Folder-header label is the workbook's verbatim "1.3 Power supply". Upstream
-  workbook contains a typo in this header (section is 1.4, not 1.3); see
+  Folder-header label was the workbook's verbatim "1.3 Power supply" (upstream
+  workbook contains a typo in this header — section is 1.4, not 1.3; see
   docs/toolkit-inventory.yaml entry for 1-4, workbook_typo_note. Same
-  off-by-one pattern as 1-3's "1.4 First aid and medical" typo. Site
-  fidelity preserves the workbook label as-is rather than silently fixing
-  the typo. The folder-header inline rendering pattern is also surfaced via
-  the ModuleLayout "See Additional Resources" action-bar button driven by
-  src/data/downloads.ts.moduleDownloads[].resourcesUrl; whether inline +
-  page-chrome is redundant or complementary is pinned for design review per
-  the inventory walk's folder_header_pattern.decision.
+  off-by-one pattern as 1-3's "1.4 First aid and medical" typo). Day 30
+  (commit 4a9c134 + follow-up commit) removed the inline `<p>Folder with
+  resources and templates: ...</p>` line as a duplicate of the ModuleLayout
+  "See Additional Resources" button affordance; the workbook folder URL
+  (1Bl9xBY...) is now sourced from src/data/downloads.ts via
+  `getResourcesUrlForSection(sectionData.number)` and recognized by the
+  verifier's layout-aware link check (commit 4a9c134). The workbook-typo
+  label "1.3" is no longer rendered to users — only the canonical section
+  title ("Power supply") remains, surfaced through ModuleLayout's page
+  header. Source-fidelity preserved: the folder URL still passes linksMatch
+  via the layout-aware exemption.
 
   Power Supply inventory link: workbook anchors the phrase "Power Supply
   inventory" to the Templates Directory master sheet at cell-level URL

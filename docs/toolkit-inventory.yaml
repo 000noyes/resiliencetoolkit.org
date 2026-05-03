@@ -725,7 +725,7 @@ modules:
         url: "https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH"
         page: 42
         purpose: "Folder with resources and templates (folder header, workbook typo)"
-        on_site: surface_via_module_layout_button         # site has "See Additional Resources" affordance via ModuleLayout — pinned for design review
+        on_site: surface_via_module_layout_button         # day-30: inline <p> removed; URL exposed via ModuleLayout "See Additional Resources" button (downloads.ts → getResourcesUrlForSection); recognized by layout-aware verify (commit 4a9c134). Workbook typo "1.4" no longer rendered.
       - anchor: "Create (and circulate!) a list"
         url: "https://drive.google.com/file/d/1xVIJEWpkQT6K5mp-9DUn-mR3T5GWQ2bt/view?usp=drive_link"
         page: 42
@@ -842,7 +842,7 @@ modules:
         url: "https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU"
         page: 45
         purpose: "Folder with resources and templates (folder header, workbook typo)"
-        on_site: surface_via_module_layout_button          # see 1-3 pinned-for-design-review discussion
+        on_site: surface_via_module_layout_button          # day-30: inline <p> removed; URL exposed via ModuleLayout "See Additional Resources" button (downloads.ts → getResourcesUrlForSection); recognized by layout-aware verify (commit 4a9c134). Workbook typo "1.3" no longer rendered. Same disposition as 1-3.
       - anchor: "Power Supply inventory"
         url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1882137661#gid=1882137661&range=A1:C1"
         page: 45
