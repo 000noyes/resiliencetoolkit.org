@@ -2913,3 +2913,40 @@ categories:
         layout-aware link check (commit 4a9c134); also reachable via the
         Systems column's "Create a system" inline anchor.
       proposed_canonical_field: null
+
+  # Workbook prose dropped because the print-medium directive doesn't
+  # translate to digital (e.g. "See next page", "See above", "overleaf").
+  # Pattern: when the workbook references print-layout adjacency that the
+  # web layout already provides via single-scroll positioning, the directive
+  # sentence is dropped and the visual adjacency replaces the pointer.
+  print_medium_drops:
+    - id: archive-0-0-phases-of-disaster-next-page-pointer
+      module: 0-0
+      location: introduction.astro "Phases of Disaster" section, end of paragraph
+      type: print_medium_drops
+      content: |
+        See next page for a graphic detailing the phases.
+      inferred_source: workbook page 7, end of "Phases of Disaster" paragraph (text immediately precedes the FEMA graphic on workbook page 8)
+      date_removed: '2026-05-05'
+      removed_in_commit: 'fix(introduction): drop print-medium "next page" directive (PR #21 follow-up)'
+      rationale: |
+        Workbook sentence dropped because the print-medium directive
+        ("next page") doesn't apply in single-scroll digital view; the
+        graphic's adjacency replaces the pointer. The FEMA Disaster
+        Recovery Continuum graphic renders as a <figure> directly below
+        this paragraph — the visual adjacency makes the pointer
+        sentence redundant and confusing on the web.
+
+        Pattern: "print_medium_drops" — workbook prose that references
+        print-layout adjacency ("next page", "see above", "overleaf",
+        "on the previous page") which the web's single-scroll layout
+        already provides without the explicit pointer. When the 0-0
+        introduction source spec is written, document this as an allowed
+        adaptation pattern; expect similar drops elsewhere in the
+        workbook prose where page-relative directives appear.
+
+        This is NOT a class-c invention removal — it is a faithful prose
+        excision driven by medium-translation, not editorial reinvention.
+        The remaining workbook prose is verbatim; only the print-only
+        navigational sentence is dropped.
+      proposed_canonical_field: null
