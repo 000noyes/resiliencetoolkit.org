@@ -173,6 +173,15 @@ export default {
         'standard': 'var(--motion-easing-standard)',
         'emphasized': 'var(--motion-easing-emphasized)',
       },
+      keyframes: {
+        'pulse-soft': {
+          '0%, 100%': { opacity: '0.85' },
+          '50%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'pulse-soft': 'pulse-soft 1200ms ease-in-out infinite',
+      },
     },
   },
   plugins: [],

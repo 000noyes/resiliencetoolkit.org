@@ -1,5 +1,6 @@
 // Service Worker — Resilience Hub Toolkit
-// Cache-first offline strategy. Bump CACHE_VERSION on every deploy.
+// Cache-first for static assets, network-first for navigation.
+// CACHE_VERSION is rewritten by scripts/generate-sw-precache.mjs at build time.
 const CACHE_VERSION = 'v-build-PENDING';
 const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 
@@ -7,11 +8,37 @@ const CACHE_NAME = `resilience-hub-${CACHE_VERSION}`;
 const PRECACHE_ASSETS = [/* auto-generated — do not edit manually */];
 // __PRECACHE_ASSETS_END__
 
+// Essentials must succeed for install to succeed (Promise.all).
+// Routes are nice-to-have — partial failures are tolerated (Promise.allSettled).
+const ESSENTIAL_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/RHT_orange.svg',
+];
+
+// Runtime cache only writes for these destination types. Excludes XHR/fetch
+// JSON, prefetch hints, and other non-document resources.
+const CACHEABLE_DESTINATIONS = new Set(['document', 'style', 'script', 'font', 'image']);
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) =>
-      Promise.allSettled(PRECACHE_ASSETS.map(url => cache.add(url).catch(e => console.warn('SW: failed to cache', url, e))))
-    ).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => {
+      const niceToHave = PRECACHE_ASSETS.filter((url) => !ESSENTIAL_ASSETS.includes(url));
+      return Promise.all([
+        Promise.all(ESSENTIAL_ASSETS.map((url) => cache.add(url))),
+        Promise.allSettled(
+          niceToHave.map((url) =>
+            cache.add(url).catch((e) => {
+              console.warn('SW: failed to cache', url, e);
+              throw e;
+            })
+          )
+        ),
+      ]);
+    })
+    // No skipWaiting() here — the new worker stays in `waiting` until the
+    // client sends SKIP_WAITING. UpdatePromptToast surfaces this state to
+    // the user and triggers the message on accept.
   );
 });
 
@@ -24,14 +51,43 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (new URL(event.request.url).origin !== location.origin) return;
+  // Only handle GET — cache.put() rejects POST/PUT/DELETE anyway, and
+  // letting them fall through avoids a respondWith() round-trip.
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  if (url.origin !== location.origin) return;
+
+  // Network-first for navigation requests. Ensures users see a fresh
+  // deploy on first nav after CACHE_VERSION bumps; falls back to cache
+  // when offline. Also resolves the redirected-response cache pollution
+  // problem because navigation responses go through the redirect-aware
+  // branch every time.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok && !response.redirected) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || new Response('Offline', { status: 503 })))
+    );
+    return;
+  }
+
+  // Cache-first for static assets in the destination whitelist.
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      // Don't serve cached redirected responses — let the browser follow them natively
       if (cached && !cached.redirected) return cached;
       return fetch(event.request).then((response) => {
-        // Don't cache redirected responses under the original URL
-        if (response.ok && !response.redirected) {
+        if (
+          response.ok &&
+          !response.redirected &&
+          CACHEABLE_DESTINATIONS.has(event.request.destination)
+        ) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
         }

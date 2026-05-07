@@ -1,16 +1,16 @@
 # Design System — Resilience Hub Toolkit
 
 ## Product Context
-- **What this is:** A local-first, offline-capable digital workbook for community disaster preparedness
-- **Who it's for:** Community organizers, neighborhood groups, and individuals working through the Resilience Hub Toolkit PDF
-- **Space/industry:** Civic tech, emergency preparedness, community resilience
+- **What this is:** A local-first, offline-capable digital workbook for disaster preparedness and community resilience
+- **Who it's for:** Community organizers, neighborhood groups, and individuals building resilience using the Resilience Hub Toolkit PDF
+- **Space/industry:** Civic tech, community resilience, emergency preparedness
 - **Project type:** Interactive web app (Astro 5 + React islands)
 
 ## Aesthetic Direction
-- **Direction:** Warm Industrial
+- **Direction:** Warm Industrial — the warmth of a place where neighbors grow capacity together; the industrial of tools that hold up under stress.
 - **Decoration level:** Intentional (subtle texture through borders and surface hierarchy, not decorative)
-- **Mood:** Trustworthy and approachable, like a well-organized community center. Warm enough to feel human, structured enough to feel reliable. Not government, not corporate, not cute.
-- **Reference sites:** Ready.gov (institutional baseline), USWDS (accessibility standards), Preparewise.com (modern prep), MyPlan app (interactive safety tools)
+- **Mood:** Trustworthy and approachable, like a well-organized community center where people build capacity together. Warm enough to feel human, structured enough to feel reliable. Centered on capacity, not threat-avoidance — the workbook is something you build with, not protection you hide behind. Not government, not corporate, not cute.
+- **Reference sites:** Ready.gov (institutional baseline), USWDS (accessibility standards), Preparewise.com (modern prep), MyPlan app (interactive safety tools). These calibrate against preparedness institutions; resilience is the destination the design moves toward, not a reference to inherit from.
 
 ## Typography
 - **Display/Hero:** Outfit (600 weight) — geometric but warm, strong at large sizes, already established in the codebase
@@ -30,9 +30,9 @@
   - uppercase-accent: 11px / 0.6875rem (letter-spacing 0.05em)
 
 ## Color
-- **Approach:** Restrained with 2 accents — color is rare and meaningful
-- **Primary (Orange):** `oklch(0.5756 0.1368 42.8)` — warmth, action, community energy. Used for CTAs, active states, progress indicators. Differentiates from government blue.
-- **Secondary (Green):** `oklch(0.4365 0.1044 156.7)` — growth, nature, resilience. Used for sidebar accents, ring/focus states, table headers, secondary actions. Consolidates the previous teal table-accent (hue 168.9, only 12 degrees from green) into one secondary.
+- **Approach:** Restrained with 2 accents — color is rare and meaningful. The split is temporal: **orange = the work of preparing right now; green = the resilience that work builds toward.** Immediate action is warm; durable capacity is grown.
+- **Primary (Orange):** `oklch(0.5756 0.1368 42.8)` — the work of preparing right now: warmth, action, community energy. Used for CTAs, active states, progress indicators. Differentiates from government blue.
+- **Secondary (Green):** `oklch(0.4365 0.1044 156.7)` — resilience as the durable outcome; also growth, nature. Used for sidebar accents, ring/focus states, table headers, secondary actions. Consolidates the previous teal table-accent (hue 168.9, only 12 degrees from green) into one secondary.
 - **Neutrals:** Warm grays via oklch, no chroma:
   - background: `oklch(0.9911 0 0)` (near-white)
   - foreground: `oklch(0.2046 0 0)` (near-black)
@@ -74,10 +74,13 @@
   - fast: 120ms (hover states, toggles)
   - medium: 200ms (panel open/close, accordion)
   - slow: 260ms (page transitions, large layout shifts)
+  - pulse: 1200ms ease-in-out, opacity 0.85↔1.0 (UpdatePromptToast stage 3 attention; gated by `prefers-reduced-motion`)
 
 ## Component Notes (for implementation)
 
 ### Active Components — Quality Assessment
+- **BetaBanner.tsx** (NEW) — Top-of-every-page beta announcement. Neutral chrome (`bg-card border-b border-border`), copy "Your feedback shapes this site", mailto link in `text-primary`, no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Mounts in BaseLayout above StatusBanner.
+- **UpdatePromptToast.tsx** (NEW) — Bottom-right fixed-position toast surfaced when a new SW is `waiting`. Visit-counter state machine (cacheVersion-keyed) drives 3 escalation stages: subtle (max-w-xs `bg-card`), action (max-w-sm `bg-primary`), urgent (max-w-md `bg-primary` + ring + pulse). Lucide RefreshCw icon scales with stage. Subordinate X dismiss top-right. React island `client:idle`. Mobile: full-width with 16px margins; desktop: corner-anchored with stage max-w.
 - **TableOfContents** (4 files) — Well-structured, no issues
 - **EditableTable** (226 lines) — Being replaced by DataTable in Template Kit v2. Row ID strategy (`rowId < 1000` = initial) is fragile. Storage split across localStorage + IndexedDB.
 - **Todo.tsx** (305 lines) — ~70 lines inline print CSS should be extracted. 5-second timeout after save has unclear intent.
@@ -85,8 +88,9 @@
 - **ExternalLink chain** (~378 lines) — Over-engineered modal for "leaving this site" confirmation. Intent unclear. Flagged P3 in CLAUDE.md.
 - **UserProgressDashboard** (570 lines) — Hardcoded module names/URLs. Event cascade risk on storage changes.
 
-### Deferred Components (safe to delete)
-- WhatsNewBanner, SearchField, EmptyState, SegmentedControl, OfflineReadyBanner — all in `src/design-system/_deferred/`, zero imports
+### Deferred Components
+- **Reference templates (DO NOT delete):** WhatsNewBanner, OfflineReadyBanner — in `src/design-system/_deferred/`, zero imports. Kept as canonical templates for BetaBanner (top-banner pattern + localStorage dismissal) and UpdatePromptToast (bottom-right fixed toast + slide-up keyframe).
+- **Safe to delete:** SearchField, EmptyState, SegmentedControl — in `src/design-system/_deferred/`, zero imports, no downstream consumers.
 
 ### Textarea
 - Border: `1px solid var(--border)`, `border-radius: var(--radius-sm)` (4px)
@@ -112,3 +116,7 @@
 | 2026-04-06 | Keep Outfit as sole typeface | Already loaded, well-suited, supports tabular figures. No reason to add font weight. |
 | 2026-04-06 | Warm Industrial aesthetic (not government blue) | RT is a community tool, not a government portal. Orange warmth differentiates from Ready.gov/FEMA institutional blue. |
 | 2026-04-06 | Mobile spacing fix flagged | Left margin too large on mobile module pages — padding compounds across layout layers |
+| 2026-05-07 | BetaBanner + UpdatePromptToast added | Site-meta announcement banner + SW lifecycle prompt toast — first surfaces to extend the design vocabulary into stage-based attention escalation. Reference templates (WhatsNewBanner, OfflineReadyBanner) kept in `_deferred/` for future reuse. |
+| 2026-05-07 | Added `pulse` motion duration (1200ms ease-in-out) | UpdatePromptToast stage 3 needed a continuous-attention token outside the existing fast/medium/slow scale. Gated by `prefers-reduced-motion`. |
+| 2026-05-07 | Reframed product description: "community disaster preparedness" → "disaster preparedness and community resilience" | Recenters resilience as a coordinate purpose alongside preparedness, not a subset of it. Aligns the design system's framing with the brand name (Resilience Toolkit). |
+| 2026-05-07 | Restated 2-accent system as a temporal split | Orange = the work of preparing right now (immediate action, warmth). Green = the resilience that work builds toward (durable capacity, growth). The accent system now carries a meaningful design rationale beyond decorative differentiation, and reinforces the resilience-coordinate reframe at the token level. Cascades into Aesthetic Direction (Warm Industrial rationale), Mood (capacity not threat-avoidance), Reference sites (preparedness as calibration anchor, resilience as destination). |
