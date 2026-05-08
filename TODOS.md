@@ -287,3 +287,26 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Description:** Playwright E2E test that visits the homepage, types a known query (e.g., "mutual aid"), and verifies search results appear with correct links to module pages. Build verification test exists (Vitest), but no test exercises the actual search UX in a browser.
 **Fix:** Add a spec to `tests/e2e/` that runs against `pnpm preview` output.
 **Depends on:** 26 existing E2E failures fixed (render-verification, module-hydration, indexeddb specs)
+
+## Analytics & CSP
+
+### Umami client calls api-gateway.umami.dev but CSP only allows cloud.umami.is
+**Priority:** P2
+**Description:** Surfaced in browser DevTools console on 2026-05-08. The Umami analytics client (`script.js`) is calling `https://api-gateway.umami.dev/api/send` for every event/pageview, but the site's Content Security Policy `connect-src` directive only permits `'self'` and `https://cloud.umami.is`. Every analytics request is blocked at the CSP layer:
+```
+Connecting to 'https://api-gateway.umami.dev/api/send' violates the following Content Security Policy directive: "connect-src 'self' https://cloud.umami.is".
+Fetch API cannot load https://api-gateway.umami.dev/api/send. Refused to connect because it violates the document's Content Security Policy.
+```
+Net effect: zero pageview/event tracking is currently being captured. The "Search analytics via Umami events" item below depends on this being fixed first.
+
+**Fix:** Verify which endpoint Umami's hosted instance actually expects (could be a recent endpoint migration or a configuration mismatch). Then either (a) update CSP to allow `https://api-gateway.umami.dev` in `connect-src`, or (b) reconfigure the Umami client to point at the allowed `cloud.umami.is` endpoint, or (c) self-host Umami and point at our own domain. Check current CSP source in `astro.config.mjs` / `_headers` / wherever it's defined.
+**Depends on:** None — investigate first, then small CSP edit or client-config change.
+
+### Cloudflare Web Analytics beacon failing on DNS-blocked clients
+**Priority:** P2
+**Description:** Cloudflare Pages auto-injects a Cloudflare Web Analytics beacon (`static.cloudflareinsights.com/beacon.min.js/v{hash}`) on every page. On any client with network-level domain blocking (NextDNS, pi-hole, AdGuard DNS, Brave Shields, uBlock at network layer), the beacon fails with `net::ERR_NAME_NOT_RESOLVED`. Surfaced in console captures on 2026-05-08. Benign for site rendering but produces console noise on every load and double-counts analytics with Umami.
+
+The dormant `fix/csp-cloudflare-insights` branch on origin appears to have been started for this and never finished.
+
+**Fix:** Either (a) turn off Cloudflare Web Analytics in the Cloudflare Pages dashboard (Settings → Web Analytics → disable; we already use Umami so this is duplicative), or (b) finish the `fix/csp-cloudflare-insights` branch with whatever CSP/inline approach it was attempting. Option (a) is one click and removes the noise outright. Option (b) preserves it as a fallback analytics source.
+**Depends on:** Decision on whether to keep Cloudflare Web Analytics alongside Umami at all.
