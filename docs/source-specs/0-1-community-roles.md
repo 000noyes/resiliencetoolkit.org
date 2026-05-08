@@ -28,7 +28,7 @@ subheadings:
   - text: Facilitation guides
   - text: 'Get to know the toolkit: interactive activity'
   - text: Conduct a Community Needs Assessment
-  - text: 'We started organizing. How do we know it''s working, and when to ask for more help?'
+  - text: 'We started organizing. How do we know it’s working, and when to ask for more help?'
   - text: 'Going deeper: finding the community work you want to do'
   - text: Pod mapping
   - text: Pods and Pod Mapping Worksheet
