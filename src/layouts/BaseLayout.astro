@@ -7,7 +7,6 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
 import BetaBanner from '../components/BetaBanner.tsx';
-import UpdatePromptToast from '../components/UpdatePromptToast.tsx';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
 
@@ -96,8 +95,6 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     <!-- Feedback widget -->
     {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
     {!isPrintMode && <FeedbackWidgetWrapper client:load />}
-
-    {!isPrintMode && <UpdatePromptToast client:idle />}
 
     <script>
       // Keep CSS header height variable in sync with the rendered sticky header

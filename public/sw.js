@@ -36,9 +36,11 @@ self.addEventListener('install', (event) => {
         ),
       ]);
     })
-    // No skipWaiting() here — the new worker stays in `waiting` until the
-    // client sends SKIP_WAITING. UpdatePromptToast surfaces this state to
-    // the user and triggers the message on accept.
+    // Silent-update policy: do NOT call skipWaiting() here. The new worker
+    // stays `waiting` until every controlled tab is closed, then the browser
+    // promotes it. Users get the update on next visit with no UI prompt.
+    // Network-first navigation in the fetch handler keeps in-flight tabs
+    // fresh in the meantime.
   );
 });
 
@@ -97,6 +99,3 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
-});

@@ -74,13 +74,12 @@
   - fast: 120ms (hover states, toggles)
   - medium: 200ms (panel open/close, accordion)
   - slow: 260ms (page transitions, large layout shifts)
-  - pulse: 1200ms ease-in-out, opacity 0.85↔1.0 (UpdatePromptToast stage 3 attention; gated by `prefers-reduced-motion`)
 
 ## Component Notes (for implementation)
 
 ### Active Components — Quality Assessment
-- **BetaBanner.tsx** (NEW) — Top-of-every-page beta announcement. Neutral chrome (`bg-card border-b border-border`), copy "Your feedback shapes this site", mailto link in `text-primary`, no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Mounts in BaseLayout above StatusBanner.
-- **UpdatePromptToast.tsx** (NEW) — Bottom-right fixed-position toast surfaced when a new SW is `waiting`. Visit-counter state machine (cacheVersion-keyed) drives 3 escalation stages: subtle (max-w-xs `bg-card`), action (max-w-sm `bg-primary`), urgent (max-w-md `bg-primary` + ring + pulse). Lucide RefreshCw icon scales with stage. Subordinate X dismiss top-right. React island `client:idle`. Mobile: full-width with 16px margins; desktop: corner-anchored with stage max-w.
+- **BetaBanner.tsx** — Top-of-every-page beta announcement. Neutral chrome (`bg-card border-b border-border`), copy "Your feedback shapes this site", mailto link in `text-primary`, no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Mounts in BaseLayout above StatusBanner.
+- **Footer "Last updated" stamp** — Small muted line in Footer (`text-xs text-muted-foreground/80`) showing the build date as `<time datetime="YYYY-MM-DD">`. Quiet transparency that the site is being maintained, in lieu of a public changelog or update prompt.
 - **TableOfContents** (4 files) — Well-structured, no issues
 - **EditableTable** (226 lines) — Being replaced by DataTable in Template Kit v2. Row ID strategy (`rowId < 1000` = initial) is fragile. Storage split across localStorage + IndexedDB.
 - **Todo.tsx** (305 lines) — ~70 lines inline print CSS should be extracted. 5-second timeout after save has unclear intent.
@@ -89,7 +88,7 @@
 - **UserProgressDashboard** (570 lines) — Hardcoded module names/URLs. Event cascade risk on storage changes.
 
 ### Deferred Components
-- **Reference templates (DO NOT delete):** WhatsNewBanner, OfflineReadyBanner — in `src/design-system/_deferred/`, zero imports. Kept as canonical templates for BetaBanner (top-banner pattern + localStorage dismissal) and UpdatePromptToast (bottom-right fixed toast + slide-up keyframe).
+- **Reference templates (DO NOT delete):** WhatsNewBanner, OfflineReadyBanner — in `src/design-system/_deferred/`, zero imports. Kept as canonical templates for BetaBanner (top-banner pattern + localStorage dismissal) and the bottom-right fixed-toast pattern should it ever return.
 - **Safe to delete:** SearchField, EmptyState, SegmentedControl — in `src/design-system/_deferred/`, zero imports, no downstream consumers.
 
 ### Textarea
@@ -118,5 +117,6 @@
 | 2026-04-06 | Mobile spacing fix flagged | Left margin too large on mobile module pages — padding compounds across layout layers |
 | 2026-05-07 | BetaBanner + UpdatePromptToast added | Site-meta announcement banner + SW lifecycle prompt toast — first surfaces to extend the design vocabulary into stage-based attention escalation. Reference templates (WhatsNewBanner, OfflineReadyBanner) kept in `_deferred/` for future reuse. |
 | 2026-05-07 | Added `pulse` motion duration (1200ms ease-in-out) | UpdatePromptToast stage 3 needed a continuous-attention token outside the existing fast/medium/slow scale. Gated by `prefers-reduced-motion`. |
+| 2026-05-08 | Reversed UpdatePromptToast — removed component, removed `pulse` motion token, switched SW to silent-update policy | Daily update cadence + no public changelog meant the toast would fire on nearly every visit while saying nothing about what changed — pure friction with no signal. Replaced with: silent SW lifecycle (new worker waits for natural tab close, then promotes on next visit; network-first navigation already keeps in-flight tabs fresh) + a small "Last updated YYYY-MM-DD" line in the Footer for quiet transparency. The escalation stage vocabulary is no longer in active use; the templates remain in `_deferred/` if a future component needs it. |
 | 2026-05-07 | Reframed product description: "community disaster preparedness" → "disaster preparedness and community resilience" | Recenters resilience as a coordinate purpose alongside preparedness, not a subset of it. Aligns the design system's framing with the brand name (Resilience Toolkit). |
 | 2026-05-07 | Restated 2-accent system as a temporal split | Orange = the work of preparing right now (immediate action, warmth). Green = the resilience that work builds toward (durable capacity, growth). The accent system now carries a meaningful design rationale beyond decorative differentiation, and reinforces the resilience-coordinate reframe at the token level. Cascades into Aesthetic Direction (Warm Industrial rationale), Mood (capacity not threat-avoidance), Reference sites (preparedness as calibration anchor, resilience as destination). |

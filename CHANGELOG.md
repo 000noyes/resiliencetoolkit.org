@@ -2,6 +2,29 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [Unreleased]
+
+### Changed
+- Service worker updates now land silently. A new worker installs in the
+  background and takes over on the next visit (after every site tab is
+  closed). Network-first navigation keeps in-flight tabs fresh in the
+  meantime. The earlier "Toolkit update available" toast has been removed
+  along with its visit-counter escalation logic — the prompt fired on
+  nearly every visit during active development, while saying nothing
+  about what changed, and felt like noise rather than signal.
+- Footer now shows a small "Last updated YYYY-MM-DD" stamp built from the
+  deploy date — quiet transparency that the site is being maintained,
+  without committing to a public changelog cadence.
+
+### Removed
+- `UpdatePromptToast` component, its `update-prompt` visit-counter state
+  machine, and the `pulse-soft` motion token that animated its
+  highest-urgency stage. The bottom-right toast pattern reference
+  template remains in `src/design-system/_deferred/` for future reuse.
+- Service worker `SKIP_WAITING` message handler and the client-side
+  `controllerchange → reload` handler — neither has a caller now that
+  the toast is gone.
+
 ## [0.0.10] - 2026-05-03
 
 ### Source Fidelity restoration across all 17 modules

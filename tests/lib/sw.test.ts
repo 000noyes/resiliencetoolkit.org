@@ -2,8 +2,8 @@
  * Service Worker behavior tests
  *
  * Loads public/sw.js into a sandbox with mocked SW globals and exercises
- * each event handler. Keeps the iron-rule D2 regression suite (no auto
- * skipWaiting in install) and validates D7 fetch-handler behavior.
+ * each event handler. Asserts the silent-update policy (no skipWaiting
+ * anywhere — install nor message) and validates D7 fetch-handler behavior.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -132,19 +132,18 @@ function makeFetchEvent(req: { url: string; method?: string; mode?: string; dest
   };
 }
 
-describe('sw.js — D2 regression (IRON RULE: install must not auto-skipWaiting)', () => {
+describe('sw.js — silent-update policy (no skipWaiting anywhere)', () => {
   it('install handler does NOT call self.skipWaiting()', async () => {
-    const { sandbox, context } = createSandbox();
+    const { sandbox } = createSandbox();
     const event = makeExtendableEvent();
     sandbox.listeners.install[0](event);
     await event._waitPromise;
     expect(sandbox.skipWaitingCalls).toBe(0);
   });
 
-  it('SKIP_WAITING message handler still triggers skipWaiting', () => {
+  it('no message listener is registered (no client can trigger skipWaiting)', () => {
     const { sandbox } = createSandbox();
-    sandbox.listeners.message[0]({ data: { type: 'SKIP_WAITING' } });
-    expect(sandbox.skipWaitingCalls).toBe(1);
+    expect(sandbox.listeners.message).toBeUndefined();
   });
 
   it('activate handler deletes old caches and claims clients', async () => {
@@ -158,13 +157,6 @@ describe('sw.js — D2 regression (IRON RULE: install must not auto-skipWaiting)
     expect(sandbox.caches.delete).toHaveBeenCalledWith('unrelated');
     expect(sandbox.caches.delete).not.toHaveBeenCalledWith('resilience-hub-v-build-PENDING');
     expect(sandbox.clientsClaimCalls).toBe(1);
-  });
-
-  it('non-SKIP_WAITING messages do not trigger skipWaiting', () => {
-    const { sandbox } = createSandbox();
-    sandbox.listeners.message[0]({ data: { type: 'OTHER_THING' } });
-    sandbox.listeners.message[0]({ data: undefined });
-    expect(sandbox.skipWaitingCalls).toBe(0);
   });
 });
 

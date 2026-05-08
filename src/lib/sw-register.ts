@@ -5,9 +5,10 @@
  * page load instead of caching it (the default `imports` behavior can pin
  * users to an old worker for up to 24h).
  *
- * `refreshing` flag prevents a double-reload race: when SKIP_WAITING fires,
- * controllerchange triggers reload; without the flag, multiple simultaneous
- * controllerchange events would each call location.reload().
+ * Silent-update policy: a new SW stays in `waiting` until every controlled
+ * tab is closed, then the browser promotes it on next visit. There is no
+ * client-side prompt, no controllerchange reload, and no SKIP_WAITING
+ * message — the only update path is the natural lifecycle.
  */
 
 const isDev = () =>
@@ -26,12 +27,5 @@ export function registerServiceWorker() {
 
   navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch((error) => {
     console.log('Service Worker registration failed:', error);
-  });
-
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (refreshing) return;
-    refreshing = true;
-    window.location.reload();
   });
 }
