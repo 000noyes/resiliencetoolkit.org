@@ -126,12 +126,16 @@ const arrayBlock = `const PRECACHE_ASSETS = [\n${assetLines}\n];`;
 const replacement = `${SENTINEL_START}\n${arrayBlock}\n${SENTINEL_END}`;
 
 // --- Bump CACHE_VERSION ---
+// ms precision so two rapid-succession invocations (CI retry, hot-reload
+// rebuilds) always produce distinct CACHE_VERSION values. Without this,
+// a same-second double-build would let stale caches survive.
 
 const now = new Date();
 const pad = (n) => String(n).padStart(2, '0');
 const buildTs =
   `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}` +
-  `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}`;
+  `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}` +
+  String(now.getUTCMilliseconds()).padStart(3, '0');
 const cacheVersion = `v-build-${buildTs}`;
 
 // Replace PRECACHE_ASSETS block between sentinels
@@ -148,6 +152,14 @@ const final = updated.replace(
 // Assert CACHE_VERSION was actually replaced (guards against regex mismatch)
 if (!final.includes(`const CACHE_VERSION = '${cacheVersion}';`)) {
   console.error('SW generator: CACHE_VERSION replacement failed — dist/sw.js not updated.');
+  process.exit(1);
+}
+
+// Assert v-build-PENDING is gone. A surviving sentinel would mean every
+// client thinks the cache is named `resilience-hub-v-build-PENDING` and
+// nothing ever rotates.
+if (final.includes('v-build-PENDING')) {
+  console.error('SW generator: v-build-PENDING still present in dist/sw.js after rewrite.');
   process.exit(1);
 }
 

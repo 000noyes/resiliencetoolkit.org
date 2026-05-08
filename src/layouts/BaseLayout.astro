@@ -6,6 +6,8 @@ import '@fontsource/outfit/600.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
+import BetaBanner from '../components/BetaBanner.tsx';
+import UpdatePromptToast from '../components/UpdatePromptToast.tsx';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
 
@@ -81,6 +83,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
       Skip to main content
     </a>
 
+    {!isPrintMode && <BetaBanner client:idle />}
     {!isPrintMode && <StatusBanner />}
     {!isPrintMode && <Header />}
 
@@ -93,6 +96,8 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     <!-- Feedback widget -->
     {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
     {!isPrintMode && <FeedbackWidgetWrapper client:load />}
+
+    {!isPrintMode && <UpdatePromptToast client:idle />}
 
     <script>
       // Keep CSS header height variable in sync with the rendered sticky header
@@ -129,32 +134,17 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     </script>
 
     <script>
-      // Register service worker for offline functionality
-      // NOTE: Disabled in development to prevent caching issues
-      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      import { registerServiceWorker } from '@/lib/sw-register';
 
-      if ('serviceWorker' in navigator && !isDevelopment) {
-        navigator.serviceWorker.register('/sw.js').catch((error) => {
-          console.log('Service Worker registration failed:', error);
-        });
-      } else if (isDevelopment && 'serviceWorker' in navigator) {
-        // Unregister service workers in development
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          registrations.forEach((registration) => registration.unregister());
-        });
-      }
+      registerServiceWorker();
 
-      // Network status detection
       window.addEventListener('online', () => {
         document.dispatchEvent(new CustomEvent('network-status-change', {
           detail: { online: true }
         }));
 
-        // Trigger background sync when coming back online
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({
-            type: 'REGISTER_SYNC'
-          });
+          navigator.serviceWorker.controller.postMessage({ type: 'REGISTER_SYNC' });
         }
       });
 
@@ -164,22 +154,12 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
         }));
       });
 
-      // Listen for messages from service worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data && event.data.type === 'SYNC_DATA') {
-            console.log('Sync triggered from service worker at:', event.data.timestamp);
-            // Dispatch custom event that components can listen to
             document.dispatchEvent(new CustomEvent('background-sync', {
               detail: { timestamp: event.data.timestamp }
             }));
-          }
-
-          // SW updated to a new version — reload to get fresh HTML with correct
-          // asset hashes. Prevents the skipWaiting() race where existing tabs get
-          // old HTML pointing to old bundle URLs that 404 on the new deploy.
-          if (event.data && event.data.type === 'SW_UPDATED') {
-            window.location.reload();
           }
         });
       }
