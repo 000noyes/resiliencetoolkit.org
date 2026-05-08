@@ -1,19 +1,23 @@
 /**
- * sw-register tests — D6 #1 (updateViaCache: 'none') + D6 #2 (refreshing
- * flag prevents double-reload).
+ * sw-register tests — silent-update policy.
  *
- * These run in jsdom; we stub navigator.serviceWorker and window.location
- * to inspect what the wrapper passes through.
+ * Asserts that the wrapper:
+ *   1. Registers /sw.js with `updateViaCache: 'none'` (no 24h SW caching).
+ *   2. Does NOT attach a controllerchange/reload handler — silent updates
+ *      land on the next natural visit, not via mid-session reload.
+ *   3. Unregisters in dev to avoid stale workers during local development.
+ *
+ * jsdom; we stub navigator.serviceWorker and window.location.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 let registerMock: ReturnType<typeof vi.fn>;
 let getRegistrationsMock: ReturnType<typeof vi.fn>;
-let controllerChangeListeners: Array<() => void>;
+let serviceWorkerListenerCount: number;
 let reloadMock: ReturnType<typeof vi.fn>;
 
 function installNavigatorMock() {
-  controllerChangeListeners = [];
+  serviceWorkerListenerCount = 0;
   registerMock = vi.fn().mockResolvedValue({});
   getRegistrationsMock = vi.fn().mockResolvedValue([]);
   Object.defineProperty(window.navigator, 'serviceWorker', {
@@ -21,8 +25,8 @@ function installNavigatorMock() {
     value: {
       register: registerMock,
       getRegistrations: getRegistrationsMock,
-      addEventListener: (type: string, cb: () => void) => {
-        if (type === 'controllerchange') controllerChangeListeners.push(cb);
+      addEventListener: () => {
+        serviceWorkerListenerCount += 1;
       },
       removeEventListener: () => {},
     },
@@ -51,18 +55,13 @@ describe('sw-register', () => {
     expect(registerMock).toHaveBeenCalledWith('/sw.js', { updateViaCache: 'none' });
   });
 
-  it('refreshing flag — controllerchange only triggers location.reload once', async () => {
+  it('does NOT attach any serviceWorker event listeners (silent update — no mid-session reload)', async () => {
     installLocationMock('resiliencetoolkit.org');
     installNavigatorMock();
     const { registerServiceWorker } = await import('../../src/lib/sw-register');
     registerServiceWorker();
-
-    expect(controllerChangeListeners.length).toBe(1);
-    controllerChangeListeners[0]();
-    controllerChangeListeners[0]();
-    controllerChangeListeners[0]();
-
-    expect(reloadMock).toHaveBeenCalledTimes(1);
+    expect(serviceWorkerListenerCount).toBe(0);
+    expect(reloadMock).not.toHaveBeenCalled();
   });
 
   it('dev mode: unregisters existing workers and does NOT register a new one', async () => {

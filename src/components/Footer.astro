@@ -1,7 +1,12 @@
 ---
 import ExternalLink from './ExternalLink.astro';
 
-const currentYear = new Date().getFullYear();
+const now = new Date();
+const currentYear = now.getFullYear();
+// Build-time stamp — reflects the deploy date, since Astro renders this
+// in the static build. Surfaces "this site is being maintained" without
+// requiring a public changelog.
+const lastUpdated = now.toISOString().slice(0, 10);
 ---
 
 <footer class="bg-card border-t border-border mt-auto no-print">
@@ -48,6 +53,9 @@ const currentYear = new Date().getFullYear();
       </p>
       <p>
         Website © {currentYear} <a href="https://www.accessecologies.com/" class="text-primary hover:text-primary/80 transition-colors">Access Ecologies</a>, <a href="/LICENSE" class="text-primary hover:text-primary/80 transition-colors">MIT License</a>.
+      </p>
+      <p class="mt-2 text-xs text-muted-foreground/80">
+        Last updated <time datetime={lastUpdated}>{lastUpdated}</time>
       </p>
     </div>
   </div>
