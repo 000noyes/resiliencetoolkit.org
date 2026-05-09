@@ -2950,3 +2950,100 @@ categories:
         The remaining workbook prose is verbatim; only the print-only
         navigational sentence is dropped.
       proposed_canonical_field: null
+
+  # Hand-authored module-card summary strings rendered on the /modules
+  # index page (and homepage explorer) via src/data/modules.ts. These
+  # strings never appear in the workbook PDF — they are site-authored
+  # navigational copy that introduces each module on the card grid.
+  #
+  # Documentation-only: src/data/modules.ts is not src/pages/** or
+  # src/components/**, so per Architecture Rule #4 these summaries do
+  # not violate the class-c firewall and are NOT being removed in this
+  # archive pass. The archive entry exists so the inventory of class-c
+  # surfaces is exhaustive — when the canonical-field registry comes
+  # online in Step 2 these summaries are candidate seed data for the
+  # "module navigational summary" registry slot.
+  #
+  # `removed_in_commit: null` is the signal that the entry is
+  # archive-only (content stays in modules.ts).
+  class_c_navigation_copy:
+    - id: modules-ts-summary-introduction
+      module: introduction
+      location: 'src/data/modules.ts modules[0].frontmatter.summary (slug: introduction)'
+      type: class_c_navigation_copy
+      content: |
+        Understanding what this toolkit is for, how to use it, and what resilience means for your community.
+      inferred_source: site-authored /modules card-grid summary, never workbook-cited
+      date_removed: '2026-05-08'
+      removed_in_commit: null
+      rationale: |
+        Hand-authored navigational summary on the /modules index card
+        grid. No workbook citation. Logged here so the class-c surface
+        inventory is exhaustive across the Step 2 walk; modules.ts is
+        outside the src/pages/** and src/components/** firewall so the
+        string stays wired.
+      proposed_canonical_field: null
+    - id: modules-ts-summary-knowing-your-community
+      module: knowing-your-community
+      location: 'src/data/modules.ts modules[1].frontmatter.summary (slug: knowing-your-community)'
+      type: class_c_navigation_copy
+      content: |
+        Map your community, identify resources, and build relationships.
+      inferred_source: site-authored /modules card-grid summary, never workbook-cited
+      date_removed: '2026-05-08'
+      removed_in_commit: null
+      rationale: |
+        Hand-authored navigational summary on the /modules index card
+        grid. No workbook citation. Logged here so the class-c surface
+        inventory is exhaustive across the Step 2 walk; modules.ts is
+        outside the src/pages/** and src/components/** firewall so the
+        string stays wired.
+      proposed_canonical_field: null
+    - id: modules-ts-summary-emergency-preparedness
+      module: emergency-preparedness
+      location: 'src/data/modules.ts modules[2].frontmatter.summary (slug: emergency-preparedness)'
+      type: class_c_navigation_copy
+      content: |
+        Essential supplies, plans, and systems needed to prepare for and respond to disasters.
+      inferred_source: site-authored /modules card-grid summary, never workbook-cited
+      date_removed: '2026-05-08'
+      removed_in_commit: null
+      rationale: |
+        Hand-authored navigational summary on the /modules index card
+        grid. No workbook citation. Logged here so the class-c surface
+        inventory is exhaustive across the Step 2 walk; modules.ts is
+        outside the src/pages/** and src/components/** firewall so the
+        string stays wired.
+      proposed_canonical_field: null
+    - id: modules-ts-summary-baseline-resilience
+      module: baseline-resilience
+      location: 'src/data/modules.ts modules[3].frontmatter.summary (slug: baseline-resilience)'
+      type: class_c_navigation_copy
+      content: |
+        Build everyday resilience through shared resources, community building, and mutual aid.
+      inferred_source: site-authored /modules card-grid summary, never workbook-cited
+      date_removed: '2026-05-08'
+      removed_in_commit: null
+      rationale: |
+        Hand-authored navigational summary on the /modules index card
+        grid. No workbook citation. Logged here so the class-c surface
+        inventory is exhaustive across the Step 2 walk; modules.ts is
+        outside the src/pages/** and src/components/** firewall so the
+        string stays wired.
+      proposed_canonical_field: null
+    - id: modules-ts-summary-downloads
+      module: downloads
+      location: 'src/data/modules.ts modules[4].frontmatter.summary (slug: downloads)'
+      type: class_c_navigation_copy
+      content: |
+        Printable worksheets, checklists, and planning aids that support the guides.
+      inferred_source: site-authored /modules card-grid summary, never workbook-cited
+      date_removed: '2026-05-08'
+      removed_in_commit: null
+      rationale: |
+        Hand-authored navigational summary on the /modules index card
+        grid. No workbook citation. Logged here so the class-c surface
+        inventory is exhaustive across the Step 2 walk; modules.ts is
+        outside the src/pages/** and src/components/** firewall so the
+        string stays wired.
+      proposed_canonical_field: null
