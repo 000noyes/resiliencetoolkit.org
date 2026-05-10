@@ -13,7 +13,7 @@ matching:
   require_cluster: false
 prose_scope:
   start_line: 1
-  end_line: 486
+  end_line: 496
 subheadings:
   - text: Mapping your community
   - text: Who is in your community/place?
@@ -29,6 +29,7 @@ subheadings:
   - text: Pod mapping
   - text: Pods and Pod Mapping Worksheet
   - text: POD
+  - text: BATJC Pod Mapping Worksheet
 links:
   - url: https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link
     label: 0. Organizing your community

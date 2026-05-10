@@ -33,6 +33,7 @@ subheadings:
   - text: Pod mapping
   - text: Pods and Pod Mapping Worksheet
   - text: POD
+  - text: BATJC Pod Mapping Worksheet
 notes: |
   Day-18 KYC half-2 spec — covers the Who is in your community/place?
   DataTable (tableId: community-roles) on
