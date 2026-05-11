@@ -3047,3 +3047,72 @@ categories:
         outside the src/pages/** and src/components/** firewall so the
         string stays wired.
       proposed_canonical_field: null
+
+  # ---------------------------------------------------------------------------
+  # structural_flatten — workbook authors a structured sub-collection
+  # (numbered slots, sub-bullets, sub-columns); site renders it as a single
+  # flattened field. Each entry declares the variant + resolution; the paired
+  # spec.structural_flatten (docs/source-specs/...) references the entry by
+  # `archive_id` and the verifier enforces consistency. See
+  # src/lib/verify/runner-checks.ts `structuralFlattenMatches`.
+  #
+  # Variants:
+  #   - slot_flatten      — workbook numbered slots → site free-text
+  #   - bullet_flatten    — workbook sub-bullets    → site concatenated body
+  #   - subcolumn_flatten — workbook 2-column       → site single-list
+  #
+  # Resolution states:
+  #   - pending_restore     — site flat; restoration queued (verifier emits
+  #                            `structural_flatten_pending` soft-fail until
+  #                            paired spec gains `structural_fidelity`)
+  #   - restored            — site now renders structured form; restore_commit
+  #                            cites the commit that flipped it
+  #   - accepted_decorative — workbook structure judged decorative; flat
+  #                            rendering is permanent; rationale required
+  # ---------------------------------------------------------------------------
+  structural_flatten:
+    - id: 0-1-place-characteristics-row-0-flatten
+      category: structural_flatten
+      variant: slot_flatten
+      page: src/pages/modules/knowing-your-community.astro
+      workbook_page: 10
+      workbook_structure: '3 numbered sub-slots (workbook glyphs "1: ___ 2: ___ 3: ___") authored as a counted enumeration on row-0 of the place-characteristics table'
+      pre_restore_site_shape: '1 free-text "Your Response" cell under tableId="place-characteristics" row-0; site loses the count and the per-slot affordance'
+      post_restore_site_shape: null
+      inferred_source: 'BATJC place-characteristics, workbook p10 row-0 ("Write down three important things about your place / what life is like here")'
+      resolution: pending_restore
+      rationale: null
+      date_archived: '2026-05-10'
+      archived_in_commit: 'feat(verify): add structural_flatten archive category and runner check'
+      restore_commit: null
+      proposed_canonical_field: structured_collection_3_slot
+    - id: 2-1-carpooling-initiatives-flatten
+      category: structural_flatten
+      variant: bullet_flatten
+      page: src/pages/modules/baseline-resilience/2-1.astro
+      workbook_page: 81
+      workbook_structure: '3 sub-bullets under the "Create community-run and specific carpooling initiatives" parent — organizing community events / designating carpool areas / promoting at library + community stores + Front Porch Forum'
+      pre_restore_site_shape: '1 Todo body concatenating the 3 sub-bullets with " - " separators (todoId="carpooling-initiatives"); site loses checkbox-per-action progress semantics'
+      post_restore_site_shape: null
+      inferred_source: 'workbook p81 "Ridesharing and carpooling" section, carpooling-initiatives parent bullet'
+      resolution: pending_restore
+      rationale: null
+      date_archived: '2026-05-10'
+      archived_in_commit: 'feat(verify): add structural_flatten archive category and runner check'
+      restore_commit: null
+      proposed_canonical_field: checklist_3_action
+    - id: 2-3-skill-other-subcolumn-flatten
+      category: structural_flatten
+      variant: subcolumn_flatten
+      page: src/pages/modules/baseline-resilience/2-3.astro
+      workbook_page: 88
+      workbook_structure: '2-sub-column layout (4 items + 5 items) under the "Other" colspan=2 row of the Skill building workshops 2x2+Other guide-table'
+      pre_restore_site_shape: '1 flat list of 9 child Todos rendered under a single <td colspan="2"> cell; no semantic structure lost (column split is print-page legibility only)'
+      post_restore_site_shape: null
+      inferred_source: 'workbook p88 Skill building workshops 2x2+Other guide-table, "Other" row 2-column layout'
+      resolution: accepted_decorative
+      rationale: 'workbook 2-column print layout for a long skills list; semantic content is identical to single-list rendering — column split is print-page-legibility presentation, not enumerated structure'
+      date_archived: '2026-05-10'
+      archived_in_commit: 'feat(verify): add structural_flatten archive category and runner check'
+      restore_commit: null
+      proposed_canonical_field: null
