@@ -7,6 +7,7 @@ import {
   keysMatch,
   structuralFidelityMatches,
   proseMatches,
+  runDay5aChecks,
   type CheckContext,
 } from './runner-checks';
 
@@ -861,5 +862,121 @@ Section 1.9 First Responder prose at line 5 is also grounded fully here.`;
     const out = proseMatches(ctx(spec, site, extracted));
     expect(out).toHaveLength(1);
     expect(out[0].message).toMatch(/Leader prose at line 1/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// runDay5aChecks composer — structural_flatten integration
+// ---------------------------------------------------------------------------
+
+describe('runner-checks: runDay5aChecks composer', () => {
+  it('threads structural_flatten check alongside the other day-5 checks (PASS path)', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_flatten: {
+        variant: 'subcolumn_flatten',
+        resolution: 'accepted_decorative',
+        archive_id: 'live-archive-id',
+      },
+    });
+    const site = `<h1>${spec.title}</h1>`;
+    const c: CheckContext = {
+      spec,
+      file: 'src/pages/modules/test.astro',
+      citationLine: 1,
+      siteContent: site,
+      source: 'docs/source-specs/test.md',
+      archiveIds: new Set(['live-archive-id']),
+    };
+    // accepted_decorative + resolving archive → no entries from the flatten
+    // check; the other checks emit on their own merit. Confirm no
+    // structural_flatten_* entries appear.
+    const out = runDay5aChecks(c);
+    expect(
+      out.filter(
+        (e) =>
+          e.status === 'structural_flatten_pending' ||
+          e.status === 'structural_flatten_unarchived',
+      ),
+    ).toEqual([]);
+  });
+
+  it('surfaces structural_flatten_unarchived via the composer when archive_id is unresolved', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_flatten: {
+        variant: 'slot_flatten',
+        resolution: 'accepted_decorative',
+        archive_id: 'never-archived',
+      },
+    });
+    const site = `<h1>${spec.title}</h1>`;
+    const c: CheckContext = {
+      spec,
+      file: 'src/pages/modules/test.astro',
+      citationLine: 1,
+      siteContent: site,
+      source: 'docs/source-specs/test.md',
+      archiveIds: new Set(['something-else']),
+    };
+    const out = runDay5aChecks(c);
+    const flattenEntries = out.filter(
+      (e) =>
+        e.status === 'structural_flatten_pending' ||
+        e.status === 'structural_flatten_unarchived',
+    );
+    expect(flattenEntries).toHaveLength(1);
+    expect(flattenEntries[0].status).toBe('structural_flatten_unarchived');
+  });
+
+  it('surfaces structural_flatten_pending via the composer when archive resolution is pending_restore', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_flatten: {
+        variant: 'bullet_flatten',
+        resolution: 'pending_restore',
+        archive_id: 'live-archive-id',
+      },
+    });
+    const site = `<h1>${spec.title}</h1>`;
+    const c: CheckContext = {
+      spec,
+      file: 'src/pages/modules/test.astro',
+      citationLine: 1,
+      siteContent: site,
+      source: 'docs/source-specs/test.md',
+      archiveIds: new Set(['live-archive-id']),
+    };
+    const out = runDay5aChecks(c);
+    const flattenEntries = out.filter(
+      (e) =>
+        e.status === 'structural_flatten_pending' ||
+        e.status === 'structural_flatten_unarchived',
+    );
+    expect(flattenEntries).toHaveLength(1);
+    expect(flattenEntries[0].status).toBe('structural_flatten_pending');
+  });
+
+  it('composer is silent on structural_flatten when the spec omits the field', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+    });
+    const site = `<h1>${spec.title}</h1>`;
+    const c: CheckContext = {
+      spec,
+      file: 'src/pages/modules/test.astro',
+      citationLine: 1,
+      siteContent: site,
+      source: 'docs/source-specs/test.md',
+      archiveIds: new Set(['live-archive-id']),
+    };
+    const out = runDay5aChecks(c);
+    expect(
+      out.filter(
+        (e) =>
+          e.status === 'structural_flatten_pending' ||
+          e.status === 'structural_flatten_unarchived',
+      ),
+    ).toEqual([]);
   });
 });
