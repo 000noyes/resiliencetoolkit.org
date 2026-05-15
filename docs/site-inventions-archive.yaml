@@ -2485,7 +2485,7 @@ categories:
       proposed_canonical_field: null
     - id: archive-1-8-lep-folder-header-link-drop
       module: 1-8
-      location: 1-8.astro LEP h3 leading <p> "Folder with resources and templates: Limited English Proficiency Documents" (line 274)
+      location: '1-8.astro LEP h3 leading <p> "Folder with resources and templates: Limited English Proficiency Documents" (line 274)'
       type: dropped_workbook_links
       content: |
         Anchor: "Limited English Proficiency Documents"
