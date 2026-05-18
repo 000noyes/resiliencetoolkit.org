@@ -13,7 +13,7 @@ matching:
   require_cluster: false
 prose_scope:
   start_line: 1
-  end_line: 496
+  end_line: 452
 subheadings:
   - text: Mapping your community
   - text: Who is in your community/place?
@@ -27,9 +27,6 @@ subheadings:
   - text: 'We started organizing. How do we know it’s working, and when to ask for more help?'
   - text: 'Going deeper: finding the community work you want to do'
   - text: Pod mapping
-  - text: Pods and Pod Mapping Worksheet
-  - text: POD
-  - text: BATJC Pod Mapping Worksheet
 links:
   - url: https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link
     label: 0. Organizing your community
@@ -56,19 +53,24 @@ links:
     label: Bay Area Transformative Justice Center
     page: '17'
 notes: |
-  KYC half-1 spec (day 17 of Step 1 closeout). Covers workbook prose pp10-17
-  + Pods appendix pp19-23. The module file
-  src/pages/modules/knowing-your-community.astro is at top-level (not under
-  a category subfolder); preserves moduleKeys "knowing-community" and
-  "bringing-people-together" verbatim — these MUST NOT be renamed
-  (data-preservation invariant).
+  KYC half-1 spec (day 17 of Step 1 closeout). Covers workbook prose pp10-17.
+  The module file src/pages/modules/knowing-your-community.astro is at
+  top-level (not under a category subfolder); preserves moduleKeys
+  "knowing-community" and "bringing-people-together" verbatim — these
+  MUST NOT be renamed (data-preservation invariant).
 
-  Page-range citation pattern: covers Section 0.1 prose pp10-17 + Pods
-  appendix pp19-23 (workbook page 18 is the Pod-mapping diagram itself,
-  text-extraction returns the diagram caption only and is not load-bearing
-  for proseMatches). matching.require_cluster: false applies the
-  documented per-spec opt-out (decision k) — page-range citations spanning
-  multiple workbook pages cannot satisfy the 50-line cluster heuristic.
+  Page-range citation pattern: covers Section 0.1 prose pp10-17.
+  matching.require_cluster: false applies the documented per-spec opt-out
+  (decision k) — page-range citations spanning multiple workbook pages
+  cannot satisfy the 50-line cluster heuristic.
+
+  Pods appendix (workbook pp19-23) is NOT rendered inline on the site as of
+  v0.0.11.1. The standalone "Pods & Pod Mapping Worksheet" PDF linked from
+  the Pod Mapping Worksheet callout contains the full Mia Mingus essay,
+  the BATJC POD MAPPING WORKSHEET section, and the graphical worksheet
+  diagrams (the prose + diagram are designed to be read together). Inline
+  duplication was retired; the appendix is reachable via download. See
+  docs/site-inventions-archive.yaml `archive-kyc-pods-appendix-inline-removed`.
 
   subheadings[] enumerates every workbook heading (h2/h3/h4) the day-17
   restored astro file emits in workbook order. titleMatches gates against
@@ -110,8 +112,9 @@ notes: |
   URL, so the folder remains reachable via three independent surfaces
   (layout button + two inline anchors).
 
-  prose_scope is set file-wide (start_line: 1, end_line: 486) per
-  decision j symmetric-scoping retrofit on day 18. The day-18 commit
+  prose_scope is set file-wide (start_line: 1, end_line: 452 after the
+  v0.0.11.1 Pods-appendix removal) per decision j symmetric-scoping
+  retrofit on day 18. The day-18 commit
   added 6 sibling DataTable specs (place-characteristics,
   community-roles, community-dynamics, systems, ecosystem,
   going-deeper) each with a narrow prose_scope window covering only
@@ -126,11 +129,13 @@ notes: |
   Mapping your community DataTable's `showInfoCallout={true}` prop. Pairs
   with day-16's 1-1 InfoCallout removal.
 
-  Pod Mapping Worksheet callout chrome is preserved per inventory
-  current_site_state.components_wired entry
-  `retain_as_ux_chrome_but_embed_workbook_content_inline` — the day-17
-  Pods appendix narrative is embedded inline alongside the existing
-  callout, not in place of it.
+  Pod Mapping Worksheet callout is preserved as the canonical surface for
+  the Pods appendix. The inline embedding of the Pods appendix narrative
+  (previously documented under
+  `retain_as_ux_chrome_but_embed_workbook_content_inline`) was retired in
+  v0.0.11.1 after verification that the linked download contains the full
+  prose + worksheet diagrams together. The callout download link is now
+  the load-bearing path; inline prose is intentionally absent.
 ---
 
 ## Extracted text (first 2000 chars, for review only)

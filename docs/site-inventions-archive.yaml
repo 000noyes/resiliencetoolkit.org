@@ -3114,6 +3114,78 @@ categories:
         repeats content with progressive specificity (short instruction
         on a setup page + expanded worksheet later).
       proposed_canonical_field: null
+      superseded_by_archive_id: archive-kyc-pods-appendix-inline-removed
+
+  # Workbook content where the site previously rendered the appendix prose
+  # inline AND linked to a downloadable PDF that contains the same prose
+  # together with graphical worksheet diagrams. Editorial review confirmed
+  # the linked download is the canonical surface (prose + diagram are
+  # designed to be read together) and the inline duplication was retired.
+  # The linked download itself is preserved on the page as the load-bearing
+  # path; only the inline duplication is removed.
+  inline_prose_consolidated_to_linked_download:
+    - id: archive-kyc-pods-appendix-inline-removed
+      module: knowing-your-community
+      location: 'src/pages/modules/knowing-your-community.astro lines 452-494 (between the Pod-mapping p17 instruction paragraphs and the closing </section>)'
+      type: inline_prose_consolidated_to_linked_download
+      content: |
+        Pods and Pod Mapping Worksheet
+        Written by Mia Mingus for the BATJC, June 2016
+
+        [Mia Mingus essay — 6 paragraphs introducing the term "pod"
+        as a transformative-justice concept distinct from "community,"
+        followed by a POD h4 sub-section with 2 paragraphs and an 8-item
+        bulleted list of observations about pod composition, accountability,
+        relationship-building, BATJC's focus on responses to child sexual
+        abuse, and isolation as a reality for many communities.]
+
+        BATJC Pod Mapping Worksheet
+        Below is our Pod Mapping Worksheet. We use this as a template to
+        help people start to identify who could be in their pod(s). We
+        invite people to fill out multiple worksheets for their different
+        pods. This is only a basic template, people are welcome to create
+        their own pod maps.
+          - Write your name in the middle grey circle.
+          - The surrounding bold-outlined circles are your pod. Write the
+            names of the people who are in your pod...
+          - The dotted lines surrounding your pod are people who are
+            "movable." They are people that could be moved in to your pod...
+        The larger circles at the edge of the page are for networks,
+        communities or groups that could be resources for you...
+      inferred_source: workbook pp19-23 — Mia Mingus "Pods and Pod Mapping Worksheet" essay + BATJC POD MAPPING WORKSHEET section
+      linked_download: 'https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view (title: "Pods & Pod Mapping Worksheet - for website")'
+      date_removed: '2026-05-18'
+      removed_in_commit: 'fix(kyc): revert inline Pods appendix; rely on linked download'
+      rationale: |
+        Verification (PR #31): downloaded the linked Drive PDF and ran
+        pdftotext against it. The PDF contains the full Mia Mingus essay
+        verbatim, the BATJC POD MAPPING WORKSHEET section verbatim PLUS
+        an additional closing paragraph ("Your pod(s) may shift over time...")
+        not present on the site, the graphical worksheet diagrams (binary
+        content; pdftotext extracts only the title), and the CC-BY 4.0
+        license footer. The prose and the diagram are designed to be read
+        together; inline prose without the diagram loses the affordance
+        the workbook authored.
+
+        This entry supersedes archive-kyc-batjc-pod-mapping-worksheet-restored
+        (PR #28, 2026-05-10). PR #28 added the BATJC POD MAPPING WORKSHEET
+        section inline; the Mia Mingus essay was already on the site
+        pre-PR #28. PR #31 removes both together as a single editorial
+        decision now that the linked download has been verified to contain
+        the complete appendix.
+
+        Workbook-fidelity invariant: the Pod Mapping Worksheet callout
+        block (UX chrome, Download button) is preserved on the page and
+        the workbook page-17 instructions (the short pod-mapping setup
+        paragraphs ending "The largest circles are community resources...")
+        also remain inline. Only the appendix prose at pp19-23 is moved
+        behind the download.
+
+        Reachability: the linked PDF is sourced via the existing callout
+        Download button (workbook page 17 anchor restored per
+        archive-1-8-* lineage / decision 1a_restore_workbook_link), so
+        users reach the appendix in one click without leaving the page.
+      proposed_canonical_field: null
 
   # ---------------------------------------------------------------------------
   # structural_flatten — workbook authors a structured sub-collection
