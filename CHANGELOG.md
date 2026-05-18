@@ -4,6 +4,17 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+### Added
+- Knowing Your Community now includes the BATJC Pod Mapping Worksheet
+  reproduced verbatim from the workbook (pages 22–23). Readers see the
+  short pod-mapping setup AND the longer worksheet — including the
+  BATJC framing about prisons, sexual violence, and resource networks
+  like domestic violence services, nursing-school cohorts, and
+  transformative-justice groups. Previously only the workbook's short
+  page-17 instructions were rendered, omitting content that the
+  Bay Area Transformative Justice Collective specifically authored
+  for transformative-justice work.
+
 ### Changed
 - Service worker updates now land silently. A new worker installs in the
   background and takes over on the next visit (after every site tab is
