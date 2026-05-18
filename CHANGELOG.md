@@ -4,6 +4,21 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+## [0.0.11.1] - 2026-05-18
+
+### Removed
+- Knowing Your Community no longer renders the "Pods and Pod Mapping
+  Worksheet" appendix prose inline. The Mia Mingus essay and the BATJC
+  POD MAPPING WORKSHEET section (workbook pages 19–23) are now reached
+  exclusively via the existing "Download Pod Mapping Worksheet" callout
+  on the page, which links to a standalone PDF containing the full
+  essay, the worksheet instructions, and the graphical pod-mapping
+  diagrams together. The prose and the diagrams are designed to be read
+  together; the inline duplication was retired in favor of the linked
+  download as the single canonical surface for the appendix. The Pod
+  Mapping Worksheet callout itself, the workbook page-17 instructions
+  introducing the activity, and all other module content are unchanged.
+
 ## [0.0.11.0] - 2026-05-10
 
 ### Added
