@@ -3048,6 +3048,73 @@ categories:
         string stays wired.
       proposed_canonical_field: null
 
+  # Workbook content that duplicates instruction across non-adjacent pages
+  # (e.g. short intro on one page + expanded source-authored worksheet
+  # later). When the site previously rendered only one variant, restoration
+  # adds the other variant rather than replacing — both are workbook content
+  # and each preserves unique framing. See .walk-workbench/adr-cases.md
+  # Case 9 for the codification of the "render both when each adds unique
+  # content" rule.
+  workbook_redundant_consolidation:
+    - id: archive-kyc-batjc-pod-mapping-worksheet-restored
+      module: knowing-your-community
+      location: 'src/pages/modules/knowing-your-community.astro after the Mia Mingus essay bullet list (post-line-482 insertion)'
+      type: workbook_redundant_consolidation
+      content: |
+        BATJC Pod Mapping Worksheet
+
+        Below is our Pod Mapping Worksheet. We use this as a template to
+        help people start to identify who could be in their pod(s). We
+        invite people to fill out multiple worksheets for their different
+        pods. This is only a basic template, people are welcome to create
+        their own pod maps.
+
+        - Write your name in the middle grey circle.
+        - The surrounding bold-outlined circles are your pod. Write the
+          names of the people who are in your pod. We encourage people to
+          write the names of actual individuals, instead of things such as
+          "my church group" or "my neighbors."
+        - The dotted lines surrounding your pod are people who are
+          "movable." They are people that could be moved in to your pod,
+          but need a little more work. For example, you might need to
+          build more relationship or trust with them. Or maybe you've
+          never had a conversation with them about prisons or sexual
+          violence.
+
+        The larger circles at the edge of the page are for networks,
+        communities or groups that could be resources for you. It could
+        be your local domestic violence direct service organization, or
+        your cohort in nursing school, or your youth group, or a
+        transformative justice group.
+      inferred_source: workbook pages 22-23, "BATJC POD MAPPING WORKSHEET" header + intro paragraph + 3-bullet list + closing paragraph
+      date_removed: '2026-05-10'
+      removed_in_commit: 'fix(kyc): consolidate workbook pod-mapping content (Case 9)'
+      rationale: |
+        This entry documents a CONTENT ADDITION, not a class-c removal.
+        Workbook page 17 has a short pod-mapping instruction; pages 22-23
+        have the expanded "BATJC POD MAPPING WORKSHEET" with BATJC-
+        specific framing (the "prisons or sexual violence" phrasing in
+        bullet 3, plus DV / nursing school / youth group / transformative
+        justice group examples in the closing paragraph that are absent
+        from p17's food-shelf / sexual-violence-org / favorite-tree
+        examples). Site previously rendered only the p17 short version,
+        omitting BATJC-authored content the workbook chose to include.
+
+        Per Case 9 codification (.walk-workbench/adr-cases.md, "render
+        both when each adds unique content"), this commit keeps the p17
+        intro paragraphs and adds a new sub-section after the Mia Mingus
+        essay bullet list reproducing the p22-23 worksheet content
+        verbatim. No source spec scaffolded yet — that is gated on the
+        gate-2b walk-budget eng-review for verify-skill v2.
+
+        Pattern name: "workbook_redundant_consolidation". The archive
+        entry exists to make the editorial decision traceable and to
+        seed Step 2 canonical-field registry triage. First use of this
+        pattern in the walk; expect recurrence anywhere the workbook
+        repeats content with progressive specificity (short instruction
+        on a setup page + expanded worksheet later).
+      proposed_canonical_field: null
+
   # ---------------------------------------------------------------------------
   # structural_flatten — workbook authors a structured sub-collection
   # (numbered slots, sub-bullets, sub-columns); site renders it as a single
