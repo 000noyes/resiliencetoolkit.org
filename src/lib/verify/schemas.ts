@@ -127,6 +127,34 @@ export const structuralFidelitySchema = z.object({
 export type StructuralFidelity = z.infer<typeof structuralFidelitySchema>;
 
 /**
+ * Structural-flatten assertion: the workbook authors a structured
+ * sub-collection at this location (numbered slots, sub-bullets, sub-columns);
+ * the site renders a single flattened field. Pairs with an archive entry in
+ * docs/site-inventions-archive.yaml (`structural_flatten` category) referenced
+ * by `archive_id`.
+ *
+ * Resolution states drive the verifier's behavior in `structuralFlattenMatches`
+ * (src/lib/verify/runner-checks.ts):
+ *   - `pending_restore`     — soft `structural_flatten_pending` fail; the bridge
+ *                              state between archiving the entry and restoring
+ *                              the structured shape on the site.
+ *   - `restored`            — site now renders the structured form; the runner
+ *                              defers component-count assertion to the paired
+ *                              `structural_fidelity` declaration on the spec.
+ *   - `accepted_decorative` — workbook structure is print-page presentation
+ *                              with no semantic loss; PASS when the archive
+ *                              entry exists, HARD `structural_flatten_unarchived`
+ *                              when it does not.
+ */
+export const structuralFlattenSchema = z.object({
+  variant: z.enum(['slot_flatten', 'bullet_flatten', 'subcolumn_flatten']),
+  resolution: z.enum(['pending_restore', 'restored', 'accepted_decorative']),
+  archive_id: z.string().min(1),
+  expected_component_count: z.number().int().min(1).optional(),
+});
+export type StructuralFlatten = z.infer<typeof structuralFlattenSchema>;
+
+/**
  * Day-15-j: spec-local scoping window for `proseMatches`.
  *
  * Multi-citation files (e.g. 1-9.astro carries Leader + Neighbor + First
@@ -183,6 +211,7 @@ export const sourceSpecSchema = z
     links: z.array(specLinkSchema).optional(),
     subheadings: z.array(specSubheadingSchema).optional(),
     structural_fidelity: structuralFidelitySchema.optional(),
+    structural_flatten: structuralFlattenSchema.optional(),
     notes: z.string().optional(),
     last_verified: z.string().datetime().optional(),
     matching: matchingConfigSchema.optional(),
@@ -283,6 +312,10 @@ export const verifyStatusSchema = z.enum([
   'structural_fidelity_failed', // N workbook tables rendered as ≠ N site components
   'key_drift',               // DataTable column key diverges from spec field key
   'prose_drift',             // verbatim <p>/<li> text diverges from pdftotext extraction
+  // Case 8 — structural-flatten enforcement (paired with the
+  // `structural_flatten` category in docs/site-inventions-archive.yaml).
+  'structural_flatten_unarchived', // spec asserts a flatten but no archive entry resolves
+  'structural_flatten_pending',    // archive marks pending_restore — soft fail (bridge state)
 ]);
 export type VerifyStatus = z.infer<typeof verifyStatusSchema>;
 

@@ -4,6 +4,8 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+## [0.0.11.0] - 2026-05-10
+
 ### Added
 - Knowing Your Community now includes the BATJC Pod Mapping Worksheet
   reproduced verbatim from the workbook (pages 22–23). Readers see the
@@ -14,6 +16,32 @@ All notable changes to ResilienceToolkit.org are documented here.
   page-17 instructions were rendered, omitting content that the
   Bay Area Transformative Justice Collective specifically authored
   for transformative-justice work.
+- Source verifier now recognizes a `structural_flatten` family: places
+  where the workbook authors a structured sub-collection (numbered
+  slots, sub-bullets, or sub-columns) but the site renders a single
+  flattened field. Three live entries land in this release —
+  place-characteristics row-0 (workbook p10, three numbered slots
+  rendered as one free-text cell), carpooling-initiatives Todo
+  (workbook p81, three sub-bullets concatenated into one Todo body),
+  and the Skill building "Other" subcolumn (workbook p88, a two-column
+  print layout rendered as one flat list of nine Todos).
+- Source specs can now declare a paired `structural_flatten` block
+  pointing at one of those archive entries. The runner emits
+  `structural_flatten_unarchived` (hard failure) when a spec asserts a
+  flatten with no matching archive entry, and
+  `structural_flatten_pending` (soft, needs-human-review class) for
+  entries the archive marks `pending_restore` — a deliberate bridge
+  state between archiving a divergence and restoring the structured
+  shape on the site. Entries marked `accepted_decorative` pass cleanly
+  when an archive entry exists; the subcolumn entry takes this
+  resolution. Specs that mark a flatten as `restored` must also declare
+  a paired `structural_fidelity` block so the runner can enforce the
+  restored shape; the runner emits `needs_human_review` when that
+  pairing is missing.
+- Per-archive forward-pointers (`proposed_canonical_field`) seed a
+  future canonical-fields registry with two substrate-shape proposals:
+  `structured_collection_3_slot` (counted enumeration) and
+  `checklist_3_action` (fixed-N action list with per-child completion).
 
 ### Changed
 - Service worker updates now land silently. A new worker installs in the

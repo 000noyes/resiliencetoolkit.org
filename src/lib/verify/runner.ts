@@ -11,7 +11,7 @@ import type {
   VerifyStatus,
 } from './schemas';
 import { registryPageKey } from './schemas';
-import { runDay5aChecks } from './runner-checks';
+import { loadStructuralFlattenArchiveIds, runDay5aChecks } from './runner-checks';
 import {
   CacheCorruptedError,
   checkSourceFreshness,
@@ -87,6 +87,10 @@ const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
   'structural_fidelity_failed',
   'key_drift',
   'prose_drift',
+  // Case 8 structural-flatten enforcement: an unresolved archive id is a
+  // hard fail. The paired `structural_flatten_pending` (SOFT) below is the
+  // bridge state between archiving and restoration.
+  'structural_flatten_unarchived',
 ]);
 
 /**
@@ -97,6 +101,10 @@ const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
 const SOFT_FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
   'needs_human_review',
   'source_drift',
+  // Case 8 bridge state — `pending_restore` archive entries are visible to
+  // reviewers but do not block CI; the paired structured-form restoration
+  // flips the entry to `restored` (or rejects to `accepted_decorative`).
+  'structural_flatten_pending',
 ]);
 
 /**
@@ -393,6 +401,22 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
     throw e;
   }
 
+  // Load the `structural_flatten` archive ids once per run. The archive lives
+  // at docs/site-inventions-archive.yaml; the loader slices the relevant
+  // category so a parse error in any other category does not block this lookup.
+  // Missing file → empty set → all flatten specs fail with
+  // `structural_flatten_unarchived` (correct behavior: archive-before-assert).
+  const archiveYamlPath = resolve(projectRoot, 'docs/site-inventions-archive.yaml');
+  let archiveIds: ReadonlySet<string> = new Set();
+  if (existsSync(archiveYamlPath)) {
+    try {
+      const text = await readFile(archiveYamlPath, 'utf-8');
+      archiveIds = loadStructuralFlattenArchiveIds(text);
+    } catch {
+      archiveIds = new Set();
+    }
+  }
+
   const { citations, violations } = await discover({ projectRoot });
 
   let changedFiles: ReadonlySet<string> = new Set();
@@ -452,6 +476,7 @@ export async function runVerify(options: RunVerifyOptions): Promise<RunVerifyRes
             siteContent,
             source: cit.source,
             extractedText,
+            archiveIds,
           });
           entries.push(...checkEntries);
         }

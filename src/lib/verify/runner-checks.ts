@@ -26,6 +26,8 @@
  *                                   Emits prose_drift.
  */
 
+import { load as yamlLoad } from 'js-yaml';
+
 import { moduleDownloads } from '@/data/downloads';
 import type {
   SourceSpec,
@@ -62,6 +64,15 @@ export interface CheckContext {
    * Absent → `proseMatches` no-ops (can't compare against nothing).
    */
   extractedText?: string;
+  /**
+   * Set of archive ids loaded from docs/site-inventions-archive.yaml
+   * `structural_flatten` category. Populated by the runner once per verify
+   * run and consumed by `structuralFlattenMatches` to resolve
+   * `spec.structural_flatten.archive_id`. Absent in isolated test contexts
+   * that do not exercise the structural-flatten check — those tests should
+   * either pass an explicit Set or omit `spec.structural_flatten`.
+   */
+  archiveIds?: ReadonlySet<string>;
 }
 
 function entry(
@@ -447,6 +458,121 @@ export function structuralFidelityMatches(ctx: CheckContext): VerifyReportEntry[
 }
 
 // ---------------------------------------------------------------------------
+// structuralFlattenMatches
+// ---------------------------------------------------------------------------
+
+/**
+ * Parse the `structural_flatten:` section out of
+ * `docs/site-inventions-archive.yaml` and return the set of archive ids it
+ * contains. Robust to parse errors elsewhere in the yaml file by slicing the
+ * one category before handing it to `yamlLoad` — an existing parse error in
+ * an unrelated category does not block structural-flatten resolution.
+ *
+ * The slice runs from `  structural_flatten:` to the next top-level category
+ * (next `  <kebab>:` at 2-space indent) or end-of-file. Empty set when the
+ * category is absent or the slice fails to parse.
+ */
+export function loadStructuralFlattenArchiveIds(
+  archiveYamlText: string,
+): Set<string> {
+  const match = archiveYamlText.match(
+    /(?:^|\n) {2}structural_flatten:\n([\s\S]*?)(?=\n {2}[a-z_][a-z0-9_]*:|$)/,
+  );
+  if (!match) return new Set();
+  let parsed: unknown;
+  try {
+    parsed = yamlLoad(match[1]);
+  } catch {
+    return new Set();
+  }
+  if (!Array.isArray(parsed)) return new Set();
+  const ids = new Set<string>();
+  for (const e of parsed) {
+    if (e && typeof e === 'object' && 'id' in e) {
+      const id = (e as { id?: unknown }).id;
+      if (typeof id === 'string' && id.length > 0) ids.add(id);
+    }
+  }
+  return ids;
+}
+
+/**
+ * Pair a spec's `structural_flatten` block with its archive entry and emit the
+ * appropriate verify status. The runner enforces three states (see §D5 of the
+ * ADR; behavior table):
+ *
+ *   - `accepted_decorative` + archive resolves          → PASS (no entry)
+ *   - `accepted_decorative` + archive id NOT in yaml    → `structural_flatten_unarchived` (HARD)
+ *   - `pending_restore`                                 → `structural_flatten_pending` (SOFT)
+ *   - `restored` + paired `structural_fidelity` block   → no entry; component-count
+ *                                                          assertion is delegated to
+ *                                                          `structuralFidelityMatches`.
+ *   - `restored` + NO `structural_fidelity` on spec     → `needs_human_review` (SOFT);
+ *                                                          the docstring delegation
+ *                                                          claim is unenforceable
+ *                                                          without the paired block,
+ *                                                          so surface the gap rather
+ *                                                          than pass silently.
+ *
+ * Silent when `spec.structural_flatten` is absent — this is a cite-on-demand
+ * assertion, like `structural_fidelity`.
+ *
+ * When `ctx.archiveIds` is absent (isolated unit-test context), the check
+ * cannot determine whether the archive entry resolves; rather than passing
+ * silently it emits `needs_human_review` so the missing wiring surfaces.
+ */
+export function structuralFlattenMatches(
+  ctx: CheckContext,
+): VerifyReportEntry[] {
+  const sf = ctx.spec.structural_flatten;
+  if (!sf) return [];
+
+  if (!ctx.archiveIds) {
+    return [
+      entry(
+        ctx,
+        'needs_human_review',
+        `spec.structural_flatten present but archive ids not loaded by runner (cannot resolve archive_id "${sf.archive_id}")`,
+      ),
+    ];
+  }
+
+  if (!ctx.archiveIds.has(sf.archive_id)) {
+    return [
+      entry(
+        ctx,
+        'structural_flatten_unarchived',
+        `spec.structural_flatten.archive_id "${sf.archive_id}" has no matching entry in docs/site-inventions-archive.yaml (structural_flatten category)`,
+      ),
+    ];
+  }
+
+  switch (sf.resolution) {
+    case 'pending_restore':
+      return [
+        entry(
+          ctx,
+          'structural_flatten_pending',
+          `archive ${sf.archive_id} marks ${sf.variant} as pending_restore — restoration queued (bridge state)`,
+        ),
+      ];
+    case 'accepted_decorative':
+      return [];
+    case 'restored':
+      if (!ctx.spec.structural_fidelity) {
+        return [
+          entry(
+            ctx,
+            'needs_human_review',
+            `archive ${sf.archive_id} marks ${sf.variant} as restored, but spec lacks a paired structural_fidelity block — the runner cannot enforce the restored shape without it`,
+          ),
+        ];
+      }
+      return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
 // proseMatches
 // ---------------------------------------------------------------------------
 
@@ -591,6 +717,7 @@ export function runDay5aChecks(ctx: CheckContext): VerifyReportEntry[] {
     ...titleMatches(ctx),
     ...keysMatch(ctx),
     ...structuralFidelityMatches(ctx),
+    ...structuralFlattenMatches(ctx),
     ...proseMatches(ctx),
   ];
 }
