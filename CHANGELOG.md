@@ -25,7 +25,10 @@ All notable changes to ResilienceToolkit.org are documented here.
   state between archiving a divergence and restoring the structured
   shape on the site. Entries marked `accepted_decorative` pass cleanly
   when an archive entry exists; the subcolumn entry takes this
-  resolution.
+  resolution. Specs that mark a flatten as `restored` must also declare
+  a paired `structural_fidelity` block so the runner can enforce the
+  restored shape; the runner emits `needs_human_review` when that
+  pairing is missing.
 - Per-archive forward-pointers (`proposed_canonical_field`) seed a
   future canonical-fields registry with two substrate-shape proposals:
   `structured_collection_3_slot` (counted enumeration) and

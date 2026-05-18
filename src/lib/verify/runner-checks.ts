@@ -504,11 +504,15 @@ export function loadStructuralFlattenArchiveIds(
  *   - `accepted_decorative` + archive resolves          → PASS (no entry)
  *   - `accepted_decorative` + archive id NOT in yaml    → `structural_flatten_unarchived` (HARD)
  *   - `pending_restore`                                 → `structural_flatten_pending` (SOFT)
- *   - `restored`                                        → no entry; component-count
- *                                                          assertion is delegated to the
- *                                                          paired `structural_fidelity`
- *                                                          declaration on the spec
- *                                                          (`structuralFidelityMatches`).
+ *   - `restored` + paired `structural_fidelity` block   → no entry; component-count
+ *                                                          assertion is delegated to
+ *                                                          `structuralFidelityMatches`.
+ *   - `restored` + NO `structural_fidelity` on spec     → `needs_human_review` (SOFT);
+ *                                                          the docstring delegation
+ *                                                          claim is unenforceable
+ *                                                          without the paired block,
+ *                                                          so surface the gap rather
+ *                                                          than pass silently.
  *
  * Silent when `spec.structural_flatten` is absent — this is a cite-on-demand
  * assertion, like `structural_fidelity`.
@@ -555,6 +559,15 @@ export function structuralFlattenMatches(
     case 'accepted_decorative':
       return [];
     case 'restored':
+      if (!ctx.spec.structural_fidelity) {
+        return [
+          entry(
+            ctx,
+            'needs_human_review',
+            `archive ${sf.archive_id} marks ${sf.variant} as restored, but spec lacks a paired structural_fidelity block — the runner cannot enforce the restored shape without it`,
+          ),
+        ];
+      }
       return [];
   }
 }

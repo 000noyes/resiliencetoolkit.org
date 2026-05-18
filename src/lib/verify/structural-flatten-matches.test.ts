@@ -108,7 +108,21 @@ describe('structuralFlattenMatches', () => {
     expect(out[0].status).toBe('structural_flatten_unarchived');
   });
 
-  it('restored with archive resolving — emits nothing (delegates to structural_fidelity)', () => {
+  it('restored with archive resolving AND paired structural_fidelity — emits nothing (delegates)', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: { table_count: 3 },
+      structural_flatten: {
+        variant: 'bullet_flatten',
+        resolution: 'restored',
+        archive_id: 'a-1',
+        expected_component_count: 3,
+      },
+    });
+    expect(structuralFlattenMatches(ctx(spec, new Set(['a-1'])))).toEqual([]);
+  });
+
+  it('SOFT — restored with archive resolving but NO structural_fidelity block — emits needs_human_review', () => {
     const spec = baseSpec({
       fields: [{ key: 'x', label: 'X', type: 'text' }],
       structural_flatten: {
@@ -118,7 +132,10 @@ describe('structuralFlattenMatches', () => {
         expected_component_count: 3,
       },
     });
-    expect(structuralFlattenMatches(ctx(spec, new Set(['a-1'])))).toEqual([]);
+    const out = structuralFlattenMatches(ctx(spec, new Set(['a-1'])));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('needs_human_review');
+    expect(out[0].message).toMatch(/structural_fidelity/);
   });
 
   it('HARD FAIL — restored with archive_id NOT in yaml', () => {
