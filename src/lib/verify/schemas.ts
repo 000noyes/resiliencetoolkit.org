@@ -115,10 +115,18 @@ export type SpecSubheading = z.infer<typeof specSubheadingSchema>;
 export const structuralFidelitySchema = z.object({
   /**
    * Expected count of primary data-bearing components (DataTable, PlanForm,
-   * directory tables) that descend from the cited workbook location. The
-   * runner checks this as a hard-equality: count(site components) === table_count.
+   * SlotCollection, directory tables) that descend from the cited workbook
+   * location. The runner checks this as a hard-equality:
+   * count(site components) === table_count.
+   *
+   * `table_count: 0` is the canonical assertion for Todo-only pages whose
+   * `structural_flatten:` resolution is `restored` via the parent + ml-6
+   * children Todo pattern — the workbook's structured sub-collection now
+   * renders as a Todo group with no data-bearing component on the page,
+   * and the spec asserts that absence to keep regressions from silently
+   * re-introducing a DataTable / PlanForm / SlotCollection here.
    */
-  table_count: z.number().int().min(1),
+  table_count: z.number().int().min(0),
   /**
    * Human-readable note on what the tables correspond to (optional audit trail).
    */
