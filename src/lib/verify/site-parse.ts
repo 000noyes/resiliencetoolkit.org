@@ -68,6 +68,19 @@ export interface SitePlanForm {
   formId?: string;
 }
 
+export interface SiteSlotCollection {
+  /** 1-indexed line number of the opening `<SlotCollection` tag. */
+  line: number;
+  /** `moduleKey` prop if authored as a string literal, else undefined. */
+  moduleKey?: string;
+  /** `tableId` prop if authored as a string literal, else undefined. */
+  tableId?: string;
+  /** `count` prop if authored as a non-negative integer expression `{N}`. */
+  count?: number;
+  /** `prompt` prop if authored as a string literal, else undefined. */
+  prompt?: string;
+}
+
 export interface SiteParagraph {
   /** Tag name — 'p' for paragraph, 'li' for list item. */
   tag: 'p' | 'li';
@@ -221,6 +234,32 @@ function extractStringProp(tag: string, propName: string): string | undefined {
 }
 
 /**
+ * Extract a JSX integer-expression prop value: matches `prop={N}` where N is a
+ * non-negative integer literal. Tolerates cosmetic whitespace around `=` and
+ * inside the braces (mirrors `extractStringProp`'s `\s*=\s*` convention).
+ *
+ * Returns `undefined` if the prop is absent, an identifier (`count={foo}`),
+ * a JSX comment (`count={/* *\/ 3}`), a computed expression (`count={3+0}`),
+ * a signed integer (`count={-3}`), or any shape that isn't a bare digit
+ * sequence inside braces. The strict-shape contract is intentional: the
+ * verifier parses authored source, not runtime values, so anything that
+ * isn't an obvious integer literal should fail closed (undefined → the
+ * consumer treats it as unparseable rather than mis-parsing).
+ *
+ * Exported because both `extractSlotCollections` (this file) and a future
+ * `expected_component_count` enforcement check will use it on the same
+ * `count={N}` prop shape.
+ */
+export function extractIntegerExpressionProp(
+  tag: string,
+  propName: string,
+): number | undefined {
+  const re = new RegExp(`\\b${propName}\\s*=\\s*\\{\\s*(\\d+)\\s*\\}`);
+  const m = re.exec(tag);
+  return m ? parseInt(m[1], 10) : undefined;
+}
+
+/**
  * Pull the `columns={[...]}` expression out of a DataTable opening tag, then
  * parse each top-level object literal for its `key` and `label` string
  * properties.
@@ -345,6 +384,43 @@ export function extractPlanForms(content: string): SitePlanForm[] {
     const formId = extractStringProp(tag, 'formId');
     if (moduleKey !== undefined) entry.moduleKey = moduleKey;
     if (formId !== undefined) entry.formId = formId;
+    out.push(entry);
+  }
+  return out;
+}
+
+/**
+ * Extract every `<SlotCollection ...>` occurrence with its string-literal
+ * `moduleKey` / `tableId` / `prompt` props and its integer-expression `count`
+ * prop. SlotCollection is the third primary data-bearing component on this
+ * site (alongside DataTable and PlanForm); `structuralFidelityMatches` sums
+ * all three component counts for the spec's `table_count` comparison.
+ *
+ * The `count` prop is a JSX integer expression (`count={3}`), not a quoted
+ * string, so it's parsed via `extractIntegerExpressionProp` rather than
+ * `extractStringProp`. Counts that aren't a bare non-negative integer
+ * literal yield `undefined` (the consumer surfaces that as a needs-review
+ * shape rather than mis-parsing computed/signed/identifier forms).
+ */
+export function extractSlotCollections(content: string): SiteSlotCollection[] {
+  const out: SiteSlotCollection[] = [];
+  const tagRe = /<SlotCollection\b/g;
+  let m: RegExpExecArray | null;
+  while ((m = tagRe.exec(content)) !== null) {
+    const openIdx = m.index;
+    const gt = findTagClose(content, openIdx);
+    if (gt === -1) continue;
+    const tag = content.slice(openIdx, gt);
+    const line = lineAtIndex(content, openIdx);
+    const entry: SiteSlotCollection = { line };
+    const moduleKey = extractStringProp(tag, 'moduleKey');
+    const tableId = extractStringProp(tag, 'tableId');
+    const count = extractIntegerExpressionProp(tag, 'count');
+    const prompt = extractStringProp(tag, 'prompt');
+    if (moduleKey !== undefined) entry.moduleKey = moduleKey;
+    if (tableId !== undefined) entry.tableId = tableId;
+    if (count !== undefined) entry.count = count;
+    if (prompt !== undefined) entry.prompt = prompt;
     out.push(entry);
   }
   return out;
