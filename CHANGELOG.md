@@ -4,6 +4,15 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+### Changed
+- Source-fidelity verifier now recognizes SlotCollection components
+  alongside DataTable and PlanForm when checking structural fidelity,
+  supports a `table_count: 0` assertion for pages whose authored
+  components are entirely Todo-based, and scopes its component count
+  to a single tableId when the source spec declares one. No
+  user-facing change; tightens the regression net around module
+  pages.
+
 ## [0.0.11.1] - 2026-05-18
 
 ### Removed

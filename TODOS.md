@@ -310,3 +310,15 @@ The dormant `fix/csp-cloudflare-insights` branch on origin appears to have been 
 
 **Fix:** Either (a) turn off Cloudflare Web Analytics in the Cloudflare Pages dashboard (Settings → Web Analytics → disable; we already use Umami so this is duplicative), or (b) finish the `fix/csp-cloudflare-insights` branch with whatever CSP/inline approach it was attempting. Option (a) is one click and removes the noise outright. Option (b) preserves it as a fallback analytics source.
 **Depends on:** Decision on whether to keep Cloudflare Web Analytics alongside Umami at all.
+
+### Verify: placeholder-anchor pattern in `keysMatch`
+**Priority:** P3
+**Description:** Several source specs intentionally declare fewer fields than the rendered DataTable has columns (typically 1 spec field vs 2 site columns). The 1-column spec field is a "placeholder anchor" — the workbook's authored prompt for a row, while the DataTable's second column is the user's response affordance with no workbook authority. Today `keysMatch` treats this shape as `key_drift`, so the affected specs intentionally OMIT their `tableId:` field to silence the check and skip per-component structural assertions.
+
+Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: { table_count: N }` per-component scoping because adopting it would surface the deliberately-suppressed drift signal.
+
+**Fix:** Extend `keysMatch` (src/lib/verify/runner-checks.ts) to recognize the `spec_field_count < site_column_count` shape as a placeholder-anchor pattern rather than drift, gated on a new spec-side opt-in (e.g., `keys_match: { placeholder_anchor: true }`). Then in a follow-up sweep, add `tableId:` + `structural_fidelity: { table_count: 1 }` to all ~8 affected specs at once for uniform per-component coverage. Audit each spec individually before adding the opt-in to confirm the column-count mismatch is intentional placeholder-anchor and not actual drift.
+
+**Motivated trigger:** A future regression on any of the placeholder-anchor specs (DataTable dropped, duplicated, or split) that current `keysMatch` + `proseMatches` + inventory yaml coverage wouldn't catch as cleanly as per-component `structural_fidelity` would. Until then, the existing coverage layers are sufficient.
+
+**Depends on:** Nothing. Self-contained verifier improvement plus a spec-sweep PR.
