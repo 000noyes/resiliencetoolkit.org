@@ -611,6 +611,90 @@ describe('runner-checks: structuralFidelityMatches', () => {
     expect(out[0].status).toBe('structural_fidelity_failed');
     expect(out[0].message).toMatch(/0 data-bearing/);
   });
+
+  it('table_count: 0 on a Todo-only page (no DataTable, no PlanForm, no SlotCollection) → pass', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: {
+        table_count: 0,
+        description: 'Workbook structure restored as parent + ml-6 children Todo group',
+      },
+    });
+    const site = `
+<Todo id="parent" moduleKey="m" client:load>Parent prompt</Todo>
+<div class="ml-6 space-y-4">
+  <Todo id="child-a" moduleKey="m" client:load>Child A</Todo>
+  <Todo id="child-b" moduleKey="m" client:load>Child B</Todo>
+</div>`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('per-tableId scope: pass when exactly one matching DataTable is present alongside others', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      tableId: 'x',
+      structural_fidelity: { table_count: 1 },
+    });
+    const site = `
+<DataTable moduleKey="m" tableId="x" columns={[{ key: 'A', label: 'A' }]} />
+<DataTable moduleKey="m" tableId="y" columns={[{ key: 'B', label: 'B' }]} />
+<DataTable moduleKey="m" tableId="z" columns={[{ key: 'C', label: 'C' }]} />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('per-tableId scope: fail when two DataTables share the scoped tableId', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      tableId: 'x',
+      structural_fidelity: { table_count: 1 },
+    });
+    const site = `
+<DataTable moduleKey="m" tableId="x" columns={[{ key: 'A', label: 'A' }]} />
+<DataTable moduleKey="m" tableId="x" columns={[{ key: 'B', label: 'B' }]} />
+<DataTable moduleKey="m" tableId="y" columns={[{ key: 'C', label: 'C' }]} />`;
+    const out = structuralFidelityMatches(ctx(spec, site));
+    expect(out).toHaveLength(1);
+    expect(out[0].status).toBe('structural_fidelity_failed');
+    expect(out[0].message).toMatch(/2 data-bearing/);
+    expect(out[0].message).toMatch(/scoped to tableId="x"/);
+  });
+
+  it('SlotCollection-only scope: pass when 0 DataTable + 1 SlotCollection match the scoped tableId', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      tableId: 'place-characteristics-row-0-slots',
+      structural_fidelity: { table_count: 1 },
+    });
+    const site = `
+<DataTable moduleKey="m" tableId="place-characteristics" columns={[{ key: 'A', label: 'A' }]} />
+<SlotCollection moduleKey="m" tableId="place-characteristics-row-0-slots" count={3} prompt="Three things" />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('mixed-scope: 1 DataTable + 1 SlotCollection sharing the scoped tableId → observed=2, asserted=2 → pass', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      tableId: 'shared-key',
+      structural_fidelity: { table_count: 2 },
+    });
+    const site = `
+<DataTable moduleKey="m" tableId="shared-key" columns={[{ key: 'A', label: 'A' }]} />
+<SlotCollection moduleKey="m" tableId="shared-key" count={3} prompt="Slot prompt" />
+<DataTable moduleKey="m" tableId="other" columns={[{ key: 'B', label: 'B' }]} />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('no-tableId backward compat: file-global sum across DataTable + PlanForm + SlotCollection', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      structural_fidelity: { table_count: 3 },
+    });
+    const site = `
+<DataTable columns={[{ key: 'A', label: 'A' }]} />
+<PlanForm moduleKey="m" formId="f" fields={planFields} title="T" />
+<SlotCollection moduleKey="m" tableId="t" count={2} prompt="P" />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
 });
 
 // ---------------------------------------------------------------------------
