@@ -4,6 +4,13 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+## [0.0.13.0] - 2026-05-25
+
+### Changed
+- Restore 3-slot structure on the "Mapping your community" exercise
+  (knowing-your-community module) per workbook p10. Existing
+  responses migrate into Slot 1; Slots 2-3 start empty.
+
 ## [0.0.12.0] - 2026-05-25
 
 ### Changed
