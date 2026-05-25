@@ -12,13 +12,30 @@ fields:
 matching:
   require_cluster: false
 prose_scope:
-  # Provisional ranges — recomputed and pinned in phase (iv) after the
-  # knowing-your-community.astro edit lands. These placeholders intentionally
-  # cover the expected post-edit SlotCollection band so phase (ii) commits
-  # in a non-verify-failing state; phase (iv) re-pins the exact values from
-  # the actual diff.
-  start_line: 46
-  end_line: 55
+  # Pinned to the SlotCollection JSX band post-substrate-restore. Disjoint
+  # from the sibling DataTable spec's prose_scope (56-72) so proseMatches
+  # does not double-count paragraph drift across the two specs that now
+  # share knowing-your-community.astro.
+  start_line: 47
+  end_line: 54
+subheadings:
+  # titleMatches runs file-globally per-spec (not scoped to prose_scope),
+  # so this list mirrors the sibling 0-1-place-characteristics.md spec
+  # exactly. Without it the verifier flags every h2/h3 on the file as
+  # title_drift against this spec. Both specs cover the same .astro file
+  # so they declare the same subheading set.
+  - text: 'Organizing your community: who is here and what are they doing?'
+  - text: Who is in your community/place?
+  - text: What other dynamics are present in your place?
+  - text: Stuff and systems in your community
+  - text: Knowing your ecosystem
+  - text: Bringing people together
+  - text: Facilitation guides
+  - text: 'Get to know the toolkit: interactive activity'
+  - text: Conduct a Community Needs Assessment
+  - text: 'We started organizing. How do we know it’s working, and when to ask for more help?'
+  - text: 'Going deeper: finding the community work you want to do'
+  - text: Pod mapping
 structural_flatten:
   variant: slot_flatten
   resolution: restored

@@ -12,8 +12,8 @@ fields:
 matching:
   require_cluster: false
 prose_scope:
-  start_line: 48
-  end_line: 65
+  start_line: 56
+  end_line: 72
 subheadings:
   - text: 'Organizing your community: who is here and what are they doing?'
   - text: Who is in your community/place?
@@ -29,9 +29,16 @@ subheadings:
   - text: Pod mapping
 notes: |
   Day-18 KYC half-2 spec — covers the Mapping your community DataTable
-  (tableId: place-characteristics) on src/pages/modules/knowing-your-community.astro
-  lines 48-64. Pairs with day-17 spec 0-1-knowing-your-community.md (page
-  10-23 file-global) and 5 sibling day-18 DataTable specs.
+  (tableId: place-characteristics) on src/pages/modules/knowing-your-community.astro.
+  Post-PR-B layout: the original row-0 ("Write down three important things...")
+  was extracted into a SlotCollection sibling component at
+  knowing-your-community.astro:47-54 under the isolated
+  tableId="place-characteristics-row-0-slots" (see
+  0-1-place-characteristics-row-0-slots.md). This spec now covers the
+  remaining 3-row DataTable at lines 56-72 with rowIds row-1/row-2/row-3
+  (challenges/assets/thriving prompts). Pairs with day-17 spec
+  0-1-knowing-your-community.md (page 10-23 file-global) and 5 sibling
+  day-18 DataTable specs.
 
   fields[] uses a single placeholder anchor (label "Mapping your
   community", which is the section heading on workbook page 10) — same
@@ -39,12 +46,12 @@ notes: |
   and 1-1 (1-1-emergency-preparedness-kits). Workbook page 10 contains
   no explicit column headers for this prompt-list table, and the site
   DataTable's "Prompt"/"Your Response" labels are a site-authored
-  rendering convention not present in the workbook. The 4 row prompts
-  ARE in the workbook verbatim but pdftotext fragments them across
-  drop-cap typography lines ("W" + "rite down three important...")
-  which lowers bestMatchScore below the 0.85 match threshold — so
-  per-prompt fields[] would land in the drift zone (recall < 0.95)
-  and yield needs_human_review rather than pass. Verbatim row content
+  rendering convention not present in the workbook. The 3 remaining row
+  prompts (post-PR-B: challenges/assets/thriving) ARE in the workbook
+  verbatim but pdftotext fragments them across drop-cap typography
+  lines which lowers bestMatchScore below the 0.85 match threshold — so
+  per-prompt fields[] would land in the drift zone (recall < 0.95) and
+  yield needs_human_review rather than pass. Verbatim row content
   fidelity is enforced by the inventory audit trail
   (toolkit-inventory.yaml) rather than by spec.fields[].
 
@@ -57,7 +64,12 @@ notes: |
   citation in the .astro file (`source="docs/source-specs/0-1-place-
   characteristics.md"` on the DataTable opening tag) — if the
   DataTable is removed, the citation is orphaned and verify surfaces
-  the missing source via the `missing_citation` taxonomy.
+  the missing source via the `missing_citation` taxonomy. PR B's accepted
+  coverage gap (OQ2 resolution): the 3-row DataTable post-PR-B is not
+  structurally verified by structural_fidelity because adding tableId
+  would re-introduce the placeholder-field-vs-column-count drift; a
+  future PR D may extend keysMatch to recognize the placeholder-anchor
+  pattern.
 
   matching.require_cluster: false — the single-token "your" inside
   "Mapping your community" would otherwise need a cluster of sibling
