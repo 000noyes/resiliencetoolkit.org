@@ -115,10 +115,36 @@ export type SpecSubheading = z.infer<typeof specSubheadingSchema>;
 export const structuralFidelitySchema = z.object({
   /**
    * Expected count of primary data-bearing components (DataTable, PlanForm,
-   * directory tables) that descend from the cited workbook location. The
-   * runner checks this as a hard-equality: count(site components) === table_count.
+   * SlotCollection, directory tables) that descend from the cited workbook
+   * location. The runner checks this as a hard-equality:
+   * count(site components) === table_count.
+   *
+   * `table_count: 0` is the canonical assertion for Todo-only pages whose
+   * `structural_flatten:` resolution is `restored` via the parent + ml-6
+   * children Todo pattern — the workbook's structured sub-collection now
+   * renders as a Todo group with no data-bearing component on the page,
+   * and the spec asserts that absence to keep regressions from silently
+   * re-introducing a DataTable / PlanForm / SlotCollection here.
    */
-  table_count: z.number().int().min(1),
+  table_count: z.number().int().min(0),
+  /**
+   * Optional component-identity key used to scope `table_count` to a single
+   * authoring identity instead of summing every data-bearing component in
+   * the file. Matched against `DataTable.tableId`, `SlotCollection.tableId`,
+   * and `PlanForm.formId` — so any of the three component classes can be
+   * scoped with one field. Decoupled from the top-level `spec.tableId`
+   * (which is keysMatch's DataTable identity contract) so PlanForm- or
+   * SlotCollection-only specs can scope structural_fidelity without
+   * triggering a spurious keysMatch `key_drift` against a missing
+   * DataTable. When `scope_id` is undefined, the runner falls back to
+   * `spec.tableId` for backward compatibility with day-15-i DataTable
+   * specs that already use it as the structural scope. When both are
+   * undefined, structural_fidelity sums file-globally. Empty and
+   * whitespace-only values are rejected at parse time via
+   * `.trim().min(1)` so an accidental `scope_id: ""` doesn't silently
+   * fall through to unscoped mode.
+   */
+  scope_id: z.string().trim().min(1).optional(),
   /**
    * Human-readable note on what the tables correspond to (optional audit trail).
    */

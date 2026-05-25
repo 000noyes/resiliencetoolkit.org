@@ -310,3 +310,45 @@ The dormant `fix/csp-cloudflare-insights` branch on origin appears to have been 
 
 **Fix:** Either (a) turn off Cloudflare Web Analytics in the Cloudflare Pages dashboard (Settings → Web Analytics → disable; we already use Umami so this is duplicative), or (b) finish the `fix/csp-cloudflare-insights` branch with whatever CSP/inline approach it was attempting. Option (a) is one click and removes the noise outright. Option (b) preserves it as a fallback analytics source.
 **Depends on:** Decision on whether to keep Cloudflare Web Analytics alongside Umami at all.
+
+### Verify: placeholder-anchor pattern in `keysMatch`
+**Priority:** P3
+**Description:** Several source specs intentionally declare fewer fields than the rendered DataTable has columns (typically 1 spec field vs 2 site columns). The 1-column spec field is a "placeholder anchor" — the workbook's authored prompt for a row, while the DataTable's second column is the user's response affordance with no workbook authority. Today `keysMatch` treats this shape as `key_drift`, so the affected specs intentionally OMIT their `tableId:` field to silence the check and skip per-component structural assertions.
+
+Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: { table_count: N }` per-component scoping because adopting it would surface the deliberately-suppressed drift signal.
+
+**Fix:** Extend `keysMatch` (src/lib/verify/runner-checks.ts) to recognize the `spec_field_count < site_column_count` shape as a placeholder-anchor pattern rather than drift, gated on a new spec-side opt-in (e.g., `keys_match: { placeholder_anchor: true }`). Then in a follow-up sweep, add `tableId:` + `structural_fidelity: { table_count: 1 }` to all ~8 affected specs at once for uniform per-component coverage. Audit each spec individually before adding the opt-in to confirm the column-count mismatch is intentional placeholder-anchor and not actual drift.
+
+**Motivated trigger:** A future regression on any of the placeholder-anchor specs (DataTable dropped, duplicated, or split) that current `keysMatch` + `proseMatches` + inventory yaml coverage wouldn't catch as cleanly as per-component `structural_fidelity` would. Until then, the existing coverage layers are sufficient.
+
+**Depends on:** Nothing. Self-contained verifier improvement plus a spec-sweep PR.
+
+### Verify: structural_fidelity can't detect component-type swaps
+**Priority:** P3
+**Description:** `structuralFidelityMatches` sums DataTable + PlanForm + SlotCollection counts and compares against `table_count`. A spec intending "1 SlotCollection at scope_id X" passes equally if the site renders "1 DataTable at scope_id X" instead — the type identity is invisible to the check. Silent-pass risk for any future split or migration where one component class gets swapped for another at the same scope_id.
+
+**Fix:** Extend `structuralFidelitySchema` with an optional `component_type` enum (`'DataTable' | 'PlanForm' | 'SlotCollection'`) OR with per-type count fields (`{ data_tables?: N, plan_forms?: N, slot_collections?: N }`). When set, the runner asserts not just the total but the per-class counts. Existing `table_count`-only specs continue to work.
+
+**Motivated trigger:** A future spec that legitimately needs to distinguish "1 DataTable" from "1 SlotCollection" at the same scope_id — e.g. a migration that intentionally changes the component class for an existing scope. Today no spec has that shape; the gap is latent.
+
+**Depends on:** Nothing. Self-contained verifier extension.
+
+### Verify: `table_count: 0` + scope_id weakens the Todo-only guarantee
+**Priority:** P3
+**Description:** The schema currently allows both `table_count: 0` and `scope_id` on the same `structural_fidelity` block. When combined, the runner asserts "zero components with this scope_id" rather than the intended "zero data-bearing components on this page." A regression that introduces a DataTable with a different tableId would silently pass.
+
+**Fix:** Either (a) refine `structuralFidelitySchema` to reject the combination (`table_count: 0` requires `scope_id` to be absent), or (b) carve out the scoped filter when `table_count === 0` so the check always runs file-globally for the Todo-only assertion. Option (a) is the cleaner contract; option (b) lets author intent ("zero of class X") still be expressible but documents the semantic in the docstring. Add tests for both branches.
+
+**Motivated trigger:** A future spec author who pairs the two fields without intending to. Today no spec exists with that shape; if it ever ships, the verifier silently under-asserts.
+
+**Depends on:** Nothing. Self-contained verifier refinement.
+
+### Verify: scoped counting silently skips unparseable component identity
+**Priority:** P3
+**Description:** `extractStringProp` returns `undefined` for any tableId/formId authored as a computed expression (`tableId={dynamicId}`), template literal, or missing prop. The scoped filter `s.tableId === scope` then drops those components from the count. A page with one correctly scoped component plus a duplicate authored with a computed identity still passes `table_count: 1`. Robustness gap for any site authoring that uses computed identities — which today is zero, but the verifier doesn't enforce that authoring convention.
+
+**Fix:** When `scope_id` filtering is active and any counted component class has at least one entry with an unparseable identity (`undefined` after extraction), emit a `needs_review` soft entry citing the line. Authors can either annotate the spec to acknowledge the dynamic identity or convert the component to a literal string prop. Alternatively, surface a build-time lint that forbids computed identity props on data-bearing components in `src/pages/**` (firmer but more invasive).
+
+**Motivated trigger:** A future authoring pattern that uses computed tableIds (e.g. row-templating). Today all sites author literal string tableIds; the gap is latent until convention changes.
+
+**Depends on:** Nothing. Self-contained verifier refinement.

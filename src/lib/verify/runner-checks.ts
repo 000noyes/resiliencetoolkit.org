@@ -19,7 +19,7 @@
  *
  * Added in day-5b:
  *   - `structuralFidelityMatches` — N workbook tables → N site components
- *                                   (DataTable + PlanForm sum).
+ *                                   (DataTable + PlanForm + SlotCollection sum).
  *                                   Emits structural_fidelity_failed.
  *   - `proseMatches`              — site <p>/<li> text must be grounded in
  *                                   pdftotext extraction (precision-first).
@@ -44,6 +44,7 @@ import {
   extractParagraphs,
   extractPlanForms,
   extractSectionNumber,
+  extractSlotCollections,
   type SiteColumn,
   type SiteLink,
 } from './site-parse';
@@ -420,15 +421,35 @@ export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
 
 /**
  * Assert that the number of primary data-bearing components rendered on the
- * site equals `spec.structural_fidelity.table_count`. Counts both
- * `<DataTable>` and `<PlanForm>` (the two authored data-bearing components on
- * this site; directory-tables historically used raw `<table>` but are now
- * DataTable-backed so are already covered).
+ * site equals `spec.structural_fidelity.table_count`. Counts three component
+ * classes: `<DataTable>`, `<PlanForm>`, and `<SlotCollection>` — the three
+ * authored data-bearing component shapes on this site. Directory tables
+ * historically used raw `<table>` but are now DataTable-backed so are
+ * already covered.
  *
  * Walk case: 1-8 Populations with Specific Needs — the workbook authors ONE
  * Seniors+Disabilities planning table; the site splits it into TWO
  * DataTables. The spec asserts `table_count: 1`; the check observes 2;
  * result: `structural_fidelity_failed` blocking class-a status for 1-8.
+ *
+ * `table_count: 0` is the canonical assertion for Todo-only pages whose
+ * `structural_flatten` resolution is `restored` via the parent + ml-6
+ * children Todo pattern — the spec asserts that no DataTable / PlanForm /
+ * SlotCollection renders here, so a regression that silently reintroduces
+ * one is caught.
+ *
+ * Scoping: when the spec declares `structural_fidelity.scope_id`, observed
+ * counts are filtered to components whose authoring identity matches that
+ * key — `DataTable.tableId`, `SlotCollection.tableId`, or `PlanForm.formId`
+ * (one scope key across all three component classes, by design). `scope_id`
+ * is independent of the top-level `spec.tableId` (which is `keysMatch`'s
+ * DataTable identity contract); a PlanForm- or SlotCollection-only spec
+ * that wants to scope structural_fidelity SHOULD use `scope_id` and leave
+ * `spec.tableId` undefined, so `keysMatch` stays silent against the missing
+ * DataTable. When `scope_id` is undefined, the runner falls back to
+ * `spec.tableId` for backward compatibility with day-15-i DataTable specs
+ * that already use it as the structural scope. When both are undefined,
+ * observed counts sum file-globally (preserves day-1.5 behavior).
  *
  * Silent when `spec.structural_fidelity` is absent — this is a cite-on-demand
  * assertion, not a universal requirement. A future spec that cares about
@@ -442,17 +463,25 @@ export function structuralFidelityMatches(ctx: CheckContext): VerifyReportEntry[
   const sf = ctx.spec.structural_fidelity;
   if (!sf) return [];
 
-  const tables = extractDataTables(ctx.siteContent);
-  const forms = extractPlanForms(ctx.siteContent);
-  const observed = tables.length + forms.length;
+  const allTables = extractDataTables(ctx.siteContent);
+  const allForms = extractPlanForms(ctx.siteContent);
+  const allSlots = extractSlotCollections(ctx.siteContent);
+
+  const scope = sf.scope_id ?? ctx.spec.tableId;
+  const tables = scope ? allTables.filter((t) => t.tableId === scope) : allTables;
+  const forms = scope ? allForms.filter((f) => f.formId === scope) : allForms;
+  const slots = scope ? allSlots.filter((s) => s.tableId === scope) : allSlots;
+
+  const observed = tables.length + forms.length + slots.length;
   if (observed === sf.table_count) return [];
 
   const desc = sf.description ? ` — ${sf.description}` : '';
+  const scopeNote = scope ? ` scoped to scope_id="${scope}"` : '';
   return [
     entry(
       ctx,
       'structural_fidelity_failed',
-      `spec.structural_fidelity.table_count=${sf.table_count} but ${ctx.file} renders ${observed} data-bearing component(s) (${tables.length} DataTable + ${forms.length} PlanForm)${desc}`,
+      `spec.structural_fidelity.table_count=${sf.table_count} but ${ctx.file} renders ${observed} data-bearing component(s)${scopeNote} (${tables.length} DataTable + ${forms.length} PlanForm + ${slots.length} SlotCollection)${desc}`,
     ),
   ];
 }

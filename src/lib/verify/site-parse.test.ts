@@ -7,6 +7,8 @@ import {
   extractPlanForms,
   extractParagraphs,
   extractSectionNumber,
+  extractIntegerExpressionProp,
+  extractSlotCollections,
 } from './site-parse';
 
 describe('site-parse: extractSectionNumber', () => {
@@ -280,5 +282,141 @@ describe('site-parse: extractParagraphs', () => {
       'Second',
       'Third',
     ]);
+  });
+});
+
+describe('site-parse: extractIntegerExpressionProp', () => {
+  it('extracts a bare integer literal', () => {
+    expect(extractIntegerExpressionProp(`<X count={3} />`, 'count')).toBe(3);
+  });
+
+  it('tolerates whitespace around the `=` sign', () => {
+    expect(extractIntegerExpressionProp(`<X count = {3} />`, 'count')).toBe(3);
+  });
+
+  it('tolerates whitespace inside the braces', () => {
+    expect(extractIntegerExpressionProp(`<X count={ 3 } />`, 'count')).toBe(3);
+  });
+
+  it('returns undefined when the prop is missing', () => {
+    expect(extractIntegerExpressionProp(`<X />`, 'count')).toBeUndefined();
+  });
+
+  it('rejects an identifier expression', () => {
+    expect(
+      extractIntegerExpressionProp(`<X count={foo} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('rejects a JSX comment inside the expression', () => {
+    expect(
+      extractIntegerExpressionProp(`<X count={/* */ 3} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('rejects a computed expression', () => {
+    expect(
+      extractIntegerExpressionProp(`<X count={3+0} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('rejects a signed integer', () => {
+    expect(
+      extractIntegerExpressionProp(`<X count={-3} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('extracts multi-digit integers', () => {
+    expect(
+      extractIntegerExpressionProp(`<X count={123} />`, 'count'),
+    ).toBe(123);
+  });
+
+  it('extracts cleanly when a string prop sits beside the integer prop', () => {
+    const tag = `<X prompt="hello" count={3} moduleKey="a" />`;
+    expect(extractIntegerExpressionProp(tag, 'count')).toBe(3);
+  });
+
+  it('does NOT falsely match a hyphenated suffix prop (data-count={3})', () => {
+    expect(
+      extractIntegerExpressionProp(`<X data-count={3} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('does NOT falsely match a hyphenated suffix prop (row-count={3})', () => {
+    expect(
+      extractIntegerExpressionProp(`<X row-count={3} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('does NOT falsely match a camelCase prefix prop (rowcount={3})', () => {
+    expect(
+      extractIntegerExpressionProp(`<X rowcount={3} />`, 'count'),
+    ).toBeUndefined();
+  });
+});
+
+describe('site-parse: extractSlotCollections', () => {
+  it('returns an empty array when the file has no SlotCollection', () => {
+    expect(extractSlotCollections(`<p>Just prose.</p>`)).toEqual([]);
+  });
+
+  it('extracts a SlotCollection with all four props', () => {
+    const src = `<SlotCollection moduleKey="knowing-community" tableId="place-characteristics-row-0-slots" count={3} prompt="Write three things." />`;
+    const out = extractSlotCollections(src);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({
+      line: 1,
+      moduleKey: 'knowing-community',
+      tableId: 'place-characteristics-row-0-slots',
+      count: 3,
+      prompt: 'Write three things.',
+    });
+  });
+
+  it('handles multiple SlotCollections in one file', () => {
+    const src = `<SlotCollection moduleKey="a" tableId="t1" count={2} prompt="A" />
+<SlotCollection moduleKey="b" tableId="t2" count={4} prompt="B" />`;
+    const out = extractSlotCollections(src);
+    expect(out).toHaveLength(2);
+    expect(out.map((s) => [s.tableId, s.count])).toEqual([
+      ['t1', 2],
+      ['t2', 4],
+    ]);
+  });
+
+  it('omits absent optional props (moduleKey, tableId, count, prompt)', () => {
+    const src = `<SlotCollection />`;
+    const out = extractSlotCollections(src);
+    expect(out).toHaveLength(1);
+    expect(out[0].moduleKey).toBeUndefined();
+    expect(out[0].tableId).toBeUndefined();
+    expect(out[0].count).toBeUndefined();
+    expect(out[0].prompt).toBeUndefined();
+    expect(out[0].line).toBe(1);
+  });
+
+  it('parses a SlotCollection across multiple authored lines', () => {
+    const src = `<SlotCollection
+  moduleKey="knowing-community"
+  tableId="place-characteristics-row-0-slots"
+  count={3}
+  prompt="Write down three important things about your place."
+/>`;
+    const out = extractSlotCollections(src);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({
+      line: 1,
+      moduleKey: 'knowing-community',
+      tableId: 'place-characteristics-row-0-slots',
+      count: 3,
+    });
+  });
+
+  it('does NOT pick up a suffix-prop value (e.g. data-tableId="x") as tableId', () => {
+    const src = `<SlotCollection moduleKey="m" data-tableId="not-this" tableId="real" count={1} />`;
+    const out = extractSlotCollections(src);
+    expect(out).toHaveLength(1);
+    expect(out[0].tableId).toBe('real');
   });
 });
