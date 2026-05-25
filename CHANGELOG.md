@@ -9,9 +9,12 @@ All notable changes to ResilienceToolkit.org are documented here.
   alongside DataTable and PlanForm when checking structural fidelity,
   supports a `table_count: 0` assertion for pages whose authored
   components are entirely Todo-based, and scopes its component count
-  to a single tableId when the source spec declares one. No
-  user-facing change; tightens the regression net around module
-  pages.
+  via a new `structural_fidelity.scope_id` field (decoupled from the
+  top-level `spec.tableId` so PlanForm- or SlotCollection-only specs
+  can scope without triggering key-alignment checks). Prop-name
+  parsing in the site extractors also tightened to reject hyphenated
+  suffix matches like `data-count`. No user-facing change; tightens
+  the regression net around module pages.
 
 ## [0.0.11.1] - 2026-05-18
 

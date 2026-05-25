@@ -336,6 +336,24 @@ describe('site-parse: extractIntegerExpressionProp', () => {
     const tag = `<X prompt="hello" count={3} moduleKey="a" />`;
     expect(extractIntegerExpressionProp(tag, 'count')).toBe(3);
   });
+
+  it('does NOT falsely match a hyphenated suffix prop (data-count={3})', () => {
+    expect(
+      extractIntegerExpressionProp(`<X data-count={3} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('does NOT falsely match a hyphenated suffix prop (row-count={3})', () => {
+    expect(
+      extractIntegerExpressionProp(`<X row-count={3} />`, 'count'),
+    ).toBeUndefined();
+  });
+
+  it('does NOT falsely match a camelCase prefix prop (rowcount={3})', () => {
+    expect(
+      extractIntegerExpressionProp(`<X rowcount={3} />`, 'count'),
+    ).toBeUndefined();
+  });
 });
 
 describe('site-parse: extractSlotCollections', () => {
@@ -393,5 +411,12 @@ describe('site-parse: extractSlotCollections', () => {
       tableId: 'place-characteristics-row-0-slots',
       count: 3,
     });
+  });
+
+  it('does NOT pick up a suffix-prop value (e.g. data-tableId="x") as tableId', () => {
+    const src = `<SlotCollection moduleKey="m" data-tableId="not-this" tableId="real" count={1} />`;
+    const out = extractSlotCollections(src);
+    expect(out).toHaveLength(1);
+    expect(out[0].tableId).toBe('real');
   });
 });

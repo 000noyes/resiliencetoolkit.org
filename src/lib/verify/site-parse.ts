@@ -224,13 +224,26 @@ function findTagClose(content: string, openIdx: number): number {
   return -1;
 }
 
-/** Pull `propName="value"` or `propName='value'` out of an opening tag. */
+/**
+ * Pull `propName="value"` or `propName='value'` out of an opening tag.
+ *
+ * Left-boundary uses `(^|[\s/])` rather than `\b` because `\b` treats `-`
+ * as a word boundary, so `\bcount\b` matches the suffix `count` inside
+ * `data-count={3}` or `row-count={3}` — a false positive on hyphenated
+ * attribute names. The `[\s/]` alternation lets us match props that
+ * follow either whitespace (the common case) or `/` (a self-closing JSX
+ * tag start, defensive). Start-of-string is included for the rare case
+ * where the prop is the first token of the slice — currently only true
+ * if findTagClose ever returned a slice without the leading tag name,
+ * which it doesn't, but keeping it makes the boundary semantically
+ * obvious instead of relying on a tag-name prefix invariant.
+ */
 function extractStringProp(tag: string, propName: string): string | undefined {
   const re = new RegExp(
-    `\\b${propName}\\s*=\\s*(['"])((?:(?!\\1).)*)\\1`,
+    `(^|[\\s/])${propName}\\s*=\\s*(['"])((?:(?!\\2).)*)\\2`,
   );
   const m = re.exec(tag);
-  return m ? m[2] : undefined;
+  return m ? m[3] : undefined;
 }
 
 /**
@@ -246,6 +259,11 @@ function extractStringProp(tag: string, propName: string): string | undefined {
  * isn't an obvious integer literal should fail closed (undefined → the
  * consumer treats it as unparseable rather than mis-parsing).
  *
+ * Left-boundary uses `(^|[\s/])` rather than `\b` because `\b` treats `-`
+ * as a word boundary, so `\bcount\b` matches the suffix `count` inside
+ * `data-count={3}` or `row-count={3}` — a false positive on hyphenated
+ * attribute names. See `extractStringProp` for the same fix.
+ *
  * Exported because both `extractSlotCollections` (this file) and a future
  * `expected_component_count` enforcement check will use it on the same
  * `count={N}` prop shape.
@@ -254,9 +272,11 @@ export function extractIntegerExpressionProp(
   tag: string,
   propName: string,
 ): number | undefined {
-  const re = new RegExp(`\\b${propName}\\s*=\\s*\\{\\s*(\\d+)\\s*\\}`);
+  const re = new RegExp(
+    `(^|[\\s/])${propName}\\s*=\\s*\\{\\s*(\\d+)\\s*\\}`,
+  );
   const m = re.exec(tag);
-  return m ? parseInt(m[1], 10) : undefined;
+  return m ? parseInt(m[2], 10) : undefined;
 }
 
 /**
