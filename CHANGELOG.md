@@ -4,6 +4,8 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+## [0.0.11.2] - 2026-05-25
+
 ### Changed
 - Source-fidelity verifier now recognizes SlotCollection components
   alongside DataTable and PlanForm when checking structural fidelity,
