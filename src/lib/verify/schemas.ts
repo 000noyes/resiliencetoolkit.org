@@ -128,6 +128,21 @@ export const structuralFidelitySchema = z.object({
    */
   table_count: z.number().int().min(0),
   /**
+   * Optional component-identity key used to scope `table_count` to a single
+   * authoring identity instead of summing every data-bearing component in
+   * the file. Matched against `DataTable.tableId`, `SlotCollection.tableId`,
+   * and `PlanForm.formId` — so any of the three component classes can be
+   * scoped with one field. Decoupled from the top-level `spec.tableId`
+   * (which is keysMatch's DataTable identity contract) so PlanForm- or
+   * SlotCollection-only specs can scope structural_fidelity without
+   * triggering a spurious keysMatch `key_drift` against a missing
+   * DataTable. When `scope_id` is undefined, the runner falls back to
+   * `spec.tableId` for backward compatibility with day-15-i DataTable
+   * specs that already use it as the structural scope. When both are
+   * undefined, structural_fidelity sums file-globally.
+   */
+  scope_id: z.string().optional(),
+  /**
    * Human-readable note on what the tables correspond to (optional audit trail).
    */
   description: z.string().optional(),

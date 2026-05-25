@@ -629,11 +629,10 @@ describe('runner-checks: structuralFidelityMatches', () => {
     expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
   });
 
-  it('per-tableId scope: pass when exactly one matching DataTable is present alongside others', () => {
+  it('scope_id (DataTable): pass when exactly one matching DataTable is present alongside others', () => {
     const spec = baseSpec({
       fields: [{ key: 'x', label: 'X', type: 'text' }],
-      tableId: 'x',
-      structural_fidelity: { table_count: 1 },
+      structural_fidelity: { table_count: 1, scope_id: 'x' },
     });
     const site = `
 <DataTable moduleKey="m" tableId="x" columns={[{ key: 'A', label: 'A' }]} />
@@ -642,11 +641,10 @@ describe('runner-checks: structuralFidelityMatches', () => {
     expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
   });
 
-  it('per-tableId scope: fail when two DataTables share the scoped tableId', () => {
+  it('scope_id: fail when two DataTables share the scoped id', () => {
     const spec = baseSpec({
       fields: [{ key: 'x', label: 'X', type: 'text' }],
-      tableId: 'x',
-      structural_fidelity: { table_count: 1 },
+      structural_fidelity: { table_count: 1, scope_id: 'x' },
     });
     const site = `
 <DataTable moduleKey="m" tableId="x" columns={[{ key: 'A', label: 'A' }]} />
@@ -656,14 +654,18 @@ describe('runner-checks: structuralFidelityMatches', () => {
     expect(out).toHaveLength(1);
     expect(out[0].status).toBe('structural_fidelity_failed');
     expect(out[0].message).toMatch(/2 data-bearing/);
-    expect(out[0].message).toMatch(/scoped to tableId="x"/);
+    expect(out[0].message).toMatch(/scoped to scope_id="x"/);
   });
 
-  it('SlotCollection-only scope: pass when 0 DataTable + 1 SlotCollection match the scoped tableId', () => {
+  it('scope_id (SlotCollection-only): pass when 0 DataTable + 1 SlotCollection match — and spec.tableId is unset so keysMatch stays silent', () => {
     const spec = baseSpec({
       fields: [{ key: 'x', label: 'X', type: 'text' }],
-      tableId: 'place-characteristics-row-0-slots',
-      structural_fidelity: { table_count: 1 },
+      // NOTE: spec.tableId intentionally absent — scope_id decouples
+      // structural_fidelity from keysMatch's DataTable identity contract.
+      structural_fidelity: {
+        table_count: 1,
+        scope_id: 'place-characteristics-row-0-slots',
+      },
     });
     const site = `
 <DataTable moduleKey="m" tableId="place-characteristics" columns={[{ key: 'A', label: 'A' }]} />
@@ -671,16 +673,39 @@ describe('runner-checks: structuralFidelityMatches', () => {
     expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
   });
 
-  it('mixed-scope: 1 DataTable + 1 SlotCollection sharing the scoped tableId → observed=2, asserted=2 → pass', () => {
+  it('scope_id (mixed): 1 DataTable + 1 SlotCollection sharing the scoped id → observed=2, asserted=2 → pass', () => {
     const spec = baseSpec({
       fields: [{ key: 'x', label: 'X', type: 'text' }],
-      tableId: 'shared-key',
-      structural_fidelity: { table_count: 2 },
+      structural_fidelity: { table_count: 2, scope_id: 'shared-key' },
     });
     const site = `
 <DataTable moduleKey="m" tableId="shared-key" columns={[{ key: 'A', label: 'A' }]} />
 <SlotCollection moduleKey="m" tableId="shared-key" count={3} prompt="Slot prompt" />
 <DataTable moduleKey="m" tableId="other" columns={[{ key: 'B', label: 'B' }]} />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('spec.tableId fallback: when scope_id is absent, falls back to spec.tableId (day-15-i DataTable backward compat)', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      tableId: 'x',
+      structural_fidelity: { table_count: 1 },
+    });
+    const site = `
+<DataTable moduleKey="m" tableId="x" columns={[{ key: 'A', label: 'A' }]} />
+<DataTable moduleKey="m" tableId="y" columns={[{ key: 'B', label: 'B' }]} />`;
+    expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
+  });
+
+  it('scope_id wins over spec.tableId when both are present', () => {
+    const spec = baseSpec({
+      fields: [{ key: 'x', label: 'X', type: 'text' }],
+      tableId: 'x',
+      structural_fidelity: { table_count: 1, scope_id: 'y' },
+    });
+    const site = `
+<DataTable moduleKey="m" tableId="x" columns={[{ key: 'A', label: 'A' }]} />
+<DataTable moduleKey="m" tableId="y" columns={[{ key: 'B', label: 'B' }]} />`;
     expect(structuralFidelityMatches(ctx(spec, site))).toEqual([]);
   });
 

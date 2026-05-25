@@ -438,15 +438,18 @@ export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
  * SlotCollection renders here, so a regression that silently reintroduces
  * one is caught.
  *
- * Per-tableId scoping: when the spec declares a `tableId:`, observed counts
- * are filtered to components whose authoring identity matches that scope
- * key. DataTable and SlotCollection use the literal `tableId` prop;
- * PlanForm uses `formId` in storage.ts convention, but its `formId` is
- * filtered against `spec.tableId` for spec-side uniformity (one scope key
- * across all three component classes). When `spec.tableId` is absent, the
- * observed count sums file-globally (preserves the day-1.5 behavior for
- * every existing spec, none of which declare both `structural_fidelity:`
- * AND `tableId:` together).
+ * Scoping: when the spec declares `structural_fidelity.scope_id`, observed
+ * counts are filtered to components whose authoring identity matches that
+ * key — `DataTable.tableId`, `SlotCollection.tableId`, or `PlanForm.formId`
+ * (one scope key across all three component classes, by design). `scope_id`
+ * is independent of the top-level `spec.tableId` (which is `keysMatch`'s
+ * DataTable identity contract); a PlanForm- or SlotCollection-only spec
+ * that wants to scope structural_fidelity SHOULD use `scope_id` and leave
+ * `spec.tableId` undefined, so `keysMatch` stays silent against the missing
+ * DataTable. When `scope_id` is undefined, the runner falls back to
+ * `spec.tableId` for backward compatibility with day-15-i DataTable specs
+ * that already use it as the structural scope. When both are undefined,
+ * observed counts sum file-globally (preserves day-1.5 behavior).
  *
  * Silent when `spec.structural_fidelity` is absent — this is a cite-on-demand
  * assertion, not a universal requirement. A future spec that cares about
@@ -464,7 +467,7 @@ export function structuralFidelityMatches(ctx: CheckContext): VerifyReportEntry[
   const allForms = extractPlanForms(ctx.siteContent);
   const allSlots = extractSlotCollections(ctx.siteContent);
 
-  const scope = ctx.spec.tableId;
+  const scope = sf.scope_id ?? ctx.spec.tableId;
   const tables = scope ? allTables.filter((t) => t.tableId === scope) : allTables;
   const forms = scope ? allForms.filter((f) => f.formId === scope) : allForms;
   const slots = scope ? allSlots.filter((s) => s.tableId === scope) : allSlots;
@@ -473,7 +476,7 @@ export function structuralFidelityMatches(ctx: CheckContext): VerifyReportEntry[
   if (observed === sf.table_count) return [];
 
   const desc = sf.description ? ` — ${sf.description}` : '';
-  const scopeNote = scope ? ` scoped to tableId="${scope}"` : '';
+  const scopeNote = scope ? ` scoped to scope_id="${scope}"` : '';
   return [
     entry(
       ctx,
