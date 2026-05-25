@@ -3232,13 +3232,13 @@ categories:
       workbook_page: 81
       workbook_structure: '3 sub-bullets under the "Create community-run and specific carpooling initiatives" parent — organizing community events / designating carpool areas / promoting at library + community stores + Front Porch Forum'
       pre_restore_site_shape: '1 Todo body concatenating the 3 sub-bullets with " - " separators (todoId="carpooling-initiatives"); site loses checkbox-per-action progress semantics'
-      post_restore_site_shape: null
+      post_restore_site_shape: '1 parent Todo (carpooling-initiatives, body restored to workbook parent-bullet "Create community-run and specific carpooling initiatives, like:") + 3 ml-6 child Todos (carpooling-organize-events, carpooling-designate-areas, carpooling-promote-channels), checkbox-per-action semantics restored'
       inferred_source: 'workbook p81 "Ridesharing and carpooling" section, carpooling-initiatives parent bullet'
-      resolution: pending_restore
+      resolution: restored
       rationale: null
       date_archived: '2026-05-10'
       archived_in_commit: 'feat(verify): add structural_flatten archive category and runner check'
-      restore_commit: null
+      restore_commit: 'feat(2-1): restore carpooling-initiatives parent + 3 ml-6 child Todos (workbook p81)'
       proposed_canonical_field: checklist_3_action
     - id: 2-3-skill-other-subcolumn-flatten
       category: structural_flatten
