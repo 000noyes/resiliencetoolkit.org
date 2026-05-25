@@ -61,6 +61,13 @@ links:
   - url: https://www.rosecorecollective.org/
     label: Rose Core Collective
     page: '81'
+structural_flatten:
+  variant: bullet_flatten
+  resolution: restored
+  archive_id: 2-1-carpooling-initiatives-flatten
+structural_fidelity:
+  table_count: 0
+  description: 'Todo-only page; restored bullet_flatten lives as parent + 3 ml-6 child Todos under todoId carpooling-initiatives (workbook p81 sub-bullets)'
 notes: |
   2-1 is a 7-h2 prose page covering community food production, local-producer
   directory, community meals + food distribution, public-shower hygiene,

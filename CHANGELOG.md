@@ -4,6 +4,12 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+## [0.0.12.0] - 2026-05-25
+
+### Changed
+- Restore checkbox-per-action progress on 2-1 carpooling initiatives
+  (split into parent + 3 sub-action todos per workbook p81 structure).
+
 ## [0.0.11.2] - 2026-05-25
 
 ### Changed
