@@ -360,9 +360,10 @@ function extractObjectProp(body: string, propName: string): string | undefined {
 
 /**
  * Extract every `<PlanForm ...>` occurrence with its string-literal
- * `moduleKey` / `formId` props. PlanForm is the second primary data-bearing
- * component on this site (alongside DataTable); `structuralFidelityMatches`
- * sums the two component counts for the spec's `table_count` comparison.
+ * `moduleKey` / `formId` props. PlanForm is one of three primary data-bearing
+ * components on this site (alongside DataTable and SlotCollection);
+ * `structuralFidelityMatches` sums all three component counts for the spec's
+ * `table_count` comparison.
  *
  * Unlike DataTable, PlanForm's `fields` prop is typically authored from an
  * imported const in the same file (or ported from a source spec), so this

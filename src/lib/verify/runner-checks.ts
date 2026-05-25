@@ -19,7 +19,7 @@
  *
  * Added in day-5b:
  *   - `structuralFidelityMatches` — N workbook tables → N site components
- *                                   (DataTable + PlanForm sum).
+ *                                   (DataTable + PlanForm + SlotCollection sum).
  *                                   Emits structural_fidelity_failed.
  *   - `proseMatches`              — site <p>/<li> text must be grounded in
  *                                   pdftotext extraction (precision-first).
