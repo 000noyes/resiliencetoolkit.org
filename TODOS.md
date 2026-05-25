@@ -322,3 +322,33 @@ Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: {
 **Motivated trigger:** A future regression on any of the placeholder-anchor specs (DataTable dropped, duplicated, or split) that current `keysMatch` + `proseMatches` + inventory yaml coverage wouldn't catch as cleanly as per-component `structural_fidelity` would. Until then, the existing coverage layers are sufficient.
 
 **Depends on:** Nothing. Self-contained verifier improvement plus a spec-sweep PR.
+
+### Verify: structural_fidelity can't detect component-type swaps
+**Priority:** P3
+**Description:** `structuralFidelityMatches` sums DataTable + PlanForm + SlotCollection counts and compares against `table_count`. A spec intending "1 SlotCollection at scope_id X" passes equally if the site renders "1 DataTable at scope_id X" instead — the type identity is invisible to the check. Silent-pass risk for any future split or migration where one component class gets swapped for another at the same scope_id.
+
+**Fix:** Extend `structuralFidelitySchema` with an optional `component_type` enum (`'DataTable' | 'PlanForm' | 'SlotCollection'`) OR with per-type count fields (`{ data_tables?: N, plan_forms?: N, slot_collections?: N }`). When set, the runner asserts not just the total but the per-class counts. Existing `table_count`-only specs continue to work.
+
+**Motivated trigger:** A future spec that legitimately needs to distinguish "1 DataTable" from "1 SlotCollection" at the same scope_id — e.g. a migration that intentionally changes the component class for an existing scope. Today no spec has that shape; the gap is latent.
+
+**Depends on:** Nothing. Self-contained verifier extension.
+
+### Verify: `table_count: 0` + scope_id weakens the Todo-only guarantee
+**Priority:** P3
+**Description:** The schema currently allows both `table_count: 0` and `scope_id` on the same `structural_fidelity` block. When combined, the runner asserts "zero components with this scope_id" rather than the intended "zero data-bearing components on this page." A regression that introduces a DataTable with a different tableId would silently pass.
+
+**Fix:** Either (a) refine `structuralFidelitySchema` to reject the combination (`table_count: 0` requires `scope_id` to be absent), or (b) carve out the scoped filter when `table_count === 0` so the check always runs file-globally for the Todo-only assertion. Option (a) is the cleaner contract; option (b) lets author intent ("zero of class X") still be expressible but documents the semantic in the docstring. Add tests for both branches.
+
+**Motivated trigger:** A future spec author who pairs the two fields without intending to. Today no spec exists with that shape; if it ever ships, the verifier silently under-asserts.
+
+**Depends on:** Nothing. Self-contained verifier refinement.
+
+### Verify: scoped counting silently skips unparseable component identity
+**Priority:** P3
+**Description:** `extractStringProp` returns `undefined` for any tableId/formId authored as a computed expression (`tableId={dynamicId}`), template literal, or missing prop. The scoped filter `s.tableId === scope` then drops those components from the count. A page with one correctly scoped component plus a duplicate authored with a computed identity still passes `table_count: 1`. Robustness gap for any site authoring that uses computed identities — which today is zero, but the verifier doesn't enforce that authoring convention.
+
+**Fix:** When `scope_id` filtering is active and any counted component class has at least one entry with an unparseable identity (`undefined` after extraction), emit a `needs_review` soft entry citing the line. Authors can either annotate the spec to acknowledge the dynamic identity or convert the component to a literal string prop. Alternatively, surface a build-time lint that forbids computed identity props on data-bearing components in `src/pages/**` (firmer but more invasive).
+
+**Motivated trigger:** A future authoring pattern that uses computed tableIds (e.g. row-templating). Today all sites author literal string tableIds; the gap is latent until convention changes.
+
+**Depends on:** Nothing. Self-contained verifier refinement.
