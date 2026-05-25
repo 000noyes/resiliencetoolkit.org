@@ -1037,12 +1037,27 @@ const SENIORS_AND_DISABILITIES_DEPRECATED_KEYS = [
 const SENIORS_AND_DISABILITIES_MIGRATION_MARKER = 'migration_seniors_and_disabilities_v1';
 const MIGRATION_NOTES_SEPARATOR = '\n\n---\n\n';
 
+// 0-1 place-characteristics row-0 slot-substrate restore (workbook p10 "1: 2: 3:" enumeration).
+// Legacy free-text row-0 under tableId="place-characteristics" lifts to slot-1 under the
+// isolated tableId="place-characteristics-row-0-slots". Legacy record stays readable
+// (orphan-discipline, forensic recovery — same shape as seniors).
+const PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER = 'migration_place_characteristics_row_0_slots_v1';
+const PLACE_CHARACTERISTICS_ROW0_MODULE_KEY = 'knowing-community';
+const PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID = 'place-characteristics';
+const PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID = 'row-0';
+const PLACE_CHARACTERISTICS_ROW0_LEGACY_FIELD = 'Your Response';
+const PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID = 'place-characteristics-row-0-slots';
+const PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID = 'slot-1';
+
 /**
  * Markers that gate one-shot migrations. Cleared on `importAllData` so an
  * imported snapshot always re-evaluates against current code, regardless
  * of which device produced the export.
  */
-const MIGRATION_MARKER_KEYS = [SENIORS_AND_DISABILITIES_MIGRATION_MARKER] as const;
+const MIGRATION_MARKER_KEYS = [
+  SENIORS_AND_DISABILITIES_MIGRATION_MARKER,
+  PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER,
+] as const;
 
 /**
  * moduleKeys whose data is preserved (readable) but no longer wired into
@@ -1272,6 +1287,106 @@ export async function migrateSeniorsAndDisabilities(): Promise<SeniorsAndDisabil
   };
 }
 
+/**
+ * Result of the place-characteristics row-0 slot-substrate restore.
+ *
+ * `status`:
+ *   - `migrated`     — legacy row-0 free-text was lifted to slot-1.
+ *   - `already_run`  — marker present OR user has already populated at least
+ *                      one slot under the new SlotCollection (target-authoritative).
+ *   - `no_data`      — no legacy text to lift; marker NOT set so a future
+ *                      `importAllData` that brings legacy data in still
+ *                      triggers a real migration (codex P1 #1 regression
+ *                      precedent).
+ */
+export interface PlaceCharRow0MigrationResult {
+  status: 'already_run' | 'migrated' | 'no_data';
+  slotsCopied: number;
+}
+
+/**
+ * Restore the workbook p10 "1: 2: 3:" 3-slot enumeration that was authored on
+ * row-0 of the place-characteristics DataTable. The legacy single free-text
+ * "Your Response" cell becomes slot-1 of a SlotCollection under an isolated
+ * tableId; slots 2 and 3 start empty so the user can complete the workbook's
+ * counted enumeration.
+ *
+ * Source: TableRow at (knowing-community, place-characteristics, row-0)
+ *   data: { "Prompt": "...", "Your Response": "<user text>" }
+ * Target: TableRow at (knowing-community, place-characteristics-row-0-slots, slot-1)
+ *   data: { value: "<user text>" }
+ *
+ * Discipline (mirrors `migrateSeniorsAndDisabilities`):
+ *   1. Marker short-circuit (any non-undefined value counts as already-set,
+ *      defending against malformed imports with non-string markers).
+ *   2. Source read. Defensive: legacyRow.data may be undefined or shaped
+ *      differently; only a non-empty trimmed string in
+ *      `data["Your Response"]` counts as migrate-able.
+ *   3. `no_data` short-circuit. The marker is NOT set on this branch so a
+ *      later `importAllData` that brings the legacy row in still gets a
+ *      real migration pass.
+ *   4. Target-authoritative check across ALL slots. A user who typed into
+ *      slot-2 first intentionally left slot-1 empty; legacy text MUST NOT
+ *      overwrite that intent. If any slot has trimmed non-empty value,
+ *      mark and exit.
+ *   5. Otherwise, write legacy text into slot-1 and set the marker. Slots 2
+ *      and 3 stay untouched (start empty).
+ *   6. Lossless. The legacy row-0 record stays readable on the pre-substrate
+ *      tuple (knowing-community, place-characteristics, row-0) — never
+ *      delete. Same orphan-discipline as seniors. Surfaces in
+ *      `debugStorage.healthCheck()` and DevTools but not in the UI
+ *      (DataTable now seeds only rows 1/2/3 under tableId place-characteristics).
+ */
+export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0MigrationResult> {
+  const marker = await getMetadata(PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER);
+  if (marker !== undefined) {
+    return { status: 'already_run', slotsCopied: 0 };
+  }
+
+  const legacyRow = await getTableRow(
+    PLACE_CHARACTERISTICS_ROW0_MODULE_KEY,
+    PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID,
+    PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID,
+  );
+  const legacyData = legacyRow?.data as Record<string, unknown> | undefined;
+  const legacyRaw = legacyData?.[PLACE_CHARACTERISTICS_ROW0_LEGACY_FIELD];
+  const legacyText = typeof legacyRaw === 'string' ? legacyRaw.trim() : '';
+
+  if (!legacyText) {
+    // Intentionally do NOT set the marker on no_data — a later
+    // `importAllData` that brings the legacy row in must re-evaluate.
+    return { status: 'no_data', slotsCopied: 0 };
+  }
+
+  const existingSlots = await getTableRows(
+    PLACE_CHARACTERISTICS_ROW0_MODULE_KEY,
+    PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID,
+  );
+  const anySlotPopulated = existingSlots.some((r) => {
+    const v = (r.data as { value?: unknown } | undefined)?.value;
+    return typeof v === 'string' && v.trim().length > 0;
+  });
+
+  const now = new Date().toISOString();
+
+  if (anySlotPopulated) {
+    // User has already interacted with the new SlotCollection. Respect their
+    // state across ALL slots, not just slot-1.
+    await setMetadata(PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER, now);
+    return { status: 'already_run', slotsCopied: 0 };
+  }
+
+  await saveTableRow({
+    moduleKey: PLACE_CHARACTERISTICS_ROW0_MODULE_KEY,
+    tableId: PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID,
+    rowId: PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID,
+    data: { value: legacyText },
+  });
+  await setMetadata(PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER, now);
+
+  return { status: 'migrated', slotsCopied: 1 };
+}
+
 // ============================================================================
 // INITIALIZATION
 // ============================================================================
@@ -1310,6 +1425,14 @@ export async function initializeStorage(): Promise<{
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error('[Storage] seniors-and-disabilities migration failed:', err);
+      }
+    }
+
+    try {
+      await migratePlaceCharacteristicsRow0();
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('[Storage] place-characteristics-row-0 migration failed:', err);
       }
     }
 
