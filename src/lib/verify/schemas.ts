@@ -139,9 +139,12 @@ export const structuralFidelitySchema = z.object({
    * DataTable. When `scope_id` is undefined, the runner falls back to
    * `spec.tableId` for backward compatibility with day-15-i DataTable
    * specs that already use it as the structural scope. When both are
-   * undefined, structural_fidelity sums file-globally.
+   * undefined, structural_fidelity sums file-globally. Empty and
+   * whitespace-only values are rejected at parse time via
+   * `.trim().min(1)` so an accidental `scope_id: ""` doesn't silently
+   * fall through to unscoped mode.
    */
-  scope_id: z.string().optional(),
+  scope_id: z.string().trim().min(1).optional(),
   /**
    * Human-readable note on what the tables correspond to (optional audit trail).
    */
