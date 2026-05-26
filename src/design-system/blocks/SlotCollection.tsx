@@ -176,10 +176,18 @@ export default function SlotCollection({
                   const next = [...values];
                   next[i] = saved;
                   setValues(next);
+                  const ta = e.target as HTMLTextAreaElement;
+                  // Synchronously assign the textarea DOM value to the
+                  // saved string BEFORE blur fires. Without this, the
+                  // synchronous onBlur reads e.target.value (which still
+                  // holds the user's pre-Escape typed bytes because the
+                  // setValues React update has not yet re-rendered),
+                  // and persists the edit Escape was meant to discard.
+                  ta.value = saved;
                   requestAnimationFrame(() => {
-                    autoResizeTextarea(e.target as HTMLTextAreaElement);
+                    autoResizeTextarea(ta);
                   });
-                  (e.target as HTMLTextAreaElement).blur();
+                  ta.blur();
                 }
               }}
               onFocus={(e) => {
