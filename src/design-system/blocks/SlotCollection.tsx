@@ -154,7 +154,13 @@ export default function SlotCollection({
             <textarea
               id={id}
               value={value}
-              placeholder="Write your response..."
+              placeholder={loading ? 'Loading…' : 'Write your response...'}
+              // Disable input while IndexedDB hydrates. Without this, a user
+              // typing before the load resolves would have their in-progress
+              // edits clobbered by the setValues(next) call when load
+              // completes.
+              disabled={loading}
+              aria-busy={loading}
               onChange={(e) => {
                 const next = [...values];
                 next[i] = e.target.value;

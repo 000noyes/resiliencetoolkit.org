@@ -69,8 +69,7 @@ notes: |
   (NOT periods). Workbook p10 renders the 3-slot prompt as a counted
   enumeration with colon glyphs; the SlotCollection component renders
   <label> children matching the workbook glyphs. Source-fidelity HARD
-  INVARIANT — design decision D1 in
-  .gstack-persistent/projects/000noyes-resiliencetoolkit.org/design-decisions-pr-b-slot-collection-2026-05-25.md.
+  INVARIANT (CLAUDE.md Architecture Rule 3).
 
   matching.require_cluster: false — same single-token cluster rationale as
   the sibling 0-1-place-characteristics.md (single placeholder anchor;
