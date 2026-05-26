@@ -945,24 +945,28 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     expect(slot1?.data?.value).toBe('user notes');
   });
 
-  it('3. target-authoritative across ALL slots — slot-2-only state blocks legacy overwrite of slot-1', async () => {
-    // User started typing into the new SlotCollection at slot-2 first.
-    // Legacy row exists. Migration must NOT write legacy text to slot-1 —
-    // an empty slot-1 is the user's intentional state.
-    await seedLegacyRow('legacy untouched');
-    await seedSlot(2, 'I jumped to slot 2 intentionally');
+  it('3. slot-2 typed before migration completed — migrate legacy into empty slot-1, preserve slot-2, delete legacy', async () => {
+    // Race window: user opened the page, the UI hydrated, the user typed
+    // into slot-2 BEFORE migration's IndexedDB transaction completed.
+    // Migration must:
+    //   - recover the legacy bytes by writing them into the empty slot-1
+    //     (slot-1 was empty, so this is non-destructive)
+    //   - preserve the user's slot-2 typing
+    //   - delete the legacy row so DataTable does not surface it as a
+    //     duplicate prompt below the SlotCollection
+    await seedLegacyRow('legacy bytes recovered into slot-1');
+    await seedSlot(2, 'I started typing in slot 2 during the load race');
 
     const result = await migratePlaceCharacteristicsRow0();
-    expect(result.status).toBe('already_run');
-    expect(result.slotsCopied).toBe(0);
+    expect(result.status).toBe('migrated');
+    expect(result.slotsCopied).toBe(1);
 
-    // slot-1 was never written
     const slot1 = await getTableRow(
       PLACE_CHAR_ROW0_MODULE_KEY,
       PLACE_CHAR_ROW0_MERGED_TABLE_ID,
       'slot-1',
     );
-    expect(slot1).toBeUndefined();
+    expect(slot1?.data?.value).toBe('legacy bytes recovered into slot-1');
 
     // slot-2 is preserved verbatim
     const slot2 = await getTableRow(
@@ -970,11 +974,25 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
       PLACE_CHAR_ROW0_MERGED_TABLE_ID,
       'slot-2',
     );
-    expect(slot2?.data?.value).toBe('I jumped to slot 2 intentionally');
+    expect(slot2?.data?.value).toBe('I started typing in slot 2 during the load race');
+
+    // Legacy source row is gone — no double-render
+    const legacyRow = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
+      PLACE_CHAR_ROW0_LEGACY_ROW_ID,
+    );
+    expect(legacyRow).toBeUndefined();
   });
 
-  it('4. target-authoritative slot-1 case — slot-1 already populated does not get overwritten', async () => {
-    await seedLegacyRow('legacy ignored');
+  it('4. slot-1 already populated — user typing wins, legacy is released, legacy row deleted', async () => {
+    // User has typed directly into slot-1 post-PR-B (e.g., they ignored
+    // their pre-PR-B row-0 text and started fresh). Their slot-1 value
+    // is authoritative. Migration must:
+    //   - leave slot-1 unchanged (do NOT overwrite)
+    //   - delete the legacy row anyway to prevent DataTable double-render
+    //   - return already_run, set marker
+    await seedLegacyRow('legacy bytes released because user retyped');
     await seedSlot(1, 'user typed directly into slot-1');
 
     const result = await migratePlaceCharacteristicsRow0();
@@ -987,6 +1005,14 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
       'slot-1',
     );
     expect(slot1?.data?.value).toBe('user typed directly into slot-1');
+
+    // Legacy source row is gone — no double-render
+    const legacyRow = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
+      PLACE_CHAR_ROW0_LEGACY_ROW_ID,
+    );
+    expect(legacyRow).toBeUndefined();
   });
 
   it('5. no_data — empty legacy, marker stays unset (late-arriving import re-evaluates)', async () => {
@@ -1105,13 +1131,16 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     expect(slot1?.data?.value).toBe('this row will be deleted post-copy');
   });
 
-  it('9. defensive — malformed legacyRow (missing "Your Response" field) is treated as no_data', async () => {
+  it('9. defensive — malformed legacyRow (missing "Your Response" field) is treated as no_data, but the ghost row is deleted', async () => {
     // Some imports may carry a legacy row whose data shape differs from the
     // expected DataTable two-column shape — e.g. a saveFormField path
     // accidentally writing { value: ... } under the legacy tableId, or an
     // older row schema. The migration's optional chain on
     // legacyRow?.data?.[FIELD] must guard against both shapes without
-    // crashing.
+    // crashing. Because DataTable would render the malformed row as a
+    // ghost (empty prompt, empty response) below the SlotCollection, the
+    // migration also deletes it. Marker stays unset so a later import
+    // with the correct shape can still trigger a real migration.
     await saveTableRow({
       moduleKey: PLACE_CHAR_ROW0_MODULE_KEY,
       tableId: PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
@@ -1127,17 +1156,28 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     // Marker stays unset — a future re-import with correct shape can still migrate.
     const marker = await getMetadata(PLACE_CHAR_ROW0_MIGRATION_MARKER);
     expect(marker).toBeUndefined();
+
+    // Malformed legacy row was deleted — no ghost row remains for
+    // DataTable to render below the SlotCollection.
+    const legacyRow = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
+      PLACE_CHAR_ROW0_LEGACY_ROW_ID,
+    );
+    expect(legacyRow).toBeUndefined();
   });
 
-  it('10. defensive — whitespace-only "Your Response" is treated as no_data', async () => {
-    // Legacy text is just "   " — trims to empty, no migration.
+  it('10. defensive — whitespace-only "Your Response" is treated as no_data, but the ghost row is deleted', async () => {
+    // Legacy text is just "   " — trims to empty, no migration. But the
+    // row still exists in the place-characteristics namespace and would
+    // be surfaced by DataTable as an empty ghost row. Delete it.
     await seedLegacyRow('   \n\t  ');
 
     const result = await migratePlaceCharacteristicsRow0();
     expect(result.status).toBe('no_data');
     expect(result.slotsCopied).toBe(0);
 
-    // No write, no marker
+    // No slot-1 write, no marker
     const slot1 = await getTableRow(
       PLACE_CHAR_ROW0_MODULE_KEY,
       PLACE_CHAR_ROW0_MERGED_TABLE_ID,
@@ -1146,5 +1186,13 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     expect(slot1).toBeUndefined();
     const marker = await getMetadata(PLACE_CHAR_ROW0_MIGRATION_MARKER);
     expect(marker).toBeUndefined();
+
+    // Legacy whitespace-only row deleted — no ghost row in DataTable.
+    const legacyRow = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
+      PLACE_CHAR_ROW0_LEGACY_ROW_ID,
+    );
+    expect(legacyRow).toBeUndefined();
   });
 });

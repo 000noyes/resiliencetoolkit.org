@@ -1318,30 +1318,29 @@ export interface PlaceCharRow0MigrationResult {
  *   data: { value: "<user text>" }
  *
  * Discipline:
- *   1. All reads, the existence check, and the writes happen in a single
- *      `readwrite` IndexedDB transaction so concurrent tabs cannot race
- *      between the slot-existence check and the slot-1 write.
+ *   1. All reads, the existence check, the writes, and the source-row
+ *      delete happen in a single `readwrite` IndexedDB transaction on
+ *      (tables, metadata) so concurrent tabs cannot race between the
+ *      slot-existence check and the slot-1 write.
  *   2. Marker short-circuit (any non-undefined value counts as already-set,
  *      defending against malformed imports with non-string markers).
- *   3. Source read. Defensive: legacyRow.data may be undefined or shaped
- *      differently; only a non-empty trimmed string in
- *      `data["Your Response"]` counts as migrate-able. The user's exact bytes
- *      (including leading/trailing whitespace and newlines) are preserved on
- *      write — the trim is for the emptiness check only.
- *   4. `no_data` short-circuit. The marker is NOT set on this branch so a
- *      later `importAllData` that brings the legacy row in still gets a
- *      real migration pass.
- *   5. Target-authoritative check across ALL slots. A user who typed into
- *      slot-2 first intentionally left slot-1 empty; legacy text MUST NOT
- *      overwrite that intent. If any slot has trimmed non-empty value,
- *      mark and exit.
- *   6. Otherwise, write the user's raw legacy bytes into slot-1, delete the
- *      legacy source row in the same transaction, and set the marker. Slots
- *      2 and 3 stay untouched (start empty).
- *   7. The source row is deleted so DataTable's `getTableRows` no longer
- *      surfaces it on the place-characteristics tableId — preventing the
- *      same prompt + text from rendering twice (once in the SlotCollection
- *      above, once in the DataTable below).
+ *   3. The legacy source row is ALWAYS deleted when it exists in any shape
+ *      (whitespace, malformed, or migrated). This prevents DataTable's
+ *      namespace-scoped `getTableRows` from surfacing a stale or ghost row
+ *      below the SlotCollection. The migrated user bytes live in slot-1
+ *      from this point forward; slot-1 IS the canonical recovery point.
+ *   4. Three cases:
+ *      A. `no_data`   — no migrate-able legacy content (absent, malformed,
+ *                       or whitespace-only). If row exists, delete it.
+ *                       Marker stays UNSET so a late-arriving import with
+ *                       real legacy text re-triggers a real migration pass.
+ *      B. `already_run` — slot-1 is already populated by the user. Their
+ *                         slot-1 text is authoritative; delete the legacy
+ *                         row, set marker.
+ *      C. `migrated`  — legacy has content AND slot-1 is empty. Migrate
+ *                       the user's raw legacy bytes (untrimmed) into
+ *                       slot-1, delete legacy, set marker. Slot-2/3
+ *                       typing from a load-race is preserved.
  */
 export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0MigrationResult> {
   const db = await getDB();
@@ -1357,14 +1356,22 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
 
   const legacyId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID}`;
   const legacyRow = await tablesStore.get(legacyId);
+  const legacyExists = legacyRow !== undefined;
   const legacyData = legacyRow?.data as Record<string, unknown> | undefined;
   const legacyRaw = legacyData?.[PLACE_CHARACTERISTICS_ROW0_LEGACY_FIELD];
   const legacyValue = typeof legacyRaw === 'string' ? legacyRaw : '';
   const legacyHasContent = legacyValue.trim().length > 0;
 
+  // CASE A — no migrate-able legacy content. Includes: row absent, row
+  // present but malformed (missing/non-string "Your Response"), row present
+  // but whitespace-only. If the row exists in ANY shape, delete it so
+  // DataTable's namespace-scoped getTableRows does not surface a ghost
+  // row alongside row-1/2/3 below the SlotCollection. Marker stays unset
+  // so a late-arriving import with real legacy text re-triggers migration.
   if (!legacyHasContent) {
-    // Intentionally do NOT set the marker on no_data — a later
-    // `importAllData` that brings the legacy row in must re-evaluate.
+    if (legacyExists) {
+      await tablesStore.delete(legacyId);
+    }
     await tx.done;
     return { status: 'no_data', slotsCopied: 0 };
   }
@@ -1372,16 +1379,24 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
   const existingSlots = await tablesStore
     .index('by-table')
     .getAll([PLACE_CHARACTERISTICS_ROW0_MODULE_KEY, PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID]);
-  const anySlotPopulated = existingSlots.some((r) => {
-    const v = (r.data as { value?: unknown } | undefined)?.value;
-    return typeof v === 'string' && v.trim().length > 0;
-  });
+  const slot1Row = existingSlots.find(
+    (r) => r.rowId === PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID,
+  );
+  const slot1Value = (slot1Row?.data as { value?: unknown } | undefined)?.value;
+  const slot1HasContent =
+    typeof slot1Value === 'string' && slot1Value.trim().length > 0;
 
   const now = new Date().toISOString();
+  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
 
-  if (anySlotPopulated) {
-    // User has already interacted with the new SlotCollection. Respect their
-    // state across ALL slots, not just slot-1.
+  // CASE B — slot-1 is already populated. User has typed directly into
+  // slot-1 post-PR-B; their value is authoritative and we must not
+  // overwrite it. Delete the legacy row anyway so DataTable does not
+  // double-render the workbook prompt. The user's slot-1 text wins; the
+  // legacy bytes are released (they chose to retype rather than wait for
+  // migration). Slot-2/3 typing is preserved (we don't touch them).
+  if (slot1HasContent) {
+    await tablesStore.delete(legacyId);
     await metadataStore.put({
       key: PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER,
       value: now,
@@ -1391,7 +1406,11 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
     return { status: 'already_run', slotsCopied: 0 };
   }
 
-  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
+  // CASE C — slot-1 is empty (slot-2 or slot-3 may be populated from a
+  // race where the user typed before migration completed). Migrate the
+  // legacy bytes into slot-1 — slot-1 was empty so this is non-destructive,
+  // and the user's slot-2/3 typing is preserved. Delete the legacy source
+  // row to prevent double-render.
   await tablesStore.put({
     id: targetId,
     moduleKey: PLACE_CHARACTERISTICS_ROW0_MODULE_KEY,
@@ -1400,10 +1419,6 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
     data: { value: legacyValue },
     updatedAt: now,
   });
-  // Delete the legacy source row so DataTable's namespace-scoped
-  // getTableRows does not re-surface it alongside the canonical
-  // place-characteristics row-1/2/3 set. The migrated bytes live in slot-1
-  // from this point forward (slot-1 IS the canonical recovery point).
   await tablesStore.delete(legacyId);
   await metadataStore.put({
     key: PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER,
