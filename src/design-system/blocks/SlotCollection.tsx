@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getTableRows, saveTableRow } from '@/lib/storage';
+import { getTableRows, saveTableRow, initializeStorage } from '@/lib/storage';
 
 export interface SlotCollectionProps {
   /** moduleKey for IndexedDB scoping (e.g. "knowing-community"). */
@@ -52,6 +52,12 @@ export default function SlotCollection({
     let mounted = true;
     async function load() {
       try {
+        // Wait for any pending one-shot migrations to complete before reading
+        // slot state. Without this, an upgrading user can hydrate, see slot-1
+        // empty, type into it, and clobber the migration's recovered legacy
+        // bytes when their onBlur persists. The disabled-during-load guard
+        // covers this entire window.
+        await initializeStorage();
         const rows = await getTableRows(moduleKey, tableId);
         if (!mounted) return;
         const next = Array(count).fill('');

@@ -1195,4 +1195,32 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     );
     expect(legacyRow).toBeUndefined();
   });
+
+  it('11. slot-1 cleared (empty string) is authoritative — do not resurrect legacy after marker clear', async () => {
+    // User typed in slot-1, then cleared it (saving { value: '' }), then
+    // importAllData cleared the marker and re-imported the legacy row.
+    // Migration must NOT overwrite the user's intentional clear with stale
+    // legacy bytes — existence of slot-1 is authoritative regardless of
+    // its string content.
+    await seedLegacyRow('stale legacy text that should NOT resurrect');
+    await seedSlot(1, ''); // user-cleared slot-1
+
+    const result = await migratePlaceCharacteristicsRow0();
+    expect(result.status).toBe('already_run');
+    expect(result.slotsCopied).toBe(0);
+
+    const slot1 = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_MERGED_TABLE_ID,
+      'slot-1',
+    );
+    expect(slot1?.data?.value).toBe(''); // user's clear preserved
+
+    const legacyRow = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
+      PLACE_CHAR_ROW0_LEGACY_ROW_ID,
+    );
+    expect(legacyRow).toBeUndefined(); // legacy deleted regardless
+  });
 });
