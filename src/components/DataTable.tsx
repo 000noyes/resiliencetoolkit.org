@@ -566,12 +566,22 @@ export default function DataTable({
       // one-shot migration has run yet (codex round-8 P1). The empty-check
       // below uses the VISIBLE set so a table holding only hidden rows still
       // re-seeds its initialRows instead of rendering blank.
+      //
+      // initialRows is filtered the SAME way: a hidden rowId present in both
+      // savedRows and initialRows must not slip back in via the seed path, or
+      // the "never rendered/edited" contract would break on a cleared table
+      // (codex round-9 P2). Hidden rows therefore never enter `rows` state, so
+      // the edit/delete/add handlers — which only operate on `rows` — can
+      // never touch them; no separate handler guard is needed.
       const savedRows = hiddenRowIds?.length
         ? allSavedRows.filter((r) => !hiddenRowIds.includes(r.rowId))
         : allSavedRows;
+      const visibleInitialRows = hiddenRowIds?.length
+        ? initialRows.filter((r) => !hiddenRowIds.includes(r.rowId))
+        : initialRows;
 
-      if (savedRows.length === 0 && initialRows.length > 0) {
-        const newRows: TableRow[] = initialRows.map((init) => ({
+      if (savedRows.length === 0 && visibleInitialRows.length > 0) {
+        const newRows: TableRow[] = visibleInitialRows.map((init) => ({
           id: `${moduleKey}-${tableId}-${init.rowId}`,
           moduleKey,
           tableId,
