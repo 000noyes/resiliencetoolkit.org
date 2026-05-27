@@ -1454,6 +1454,17 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
  */
 export async function initializeStorage(): Promise<{
   userId: string;
+  /**
+   * True only if every one-shot data migration completed (success OR a
+   * conclusive no-op). False if any migration threw. We still swallow the
+   * error so app startup is never broken (BaseLayout depends on this), but
+   * we SURFACE the outcome so callers that hydrate migrated data — e.g.
+   * SlotCollection — can refuse to enable editing until migrations are
+   * known-complete. Without this, a transient migration failure would let a
+   * user type into an empty slot and clobber un-recovered legacy bytes when
+   * the migration retries on the next load (codex round-5 P1 #2).
+   */
+  migrationsOk: boolean;
 }> {
   if (typeof window !== 'undefined') {
     let deviceId = localStorage.getItem('deviceId');
@@ -1472,10 +1483,14 @@ export async function initializeStorage(): Promise<{
 
     // Idempotent on every load — gated on a metadata marker. Failure to
     // migrate must not break startup; existing UI continues to work even
-    // if a user-data merge gets skipped.
+    // if a user-data merge gets skipped. We record (but do not throw on)
+    // any failure so data-hydrating callers can gate on migrationsOk.
+    let migrationsOk = true;
+
     try {
       await migrateSeniorsAndDisabilities();
     } catch (err) {
+      migrationsOk = false;
       if (import.meta.env.DEV) {
         console.error('[Storage] seniors-and-disabilities migration failed:', err);
       }
@@ -1484,12 +1499,13 @@ export async function initializeStorage(): Promise<{
     try {
       await migratePlaceCharacteristicsRow0();
     } catch (err) {
+      migrationsOk = false;
       if (import.meta.env.DEV) {
         console.error('[Storage] place-characteristics-row-0 migration failed:', err);
       }
     }
 
-    return { userId: deviceId };
+    return { userId: deviceId, migrationsOk };
   }
 
   throw new Error('Cannot initialize storage on server-side');

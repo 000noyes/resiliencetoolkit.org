@@ -45,6 +45,11 @@ export default function SlotCollection({
 }: SlotCollectionProps) {
   const [values, setValues] = useState<string[]>(() => Array(count).fill(''));
   const [loading, setLoading] = useState(true);
+  // Set when migrations failed or the slot read threw. Keeps textareas
+  // disabled so the user cannot type into slots whose backing data is
+  // unknown — typing now and persisting on blur could clobber legacy bytes
+  // a retried migration would otherwise recover (round-5 P1 #2).
+  const [loadError, setLoadError] = useState(false);
   const savedValuesRef = useRef<string[]>(Array(count).fill(''));
   const containerRef = useRef<HTMLFieldSetElement>(null);
 
@@ -57,7 +62,18 @@ export default function SlotCollection({
         // empty, type into it, and clobber the migration's recovered legacy
         // bytes when their onBlur persists. The disabled-during-load guard
         // covers this entire window.
-        await initializeStorage();
+        //
+        // initializeStorage swallows migration errors (so app startup never
+        // breaks) but reports them via migrationsOk. If a migration failed,
+        // do NOT enable editing: keep the slots disabled and show an error so
+        // the user cannot type into a slot the migration will repopulate on
+        // its next (retried) run. A refresh re-runs the migration.
+        const { migrationsOk } = await initializeStorage();
+        if (!mounted) return;
+        if (!migrationsOk) {
+          setLoadError(true);
+          return;
+        }
         const rows = await getTableRows(moduleKey, tableId);
         if (!mounted) return;
         const next = Array(count).fill('');
@@ -75,6 +91,9 @@ export default function SlotCollection({
         savedValuesRef.current = [...next];
       } catch (err) {
         console.error('[SlotCollection] load failed:', err);
+        // A read failure leaves values blank; enabling editing would let a
+        // blur overwrite saved-but-unread data. Keep slots disabled too.
+        if (mounted) setLoadError(true);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -96,6 +115,14 @@ export default function SlotCollection({
   }, [loading]);
 
   async function persist(slotIndex: number, value: string) {
+    // Skip no-op writes. A bare focus→blur (no typing) or an Escape-cancel
+    // restores the value to what was last saved; persisting it would create
+    // an accidental slot row (e.g. { value: '' } on a never-typed slot-1).
+    // migratePlaceCharacteristicsRow0 treats slot-1 EXISTENCE as authoritative,
+    // so an accidental empty row would later cause it to delete un-recovered
+    // legacy bytes on a re-import. Only a real content change persists; this
+    // keeps "slot exists" meaning "the user actually edited it" (round-5 P1 #1).
+    if (value === savedValuesRef.current[slotIndex]) return;
     try {
       await saveTableRow({
         moduleKey,
@@ -160,12 +187,19 @@ export default function SlotCollection({
             <textarea
               id={id}
               value={value}
-              placeholder={loading ? 'Loading…' : 'Write your response...'}
+              placeholder={
+                loading
+                  ? 'Loading…'
+                  : loadError
+                    ? 'Could not load your saved responses. Refresh to try again.'
+                    : 'Write your response...'
+              }
               // Disable input while IndexedDB hydrates. Without this, a user
               // typing before the load resolves would have their in-progress
               // edits clobbered by the setValues(next) call when load
-              // completes.
-              disabled={loading}
+              // completes. Also stay disabled on loadError (migration/read
+              // failure) so typing can't clobber data a retry would recover.
+              disabled={loading || loadError}
               aria-busy={loading}
               onChange={(e) => {
                 const next = [...values];
