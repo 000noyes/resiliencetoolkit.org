@@ -1352,13 +1352,35 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
   const tablesStore = tx.objectStore('tables');
   const metadataStore = tx.objectStore('metadata');
 
+  const legacyId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID}`;
+
+  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
+
   const markerEntry = await metadataStore.get(PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER);
   if (markerEntry !== undefined) {
+    // Defense-in-depth: once the migration has run, legacy row-0 must not
+    // re-surface. A sibling DataTable that hydrated a stale row-0 before the
+    // migration deleted it could re-save it AFTER the marker was set; the
+    // marker short-circuit would then let that resurrected row become a
+    // permanent ghost (double-render of the workbook prompt).
+    //
+    // Sweep a lingering row-0 here — but ONLY when slot-1 exists, which proves
+    // the content was already recovered, so row-0 is a pure duplicate. If
+    // slot-1 is ABSENT we must NOT delete row-0: a non-undefined marker can
+    // come from a malformed import that never actually migrated, and row-0
+    // may still hold un-recovered user content (covered by test 6). Deleting
+    // it there would be silent data loss — worse than a ghost row.
+    const slot1Exists = (await tablesStore.get(targetId)) !== undefined;
+    if (slot1Exists) {
+      const lingeringRow0 = await tablesStore.get(legacyId);
+      if (lingeringRow0 !== undefined) {
+        await tablesStore.delete(legacyId);
+      }
+    }
     await tx.done;
     return { status: 'already_run', slotsCopied: 0 };
   }
 
-  const legacyId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID}`;
   const legacyRow = await tablesStore.get(legacyId);
   const legacyExists = legacyRow !== undefined;
   const legacyData = legacyRow?.data as Record<string, unknown> | undefined;
@@ -1394,7 +1416,8 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
   const slot1HasContent = slot1Row !== undefined;
 
   const now = new Date().toISOString();
-  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
+  // targetId computed once at the top of the function (reused by the
+  // marker-short-circuit sweep and the Case C write below).
 
   // CASE B — slot-1 row exists in any shape (including { value: '' }).
   // Existence proves the user has interacted with the SlotCollection
@@ -1465,6 +1488,14 @@ export async function initializeStorage(): Promise<{
    * the migration retries on the next load (codex round-5 P1 #2).
    */
   migrationsOk: boolean;
+  /**
+   * Per-migration success flags, keyed by migration name. A data-hydrating
+   * caller should gate on the SPECIFIC migration its data depends on (e.g.
+   * SlotCollection gates on `placeCharacteristicsRow0`) rather than the
+   * global migrationsOk, so an unrelated migration's failure does not
+   * needlessly disable an otherwise-healthy component (codex round-6 P2).
+   */
+  migrations: Record<string, boolean>;
 }> {
   if (typeof window !== 'undefined') {
     let deviceId = localStorage.getItem('deviceId');
@@ -1484,13 +1515,15 @@ export async function initializeStorage(): Promise<{
     // Idempotent on every load — gated on a metadata marker. Failure to
     // migrate must not break startup; existing UI continues to work even
     // if a user-data merge gets skipped. We record (but do not throw on)
-    // any failure so data-hydrating callers can gate on migrationsOk.
-    let migrationsOk = true;
+    // each migration's outcome so data-hydrating callers can gate on the
+    // specific migration they depend on.
+    const migrations: Record<string, boolean> = {};
 
     try {
       await migrateSeniorsAndDisabilities();
+      migrations.seniorsAndDisabilities = true;
     } catch (err) {
-      migrationsOk = false;
+      migrations.seniorsAndDisabilities = false;
       if (import.meta.env.DEV) {
         console.error('[Storage] seniors-and-disabilities migration failed:', err);
       }
@@ -1498,14 +1531,17 @@ export async function initializeStorage(): Promise<{
 
     try {
       await migratePlaceCharacteristicsRow0();
+      migrations.placeCharacteristicsRow0 = true;
     } catch (err) {
-      migrationsOk = false;
+      migrations.placeCharacteristicsRow0 = false;
       if (import.meta.env.DEV) {
         console.error('[Storage] place-characteristics-row-0 migration failed:', err);
       }
     }
 
-    return { userId: deviceId, migrationsOk };
+    const migrationsOk = Object.values(migrations).every(Boolean);
+
+    return { userId: deviceId, migrationsOk, migrations };
   }
 
   throw new Error('Cannot initialize storage on server-side');

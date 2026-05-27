@@ -20,7 +20,7 @@
  * Orphaned note data may remain in localStorage but is not displayed.
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { getTableRows, saveTableRow, deleteTableRow, type TableRow } from '@/lib/storage';
+import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 
@@ -537,6 +537,15 @@ export default function DataTable({
         setLoading(false);
         return;
       }
+
+      // Wait for one-shot migrations to complete before reading rows. A
+      // migration may delete or rewrite rows in this table (e.g. the
+      // place-characteristics row-0 → SlotCollection restore deletes row-0).
+      // Without this await, DataTable can hydrate a stale row that the
+      // migration is about to remove, render it, and let a user edit re-save
+      // (resurrect) it after the migration's marker is set. initializeStorage
+      // is idempotent and marker-gated, so this is cheap after the first call.
+      await initializeStorage();
 
       const savedRows = await getTableRows(moduleKey, tableId);
 

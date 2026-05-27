@@ -1223,4 +1223,36 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     );
     expect(legacyRow).toBeUndefined(); // legacy deleted regardless
   });
+
+  it('12. marker set + slot-1 recovered + ghost row-0 resurrected — sweep the ghost', async () => {
+    // Codex round-6 P1: after a successful migration (marker set, content in
+    // slot-1), a sibling DataTable that hydrated a stale row-0 before the
+    // delete could re-save it. On the next load the marker short-circuits the
+    // migration, so without a sweep the resurrected row-0 would persist as a
+    // permanent ghost (double-render). Because slot-1 EXISTS, the content is
+    // already recovered and row-0 is a pure duplicate — sweep it.
+    await seedSlot(1, 'already recovered into slot-1');
+    await seedLegacyRow('ghost row-0 re-saved by a racing DataTable');
+    await setMetadata(PLACE_CHAR_ROW0_MIGRATION_MARKER, new Date().toISOString());
+
+    const result = await migratePlaceCharacteristicsRow0();
+    expect(result.status).toBe('already_run');
+    expect(result.slotsCopied).toBe(0);
+
+    // slot-1 is untouched — the sweep never rewrites recovered content.
+    const slot1 = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_MERGED_TABLE_ID,
+      'slot-1',
+    );
+    expect(slot1?.data?.value).toBe('already recovered into slot-1');
+
+    // The ghost row-0 is gone — no double-render.
+    const legacyRow = await getTableRow(
+      PLACE_CHAR_ROW0_MODULE_KEY,
+      PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
+      PLACE_CHAR_ROW0_LEGACY_ROW_ID,
+    );
+    expect(legacyRow).toBeUndefined();
+  });
 });

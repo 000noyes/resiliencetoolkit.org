@@ -55,12 +55,16 @@ describe('initializeStorage', () => {
     expect(first.userId).toBe(second.userId);
   });
 
-  it('reports migrationsOk: true when all one-shot migrations complete (or are no-ops)', async () => {
+  it('reports migrationsOk: true and per-migration flags when all migrations complete (or are no-ops)', async () => {
     // With no legacy data seeded, every migration is a conclusive no-op.
     // migrationsOk must be true so data-hydrating callers (e.g. SlotCollection)
     // enable editing. It flips to false only when a migration throws.
     const result = await initializeStorage();
     expect(result.migrationsOk).toBe(true);
+    // Per-migration map lets a component gate on just the migration its data
+    // depends on, instead of the global flag (codex round-6 P2).
+    expect(result.migrations.placeCharacteristicsRow0).toBe(true);
+    expect(result.migrations.seniorsAndDisabilities).toBe(true);
   });
 });
 

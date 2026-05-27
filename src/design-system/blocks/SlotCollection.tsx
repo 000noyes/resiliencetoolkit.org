@@ -20,6 +20,13 @@ export interface SlotCollectionProps {
    * to trace the SlotCollection back to a spec in docs/source-specs/.
    */
   source?: string;
+  /**
+   * Name of the one-shot migration (key in initializeStorage's `migrations`
+   * map) that populates this collection's data. If set, editing is gated on
+   * THAT migration succeeding rather than on all migrations — so an unrelated
+   * migration's failure does not disable this collection (codex round-6 P2).
+   */
+  requiredMigration?: string;
 }
 
 /** Per-slot rowId convention: 1-indexed to mirror workbook glyphs (1: 2: 3:). */
@@ -42,6 +49,7 @@ export default function SlotCollection({
   tableId,
   count,
   prompt,
+  requiredMigration,
 }: SlotCollectionProps) {
   const [values, setValues] = useState<string[]>(() => Array(count).fill(''));
   const [loading, setLoading] = useState(true);
@@ -68,9 +76,15 @@ export default function SlotCollection({
         // do NOT enable editing: keep the slots disabled and show an error so
         // the user cannot type into a slot the migration will repopulate on
         // its next (retried) run. A refresh re-runs the migration.
-        const { migrationsOk } = await initializeStorage();
+        const { migrationsOk, migrations } = await initializeStorage();
         if (!mounted) return;
-        if (!migrationsOk) {
+        // Gate on the specific migration this collection depends on, if one is
+        // declared; otherwise fall back to "all migrations succeeded". This
+        // prevents an unrelated migration's failure from disabling editing.
+        const migrationFailed = requiredMigration
+          ? migrations[requiredMigration] === false
+          : !migrationsOk;
+        if (migrationFailed) {
           setLoadError(true);
           return;
         }
@@ -102,7 +116,7 @@ export default function SlotCollection({
     return () => {
       mounted = false;
     };
-  }, [moduleKey, tableId, count]);
+  }, [moduleKey, tableId, count, requiredMigration]);
 
   // Auto-resize textareas once values are loaded.
   useEffect(() => {
