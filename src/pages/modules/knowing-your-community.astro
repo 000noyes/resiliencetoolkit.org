@@ -2,6 +2,7 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import DataTable from '@/components/DataTable';
 import Todo from '@/design-system/blocks/Todo';
+import SlotCollection from '@/design-system/blocks/SlotCollection';
 import ExternalLink from '@/components/ExternalLink.astro';
 import ActionButton from '@/components/ActionButton.astro';
 import type { SectionData } from '@/types/section-navigation';
@@ -43,9 +44,18 @@ const sectionData: SectionData = {
 
         <h3 class="text-heading font-semibold mb-4" id="place-characteristics">Mapping your community</h3>
 
+        <SlotCollection
+          moduleKey="knowing-community"
+          tableId="place-characteristics-row-0-slots"
+          count={3}
+          prompt="Write down three important things about your place/what life is like here."
+          source="docs/source-specs/0-1-place-characteristics-row-0-slots.md" requiredMigration="placeCharacteristicsRow0"
+          client:idle
+        />
+
         <DataTable
           moduleKey="knowing-community"
-          tableId="place-characteristics"
+          tableId="place-characteristics" hiddenRowIds={['row-0']}
           tableName="Mapping your community"
           source="docs/source-specs/0-1-place-characteristics.md"
           variant="journal"
@@ -54,7 +64,6 @@ const sectionData: SectionData = {
             { key: 'Your Response', label: 'Your Response', type: 'text', placeholder: 'Your response', priority: 1 }
           ]}
           initialRows={[
-            { rowId: 'row-0', data: { 'Prompt': 'Write down three important things about your place/what life is like here.', 'Your Response': '' } },
             { rowId: 'row-1', data: { 'Prompt': 'What are the biggest challenges in your place?', 'Your Response': '' } },
             { rowId: 'row-2', data: { 'Prompt': 'What are the biggest assets in your place?', 'Your Response': '' } },
             { rowId: 'row-3', data: { 'Prompt': 'Describe thriving conditions for your place. Use your imagination!', 'Your Response': '' } }

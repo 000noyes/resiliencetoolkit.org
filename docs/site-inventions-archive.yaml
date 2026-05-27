@@ -3217,13 +3217,13 @@ categories:
       workbook_page: 10
       workbook_structure: '3 numbered sub-slots (workbook glyphs "1: ___ 2: ___ 3: ___") authored as a counted enumeration on row-0 of the place-characteristics table'
       pre_restore_site_shape: '1 free-text "Your Response" cell under tableId="place-characteristics" row-0; site loses the count and the per-slot affordance'
-      post_restore_site_shape: null
+      post_restore_site_shape: 'SlotCollection component with 3 numbered textareas (count={3}) above the place-characteristics DataTable; per-slot IndexedDB persistence under isolated tableId="place-characteristics-row-0-slots" with rowIds="slot-{1,2,3}". On migration the original row-0 free-text record at (knowing-community, place-characteristics, row-0) is deleted in the same transaction as the slot-1 write so the DataTable below the SlotCollection does not surface the same workbook prompt twice. The migrated bytes live in slot-1 from that point forward (slot-1 IS the canonical recovery point).'
       inferred_source: 'BATJC place-characteristics, workbook p10 row-0 ("Write down three important things about your place / what life is like here")'
-      resolution: pending_restore
+      resolution: restored
       rationale: null
       date_archived: '2026-05-10'
       archived_in_commit: 'feat(verify): add structural_flatten archive category and runner check'
-      restore_commit: null
+      restore_commit: 'feat(0-1): restore 3-slot SlotCollection for place-characteristics row-0 (workbook p10)'
       proposed_canonical_field: structured_collection_3_slot
     - id: 2-1-carpooling-initiatives-flatten
       category: structural_flatten

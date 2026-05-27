@@ -1037,12 +1037,27 @@ const SENIORS_AND_DISABILITIES_DEPRECATED_KEYS = [
 const SENIORS_AND_DISABILITIES_MIGRATION_MARKER = 'migration_seniors_and_disabilities_v1';
 const MIGRATION_NOTES_SEPARATOR = '\n\n---\n\n';
 
+// 0-1 place-characteristics row-0 slot-substrate restore (workbook p10 "1: 2: 3:" enumeration).
+// Legacy free-text row-0 under tableId="place-characteristics" lifts to slot-1 under the
+// isolated tableId="place-characteristics-row-0-slots". Legacy record stays readable
+// (orphan-discipline, forensic recovery — same shape as seniors).
+const PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER = 'migration_place_characteristics_row_0_slots_v1';
+const PLACE_CHARACTERISTICS_ROW0_MODULE_KEY = 'knowing-community';
+const PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID = 'place-characteristics';
+const PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID = 'row-0';
+const PLACE_CHARACTERISTICS_ROW0_LEGACY_FIELD = 'Your Response';
+const PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID = 'place-characteristics-row-0-slots';
+const PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID = 'slot-1';
+
 /**
  * Markers that gate one-shot migrations. Cleared on `importAllData` so an
  * imported snapshot always re-evaluates against current code, regardless
  * of which device produced the export.
  */
-const MIGRATION_MARKER_KEYS = [SENIORS_AND_DISABILITIES_MIGRATION_MARKER] as const;
+const MIGRATION_MARKER_KEYS = [
+  SENIORS_AND_DISABILITIES_MIGRATION_MARKER,
+  PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER,
+] as const;
 
 /**
  * moduleKeys whose data is preserved (readable) but no longer wired into
@@ -1272,6 +1287,160 @@ export async function migrateSeniorsAndDisabilities(): Promise<SeniorsAndDisabil
   };
 }
 
+/**
+ * Result of the place-characteristics row-0 slot-substrate restore.
+ *
+ * `status`:
+ *   - `migrated`     — legacy row-0 free-text was lifted to slot-1 and the
+ *                      source row was deleted in the same transaction.
+ *   - `already_run`  — marker present OR user has already populated at least
+ *                      one slot under the new SlotCollection (target-authoritative).
+ *   - `no_data`      — no legacy text to lift; marker NOT set so a future
+ *                      `importAllData` that brings legacy data in still
+ *                      triggers a real migration (codex P1 #1 regression
+ *                      precedent).
+ */
+export interface PlaceCharRow0MigrationResult {
+  status: 'already_run' | 'migrated' | 'no_data';
+  slotsCopied: number;
+}
+
+/**
+ * Restore the workbook p10 "1: 2: 3:" 3-slot enumeration that was authored on
+ * row-0 of the place-characteristics DataTable. The legacy single free-text
+ * "Your Response" cell becomes slot-1 of a SlotCollection under an isolated
+ * tableId; slots 2 and 3 start empty so the user can complete the workbook's
+ * counted enumeration.
+ *
+ * Source: TableRow at (knowing-community, place-characteristics, row-0)
+ *   data: { "Prompt": "...", "Your Response": "<user text>" }
+ * Target: TableRow at (knowing-community, place-characteristics-row-0-slots, slot-1)
+ *   data: { value: "<user text>" }
+ *
+ * Discipline:
+ *   1. All reads, the existence check, the writes, and the source-row
+ *      delete happen in a single `readwrite` IndexedDB transaction on
+ *      (tables, metadata) so concurrent tabs cannot race between the
+ *      slot-existence check and the slot-1 write.
+ *   2. Marker short-circuit (any non-undefined value counts as already-set,
+ *      defending against malformed imports with non-string markers).
+ *   3. The legacy source row is ALWAYS deleted when it exists in any shape
+ *      (whitespace, malformed, or migrated). This prevents DataTable's
+ *      namespace-scoped `getTableRows` from surfacing a stale or ghost row
+ *      below the SlotCollection. The migrated user bytes live in slot-1
+ *      from this point forward; slot-1 IS the canonical recovery point.
+ *   4. Three cases:
+ *      A. `no_data`   — no migrate-able legacy content (absent, malformed,
+ *                       or whitespace-only). If row exists, delete it.
+ *                       Marker stays UNSET so a late-arriving import with
+ *                       real legacy text re-triggers a real migration pass.
+ *      B. `already_run` — ANY valid slot row (slot-1, slot-2, or slot-3)
+ *                         exists in any shape (including { value: '' }).
+ *                         Existence proves the user has engaged with the
+ *                         SlotCollection, so the legacy single-cell row-0 is
+ *                         superseded; injecting it would resurrect stale data
+ *                         (a deliberately-cleared slot, or slot-2/3 present
+ *                         without slot-1 after a marker-clearing import).
+ *                         Delete the legacy row, set marker; leave slots as-is.
+ *      C. `migrated`  — legacy has content AND no slots exist yet (fresh
+ *                       upgrader). Migrate the user's raw legacy bytes
+ *                       (untrimmed) into slot-1, delete legacy, set marker.
+ */
+export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0MigrationResult> {
+  const db = await getDB();
+  const tx = db.transaction(['tables', 'metadata'], 'readwrite');
+  const tablesStore = tx.objectStore('tables');
+  const metadataStore = tx.objectStore('metadata');
+
+  const legacyId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID}`;
+
+  const markerEntry = await metadataStore.get(PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER);
+  if (markerEntry !== undefined) {
+    // Migration already ran. We do NOT sweep a lingering row-0 here: the
+    // resurrection race that motivated such a sweep (a sibling DataTable
+    // hydrating a stale row-0 before the migration deleted it) is closed at
+    // the source — DataTable.loadData now awaits initializeStorage() before
+    // reading, so it reads post-migration state and never renders row-0.
+    // A blind sweep would risk deleting a row-0 that holds divergent,
+    // un-recovered content (codex round-7 P1), so it is intentionally absent.
+    await tx.done;
+    return { status: 'already_run', slotsCopied: 0 };
+  }
+
+  const legacyRow = await tablesStore.get(legacyId);
+  const legacyExists = legacyRow !== undefined;
+  const legacyData = legacyRow?.data as Record<string, unknown> | undefined;
+  const legacyRaw = legacyData?.[PLACE_CHARACTERISTICS_ROW0_LEGACY_FIELD];
+  const legacyValue = typeof legacyRaw === 'string' ? legacyRaw : '';
+  const legacyHasContent = legacyValue.trim().length > 0;
+
+  // CASE A — no migrate-able legacy content. Includes: row absent, row
+  // present but malformed (missing/non-string "Your Response"), row present
+  // but whitespace-only. If the row exists in ANY shape, delete it so
+  // DataTable's namespace-scoped getTableRows does not surface a ghost
+  // row alongside row-1/2/3 below the SlotCollection. Marker stays unset
+  // so a late-arriving import with real legacy text re-triggers migration.
+  if (!legacyHasContent) {
+    if (legacyExists) {
+      await tablesStore.delete(legacyId);
+    }
+    await tx.done;
+    return { status: 'no_data', slotsCopied: 0 };
+  }
+
+  const existingSlots = await tablesStore
+    .index('by-table')
+    .getAll([PLACE_CHARACTERISTICS_ROW0_MODULE_KEY, PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID]);
+  // The existence of ANY valid slot row (slot-1, slot-2, or slot-3) is
+  // authoritative: it proves the user has engaged with the new SlotCollection,
+  // so the legacy single-cell row-0 is superseded. Injecting legacy bytes here
+  // would resurrect stale data — e.g. a deliberately-cleared slot-1
+  // ({ value: '' }), or slot-2/slot-3 present without slot-1 after an import
+  // that cleared the marker alongside a re-imported legacy row-0 (codex
+  // round-9 P1). Checking only slot-1 missed the slot-2/3-without-slot-1 case.
+  const hasAnySlot = existingSlots.some((r) => /^slot-\d+$/.test(r.rowId));
+
+  const now = new Date().toISOString();
+  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
+
+  // CASE B — the SlotCollection already holds saved state (any slot-N row).
+  // The user has engaged with it, so the legacy row-0 is superseded and must
+  // NOT be injected. Release the legacy row (delete it so DataTable does not
+  // double-render the workbook prompt) and record the migration as run. Any
+  // existing slot content (1/2/3) is left untouched.
+  if (hasAnySlot) {
+    await tablesStore.delete(legacyId);
+    await metadataStore.put({
+      key: PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER,
+      value: now,
+      updatedAt: now,
+    });
+    await tx.done;
+    return { status: 'already_run', slotsCopied: 0 };
+  }
+
+  // CASE C — no slots exist yet: a fresh upgrader who has never touched the
+  // SlotCollection. Recover the legacy bytes into slot-1 (non-destructive —
+  // the table is empty). Delete the legacy source row to prevent double-render.
+  await tablesStore.put({
+    id: targetId,
+    moduleKey: PLACE_CHARACTERISTICS_ROW0_MODULE_KEY,
+    tableId: PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID,
+    rowId: PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID,
+    data: { value: legacyValue },
+    updatedAt: now,
+  });
+  await tablesStore.delete(legacyId);
+  await metadataStore.put({
+    key: PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER,
+    value: now,
+    updatedAt: now,
+  });
+  await tx.done;
+
+  return { status: 'migrated', slotsCopied: 1 };
+}
+
 // ============================================================================
 // INITIALIZATION
 // ============================================================================
@@ -1286,6 +1455,25 @@ export async function migrateSeniorsAndDisabilities(): Promise<SeniorsAndDisabil
  */
 export async function initializeStorage(): Promise<{
   userId: string;
+  /**
+   * True only if every one-shot data migration completed (success OR a
+   * conclusive no-op). False if any migration threw. We still swallow the
+   * error so app startup is never broken (BaseLayout depends on this), but
+   * we SURFACE the outcome so callers that hydrate migrated data — e.g.
+   * SlotCollection — can refuse to enable editing until migrations are
+   * known-complete. Without this, a transient migration failure would let a
+   * user type into an empty slot and clobber un-recovered legacy bytes when
+   * the migration retries on the next load (codex round-5 P1 #2).
+   */
+  migrationsOk: boolean;
+  /**
+   * Per-migration success flags, keyed by migration name. A data-hydrating
+   * caller should gate on the SPECIFIC migration its data depends on (e.g.
+   * SlotCollection gates on `placeCharacteristicsRow0`) rather than the
+   * global migrationsOk, so an unrelated migration's failure does not
+   * needlessly disable an otherwise-healthy component (codex round-6 P2).
+   */
+  migrations: Record<string, boolean>;
 }> {
   if (typeof window !== 'undefined') {
     let deviceId = localStorage.getItem('deviceId');
@@ -1304,16 +1492,34 @@ export async function initializeStorage(): Promise<{
 
     // Idempotent on every load — gated on a metadata marker. Failure to
     // migrate must not break startup; existing UI continues to work even
-    // if a user-data merge gets skipped.
+    // if a user-data merge gets skipped. We record (but do not throw on)
+    // each migration's outcome so data-hydrating callers can gate on the
+    // specific migration they depend on.
+    const migrations: Record<string, boolean> = {};
+
     try {
       await migrateSeniorsAndDisabilities();
+      migrations.seniorsAndDisabilities = true;
     } catch (err) {
+      migrations.seniorsAndDisabilities = false;
       if (import.meta.env.DEV) {
         console.error('[Storage] seniors-and-disabilities migration failed:', err);
       }
     }
 
-    return { userId: deviceId };
+    try {
+      await migratePlaceCharacteristicsRow0();
+      migrations.placeCharacteristicsRow0 = true;
+    } catch (err) {
+      migrations.placeCharacteristicsRow0 = false;
+      if (import.meta.env.DEV) {
+        console.error('[Storage] place-characteristics-row-0 migration failed:', err);
+      }
+    }
+
+    const migrationsOk = Object.values(migrations).every(Boolean);
+
+    return { userId: deviceId, migrationsOk, migrations };
   }
 
   throw new Error('Cannot initialize storage on server-side');

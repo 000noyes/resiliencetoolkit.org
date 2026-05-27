@@ -20,7 +20,7 @@
  * Orphaned note data may remain in localStorage but is not displayed.
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { getTableRows, saveTableRow, deleteTableRow, type TableRow } from '@/lib/storage';
+import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 
@@ -59,6 +59,17 @@ export interface DataTableProps {
    */
   source?: string;
   page?: string;
+  /**
+   * rowIds that must NEVER be rendered or edited in this table, even if they
+   * still exist in storage. Used for rows that have been DEPRECATED in favor
+   * of another component — e.g. place-characteristics `row-0` is owned by the
+   * SlotCollection post-restore. A one-shot migration deletes such rows, but
+   * until it succeeds (or after a re-import that resurrects one) the stale row
+   * could otherwise render as an editable duplicate whose edits are later
+   * discarded by the migration. Hiding it here closes that path regardless of
+   * migration state (codex round-8 P1).
+   */
+  hiddenRowIds?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -466,6 +477,7 @@ export default function DataTable({
   tableName,
   showInfoCallout = false,
   variant = 'table',
+  hiddenRowIds,
 }: DataTableProps) {
   const [rows, setRows] = useState<TableRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -538,10 +550,38 @@ export default function DataTable({
         return;
       }
 
-      const savedRows = await getTableRows(moduleKey, tableId);
+      // Wait for one-shot migrations to complete before reading rows. A
+      // migration may delete or rewrite rows in this table (e.g. the
+      // place-characteristics row-0 → SlotCollection restore deletes row-0).
+      // Without this await, DataTable can hydrate a stale row that the
+      // migration is about to remove, render it, and let a user edit re-save
+      // (resurrect) it after the migration's marker is set. initializeStorage
+      // is idempotent and marker-gated, so this is cheap after the first call.
+      await initializeStorage();
 
-      if (savedRows.length === 0 && initialRows.length > 0) {
-        const newRows: TableRow[] = initialRows.map((init) => ({
+      const allSavedRows = await getTableRows(moduleKey, tableId);
+      // Drop deprecated rows that must never render (e.g. place-characteristics
+      // row-0, owned by the SlotCollection post-restore). Filtering here means
+      // a stale/resurrected row is never editable, regardless of whether its
+      // one-shot migration has run yet (codex round-8 P1). The empty-check
+      // below uses the VISIBLE set so a table holding only hidden rows still
+      // re-seeds its initialRows instead of rendering blank.
+      //
+      // initialRows is filtered the SAME way: a hidden rowId present in both
+      // savedRows and initialRows must not slip back in via the seed path, or
+      // the "never rendered/edited" contract would break on a cleared table
+      // (codex round-9 P2). Hidden rows therefore never enter `rows` state, so
+      // the edit/delete/add handlers — which only operate on `rows` — can
+      // never touch them; no separate handler guard is needed.
+      const savedRows = hiddenRowIds?.length
+        ? allSavedRows.filter((r) => !hiddenRowIds.includes(r.rowId))
+        : allSavedRows;
+      const visibleInitialRows = hiddenRowIds?.length
+        ? initialRows.filter((r) => !hiddenRowIds.includes(r.rowId))
+        : initialRows;
+
+      if (savedRows.length === 0 && visibleInitialRows.length > 0) {
+        const newRows: TableRow[] = visibleInitialRows.map((init) => ({
           id: `${moduleKey}-${tableId}-${init.rowId}`,
           moduleKey,
           tableId,
@@ -576,7 +616,7 @@ export default function DataTable({
     } finally {
       setLoading(false);
     }
-  }, [moduleKey, tableId, initialRows]);
+  }, [moduleKey, tableId, initialRows, hiddenRowIds]);
 
   useEffect(() => {
     loadData();
