@@ -945,28 +945,28 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     expect(slot1?.data?.value).toBe('user notes');
   });
 
-  it('3. slot-2 typed before migration completed — migrate legacy into empty slot-1, preserve slot-2, delete legacy', async () => {
-    // Race window: user opened the page, the UI hydrated, the user typed
-    // into slot-2 BEFORE migration's IndexedDB transaction completed.
-    // Migration must:
-    //   - recover the legacy bytes by writing them into the empty slot-1
-    //     (slot-1 was empty, so this is non-destructive)
-    //   - preserve the user's slot-2 typing
-    //   - delete the legacy row so DataTable does not surface it as a
-    //     duplicate prompt below the SlotCollection
-    await seedLegacyRow('legacy bytes recovered into slot-1');
-    await seedSlot(2, 'I started typing in slot 2 during the load race');
+  it('3. any slot present (slot-2, no slot-1) is authoritative — legacy is released, NOT injected', async () => {
+    // slot-2 exists but slot-1 does not, alongside a legacy row-0 (reachable
+    // via a marker-clearing import). The existence of ANY slot proves the user
+    // has engaged with the SlotCollection, so the legacy single-cell row-0 is
+    // superseded. Migration must NOT inject it into the empty slot-1 (that
+    // would resurrect stale data — codex round-9 P1); it releases the legacy
+    // row and reports already_run. (Fresh upgraders with no slots still get
+    // the recovery — see test 1.)
+    await seedLegacyRow('stale legacy that must NOT be injected into slot-1');
+    await seedSlot(2, 'user already filled slot 2');
 
     const result = await migratePlaceCharacteristicsRow0();
-    expect(result.status).toBe('migrated');
-    expect(result.slotsCopied).toBe(1);
+    expect(result.status).toBe('already_run');
+    expect(result.slotsCopied).toBe(0);
 
+    // slot-1 stays empty — legacy was NOT injected
     const slot1 = await getTableRow(
       PLACE_CHAR_ROW0_MODULE_KEY,
       PLACE_CHAR_ROW0_MERGED_TABLE_ID,
       'slot-1',
     );
-    expect(slot1?.data?.value).toBe('legacy bytes recovered into slot-1');
+    expect(slot1).toBeUndefined();
 
     // slot-2 is preserved verbatim
     const slot2 = await getTableRow(
@@ -974,9 +974,9 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
       PLACE_CHAR_ROW0_MERGED_TABLE_ID,
       'slot-2',
     );
-    expect(slot2?.data?.value).toBe('I started typing in slot 2 during the load race');
+    expect(slot2?.data?.value).toBe('user already filled slot 2');
 
-    // Legacy source row is gone — no double-render
+    // Legacy source row is released — no double-render
     const legacyRow = await getTableRow(
       PLACE_CHAR_ROW0_MODULE_KEY,
       PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
