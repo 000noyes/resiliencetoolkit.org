@@ -1354,29 +1354,15 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
 
   const legacyId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_LEGACY_ROW_ID}`;
 
-  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
-
   const markerEntry = await metadataStore.get(PLACE_CHARACTERISTICS_ROW0_MIGRATION_MARKER);
   if (markerEntry !== undefined) {
-    // Defense-in-depth: once the migration has run, legacy row-0 must not
-    // re-surface. A sibling DataTable that hydrated a stale row-0 before the
-    // migration deleted it could re-save it AFTER the marker was set; the
-    // marker short-circuit would then let that resurrected row become a
-    // permanent ghost (double-render of the workbook prompt).
-    //
-    // Sweep a lingering row-0 here — but ONLY when slot-1 exists, which proves
-    // the content was already recovered, so row-0 is a pure duplicate. If
-    // slot-1 is ABSENT we must NOT delete row-0: a non-undefined marker can
-    // come from a malformed import that never actually migrated, and row-0
-    // may still hold un-recovered user content (covered by test 6). Deleting
-    // it there would be silent data loss — worse than a ghost row.
-    const slot1Exists = (await tablesStore.get(targetId)) !== undefined;
-    if (slot1Exists) {
-      const lingeringRow0 = await tablesStore.get(legacyId);
-      if (lingeringRow0 !== undefined) {
-        await tablesStore.delete(legacyId);
-      }
-    }
+    // Migration already ran. We do NOT sweep a lingering row-0 here: the
+    // resurrection race that motivated such a sweep (a sibling DataTable
+    // hydrating a stale row-0 before the migration deleted it) is closed at
+    // the source — DataTable.loadData now awaits initializeStorage() before
+    // reading, so it reads post-migration state and never renders row-0.
+    // A blind sweep would risk deleting a row-0 that holds divergent,
+    // un-recovered content (codex round-7 P1), so it is intentionally absent.
     await tx.done;
     return { status: 'already_run', slotsCopied: 0 };
   }
@@ -1416,8 +1402,7 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
   const slot1HasContent = slot1Row !== undefined;
 
   const now = new Date().toISOString();
-  // targetId computed once at the top of the function (reused by the
-  // marker-short-circuit sweep and the Case C write below).
+  const targetId = `${PLACE_CHARACTERISTICS_ROW0_MODULE_KEY}-${PLACE_CHARACTERISTICS_ROW0_MERGED_TABLE_ID}-${PLACE_CHARACTERISTICS_ROW0_TARGET_ROW_ID}`;
 
   // CASE B — slot-1 row exists in any shape (including { value: '' }).
   // Existence proves the user has interacted with the SlotCollection

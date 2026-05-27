@@ -1224,35 +1224,28 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     expect(legacyRow).toBeUndefined(); // legacy deleted regardless
   });
 
-  it('12. marker set + slot-1 recovered + ghost row-0 resurrected — sweep the ghost', async () => {
-    // Codex round-6 P1: after a successful migration (marker set, content in
-    // slot-1), a sibling DataTable that hydrated a stale row-0 before the
-    // delete could re-save it. On the next load the marker short-circuits the
-    // migration, so without a sweep the resurrected row-0 would persist as a
-    // permanent ghost (double-render). Because slot-1 EXISTS, the content is
-    // already recovered and row-0 is a pure duplicate — sweep it.
-    await seedSlot(1, 'already recovered into slot-1');
-    await seedLegacyRow('ghost row-0 re-saved by a racing DataTable');
+  it('12. marker set + row-0 still present — short-circuit does NOT delete it (no blind sweep)', async () => {
+    // The marker short-circuit must not blindly delete a lingering row-0: it
+    // could hold divergent, un-recovered content (codex round-7 P1). The
+    // resurrection race is closed at the source instead (DataTable awaits
+    // initializeStorage before reading). Here, with the marker set and a
+    // row-0 present, the migration short-circuits and leaves row-0 intact.
+    await seedSlot(1, ''); // user cleared slot-1 (round-4 authoritative)
+    await seedLegacyRow('divergent text that must NOT be silently deleted');
     await setMetadata(PLACE_CHAR_ROW0_MIGRATION_MARKER, new Date().toISOString());
 
     const result = await migratePlaceCharacteristicsRow0();
     expect(result.status).toBe('already_run');
     expect(result.slotsCopied).toBe(0);
 
-    // slot-1 is untouched — the sweep never rewrites recovered content.
-    const slot1 = await getTableRow(
-      PLACE_CHAR_ROW0_MODULE_KEY,
-      PLACE_CHAR_ROW0_MERGED_TABLE_ID,
-      'slot-1',
-    );
-    expect(slot1?.data?.value).toBe('already recovered into slot-1');
-
-    // The ghost row-0 is gone — no double-render.
+    // row-0 preserved — no silent data loss.
     const legacyRow = await getTableRow(
       PLACE_CHAR_ROW0_MODULE_KEY,
       PLACE_CHAR_ROW0_LEGACY_TABLE_ID,
       PLACE_CHAR_ROW0_LEGACY_ROW_ID,
     );
-    expect(legacyRow).toBeUndefined();
+    expect(legacyRow?.data?.['Your Response']).toBe(
+      'divergent text that must NOT be silently deleted',
+    );
   });
 });

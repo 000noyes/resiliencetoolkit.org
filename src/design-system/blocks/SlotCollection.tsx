@@ -81,9 +81,23 @@ export default function SlotCollection({
         // Gate on the specific migration this collection depends on, if one is
         // declared; otherwise fall back to "all migrations succeeded". This
         // prevents an unrelated migration's failure from disabling editing.
-        const migrationFailed = requiredMigration
-          ? migrations[requiredMigration] === false
-          : !migrationsOk;
+        //
+        // Fail-safe: a declared migration must have EXPLICITLY succeeded
+        // (=== true). A missing key — a typo or a migration that never
+        // registered a result — is treated as failure so the safety gate
+        // cannot silently vanish if the prop drifts (codex round-7 P3).
+        let migrationFailed: boolean;
+        if (requiredMigration) {
+          const status = migrations[requiredMigration];
+          if (status === undefined && import.meta.env.DEV) {
+            console.warn(
+              `[SlotCollection] requiredMigration "${requiredMigration}" is not a known migration key; gating editing closed (fail-safe).`,
+            );
+          }
+          migrationFailed = status !== true;
+        } else {
+          migrationFailed = !migrationsOk;
+        }
         if (migrationFailed) {
           setLoadError(true);
           return;
