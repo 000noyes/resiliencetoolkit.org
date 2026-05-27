@@ -59,6 +59,17 @@ export interface DataTableProps {
    */
   source?: string;
   page?: string;
+  /**
+   * rowIds that must NEVER be rendered or edited in this table, even if they
+   * still exist in storage. Used for rows that have been DEPRECATED in favor
+   * of another component — e.g. place-characteristics `row-0` is owned by the
+   * SlotCollection post-restore. A one-shot migration deletes such rows, but
+   * until it succeeds (or after a re-import that resurrects one) the stale row
+   * could otherwise render as an editable duplicate whose edits are later
+   * discarded by the migration. Hiding it here closes that path regardless of
+   * migration state (codex round-8 P1).
+   */
+  hiddenRowIds?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -466,6 +477,7 @@ export default function DataTable({
   tableName,
   showInfoCallout = false,
   variant = 'table',
+  hiddenRowIds,
 }: DataTableProps) {
   const [rows, setRows] = useState<TableRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -547,7 +559,16 @@ export default function DataTable({
       // is idempotent and marker-gated, so this is cheap after the first call.
       await initializeStorage();
 
-      const savedRows = await getTableRows(moduleKey, tableId);
+      const allSavedRows = await getTableRows(moduleKey, tableId);
+      // Drop deprecated rows that must never render (e.g. place-characteristics
+      // row-0, owned by the SlotCollection post-restore). Filtering here means
+      // a stale/resurrected row is never editable, regardless of whether its
+      // one-shot migration has run yet (codex round-8 P1). The empty-check
+      // below uses the VISIBLE set so a table holding only hidden rows still
+      // re-seeds its initialRows instead of rendering blank.
+      const savedRows = hiddenRowIds?.length
+        ? allSavedRows.filter((r) => !hiddenRowIds.includes(r.rowId))
+        : allSavedRows;
 
       if (savedRows.length === 0 && initialRows.length > 0) {
         const newRows: TableRow[] = initialRows.map((init) => ({
@@ -585,7 +606,7 @@ export default function DataTable({
     } finally {
       setLoading(false);
     }
-  }, [moduleKey, tableId, initialRows]);
+  }, [moduleKey, tableId, initialRows, hiddenRowIds]);
 
   useEffect(() => {
     loadData();
