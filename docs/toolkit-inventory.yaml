@@ -1065,25 +1065,32 @@ modules:
         page: 24
         purpose: "Folder with resources and templates (folder header)"
         on_site: surface_via_module_layout_button          # pinned (recurring)
-      - anchor: "Create a directory"                       # in "Create a directory of shared use vehicles, including who owns and insures vehicles"
+      - anchor: "Create a directory"                       # in "Create a directory of people and equipment available for emergency shuttling..." (EMERGENCY SHUTTLES section)
         url: "https://drive.google.com/file/d/1WGTfHGl9tRgEqzmeueS-8hHPSDqcx1Rs/view?usp=drive_link"
         page: 24
-        purpose: "Shared use vehicles directory template"
-        on_site: true                                      # ExternalLink ✓
+        purpose: "Emergency shuttle directory template"
+        on_site: true                                      # ExternalLink ✓ (RESTORED 2026-06-07 walk — was dropped/plain-text)
+        note: "CORRECTED 2026-06-07 content-fidelity walk. Workbook PDF link annotation (single /Rect at page-top Y≈742; verified via pdftohtml abs-coords + raw PDF /Rect) sits on the EMERGENCY-SHUTTLES 'Create a directory', NOT shared-use as the 2026-04-24 walk recorded. Pre-walk the site had DROPPED this link (rendered plain text). Restored as ExternalLink on the shuttle-directory Todo."
       - anchor: "https://foldupkayaks.com/"
         url: "https://foldupkayaks.com/"
         page: 24
         purpose: "Fold-up kayak vendor (inline reference in water-transport Todo)"
         on_site: true                                      # ExternalLink ✓
-      - anchor: "Create a directory / directory of heavy equipment"  # overlapping anchors, same URL
+      - anchor: "Create a directory"                       # in "Create a directory of shared use vehicles..." (SHARED USE VEHICLES section)
         url: "https://drive.google.com/file/d/1lIdpnkjjrCrk4e1OMb1hsHeX3u4Xs49D/view?usp=drive_link"
         page: 24
-        purpose: "Heavy equipment directory template"
+        purpose: "Shared use vehicles_heavy equipment directory template (combined; shared-use anchor)"
+        on_site: true                                      # ExternalLink ✓ (URL CORRECTED 2026-06-07 — was wrongly 1WGTfHGl)
+        note: "CORRECTED 2026-06-07. Workbook links the shared-use 'Create a directory' to 1lIdpn (the combined shared-use+heavy-equipment template, /Rect Y≈672), not 1WGTfHGl. The 2026-04-24 walk swapped the two file URLs. shared-vehicle-directory Todo href fixed 1WGTfHGl → 1lIdpn."
+      - anchor: "Create a directory / directory of heavy equipment"  # overlapping anchors, same URL (HEAVY EQUIPMENT section)
+        url: "https://drive.google.com/file/d/1lIdpnkjjrCrk4e1OMb1hsHeX3u4Xs49D/view?usp=drive_link"
+        page: 24
+        purpose: "Shared use vehicles_heavy equipment directory template (combined; heavy-equipment anchor)"
         on_site: true                                      # ExternalLink ✓ (site uses longer anchor "directory of heavy equipment")
-        note: "Workbook has two overlapping PDF link annotations on this phrase — one on 'Create a directory', another on 'directory of heavy equipment'. Both point to same URL. Site renders one ExternalLink over the longer phrase; not a fidelity issue."
-    workbook_anchor_count: 5                               # 5 distinct PDF annotations (folder + 4 in-prose)
-    workbook_unique_urls: 4                                # folder, 2 directory Drive files, foldupkayaks.com
-    site_link_count: 3                                     # 3 ExternalLinks (all present workbook URLs except folder header)
+        note: "Workbook has two overlapping PDF link annotations on this phrase — one on 'Create a directory', another on 'directory of heavy equipment'. Both point to same URL (1lIdpn). Site renders one ExternalLink over the longer phrase; not a fidelity issue."
+    workbook_anchor_count: 6                               # folder + 5 in-prose annotations (emergency-shuttles 1 + shared-use 1 + foldup 1 + heavy-equip 2 overlapping)
+    workbook_unique_urls: 4                                # folder, 2 directory Drive files (1WGTfHGl=shuttle, 1lIdpn=shared+heavy), foldupkayaks.com
+    site_link_count: 4                                     # 4 inline ExternalLinks (1WGTfHGl shuttle + foldupkayaks + 1lIdpn ×2: shared-use & heavy-equip); folder header via layout button
 
     current_site_state:
       astro: "src/pages/modules/emergency-preparedness/1-6.astro"
@@ -1110,10 +1117,10 @@ modules:
           classification: a                                # all 16 bullet texts verbatim-match workbook
           note: "Emergency shuttles: 2+1 | Shared use vehicles: 2+3 | Heavy equipment: 2+6"
         - type: ExternalLink
-          count: 3
-          classification: a                                # all 3 match workbook URLs (shared-dir, foldupkayaks, heavy-dir)
+          count: 4
+          classification: a                                # 4 after 2026-06-07 walk: shuttle-dir (1WGTfHGl), foldupkayaks, shared-use-dir (1lIdpn), heavy-equip-dir (1lIdpn). Was 3 (shuttle link dropped + shared-use URL swapped) — corrected this walk.
 
-    paragraph_drift: []                                    # no drift detected
+    paragraph_drift: []                                    # no prose drift; 2026-06-07 walk found a link-mapping drift (2 anchors) — see workbook_anchor_urls notes
 
     section_order_check: ok
     missing_sections_check: ok
