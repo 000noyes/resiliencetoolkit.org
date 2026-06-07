@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTableRows, saveTableRow, initializeStorage } from '@/lib/storage';
+import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
 
 export interface SlotCollectionProps {
   /** moduleKey for IndexedDB scoping (e.g. "knowing-community"). */
