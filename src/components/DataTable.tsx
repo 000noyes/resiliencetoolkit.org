@@ -23,6 +23,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
+import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
 
 // ---------------------------------------------------------------------------
 // Types

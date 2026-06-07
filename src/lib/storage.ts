@@ -22,6 +22,7 @@
  * - All data stays local - no cloud sync
  */
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
+import '@/lib/asset-rev'; // re-hash the shared storage chunk past the 2026-06-07 Cloudflare asset-poisoning incident (additive only; no logic/data change)
 
 /**
  * IndexedDB schema definition

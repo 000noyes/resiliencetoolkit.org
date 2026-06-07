@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTodo, toggleTodo, updateTodoNote, updateStreak, incrementWeeklyProgress } from '@/lib/storage';
 import { StickyNote } from 'lucide-react';
+import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
 
 interface TodoProps {
   id: string;
