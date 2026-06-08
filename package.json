@@ -14,7 +14,9 @@
     "verify": "tsx scripts/verify-against-source.ts",
     "measure-accuracy": "tsx scripts/measure-extraction-accuracy.ts",
     "scaffold-spec": "tsx scripts/scaffold-spec.ts",
-    "generate-icons": "node scripts/generate-icons.mjs"
+    "generate-icons": "node scripts/generate-icons.mjs",
+    "knip": "knip",
+    "knip:files": "knip --include files"
   },
   "pnpm": {
     "overrides": {

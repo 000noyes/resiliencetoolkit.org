@@ -40,6 +40,13 @@ jobs:
       - name: Run astro check
         run: pnpm astro check
 
+      # Gate on unused FILES only (orphan re-accumulation is the root cause we
+      # are fixing). Unused exports/types are intentionally NOT gated yet — the
+      # source-fidelity verifier exposes a deliberate internal API knip flags. See
+      # docs/removed-code.md for the scope decision; revisit to widen later.
+      - name: Check for orphaned files (knip)
+        run: pnpm knip:files
+
       - name: Run verify-against-source
         run: pnpm verify --since HEAD~1
 

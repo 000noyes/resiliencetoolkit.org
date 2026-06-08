@@ -50,3 +50,20 @@ Documented dead in TODOS; removed in buildable order per its recipe.
 
 To recover any removed file: `git show archive/w2-orphan-sweep~1:<path>` or
 `git checkout archive/w2-orphan-sweep~1 -- <path>`.
+
+## CI gate scope decision (2026-06-08)
+
+The CI `knip` gate (`pnpm knip:files`, in the `verify` job) checks **unused
+files only** — not unused exports or dependencies.
+
+**Why files-only for now:** orphaned *files* re-accumulating is the root cause
+this cleanup targets, and a files-only gate stays green and meaningful. A
+full-strength gate (exports + types) would immediately fail CI on the
+source-fidelity verifier's deliberate internal API — it exports ~48 functions and ~28 types
+that are part of its contract, not dead code. Pruning or allowlisting all of
+those is out of scope for the foundation cleanup and would risk the Source
+Fidelity machinery.
+
+**Revisit later:** we may widen the gate to exports/deps once the verifier's
+public surface is audited and an intentional-export allowlist is curated. Until
+then, run `pnpm knip` locally for the full report (files + exports + deps).
