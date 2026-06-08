@@ -42,3 +42,40 @@ jobs:
 
       - name: Run verify-against-source
         run: pnpm verify --since HEAD~1
+
+  offline-and-privacy:
+    name: offline-and-privacy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The offline project builds dist/ and serves it via astro preview itself
+      # (see playwright.offline.config.ts webServer), then runs the real-browser
+      # offline-durability + network-purity tests against the built service
+      # worker. Kept a separate job so it does not slow the verify job above.
+      - name: Run offline + network-purity tests
+        run: pnpm exec playwright test --config playwright.offline.config.ts
