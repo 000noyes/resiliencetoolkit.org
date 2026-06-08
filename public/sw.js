@@ -75,14 +75,21 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(event.request).then((cached) => cached || new Response('Offline', { status: 503 })))
+        .catch(() => caches.match(event.request, { ignoreVary: true }).then((cached) => cached || new Response('Offline', { status: 503 })))
     );
     return;
   }
 
   // Cache-first for static assets in the destination whitelist.
+  // `ignoreVary: true` is load-bearing for offline: precached `/_astro/*`
+  // bundles are stored via cache.add (no Origin header), but a dynamic ES-module
+  // import() is a CORS request that DOES send Origin. A server that returns
+  // `Vary: Origin` on those assets (astro preview's sirv does; a CDN may) would
+  // otherwise make caches.match(event.request) miss and 503 the module offline,
+  // silently breaking every precached-but-unvisited route. The assets are
+  // immutable + same-origin, so there is only ever one variant per URL — safe.
   event.respondWith(
-    caches.match(event.request).then((cached) => {
+    caches.match(event.request, { ignoreVary: true }).then((cached) => {
       if (cached && !cached.redirected) return cached;
       return fetch(event.request).then((response) => {
         if (

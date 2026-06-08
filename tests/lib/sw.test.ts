@@ -272,6 +272,28 @@ describe('sw.js — D7 fetch handler', () => {
     expect(sandbox.cacheStore.put).toHaveBeenCalled();
   });
 
+  it('matches the cache with ignoreVary so Vary headers cannot break offline serving', async () => {
+    const { sandbox, context } = createSandbox();
+    // A precached asset is present in the cache.
+    sandbox.caches.match.mockResolvedValueOnce(
+      new context.Response('body{}', { status: 200, redirected: false })
+    );
+    const event = makeFetchEvent({
+      url: 'https://resiliencetoolkit.org/_astro/x.css',
+      mode: 'cors',
+      destination: 'style',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    // Returned straight from cache (no network) ...
+    expect(response.body).toBe('body{}');
+    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+    // ... and the lookup ignored Vary, the load-bearing offline fix: a CORS
+    // module import sends Origin, cache.add does not, so a `Vary: Origin`
+    // response would otherwise miss and 503 the asset offline.
+    expect(sandbox.caches.match).toHaveBeenCalledWith(expect.anything(), { ignoreVary: true });
+  });
+
   it('does not cache redirected responses', async () => {
     const { sandbox, context } = createSandbox();
     sandbox.caches.match.mockResolvedValueOnce(undefined);
