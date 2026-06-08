@@ -37,23 +37,23 @@ modules:
       - anchor: "1.1 Emergency preparedness kits"
         url: "https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F"
         purpose: "Folder with resources and templates (folder header)"
-        on_site: false
+        on_site: surface_via_module_layout_button          # day-30: sourced via downloads.ts, recognized by layout-aware link check (ledger reconciled 2026-06-07)
       - anchor: "emergency plans"
         url: "https://docs.google.com/document/d/154qilah2wzsRzEhys1_dNwsS8wJkSqOCe3-miSqnUto/edit?tab=t.0"
         purpose: "Emergency plans doc linked from Systems col prose"
-        on_site: false                 # site has href="#"
+        on_site: true                  # RESTORED day-16 — ExternalLink (was href="#") (ledger reconciled 2026-06-07)
       - anchor: "emergency kits"
         url: "https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F"
         purpose: "Folder reused (same URL as folder header)"
-        on_site: false                 # site has href="#"
+        on_site: true                  # RESTORED day-16 — ExternalLink (was href="#") (ledger reconciled 2026-06-07)
       - anchor: "storing backup food"
         url: "https://docs.google.com/spreadsheets/d/1RaYyavdAbn43b3EH9zMzQir6G6gxnQE0XxMBxMH5iTQ/edit?usp=drive_link"
         purpose: "Backup food storage spreadsheet"
-        on_site: false                 # site has href="#"
+        on_site: true                  # RESTORED day-16 — ExternalLink (was href="#") (ledger reconciled 2026-06-07)
       - anchor: "go bags"
         url: "https://drive.google.com/file/d/1Ea1zc8wSbvVoMqcLqNz19sNJTsuThQIM/view?usp=drive_link"
         purpose: "Go Bags resource file"
-        on_site: false                 # site has href="#"
+        on_site: true                  # RESTORED day-16 — ExternalLink (was href="#") (ledger reconciled 2026-06-07)
     workbook_anchor_count: 5           # 5 distinct anchor occurrences pointing to 4 unique URLs
     workbook_unique_urls: 4
     site_anchor_count: 0               # all 4 inline anchors are dead href="#"; folder header not surfaced
@@ -225,12 +225,12 @@ modules:
         url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8?usp=drive_link"
         page: 10
         purpose: "Folder with resources here (folder header)"
-        on_site: false
+        on_site: surface_via_module_layout_button          # folder header sourced via downloads.ts / layout button (ledger reconciled 2026-06-07)
       - anchor: "legislature.vermont.gov/people/"
         url: "http://legislature.vermont.gov/people/"
         page: 10
         purpose: "Find your legislators (anchor IS the URL text)"
-        on_site: false                         # plain text, NO href
+        on_site: true                          # RESTORED — ExternalLink "legislature.vermont.gov/people/" (ledger reconciled 2026-06-07)
       - anchor: "https://anrmaps.vermont.gov/websites/anra5/"
         url: "https://anrmaps.vermont.gov/websites/anra5/"
         page: 12
@@ -240,27 +240,27 @@ modules:
         url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
         page: 14
         purpose: "Interactive toolkit activity prompts (inside Facilitation guides section)"
-        on_site: false                         # entire Facilitation guides section missing
+        on_site: true                          # RESTORED — ExternalLink "page of prompts"; the Facilitation guides section IS present (the "section missing" note was stale) (ledger reconciled 2026-06-07)
       - anchor: "Community Needs Assessment"
         url: "https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8"
         page: 14
         purpose: "Community Needs Assessment printable (inside Facilitation guides section)"
-        on_site: false                         # entire Facilitation guides section missing
+        on_site: true                          # RESTORED — ExternalLink "Community Needs Assessment"; Facilitation guides section IS present (the "section missing" note was stale) (ledger reconciled 2026-06-07)
       - anchor: "Check out this zine for more ideas"
         url: "https://drive.google.com/file/d/1G9M25w6kMOXArXlmXuIjOfd0o78tOrTV/view"
         page: 16
         purpose: "Zine for more ideas (Going deeper intro)"
-        on_site: false                         # plain text, NO href
+        on_site: true                          # RESTORED — ExternalLink "Check out this zine for more ideas" (ledger reconciled 2026-06-07)
       - anchor: "Check out this list"
         url: "https://drive.google.com/file/d/1RevfSVj8K8dc4xzxGmdMbIBw3peImK71/view"
         page: 16
         purpose: "Roles-to-modules list (Going deeper table intro)"
-        on_site: false                         # plain text, NO href
+        on_site: true                          # RESTORED — ExternalLink "Check out this list" (ledger reconciled 2026-06-07)
       - anchor: "Bay Area Transformative Justice Center"
         url: "https://drive.google.com/file/d/1H6acuvhgEZG4NDZJ1oIk426me3PmuYZX/view?usp=drive_link"
         page: 17
         purpose: "Pod Mapping Worksheet file (anchored via BATJC phrase, not via worksheet title)"
-        on_site: substituted                   # site links BATJC phrase to batjc.org homepage instead
+        on_site: true                          # RESTORED — BATJC anchor → 1H6acuvh Worksheet file (was batjc.org substitution) (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_link     # drop batjc.org; BATJC anchor → 1H6acuvhgEZG… Worksheet file; keep callout button (redundant but OK)
     workbook_anchor_count: 8                   # 8 distinct anchor occurrences
     workbook_unique_urls: 6                    # 161QG8b folder linked from 3 anchors; rest 1:1
@@ -540,17 +540,17 @@ modules:
         url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
         page: 35
         purpose: "Folder with resources and templates (folder header)"
-        on_site: false
+        on_site: surface_via_module_layout_button          # day-30: sourced via downloads.ts (ledger reconciled 2026-06-07)
       - anchor: "community backup stores"
         url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
         page: 35
         purpose: "Same 1.2 folder linked from Systems col prose (Backup food supply)"
-        on_site: false                         # plain text Todo, no link wrapper
+        on_site: true                          # RESTORED day-19 — ExternalLink on backup-food-community Todo (ledger reconciled 2026-06-07)
       - anchor: "community-scale equipment and infrastructure"
         url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
         page: 35
         purpose: "Same 1.2 folder linked from Systems col prose (Community food infrastructure)"
-        on_site: false                         # plain text, no link wrapper
+        on_site: true                          # RESTORED day-19 — ExternalLink on walk-in-cooler infrastructure line (ledger reconciled 2026-06-07)
       - anchor: "Create a directory"
         url: "https://drive.google.com/file/d/1VO1V7xknP-Ygvz7m_JL9m1kL7paFtuFP/view?usp=drive_link"
         page: 35
@@ -570,7 +570,7 @@ modules:
         url: "https://drive.google.com/file/d/1C5a0Sf1NWRU0XnMkHayw_vjwpuzqVZzJ/view"
         page: 35
         purpose: "Safe food handling Drive file"
-        on_site: substituted                   # site links same anchor to cdc.gov/foodsafety
+        on_site: true                          # RESTORED — "safe food handling" → 1C5a0Sf Drive file (was cdc.gov substitution; verified cdc.gov absent) (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_link     # drop cdc.gov; anchor → 1C5a0Sf1 Drive file (strict workbook fidelity)
       - anchor: "Create a directory of food access points"
         url: "https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu"
@@ -847,12 +847,12 @@ modules:
         url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1882137661#gid=1882137661&range=A1:C1"
         page: 45
         purpose: "Power Supply inventory row in Templates Directory master sheet (cell-level range)"
-        on_site: false                                     # plain text on site, no link
+        on_site: true                                      # RESTORED — ExternalLink on power-inventory Todo with sheet-level URL (ledger reconciled 2026-06-07)
         decision: 1a_restore_sheet_level_url               # drop cell-range specificity; link to sheet only
         sheet_level_url: "https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit"
     workbook_anchor_count: 3                               # 3 anchor occurrences for 1.4 (folder linked from 2)
     workbook_unique_urls: 2
-    site_link_count: 0                                     # no ExternalLinks on 1-4.astro; no hrefs at all
+    site_link_count: 1                                     # 1 inline ExternalLink (Power Supply inventory, sheet-level) + folder header via button; was 0 pre-restoration (ledger reconciled 2026-06-07)
 
     current_site_state:
       astro: "src/pages/modules/emergency-preparedness/1-4.astro"
@@ -938,7 +938,7 @@ modules:
         page: "23/45"
         purpose: "Cross-reference to 1.2 Food and water section (intra-workbook navigation)"
         target_type: internal_pdf_page_anchor
-        on_site: external_link_substitution                # site has ExternalLink→14BP-QH2d GDoc instead of site-internal route
+        on_site: true                                      # RESTORED — site-internal route <a href="/modules/emergency-preparedness/1-2">Identify</a> (14BP-QH2d GDoc substitution removed; verified absent) (ledger reconciled 2026-06-07)
         decision: 1a_replace_with_site_internal_link       # see internal-anchor-to-site-route feedback memory
         correct_site_href: "/modules/emergency-preparedness/1-2"
       - anchor: "Create a directory"                       # in "Create a directory of day use, overnight, and other shelters"
@@ -1164,41 +1164,41 @@ modules:
         url: "https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link"
         page: 25
         purpose: "Directory of showers/laundry template (covers both bathrooms and laundry directories)"
-        on_site: false                                     # DROPPED on public-bathrooms-directory Todo
+        on_site: true                                      # RESTORED day-20 — ExternalLink on public-bathrooms-directory Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "build them"                               # in "Purchase water containers with a side spigot, or build them"
         url: "https://drive.google.com/file/d/14xHhFJ-GLWtaBJpPCBwpheO-rYCwtHd-/view?usp=drive_link"
         page: 25
         purpose: "DIY water container with spigot build guide"
-        on_site: false                                     # DROPPED on water-containers-spigot Todo
+        on_site: true                                      # RESTORED day-20 — ExternalLink on water-containers-spigot Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "composting toilet box"                    # in "build a composting toilet box"
         url: "https://drive.google.com/file/d/1zDFvshC71Se1-9a4JiTaGa0IHKqQH4e1/view?usp=drive_link"
         page: 25
         purpose: "Composting toilet box build guide"
-        on_site: false                                     # DROPPED on bucket-toilet Todo
+        on_site: true                                      # RESTORED day-20 — ExternalLink on bucket-toilet Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "Create a directory"                       # laundry — in "Create a directory of households, businesses and public spaces with washers and dryers"
         url: "https://drive.google.com/file/d/1BvGEOJSKyVwq5ttTQpEdEkIRIpN056DF/view?usp=drive_link"
         page: 25
         purpose: "Directory of showers/laundry template (same URL as bathrooms anchor)"
-        on_site: false                                     # DROPPED on laundry-directory Todo
+        on_site: true                                      # RESTORED day-20 — ExternalLink on laundry-directory Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "Example here"                             # in "Contact local churches and other orgs to set up free laundry services. Example here."
         url: "https://barrecongregational.org/laundry-love"
         page: 25
         purpose: "Real-world example of free laundry service (Barre Congregational Church)"
-        on_site: false                                     # DROPPED on free-laundry-services Todo
+        on_site: true                                      # RESTORED day-20 — ExternalLink on free-laundry-services Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "Portable laundry trailers"
         url: "https://www.portablerestroomtrailers.com/products/trailer-types/laundry-trailers.html"
         page: 25
         purpose: "Vendor reference for portable laundry trailers"
-        on_site: false                                     # DROPPED on portable-laundry-trailers Todo
+        on_site: true                                      # RESTORED day-20 — ExternalLink on portable-laundry-trailers Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
     workbook_anchor_count: 7                               # 7 distinct PDF annotations (folder + 6 in-prose)
     workbook_unique_urls: 6                                # 1b1h7aUH folder + 1BvGEOJSKy (×2) + 14xHhFJ + 1zDFvshC + barrecongregational + portablerestroomtrailers
-    site_link_count: 0                                     # ZERO ExternalLinks on 1-7.astro
+    site_link_count: 6                                     # 6 inline ExternalLinks on 1-7.astro (all restored day-20; was 0 pre-day-20). Folder header via layout button. (ledger reconciled 2026-06-07)
 
     current_site_state:
       astro: "src/pages/modules/emergency-preparedness/1-7.astro"
@@ -1208,6 +1208,7 @@ modules:
           source_cited: null
           classification: c
           recurring: true
+          status: removed_day_20                            # archive-1-7-info-callout; no longer on 1-7.astro (ledger reconciled 2026-06-07)
         - type: table.guide-table
           classification: a
           note: "2 top-level sub-sections (Handwashing-toilets-showers / Laundry) match workbook"
@@ -1223,6 +1224,7 @@ modules:
           note: "Systems handwashing: 5 + 2 safe-sanitation | Stuff handwashing: 2 | Stuff toilets: 2 | Stuff showers: 3 | Laundry Systems: 2 | Laundry Stuff: 7 = 23"
         - type: plain_text_dropped_links
           count: 6
+          status: ALL_RESTORED_day_20                       # all 6 now wired as ExternalLinks on 1-7.astro; historical finding record (ledger reconciled 2026-06-07)
           details:
             - phrase: "Create a directory of local public buildings"
               todo_id: "public-bathrooms-directory"
@@ -1303,58 +1305,58 @@ modules:
         url: "https://drive.google.com/drive/folders/1if3D-wTHEf1hYUKyJk9w0EeX5ZSUi3Q-?usp=drive_link"
         page: 28
         purpose: "LEP sub-section folder"
-        on_site: site_renders_as_plain_p                   # site has <p>Folder with resources and templates: Limited English Proficiency Documents</p> — plain text, no link
+        on_site: true                                      # RESTORED day-21b — inline ExternalLink wraps "Limited English Proficiency Documents" in the LEP <p> (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_inline_link_or_layout_button
       - anchor: "Community Health Worker"
         url: "https://www.vtassociationofcommunityhealthworkers.com/"
         page: "26, 29"                                     # appears twice (Children + LEP After Disaster)
         purpose: "VT Association of Community Health Workers"
-        on_site_url_substitution: "https://www.healthvermont.gov/health-equity/community-health-workers"
-        on_site: url_substituted
+        former_url_substitution: "https://www.healthvermont.gov/health-equity/community-health-workers"  # archived alt_url
+        on_site: true                                      # RESTORED day-21 — workbook URL strict (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict           # user decision 2026-04-24: strict restoration
       - anchor: "Community Health Center"
         url: "https://bistatepca.org/centers/"
         page: "26, 29"
         purpose: "Bi-State Primary Care Association — VT community health centers directory"
-        on_site_url_substitution: "https://www.vt211.org/search/community-health-centers"
-        on_site: url_substituted
+        former_url_substitution: "https://www.vt211.org/search/community-health-centers"  # archived alt_url
+        on_site: true                                      # RESTORED day-21 — workbook URL strict (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict
       - anchor: "Free Clinic"
         url: "https://vtfreeclinics.org/find-a-clinic/"
         page: "26, 29"
         purpose: "Vermont Free Clinics — find-a-clinic page"
-        on_site_url_substitution: "https://vtfreeclinics.org/"
-        on_site: url_substituted                           # path-level drift (lost /find-a-clinic/)
+        former_url_substitution: "https://vtfreeclinics.org/"  # archived alt_url (was path-level drift, lost /find-a-clinic/)
+        on_site: true                                      # RESTORED day-21 — workbook URL strict with /find-a-clinic/ path (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict
       - anchor: "https://dcf.vermont.gov/doc/contacts/partners/aaa"
         url: "https://dcf.vermont.gov/doc/contacts/partners/aaa"
         page: 27
         purpose: "VT Area Agencies on Aging contacts page"
-        on_site: partial                                   # kept on disability-partners Todo; DROPPED on senior-partners Todo (same sentence in workbook)
+        on_site: true                                      # RESTORED day-21 — ExternalLink on senior-partners Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_on_senior_partners
       - anchor: "organizations and groups"                 # in "Partner with organizations and groups that work with (im)migrant individuals"
         url: "https://docs.google.com/document/d/1Is0po3dbNMNl56RA0zm1ARid5JoWtv-ZUnPgr__oGOM/edit?usp=sharing"
         page: 28
         purpose: "LEP partner organizations doc"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-partner-orgs Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "list of organizations and people"         # in "Make a list of organizations and people who can support…"
         url: "https://drive.google.com/file/d/1NWSRoDXt7IR8wDNnoC1lyebI9vkCJZ4R/view?usp=drive_link"
         page: 28
         purpose: "LEP org+people list template"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-directory-orgs Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "list of resources"                        # in "Compile a list of resources in other languages…"
         url: "https://docs.google.com/document/d/1JwdvySyIuOi1SlBlFE7KF3Eh09IAmzPp289-Zlqu-O0/edit?usp=sharing"
         page: 28
         purpose: "LEP resources-in-other-languages doc"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-compile-resources Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "AALV"
         url: "https://www.aalv-vt.org/interpreter"
         page: 28
         purpose: "Association of Africans Living in Vermont — interpreter services"
-        on_site: false                                     # plain text on site
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-interpreter-money Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "LanguageLine"
         url: "https://www.languageline.com/"
@@ -1370,7 +1372,7 @@ modules:
         url: "https://docs.google.com/document/d/135iBbFYDUUojTu9_irbQbnm_s5woAnX5TniHpGRedsY/edit?usp=sharing"
         page: 29
         purpose: "LEP procedure template doc"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-during-train Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "Google Translate"
         url: "https://translate.google.com/?sl=auto&tl=en&op=translate"
@@ -1382,31 +1384,31 @@ modules:
         url: "https://dcf.vermont.gov/contacts/partners/pcc"
         page: 29
         purpose: "VT Parent-Child Centers directory"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-parent-child-centers Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "food shelves"
         url: "https://www.vtfoodbank.org/access-food/find-a-food-shelf/"
         page: 29
         purpose: "VT Foodbank — find a food shelf"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on lep-parent-child-centers Todo (food shelves anchor) (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "Create a Plan"
         url: "https://www.usda.gov/sites/default/files/documents/usda-livestock-preparedness-fact-sheet.pdf"
         page: 30
         purpose: "USDA Livestock Preparedness fact sheet"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on farm-plan Todo ("Create a Plan") (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "Another Plan Template"
         url: "https://www.prep4agthreats.org/Assets/Factsheets/livestock-emergency-preparedness-plan.pdf"
         page: 30
         purpose: "Prep4AgThreats Livestock Emergency Plan template"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on farm-plan Todo ("Another Plan Template") (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
       - anchor: "FSA & NRCS Offices"
         url: "https://www.farmers.gov/"
         page: 30
         purpose: "USDA Farmers.gov (FSA + NRCS portal)"
-        on_site: false
+        on_site: true                                      # RESTORED day-21b — ExternalLink on farm-fsa-nrcs Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_Todo_plus_ExternalLink
     workbook_anchor_count: 20                              # 2 folder headers + ~18 in-prose
     workbook_unique_urls: 18
@@ -1488,8 +1490,8 @@ modules:
           classification: c
           decision: 1a_restore_verbatim
         - type: item_merging_lep_after_access
-          workbook: "Ensure individuals have access to appropriate needs." + "Do individuals have healthcare needs?"  # 2 separate items
-          site: "Ensure individuals have access to appropriate needs. Do individuals have healthcare needs?"          # merged into 1 Todo
+          workbook: ["Ensure individuals have access to appropriate needs.", "Do individuals have healthcare needs?"]  # 2 separate items (fixed invalid YAML "+"-concatenation 2026-06-07)
+          site: "Ensure individuals have access to appropriate needs. Do individuals have healthcare needs?"          # merged pre-day-21b; split back into 2 Todos day-21b
           classification: c
           decision: 1a_split_back_into_2_Todos
         - type: Todo
@@ -1719,13 +1721,13 @@ modules:
         url: "https://drive.google.com/file/d/1volnFb9p7K24iROikMt_zOg9_RT9WRVR/view?usp=drive_link"
         page: 32
         purpose: "Neighbor directory template — absorbed into DataTable"
-        on_site: datatable_source_needs_spec               # Neighbor Directory DataTable exists but no source spec yet
+        on_site: datatable_source                          # spec docs/source-specs/1-9-neighbor-directory.md now exists; DataTable cites it (ledger reconciled 2026-06-07)
         decision: 1a_create_source_spec_cite_this_url
       - anchor: "Create a directory of local first responders"
         url: "https://drive.google.com/file/d/1_s3dzOMkIUT5BGBFjfFlEDeHfHcc5m-N/view?usp=drive_link"
         page: 32
         purpose: "First responder directory template — absorbed into DataTable"
-        on_site: datatable_source_needs_spec               # First Responder Directory DataTable exists but no source spec yet
+        on_site: datatable_source                          # spec docs/source-specs/1-9-first-responder-directory.md now exists; DataTable cites it (ledger reconciled 2026-06-07)
         decision: 1a_create_source_spec_cite_this_url
       - anchor: "information about preparedness"
         url: "https://drive.google.com/file/d/1kFn8Lmia51X-Y5ZCzu2VlsWJd7JEq1dy/view?usp=drive_link"
@@ -1734,8 +1736,8 @@ modules:
       - anchor: "GoogleTranslate"
         url: "https://translate.google.com/"
         page: 32
-        purpose: "Referenced in language-access sentence — DROPPED on site along with surrounding sentence rewrite"
-        on_site: false_due_to_sentence_compression
+        purpose: "Referenced in language-access sentence"
+        on_site: true                                      # RESTORED — ExternalLink on "GoogleTranslate" + sentence restored (ledger reconciled 2026-06-07)
         decision: 1a_restore_sentence_and_link
       - anchor: "VT Language Justice Project"
         url: "https://www.vtlanguagejustice.org/ify?"
@@ -1746,7 +1748,7 @@ modules:
         target_type: internal_pdf_page_anchor
         page: 32
         purpose: "Cross-reference to 1.8 Populations with specific needs"
-        on_site: false_due_to_sentence_compression
+        on_site: true                                      # RESTORED — site-internal route <a href="/modules/emergency-preparedness/1-8"> (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_modules_emergency-preparedness_1-8
       - anchor: "situation reports"
         url: "https://docs.google.com/document/d/1p7EPPThPDA--5NxEKXIi6MZDzHthwg8VGi5XX1tq9Ek/edit?usp=drive_link"
@@ -1776,14 +1778,13 @@ modules:
         url: "2025 Resilience Hub Toolkit_V1 final.html#22"
         target_type: internal_pdf_page_anchor
         page: 33
-        on_site_text_drift: "(1.4)"                        # site shows wrong section number; numeric drift
-        on_site: false_with_numeric_drift
+        on_site: true                                      # RESTORED — site-internal route to /1-3, numeric drift fixed (renders "1.3") (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-3_and_fix_numeric_drift
       - anchor: "(1.5)"                                    # warming/cooling shelters ref in wildfire smoke section
         url: "2025 Resilience Hub Toolkit_V1 final.html#23"
         target_type: internal_pdf_page_anchor
         page: 33
-        on_site: false                                     # site has "(1.5)" plain text, no link
+        on_site: true                                      # RESTORED — site-internal route to /1-5 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-5
       - anchor: "Wet bulb temperatures & High Heat Index"
         url: "https://drive.google.com/file/d/10X2ipgJTjW1SdCaNbJZfEOI4ukD8UVYz/view"
@@ -1793,19 +1794,19 @@ modules:
         url: "2025 Resilience Hub Toolkit_V1 final.html#32"
         target_type: internal_pdf_page_anchor
         page: 33
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-9 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-9
       - anchor: "(1.2)"                                    # heat/hydration cross-ref
         url: "2025 Resilience Hub Toolkit_V1 final.html#20"
         target_type: internal_pdf_page_anchor
         page: 33
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-2 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-2
       - anchor: "(1.5)"                                    # heat cooling shelters cross-ref
         url: "2025 Resilience Hub Toolkit_V1 final.html#23"
         target_type: internal_pdf_page_anchor
         page: 33
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-5 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-5
       - anchor: "Drought"
         url: "https://drive.google.com/file/d/1glq_jPse9R4geIkeaCUr7rnAgNG5JOyW/view"
@@ -1822,22 +1823,22 @@ modules:
       - anchor: "(1.2)"                                    # ice/wind cross-ref to food
         url: "2025 Resilience Hub Toolkit_V1 final.html#20"
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-2 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-2
       - anchor: "(1.4)"                                    # ice/wind cross-ref to power
         url: "2025 Resilience Hub Toolkit_V1 final.html#23"   # NB: workbook #23 = 1.5 page; upstream workbook anchor typo
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-4 by visible number (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-4  # follow the visible number, not the broken workbook anchor
         note: "Workbook anchor points to #23 (=1.5 page) but text says '1.4' — upstream workbook link typo. Restore site link by visible number."
       - anchor: "(1.5)"                                    # ice/wind cross-ref to shelters
         url: "2025 Resilience Hub Toolkit_V1 final.html#23"
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-5 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-5
       - anchor: "(1.9;2.2)"                                # ice/wind cross-refs to CERP + comms
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal routes to /1-9 + /baseline-resilience/2-2 (ledger reconciled 2026-06-07)
         decision: 1a_restore_two_site_internal_links
       - anchor: "pandemics"
         url: "https://drive.google.com/drive/folders/1TmJ4hbHtf9gQUctlilz046B3fpmS1_yK"  # folder
@@ -1846,26 +1847,26 @@ modules:
       - anchor: "Section 2.1"
         url: "2025 Resilience Hub Toolkit_V1 final.html#40"
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /baseline-resilience/2-1 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_2-1
       - anchor: "(1.9)"
         url: "2025 Resilience Hub Toolkit_V1 final.html#32"
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-9 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-9
       - anchor: "1.8"
         url: "2025 Resilience Hub Toolkit_V1 final.html#26"
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-8 (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_site_internal_link_to_1-8
       - anchor: "(1.12)"
         url: "2025 Resilience Hub Toolkit_V1 final.html#39"
         target_type: internal_pdf_page_anchor
-        on_site: false
+        on_site: true                                      # RESTORED — site-internal route to /1-12 (ledger reconciled 2026-06-07); also (2.3)→/baseline-resilience/2-3 present (the day-28 "(2.3) drop" note was itself stale)
         decision: 1a_restore_as_site_internal_link_to_1-12
     workbook_anchor_count: 30                              # 1 folder + 16 external URLs + ~13 internal PDF anchors
     workbook_unique_urls: 14                               # unique external URLs (folder + 13 prose); internal anchors not counted
-    site_link_count: 14                                    # <ExternalLink> count
+    site_link_count: 14                                    # 14 inline <ExternalLink> (external/Drive) + 16 site-internal <a> cross-ref routes all present (ledger reconciled 2026-06-07; all on_site:false* flags above were pre-restoration findings, now closed)
 
     current_site_state:
       astro: "src/pages/modules/emergency-preparedness/1-9.astro"
@@ -1967,7 +1968,7 @@ modules:
     missing_sections_check: partial                        # "Planning for other kinds" section structurally present but closing military-presence sentence dropped
     table_titles_check: na                                 # DataTable tableName props match Phase 1 spec
 
-    class_c_count: 0   # day-28 reconciliation + day-29 spot-check correction: was 23 (pre-day-13/14 walk). 22 closed days 12+13+14 (commits b394ca8 + ab85c32 + 2db4130) — see workbook_anchor_links + paragraph_drift + dropped_workbook_items blocks above for the full per-day itemization. 1 closed day-29 (pandemics folder URL substitution corrected to 1TmJ4hbHtf workbook anchor per spot-check finding NEW-3 — day-28 reconciliation note had inaccurately attributed this closure to day-14 commit 2db4130, but git show 2db4130 proves the URL was untouched). Total: 22 + 1 = 23 (matches pre-walk baseline). 2 minor drifts found in day-28 spot-check (Town Clerk bullet split + (2.3) anchor drop) deferred to Step 2 backlog.
+    class_c_count: 0   # day-28 reconciliation + day-29 spot-check correction: was 23 (pre-day-13/14 walk). 22 closed days 12+13+14 (commits b394ca8 + ab85c32 + 2db4130) — see workbook_anchor_links + paragraph_drift + dropped_workbook_items blocks above for the full per-day itemization. 1 closed day-29 (pandemics folder URL substitution corrected to 1TmJ4hbHtf workbook anchor per spot-check finding NEW-3 — day-28 reconciliation note had inaccurately attributed this closure to day-14 commit 2db4130, but git show 2db4130 proves the URL was untouched). Total: 22 + 1 = 23 (matches pre-walk baseline). day-28 spot-check flagged 2 minor drifts; 2026-06-07 content-fidelity walk re-checked both: the (2.3) "anchor drop" was STALE — (2.3) IS linked to /baseline-resilience/2-3 on the rendered page (no drop). The Town Clerk bullet split (one comma-joined workbook bullet → two <li>) remains, treated as a content-preserving presentational choice, not a fidelity drift. Net 0 open class-c on 1-9.
     structural_fidelity:
       verdict: clean                                       # day-28 reconciliation: days 12+13+14 shipped 1-9 class-c remediation; 3 DataTable specs (Leader/Neighbor/First Responder) all pass verify
     scope: 1a
@@ -2020,8 +2021,8 @@ modules:
         url: "https://humanservices.vermont.gov/about-us/field-services"
         page: 34
         purpose: "VT Agency of Human Services / VDH field services directory"
-        on_site_url_substitution: "https://www.healthvermont.gov/about-us/contact-us"
-        on_site: url_substituted
+        former_url_substitution: "https://www.healthvermont.gov/about-us/contact-us"  # archived alt_url
+        on_site: true                                      # RESTORED day-23 — workbook URL strict (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict
         topic_branch_candidate: true                       # same pattern as 1-8 CHW/CHC/Free Clinic
       - anchor: "SignUp Genius"
@@ -2038,7 +2039,7 @@ modules:
         url: "https://drive.google.com/file/d/1-96IRuEPNE7Sb6WrVZpcyvFvCJRIjo8h/view?usp=drive_open"
         page: 35
         purpose: "Youth engagement template — referenced in Managing volunteers children sentence"
-        on_site: dropped_with_containing_sentence
+        on_site: true                                      # RESTORED day-23 — ExternalLink + full sentence on Managing-volunteers children Todo (ledger reconciled 2026-06-07)
         decision: 1a_restore_full_workbook_sentence_with_link
       - anchor: "Crisis Cleanup"
         url: "http://crisiscleanup.org/"
@@ -2176,7 +2177,7 @@ modules:
         url: "https://drive.google.com/file/d/1EYIHSzBZjEisON-7tjwueVQ1OS1EcCqs/view?usp=drive_link"
         page: 37
         purpose: "House Gutting specific template file — NOT same as folder"
-        on_site: false                                     # dropped — distinct file link
+        on_site: true                                      # RESTORED day-23 — ExternalLink wraps the "House Gutting" subsection label (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_inline_ExternalLink_on_subsection_label
       - anchor: "Mold remediation"                         # subsection header linked to folder in workbook
         url: "https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r"
@@ -2566,8 +2567,8 @@ modules:
         on_site: true                                      # ExternalLink ✓
       - anchor: "Drift Dusters in Derby, VT"
         url: "https://www.driftdusters.com/"
-        on_site_url_substitution: "https://driftdusters.org/"   # TLD .com → .org
-        on_site: url_substituted
+        former_url_substitution: "https://driftdusters.org/"   # archived alt_url (was TLD .org; workbook uses .com)
+        on_site: true                                      # RESTORED day-26 — workbook .com URL (ledger reconciled 2026-06-07)
         decision: 1a_verify_live_and_restore_correct_url
         note: "URL may have changed host over time; verify current state before 1a fix"
       - anchor: "Create a directory (mental health)"
@@ -2578,28 +2579,28 @@ modules:
         on_site: true                                      # ExternalLink ✓
       - anchor: "Vermont Care Partners"
         url: "https://vermontcarepartners.org/intake-and-crisis-lines/"
-        on_site_url_substitution: "https://vermontcarepartners.org/"  # path dropped
-        on_site: url_substituted
+        former_url_substitution: "https://vermontcarepartners.org/"  # archived alt_url (path /intake-and-crisis-lines/ was dropped)
+        on_site: true                                      # RESTORED day-26 — workbook URL strict with /intake-and-crisis-lines/ path (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict
       - anchor: "SAMHSA Disaster Distress Helpline"
         url: "https://mentalhealth.vermont.gov/flood"
-        on_site_url_substitution: "https://mentalhealth.vermont.gov/sosvt"
-        on_site_anchor_substitution: "VTSOS - VT Starting over Strong"
-        on_site: url_and_anchor_substituted
+        former_url_substitution: "https://mentalhealth.vermont.gov/sosvt"   # archived alt_url
+        former_anchor_substitution: "VTSOS - VT Starting over Strong"        # archived alt_anchor
+        on_site: true                                      # RESTORED day-26 — workbook URL (/flood) + anchor "SAMHSA Disaster Distress Helpline" (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict_AND_archive
         topic_branch_candidate: true
       - anchor: "Community Health Worker"
         url: "https://www.vtassociationofcommunityhealthworkers.com/"
-        on_site: dropped_with_containing_sentence
+        on_site: true                                      # RESTORED day-26 — ExternalLink + containing sentence (ledger reconciled 2026-06-07)
       - anchor: "Free Clinics"
         url: "https://vtfreeclinics.org/find-a-clinic/"
-        on_site: dropped_with_containing_sentence
+        on_site: true                                      # RESTORED day-26 — ExternalLink + containing sentence (ledger reconciled 2026-06-07)
       - anchor: "Community Health Centers"
         url: "https://bistatepca.org/centers/"
-        on_site: dropped_with_containing_sentence
+        on_site: true                                      # RESTORED day-26 — ExternalLink + containing sentence (ledger reconciled 2026-06-07)
       - anchor: "Vermont Health Connect Assister"
         url: "https://info.healthconnect.vermont.gov/find-local-help/find"
-        on_site: dropped_with_containing_sentence
+        on_site: true                                      # RESTORED day-26 — ExternalLink + containing sentence (ledger reconciled 2026-06-07)
       - anchor: "Create a directory of local herbalists"
         url: "https://drive.google.com/file/d/1czwqFxN1cCi9HiFqd_Gky2pBd7AUEMEW/view?usp=drive_link"
         on_site: true                                      # ExternalLink ✓
@@ -2901,13 +2902,12 @@ modules:
         on_site: true                                      # same folder
       - anchor: "Create a directory (Business directory)"
         url: "https://drive.google.com/file/d/184_orTxxvgIbKMqtFFHWhipCtqwyZzGs/view?usp=drive_link"
-        on_site_url_substitution: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
-        on_site: url_substituted
+        on_site: true                                      # RESTORED day-25 — ExternalLink uses the workbook FILE URL (no longer the parent-folder substitution) (ledger reconciled 2026-06-07)
         decision: 1a_restore_workbook_url_strict
-        note: "Workbook cites specific Business directory template file; site uses parent folder instead"
+        note: "Workbook cites specific Business directory template file; day-25 sweep restored the file URL (was parent-folder substitution)"
       - anchor: "Create a directory (Tradesfolk directory)"
         url: "https://drive.google.com/file/d/1ruSfU-WUZ0mi-Hr2yzSRR7QQhtkUTu5u/view?usp=drive_link"
-        on_site: false                                     # link dropped — plain text on site
+        on_site: true                                      # RESTORED day-25 — ExternalLink "Create a directory" (was plain text) (ledger reconciled 2026-06-07)
         decision: 1a_restore_as_ExternalLink
       - anchor: "Create a directory (Community spokespeople)"
         url: "https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4"
