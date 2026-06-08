@@ -24,9 +24,11 @@ const swPath = join(distDir, 'sw.js');
 const SENTINEL_START = '// __PRECACHE_ASSETS_START__';
 const SENTINEL_END = '// __PRECACHE_ASSETS_END__';
 
-// Routes to exclude from precache (not needed offline, not in nav)
+// Routes to exclude from precache (not needed offline, not in nav).
+// NB: /_astro/ assets are not index.html files so they never appear in the
+// route list anyway — they are precached explicitly via findAstroAssets()
+// below so precached-but-unvisited routes render styled + interactive offline.
 const EXCLUDE_PREFIXES = [
-  '/_astro/',
   '/changelog/',
   '/replicate/',
   '/access/',
@@ -52,6 +54,32 @@ function findIndexHtmlFiles(dir) {
       results.push(fullPath);
     }
   }
+  return results;
+}
+
+// Recursively collect every built /_astro asset (CSS/JS/font/etc.) as a URL.
+// These are the page bundles. Without them in the precache, a precached-but-
+// never-visited route opened offline renders unstyled + non-interactive (the
+// bundles only entered the cache lazily, when fetched online). The whole pool
+// is small (~0.8 MB / ~40 files; Astro dedupes shared chunks) so precaching all
+// of it costs ~nothing and removes the per-route subset bookkeeping. They land
+// in the nice-to-have tier (not ESSENTIAL_ASSETS) so one stale hash can't brick
+// the SW install.
+function findAstroAssets(dir) {
+  const astroDir = join(dir, '_astro');
+  if (!existsSync(astroDir)) return [];
+  const results = [];
+  const walk = (d) => {
+    for (const entry of readdirSync(d, { withFileTypes: true })) {
+      const fullPath = join(d, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+      } else {
+        results.push('/' + relative(distDir, fullPath).replace(/\\/g, '/'));
+      }
+    }
+  };
+  walk(astroDir);
   return results;
 }
 
@@ -111,7 +139,12 @@ for (const asset of STATIC_ASSETS) {
   }
 }
 
-const allAssets = [...routes, ...staticAssets];
+// --- Collect /_astro bundles (the offline-durability fix) ---
+
+const astroAssets = findAstroAssets(distDir);
+astroAssets.sort();
+
+const allAssets = [...routes, ...staticAssets, ...astroAssets];
 
 if (allAssets.length === 0) {
   console.error('SW generator: PRECACHE_ASSETS list is empty after filtering. Something is wrong.');
@@ -166,5 +199,6 @@ if (final.includes('v-build-PENDING')) {
 writeFileSync(swPath, final, 'utf-8');
 
 console.log(
-  `SW generator: ${routes.length} routes + ${staticAssets.length} static assets → dist/sw.js (${cacheVersion})`
+  `SW generator: ${routes.length} routes + ${staticAssets.length} static assets + ` +
+  `${astroAssets.length} /_astro bundles → dist/sw.js (${cacheVersion})`
 );

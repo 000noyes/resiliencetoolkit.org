@@ -9,6 +9,7 @@
     "build": "astro check && astro build && npx pagefind --site dist",
     "postbuild": "node scripts/generate-sw-precache.mjs",
     "preview": "astro preview",
+    "test:offline": "playwright test --config playwright.offline.config.ts",
     "astro": "astro",
     "verify": "tsx scripts/verify-against-source.ts",
     "measure-accuracy": "tsx scripts/measure-extraction-accuracy.ts",

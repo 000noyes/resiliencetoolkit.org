@@ -35,7 +35,7 @@ const PUBLIC_SW = join(ROOT, 'public/sw.js');
 
 let tmpRoot: string;
 
-function setupTmpProject(): string {
+function setupTmpProject(opts: { astroAssets?: string[] } = {}): string {
   tmpRoot = mkdtempSync(join(tmpdir(), 'sw-cache-version-test-'));
   const scriptsDir = join(tmpRoot, 'scripts');
   const distDir = join(tmpRoot, 'dist');
@@ -45,7 +45,22 @@ function setupTmpProject(): string {
   cpSync(PUBLIC_SW, join(distDir, 'sw.js'));
   // Need at least one index.html so PRECACHE_ASSETS isn't empty
   writeFileSync(join(distDir, 'index.html'), '<!doctype html><html></html>');
+  // Optionally seed built /_astro bundles so we can assert they are precached
+  // (the offline-durability fix — see scripts/generate-sw-precache.mjs).
+  if (opts.astroAssets?.length) {
+    mkdirSync(join(distDir, '_astro'), { recursive: true });
+    for (const name of opts.astroAssets) {
+      writeFileSync(join(distDir, '_astro', name), '/* built bundle */');
+    }
+  }
   return tmpRoot;
+}
+
+function extractPrecacheAssets(swContent: string): string[] {
+  const start = swContent.indexOf('// __PRECACHE_ASSETS_START__');
+  const end = swContent.indexOf('// __PRECACHE_ASSETS_END__');
+  if (start === -1 || end === -1) throw new Error('precache sentinels not found in sw.js');
+  return [...swContent.slice(start, end).matchAll(/'([^']+)'/g)].map((m) => m[1]);
 }
 
 function runGenerator(root: string): string {
@@ -90,5 +105,28 @@ describe('generate-sw-precache.mjs — D7-#2 PENDING assertion', () => {
     const out = readGeneratedSw(root);
     expect(out).not.toContain('v-build-PENDING');
     expect(out).toMatch(/const CACHE_VERSION = 'v-build-\d+';/);
+  });
+});
+
+describe('generate-sw-precache.mjs — offline durability: /_astro bundles precached', () => {
+  it('includes every built /_astro asset in PRECACHE_ASSETS', () => {
+    const root = setupTmpProject({
+      astroAssets: ['app.AbC123.css', 'Todo.XyZ789.js', 'outfit-400.D0e1.woff2'],
+    });
+    runGenerator(root);
+    const assets = extractPrecacheAssets(readGeneratedSw(root));
+    expect(assets).toContain('/_astro/app.AbC123.css');
+    expect(assets).toContain('/_astro/Todo.XyZ789.js');
+    expect(assets).toContain('/_astro/outfit-400.D0e1.woff2');
+  });
+
+  it('still precaches /_astro assets nested in subdirectories', () => {
+    const root = setupTmpProject();
+    // Seed a nested asset after setup to exercise the recursive walk.
+    mkdirSync(join(root, 'dist/_astro/fonts'), { recursive: true });
+    writeFileSync(join(root, 'dist/_astro/fonts/outfit.Ab12.woff2'), '/* font */');
+    runGenerator(root);
+    const assets = extractPrecacheAssets(readGeneratedSw(root));
+    expect(assets).toContain('/_astro/fonts/outfit.Ab12.woff2');
   });
 });
