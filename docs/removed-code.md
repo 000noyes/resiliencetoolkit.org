@@ -29,6 +29,17 @@ it is allowlisted in `knip.json`.
 | `src/design-system/blocks/index.ts` | Barrel with zero importers; Todo/SlotCollection are imported directly |
 | `src/lib/icons.ts` | Pre-MVP icon helper, superseded by lucide-react, zero importers |
 
+### Navigation orphan cluster (same sweep)
+
+Documented dead in TODOS; removed in buildable order per its recipe.
+
+| File | Why removed |
+|------|-------------|
+| `src/lib/navigation.ts` | `getModuleSections()` leftover from the dynamic-routing era; all sections now carry inline `sectionData`. Zero importers. |
+| `src/content/modules/baseline-resilience.yaml` | Parsed/validated at build but never read; only consumer was `navigation.ts`. |
+| `src/content/modules/emergency-preparedness.yaml` | Same — duplicate of the now-authoritative inline section data. |
+| `modules` collection in `src/content.config.ts` | Definition + zod schema removed (sourceSpecs collection retained — verify depends on it). |
+
 ### Evaluated, retained (not removed)
 
 - `src/components/PlanForm.tsx` — flagged by knip, but it is a verify-recognized
