@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/pages/**/*.{astro,ts,tsx}",
+    "scripts/**/*.{ts,mjs}",
+    "tests/**/*.{ts,tsx}",
+    "playwright.offline.config.ts"
+  ],
+  "project": ["src/**/*.{astro,ts,tsx}", "scripts/**/*.{ts,mjs}"],
+  "ignore": ["src/components/PlanForm.tsx"],
+  "ignoreUnresolved": ["/pagefind/pagefind.js"]
+}
