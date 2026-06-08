@@ -48,6 +48,22 @@ test('a cold precached route renders styled + interactive when opened offline', 
   await page.reload({ waitUntil: 'load' });
   await waitForServiceWorker(page);
 
+  // Anti-flake guard: the SW becomes active only after install's waitUntil
+  // (which includes the /_astro precache) settles, but assert the cache is
+  // actually populated before cutting the network so a slow-CI timing miss can
+  // never masquerade as the bug this test guards.
+  await page.waitForFunction(
+    async () => {
+      const names = await caches.keys();
+      if (!names.length) return false;
+      const cache = await caches.open(names[0]);
+      const keys = await cache.keys();
+      return keys.filter((r) => new URL(r.url).pathname.startsWith('/_astro/')).length > 20;
+    },
+    null,
+    { timeout: 15_000 },
+  );
+
   // 2) Start watching for any `/_astro/*` asset that fails to load. Set this up
   //    BEFORE going offline so we capture the cold-route subresource fetches.
   const astroFailures: string[] = [];
