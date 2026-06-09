@@ -1,6 +1,6 @@
 # Resilience Hub Toolkit
 
-When disasters hit, internet access goes first. Communities that prepared offline — who know their neighbors, have their supplies, have walked through the plans — do better. This toolkit gives community members a way to work through disaster preparedness together, on-device, without needing an internet connection after the first visit. All data stays on the device via IndexedDB. No accounts, no cloud sync, no server.
+When disasters hit, internet access goes first. Communities that prepared offline — who know their neighbors, have their supplies, have walked through the plans — do better. This toolkit gives community members a way to work through disaster preparedness together, on-device, without needing an internet connection after the first visit. All data stays on the device via IndexedDB. No accounts, no cloud sync, no server, no analytics, and no third-party trackers — nothing leaves the device.
 
 **Live site:** https://resiliencetoolkit.org
 **Hosting:** Cloudflare Pages (auto-deploys on push to main)
@@ -16,8 +16,14 @@ pnpm dev          # Dev server at localhost:4321
 pnpm build        # astro check && astro build (postbuild generates SW precache)
 pnpm preview      # Preview the build output
 pnpm vitest run   # Unit tests
-npx playwright test  # E2E tests (requires dev server running in another terminal)
+pnpm test:offline # Offline durability + privacy tests (builds dist/, serves via astro preview)
+npx playwright test  # E2E tests — needs a dev or preview server running in another terminal
 ```
+
+> The `npx playwright test` e2e suite expects a server you start yourself
+> (`pnpm dev` or `pnpm preview`) in a separate terminal. The offline suite
+> (`pnpm test:offline`) is self-contained: it builds `dist/` and serves it via
+> `astro preview` so it exercises the real, generated service worker.
 
 ---
 
@@ -37,16 +43,13 @@ src/
         index.astro
         2-1.astro through 2-3.astro
       knowing-your-community.astro
-  content/
-    modules/                # YAML metadata — section order, titles, slugs, phases
-  components/               # Astro + React UI components
-  design-system/blocks/     # Interactive blocks: Todo, EditableTable, InteractiveChecklist
+  components/               # Astro + React UI components (DataTable, ExternalLink, …)
+  design-system/blocks/     # Interactive blocks: Todo, SlotCollection
   layouts/
     BaseLayout.astro        # Global layout
     ModuleLayout.astro      # Module page layout (TOC sidebar + prev/next nav)
   lib/
     storage.ts              # IndexedDB wrapper (singleton)
-    navigation.ts           # Computes prev/next links from YAML metadata
   data/
     modules.ts              # Module list, phase filtering
   styles/base.css           # CSS variables (oklch color space, dark mode tokens)

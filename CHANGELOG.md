@@ -4,6 +4,19 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [Unreleased]
 
+### Fixed
+- Offline durability: the service worker now precaches the full built asset
+  manifest, so a precached-but-unvisited page opened offline renders fully
+  styled and interactive instead of unstyled. Service-worker cache matching now
+  ignores the `Vary` header so cross-origin-imported module bundles resolve
+  offline.
+
+### Removed
+- Third-party analytics and trackers (Umami + Cloudflare Web Analytics),
+  including their Content Security Policy entries. The site now makes zero
+  cross-origin requests — nothing leaves the device. Enforced by a
+  network-purity test in CI.
+
 ## [0.0.13.0] - 2026-05-25
 
 ### Changed

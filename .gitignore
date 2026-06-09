@@ -138,6 +138,11 @@ src/stories/
 .tmp/
 rt-templates/
 
+# Local tooling state — never part of the published repo
+.sources/
+.cline/
+.walk-archive/
+
 # Workspace docs ignored except for tracked metadata files.
 docs/*
 !docs/toolkit-inventory.yaml
