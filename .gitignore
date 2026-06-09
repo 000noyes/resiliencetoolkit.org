@@ -142,6 +142,7 @@ rt-templates/
 docs/*
 !docs/toolkit-inventory.yaml
 !docs/site-inventions-archive.yaml
+!docs/removed-code.md
 !docs/source-specs/
 
 # Local notes (not for version control)

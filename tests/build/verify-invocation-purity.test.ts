@@ -46,6 +46,7 @@ const EXPECTED_CI_STEP_ORDER: Array<{ kind: 'uses' | 'run'; match: string | RegE
   { kind: 'run', match: 'pnpm install --frozen-lockfile' },
   { kind: 'run', match: 'pnpm vitest run' },
   { kind: 'run', match: 'pnpm astro check' },
+  { kind: 'run', match: 'pnpm knip:files' },
   { kind: 'run', match: EXPECTED_CI_VERIFY_RUN },
 ];
 

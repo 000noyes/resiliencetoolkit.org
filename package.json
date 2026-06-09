@@ -14,7 +14,9 @@
     "verify": "tsx scripts/verify-against-source.ts",
     "measure-accuracy": "tsx scripts/measure-extraction-accuracy.ts",
     "scaffold-spec": "tsx scripts/scaffold-spec.ts",
-    "generate-icons": "node scripts/generate-icons.mjs"
+    "generate-icons": "node scripts/generate-icons.mjs",
+    "knip": "knip",
+    "knip:files": "knip --include files"
   },
   "pnpm": {
     "overrides": {
@@ -53,6 +55,7 @@
     "@vitest/coverage-v8": "^4.0.15",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^28.0.0",
+    "knip": "^6.16.1",
     "pagefind": "^1.4.0",
     "playwright": "^1.58.2",
     "sharp": "^0.34.5",
