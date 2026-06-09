@@ -27,7 +27,7 @@ Content lives in `.astro` files — no CMS required. The main places to localize
 | `src/pages/modules/knowing-your-community/` | Local directory links |
 | Any module section page | External links to local agencies and resources |
 
-Module section pages are in `src/pages/modules/`. Each is a self-contained `.astro` file with interactive `<Todo>` and `<EditableTable>` components. Edit the surrounding copy and links; the interactive components work without any changes.
+Module section pages are in `src/pages/modules/`. Each is a self-contained `.astro` file with interactive `<Todo>` and `<DataTable>` components. Edit the surrounding copy and links; the interactive components work without any changes.
 
 **3. Deploy to Cloudflare Pages**
 
