@@ -49,13 +49,26 @@ The build handles this automatically. `pnpm build` generates the correct `PRECAC
 
 1. Create a new `.astro` file in `src/pages/modules/<module-name>/` (e.g. `1-14.astro`). Copy an existing section file as a starting point.
 2. Add the new `moduleKey` to `src/data/modules.ts`.
-3. Add a section entry to the relevant `src/content/modules/*.yaml` file (controls section order, title, and slug).
+3. Set the section's `number`, `title`, and navigation via the inline `const sectionData` object at the top of the new `.astro` file (it is passed to `<ModuleLayout sectionData={sectionData}>`). Section metadata lives inline on each page, not in a separate data file.
 4. Run `pnpm build` — the service worker precache updates automatically.
 
 > [!WARNING]
 > **Never rename a `moduleKey`.** The `moduleKey` is part of the IndexedDB composite key (`${moduleKey}-${todoId}`) used to store every checkbox and table entry for that section. Renaming a key destroys all stored data for anyone who has used that section. Adding new keys is safe. Renaming or removing existing keys is not.
 >
 > The canonical set of moduleKeys is enforced by `src/lib/data-preservation.test.ts`. Any rename will fail this test.
+
+---
+
+## Versioning
+
+The authoritative release version lives in the `VERSION` file as a 4-part
+number (e.g. `0.0.13.0`). `package.json`'s `version` tracks only the 3-part head
+(`0.0.13`) for tooling compatibility — the 4th segment is managed in `VERSION`
+and `CHANGELOG.md`, not in `package.json`. Don't hand-edit `package.json` to add
+a 4th segment; bump `VERSION` and add a `CHANGELOG.md` entry instead.
+
+The package manager is pinned via `package.json`'s `packageManager` field
+(`pnpm@10.30.3`) so contributors get a deterministic toolchain.
 
 ---
 
