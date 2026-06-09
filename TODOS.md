@@ -6,6 +6,7 @@ Discovered during live preview review of https://feat-phase2-planform.resilience
 
 ### P0: Source-of-truth architecture — scrap rt-templates/, upgrade extractor to see link annotations
 **Priority:** P0
+**Update (foundation cleanup):** `rt-templates/` was evaluated for removal and **RETAINED for now** — no active source spec cites it today, but it is class-(b) source material and removing it is content-source-adjacent, not pure dead code. The scrap stays gated on the extractor upgrade below (so the workbook PDF can fully supersede it as the cited source). Tracked in `docs/removed-code.md` under "Evaluated, retained."
 **Description:** Earlier analysis claimed the master workbook PDF was also lossy (zero URI annotations). That was wrong — the detection used raw-bytes regex which can't decompress Adobe's FlateDecode streams. `pdftohtml -s` decompresses properly: the workbook has **258 hyperlinks, 41 unique Drive file IDs**. Corrected source hierarchy:
 
 | Source | Status | Hyperlinks |
@@ -124,16 +125,20 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Completed:** v0.0.6 (2026-04-05)
 **Status:** 8 components deleted outright, 5 moved to `src/design-system/_deferred/`. Zero remaining imports verified via grep.
 
-### Remove orphaned modules content collection
+### ~~Remove orphaned modules content collection~~ RESOLVED
 **Priority:** P3
-**Description:** `src/content/modules/{baseline-resilience,emergency-preparedness}.yaml`, the `modules` collection in `src/content.config.ts`, and `getModuleSections()` in `src/lib/navigation.ts` are zero-reference leftovers from the dynamic-routing era. All 16 section pages now carry their own inline `sectionData`, so the YAMLs are parsed and zod-validated at build time but never read. `navigation.ts` already documents this in a header comment ("getSectionNavigation removed — all sections are hardcoded"). Same metadata now lives in two places; only the inline copy is authoritative.
-**Fix:** In one commit, delete in this order to keep each intermediate state buildable: (1) `src/lib/navigation.ts` (only exports the unused helper), (2) the `modules` collection definition + its zod schema block in `src/content.config.ts` (leave `sourceSpecs`), (3) the two YAML files under `src/content/modules/`, (4) the `src/content/modules/` directory if empty. Run `pnpm astro check && pnpm build && pnpm vitest run` to confirm no regressions.
-**Depends on:** None
+**Status:** Resolved in the foundation orphan-archive pass — `src/lib/navigation.ts`, the `modules` content collection in `src/content.config.ts`, and the two `src/content/modules/*.yaml` files were removed (the `sourceSpecs` collection stays). Section metadata now lives only in the inline `sectionData` on each page. See `docs/removed-code.md`.
 
 ### Investigate ExternalLink abstraction
 **Priority:** P3
-**Description:** `ExternalLink.tsx` → `ExternalLinkModal.tsx` → `externalLinkPreferences.ts` — ~300 lines to show a "you're leaving this site" modal before opening external links. Used in 16 pages. Investigate why this abstraction was added before removing — there may be a deliberate reason (accessibility, community trust, hosted-in-contexts-without-internet). If no good reason, replace with plain `<a target="_blank" rel="noopener noreferrer">` and a CSS external-link icon.
-**Fix:** Audit usage, understand original intent, decide: keep (document why) or replace (simpler `<a>`).
+**Update (foundation cleanup):** Intent question answered — it is **live and load-bearing on 23 importers** (the site-wide "you're leaving this site" interstitial), so it was explicitly excluded from the orphan-archive pass. What remains is the *optional* simplification, which is now a separate, test-backed refactor — not dead-code removal.
+**Description:** `ExternalLink.tsx` → `ExternalLinkModal.tsx` → `externalLinkPreferences.ts` — ~300 lines to show a "you're leaving this site" modal before opening external links. If a future audit finds the modal/preferences complexity unwarranted, replace with plain `<a target="_blank" rel="noopener noreferrer">` and a CSS external-link icon — but only behind tests covering the existing modal behavior.
+**Depends on:** None
+
+### Dead-file detection: widen the knip gate beyond files
+**Priority:** P3
+**Description:** Orphaned **files** are now gated in CI via `knip` (`pnpm knip:files`, in the verify job) — that's the root-cause fix for files re-accumulating. The gate is intentionally **files-only**: unused exports and dependencies are not checked, because the source-fidelity verifier (`src/lib/verify/*`) exposes a large, deliberate internal API that a full-strength knip run would flag as "unused exports." Scope decision recorded in `docs/removed-code.md`.
+**Fix:** When time allows, audit the verifier's public surface, curate an intentional-export allowlist in `knip.json`, then widen the gate to `--include files,exports,dependencies`. `PlanForm.tsx` is currently allowlisted (it is a recognized content-component class scheduled for re-wiring); revisit when it lands.
 **Depends on:** None
 
 ## DataTable — UX Gaps
@@ -276,9 +281,10 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Fix:** Add a pagefind glob to the generator's asset collection, or add a separate pagefind precache step. Measure total chunk size first (may be 50-200KB for 17 pages). Test cache invalidation on reindex.
 **Depends on:** Pagefind restored (v0.0.8)
 
-### Search analytics via Umami events
+### ~~Search analytics via Umami events~~ WON'T DO
 **Priority:** P3
-**Description:** Add custom Umami event tracking to the homepage search handler. Fire an event on search submission (after debounce) with the query text. Shows what users search for, helping identify content gaps or confusing terminology. Umami is already loaded on every page via BaseLayout.astro.
+**Status:** Won't do — Umami was removed (privacy-first: nothing leaves the device). If search-gap insight is ever needed, it must be first-party / on-device, not a third-party tracker.
+**Description (historical):** Add custom Umami event tracking to the homepage search handler. Fire an event on search submission (after debounce) with the query text. Shows what users search for, helping identify content gaps or confusing terminology. Umami is already loaded on every page via BaseLayout.astro.
 **Fix:** Add ~5 lines to the search handler in `src/pages/index.astro`: `window.umami?.track('search', { query })` after the debounced search fires.
 **Depends on:** Pagefind restored (v0.0.8)
 
@@ -290,9 +296,10 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 
 ## Analytics & CSP
 
-### Umami client calls api-gateway.umami.dev but CSP only allows cloud.umami.is
+### ~~Umami client calls api-gateway.umami.dev but CSP only allows cloud.umami.is~~ RESOLVED
 **Priority:** P2
-**Description:** Surfaced in browser DevTools console on 2026-05-08. The Umami analytics client (`script.js`) is calling `https://api-gateway.umami.dev/api/send` for every event/pageview, but the site's Content Security Policy `connect-src` directive only permits `'self'` and `https://cloud.umami.is`. Every analytics request is blocked at the CSP layer:
+**Status:** Moot — Umami was removed entirely (all third-party trackers dropped); no analytics endpoints remain and the CSP no longer references `cloud.umami.is`. A network-purity CI test now asserts the site makes zero cross-origin requests.
+**Description (historical):** Surfaced in browser DevTools console on 2026-05-08. The Umami analytics client (`script.js`) is calling `https://api-gateway.umami.dev/api/send` for every event/pageview, but the site's Content Security Policy `connect-src` directive only permits `'self'` and `https://cloud.umami.is`. Every analytics request is blocked at the CSP layer:
 ```
 Connecting to 'https://api-gateway.umami.dev/api/send' violates the following Content Security Policy directive: "connect-src 'self' https://cloud.umami.is".
 Fetch API cannot load https://api-gateway.umami.dev/api/send. Refused to connect because it violates the document's Content Security Policy.
@@ -302,9 +309,10 @@ Net effect: zero pageview/event tracking is currently being captured. The "Searc
 **Fix:** Verify which endpoint Umami's hosted instance actually expects (could be a recent endpoint migration or a configuration mismatch). Then either (a) update CSP to allow `https://api-gateway.umami.dev` in `connect-src`, or (b) reconfigure the Umami client to point at the allowed `cloud.umami.is` endpoint, or (c) self-host Umami and point at our own domain. Check current CSP source in `astro.config.mjs` / `_headers` / wherever it's defined.
 **Depends on:** None — investigate first, then small CSP edit or client-config change.
 
-### Cloudflare Web Analytics beacon failing on DNS-blocked clients
+### ~~Cloudflare Web Analytics beacon failing on DNS-blocked clients~~ RESOLVED
 **Priority:** P2
-**Description:** Cloudflare Pages auto-injects a Cloudflare Web Analytics beacon (`static.cloudflareinsights.com/beacon.min.js/v{hash}`) on every page. On any client with network-level domain blocking (NextDNS, pi-hole, AdGuard DNS, Brave Shields, uBlock at network layer), the beacon fails with `net::ERR_NAME_NOT_RESOLVED`. Surfaced in console captures on 2026-05-08. Benign for site rendering but produces console noise on every load and double-counts analytics with Umami.
+**Status:** Resolved — Cloudflare Web Analytics was dropped along with Umami; its `static.cloudflareinsights.com` CSP entry is gone. No beacon is injected; the console noise and the privacy contradiction are both removed.
+**Description (historical):** Cloudflare Pages auto-injects a Cloudflare Web Analytics beacon (`static.cloudflareinsights.com/beacon.min.js/v{hash}`) on every page. On any client with network-level domain blocking (NextDNS, pi-hole, AdGuard DNS, Brave Shields, uBlock at network layer), the beacon fails with `net::ERR_NAME_NOT_RESOLVED`. Surfaced in console captures on 2026-05-08. Benign for site rendering but produces console noise on every load and double-counts analytics with Umami.
 
 The dormant `fix/csp-cloudflare-insights` branch on origin appears to have been started for this and never finished.
 
@@ -352,3 +360,11 @@ Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: {
 **Motivated trigger:** A future authoring pattern that uses computed tableIds (e.g. row-templating). Today all sites author literal string tableIds; the gap is latent until convention changes.
 
 **Depends on:** Nothing. Self-contained verifier refinement.
+
+## Privacy & Trust
+
+### Public privacy/trust statement (no accounts, no tracking, on-device)
+**Priority:** P2
+**Description:** With all third-party trackers removed, the "nothing leaves the device" promise is now true in code — but there is no user-facing statement that says so. For a privacy-first toolkit serving disaster-vulnerable communities, the trust promise is a differentiator and should be visible, not just implemented. Surface it as a short "no accounts, no tracking, your data never leaves your device" note — either a dedicated `/privacy` page or a homepage line.
+**Fix:** Add a concise on-device-privacy statement. Keep it plain-language and link it where new users land (homepage and/or footer). Likely pairs with any coalition-facing materials.
+**Depends on:** None (the technical claim is already true).
