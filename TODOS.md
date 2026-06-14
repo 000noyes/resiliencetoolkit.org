@@ -352,3 +352,13 @@ Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: {
 **Motivated trigger:** A future authoring pattern that uses computed tableIds (e.g. row-templating). Today all sites author literal string tableIds; the gap is latent until convention changes.
 
 **Depends on:** Nothing. Self-contained verifier refinement.
+
+### Backlink from module sections to the companion story site
+**Priority:** P3
+**Description:** A companion long-form narrative site (story.resiliencetoolkit.org) publishes first-person accounts of community flood preparedness, response, and recovery. The first piece links into specific toolkit module sections (1-9, 1-10, 1-11, 1-12, 1-13). The reverse link does not exist yet: a relevant module section could carry a small "read the story of someone who lived this" link out to the companion site, so a reader moving through a checklist can reach the lived narrative behind it. This closes the two-way connection between the reference content and the story.
+
+**Fix:** On its own branch/PR, add an outbound link (using the existing `ExternalLink` pattern, since it leaves the site) from one or two of the most relevant module sections to the companion essay. Keep it to sections that the essay actually references.
+
+**Governance note:** A "read the story" link is navigation chrome, not workbook content, so it does not have a workbook citation. Confirm with the Source Fidelity invariant (SCOPE.md) whether navigation/cross-site links are outside the content-fidelity firewall (they should be, like the header nav and footer), or whether they need an explicit carve-out before wiring. Resolve that classification before adding the link.
+
+**Depends on:** The companion essay being live first.
