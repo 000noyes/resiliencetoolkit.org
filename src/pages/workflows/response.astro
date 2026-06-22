@@ -1,0 +1,145 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+// DRAFT — "Responding to a flood" guided path. Wayfinding only; links into cited
+// pages. Step content traced to the coalition workflows running notes (response
+// workflow, day 1 to 2-3 weeks). No toolkit field content or kit checklists
+// restated here (those live on the cited module pages). No credentials.
+const stages = [
+  { id: 'day-one', label: 'Day one: in the event of a flood' },
+  { id: 'coordinate', label: 'Stand up coordination' },
+  { id: 'survey-hub', label: 'Survey and open the hub' },
+  { id: 'mucking', label: 'Run mucking days' },
+  { id: 'daily', label: 'Daily rhythm' },
+  { id: 'winding-down', label: 'As the response winds down' },
+];
+---
+
+<BaseLayout
+  title="Responding to a flood | Workflows | Resilience Hub Toolkit"
+  description="Responding to a flood, day one through the first weeks: a guided path through standing up coordination, opening the hub, and running mucking days, linked to the toolkit pages that hold the detail."
+>
+  <section class="py-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <nav class="text-body-small text-muted-foreground mb-6" aria-label="Breadcrumb">
+        <a href="/workflows" class="hover:text-primary underline underline-offset-2">Workflows</a>
+        <span aria-hidden="true"> / </span>
+        <span class="text-foreground">Responding to a flood</span>
+      </nav>
+
+      <h1 class="text-hero font-semibold mb-4 text-foreground">Responding to a flood</h1>
+      <p class="text-body-large text-muted-foreground leading-relaxed mb-3">
+        Day one through the first two to three weeks. A flood rarely moves in a
+        straight line, so these are the moves available from where you are, not a
+        script to follow in lockstep. Each step points into the toolkit page that
+        holds the detail.
+      </p>
+
+      <!-- Navigation video slot (coming later) -->
+      <div class="rounded-lg border border-dashed border-primary/40 bg-muted p-5 my-8">
+        <p class="text-label uppercase-accent text-primary mb-1">Walkthrough video, coming soon</p>
+        <p class="text-body-small text-muted-foreground">
+          A short video will walk through how to move through this response path. It
+          is not recorded yet.
+        </p>
+      </div>
+
+      <!-- On this page -->
+      <div class="rounded-lg border border-border bg-card p-5 mb-10 shadow-card">
+        <p class="text-label uppercase-accent text-secondary mb-3">On this page</p>
+        <ol class="space-y-1 text-body text-muted-foreground list-decimal pl-5">
+          {stages.map((s) => (
+            <li><a href={`#${s.id}`} class="hover:text-primary underline underline-offset-2">{s.label}</a></li>
+          ))}
+        </ol>
+      </div>
+
+      <!-- Stage 1 -->
+      <section id="day-one" class="mb-10 scroll-mt-24">
+        <h2 class="text-title font-semibold text-foreground mb-3 pb-2 border-b border-border">Day one: in the event of a flood</h2>
+        <ol class="space-y-3 list-decimal pl-5 text-body text-muted-foreground">
+          <li>Contact local administrators, your EMD, fire departments, and community contacts on the <a href="/modules/emergency-preparedness/1-9#leader-directory" class="text-primary underline underline-offset-2">Directory of Local Leaders</a>, and regional leaders if you have them.</li>
+          <li>Identify the areas hit hardest: survey damage, ask the fire chief or EMD, watch local groups where people post photos, and get out on foot or by car so you know where to send help.</li>
+          <li>Reach the other people involved in the response through the <a href="/modules/emergency-preparedness/1-9#neighbor-directory" class="text-primary underline underline-offset-2">Neighbor Directory</a> and the Directory of Local Leaders.</li>
+        </ol>
+      </section>
+
+      <!-- Stage 2 -->
+      <section id="coordinate" class="mb-10 scroll-mt-24">
+        <h2 class="text-title font-semibold text-foreground mb-3 pb-2 border-b border-border">Stand up coordination</h2>
+        <ol class="space-y-3 list-decimal pl-5 text-body text-muted-foreground">
+          <li>Start spreadsheets from your templates to track this event.</li>
+          <li>Coordinate volunteers to go door to door surveying needs, using Crisis Cleanup or damage assessment forms. See <a href="/modules/emergency-preparedness/1-10" class="text-primary underline underline-offset-2">Volunteer Management</a>.</li>
+          <li>Launch volunteer sign-ups for as long as the severity calls for, and post the link on Front Porch Forum, social media, and other local outlets.</li>
+          <li>Set up the volunteer waiver so people can sign it as they register.</li>
+        </ol>
+      </section>
+
+      <!-- Stage 3 -->
+      <section id="survey-hub" class="mb-10 scroll-mt-24">
+        <h2 class="text-title font-semibold text-foreground mb-3 pb-2 border-b border-border">Survey and open the hub</h2>
+        <ol class="space-y-3 list-decimal pl-5 text-body text-muted-foreground">
+          <li>Set up shifts to survey impacted areas, assess damage, and pump basements where needed.</li>
+          <li>If there is heavy mucking and gutting ahead, schedule volunteer sign-ups as far out as you can, often a couple of weeks.</li>
+          <li>Connect with the <a href="/modules/emergency-preparedness/1-9#leader-directory" class="text-primary underline underline-offset-2">Directory of Local Leaders</a> to reach the hub and the response kit and tools.</li>
+          <li>When it is safe, open the hub for volunteers, take inventory, and gather the tools you need. See <a href="/modules/emergency-preparedness/1-11" class="text-primary underline underline-offset-2">Flood Recovery Supplies and Work</a>.</li>
+        </ol>
+      </section>
+
+      <!-- Stage 4 -->
+      <section id="mucking" class="mb-10 scroll-mt-24">
+        <h2 class="text-title font-semibold text-foreground mb-3 pb-2 border-b border-border">Run mucking days</h2>
+        <ol class="space-y-3 list-decimal pl-5 text-body text-muted-foreground">
+          <li>Coordinate volunteers for mucking days, and identify team leads and volunteers with trucks to move pumps. See <a href="/modules/emergency-preparedness/1-10" class="text-primary underline underline-offset-2">Volunteer Management</a>.</li>
+          <li>Make situation sheets so each crew knows their site.</li>
+          <li>Make sure volunteers have the tools and waivers they need, and have had a safety briefing and muck-and-gut training. The kit, the how-to guides, and the training all live on <a href="/modules/emergency-preparedness/1-11" class="text-primary underline underline-offset-2">Flood Recovery Supplies and Work</a>.</li>
+        </ol>
+        <div class="rounded-lg border border-dashed border-primary/40 bg-muted p-4 mt-4">
+          <p class="text-label uppercase-accent text-primary mb-1">How to use the kit, video coming soon</p>
+          <p class="text-body-small text-muted-foreground">
+            A walkthrough of the response kit and pumps will go here. For now, the
+            written guides are on <a href="/modules/emergency-preparedness/1-11" class="text-primary underline underline-offset-2">Flood Recovery Supplies and Work</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Stage 5 -->
+      <section id="daily" class="mb-10 scroll-mt-24">
+        <h2 class="text-title font-semibold text-foreground mb-3 pb-2 border-b border-border">Daily rhythm</h2>
+        <ol class="space-y-3 list-decimal pl-5 text-body text-muted-foreground">
+          <li>Carpool to sites whenever you can.</li>
+          <li>Clean tools when they come back each day.</li>
+          <li>Take inventory of what returns, and file the paperwork.</li>
+          <li>Keep coordinating with the town manager, fire chief, and your identified contacts.</li>
+          <li>Share reports as they are requested.</li>
+        </ol>
+      </section>
+
+      <!-- Stage 6 -->
+      <section id="winding-down" class="mb-10 scroll-mt-24">
+        <h2 class="text-title font-semibold text-foreground mb-3 pb-2 border-b border-border">As the response winds down</h2>
+        <ol class="space-y-3 list-decimal pl-5 text-body text-muted-foreground">
+          <li>Clean everything.</li>
+          <li>Take a final inventory.</li>
+          <li>Send a report of what was completed to state agencies, local agencies, and long-term recovery groups.</li>
+        </ol>
+        <div class="rounded-lg border border-border bg-muted p-4 mt-4">
+          <p class="text-body text-muted-foreground">
+            Sending that report to long-term recovery groups is the handoff into the
+            next phase. See <a href="/workflows/recover" class="text-primary underline underline-offset-2">Recovering after</a>.
+          </p>
+        </div>
+      </section>
+
+      <nav class="flex items-center justify-between border-t border-border mt-6 pt-6 text-body-small" aria-label="Path navigation">
+        <a href="/workflows/before" class="text-muted-foreground hover:text-primary underline underline-offset-2">&larr; Before a flood</a>
+        <a href="/workflows/recover" class="text-primary font-medium underline underline-offset-2">Next: Recovering after &rarr;</a>
+      </nav>
+
+      <p class="text-body-small text-muted-foreground mt-8">
+        Shaped by the Resilience Hub Toolkit coalition, with RAFT VT, NEK Organizing,
+        and CROs.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

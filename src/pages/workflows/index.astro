@@ -1,0 +1,87 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+// DRAFT — Resilience Workflows landing (hub).
+// Wayfinding only: every link points into an existing, source-cited toolkit page.
+// No toolkit field content is restated here. See the workflows draft plan.
+const paths = [
+  {
+    href: '/workflows/before',
+    label: 'Before a flood',
+    accent: 'border-t-primary',
+    here: 'You want your community organized and ready before water rises.',
+    hint: 'Getting organized · 4 steps',
+  },
+  {
+    href: '/workflows/response',
+    label: 'Responding to a flood',
+    accent: 'border-t-primary',
+    here: 'A flood has hit and you are coordinating the response right now.',
+    hint: 'Day one through the first weeks · 6 stages',
+  },
+  {
+    href: '/workflows/recover',
+    label: 'Recovering after',
+    accent: 'border-t-secondary',
+    here: 'The water is gone and you are rebuilding capacity for next time.',
+    hint: 'Being shaped with the team',
+  },
+];
+---
+
+<BaseLayout
+  title="Workflows | Community Resilience Hub Toolkit"
+  description="A guided path through the toolkit, organized by where you are relative to a flood: before, responding, and recovering. Choose where you are."
+>
+  <section class="py-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <p class="text-label uppercase-accent text-primary mb-3">Draft for the team</p>
+      <h1 class="text-hero font-semibold mb-4 text-foreground">Resilience Workflows</h1>
+      <p class="text-body-large text-muted-foreground leading-relaxed mb-4">
+        These workflows connect the toolkit's trainings, tools, and pages into one
+        navigable system, organized by where you are relative to a flood. They are a
+        map of the pieces you already have, not new instructions. Choose where you are.
+      </p>
+      <p class="text-body text-muted-foreground">
+        This is an early draft we are shaping together. Some paths are still being
+        written. Tell us what is missing or what reads wrong.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-8">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="grid gap-5 md:grid-cols-3">
+        {paths.map((p) => (
+          <a
+            href={p.href}
+            class={`group block rounded-lg border border-border border-t-4 ${p.accent} bg-card p-6 shadow-card hover:shadow-raised transition-shadow`}
+          >
+            <h2 class="text-title font-semibold text-foreground mb-2">{p.label}</h2>
+            <p class="text-body text-muted-foreground mb-4">{p.here}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-body-small text-muted-foreground">{p.hint}</span>
+              <span class="text-primary font-medium group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-16">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="rounded-lg border border-border bg-muted p-5">
+        <p class="text-body text-muted-foreground">
+          These phases are a cycle, not a line. What a community learns recovering
+          from one flood becomes the capacity it carries into the next time it
+          prepares. Recovery feeds the next <a href="/workflows/before" class="text-primary underline underline-offset-2">before</a>.
+        </p>
+      </div>
+      <p class="text-body-small text-muted-foreground mt-6">
+        Shaped by the Resilience Hub Toolkit coalition, with RAFT VT, NEK Organizing,
+        and CROs.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

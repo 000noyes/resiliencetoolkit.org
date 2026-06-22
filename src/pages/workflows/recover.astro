@@ -1,0 +1,64 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+// DRAFT — "Recovering after" path. Intentionally a being-shaped placeholder: the
+// source has no recovery steps yet. Do not fabricate steps. Honest invitation +
+// cycle close back to "before".
+---
+
+<BaseLayout
+  title="Recovering after | Workflows | Resilience Hub Toolkit"
+  description="Recovering after a flood: the transition from response into long-term recovery. This path is being shaped with the team."
+>
+  <section class="py-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <nav class="text-body-small text-muted-foreground mb-6" aria-label="Breadcrumb">
+        <a href="/workflows" class="hover:text-primary underline underline-offset-2">Workflows</a>
+        <span aria-hidden="true"> / </span>
+        <span class="text-foreground">Recovering after</span>
+      </nav>
+
+      <h1 class="text-hero font-semibold mb-4 text-foreground">Recovering after</h1>
+      <p class="text-body-large text-muted-foreground leading-relaxed mb-8">
+        The transition from active response into long-term recovery: working with
+        long-term recovery groups, supporting households through the slow rebuild,
+        and holding what the community learned.
+      </p>
+
+      <!-- Being-shaped panel: intentional invitation, not an apology -->
+      <div class="rounded-lg border-t-4 border-t-secondary border border-border bg-card p-6 shadow-card">
+        <p class="text-label uppercase-accent text-secondary mb-2">Being shaped with the team</p>
+        <h2 class="text-title font-semibold text-foreground mb-3">This path is still being written</h2>
+        <p class="text-body text-muted-foreground mb-3">
+          The before and response paths grew out of work people had already done and
+          written down. The recovery path is the one we are shaping next, with the
+          people who have lived it.
+        </p>
+        <p class="text-body text-muted-foreground">
+          If you have carried a community through recovery and want to help shape
+          this path, we would love your input. This is a draft, and it is open.
+        </p>
+      </div>
+
+      <!-- Cycle close -->
+      <div class="rounded-lg border border-border bg-muted p-5 mt-8">
+        <p class="text-body text-muted-foreground">
+          Recovery is not the end of the line. What a community learns here, the
+          relationships, the directories, the trained volunteers, becomes the
+          capacity it carries into the next time it prepares. Recovery feeds the
+          next <a href="/workflows/before" class="text-primary underline underline-offset-2">before</a>.
+        </p>
+      </div>
+
+      <nav class="flex items-center justify-between border-t border-border mt-10 pt-6 text-body-small" aria-label="Path navigation">
+        <a href="/workflows/response" class="text-muted-foreground hover:text-primary underline underline-offset-2">&larr; Responding to a flood</a>
+        <a href="/workflows" class="text-primary font-medium underline underline-offset-2">All workflows</a>
+      </nav>
+
+      <p class="text-body-small text-muted-foreground mt-8">
+        Shaped by the Resilience Hub Toolkit coalition, with RAFT VT, NEK Organizing,
+        and CROs.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
