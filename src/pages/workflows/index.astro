@@ -1,84 +1,96 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
-// DRAFT — Resilience Workflows landing (hub).
-// Wayfinding only: every link points into an existing, source-cited toolkit page.
-// No toolkit field content is restated here. See the workflows draft plan.
-const paths = [
+// Resilience Workflows hub — a "phases of a flood" continuum chooser, mapped from
+// the FEMA disaster continuum onto the three toolkit workflows. Wayfinding only.
+// Timeframes are FEMA-derived; the During timeframe matches the response doc.
+const phases = [
   {
     href: '/workflows/before',
+    marker: 'Before',
     label: 'Before a flood',
+    time: 'Ongoing',
+    dot: 'bg-primary',
     accent: 'border-t-primary',
-    here: 'You want your community organized and ready before water rises.',
-    hint: 'Getting organized · 4 steps',
+    hero: true,
   },
   {
     href: '/workflows/response',
+    marker: 'During',
     label: 'Responding to a flood',
+    time: 'Day 1 to 2-3 weeks',
+    dot: 'bg-primary',
     accent: 'border-t-primary',
-    here: 'A flood has hit and you are coordinating the response right now.',
-    hint: 'Day one through the first weeks · 6 stages',
+    hero: false,
   },
   {
     href: '/workflows/recover',
+    marker: 'After',
     label: 'Recovering after',
+    time: 'Weeks to years',
+    dot: 'bg-secondary',
     accent: 'border-t-secondary',
-    here: 'The water is gone and you are rebuilding capacity for next time.',
-    hint: 'Being shaped with the team',
+    hero: false,
   },
 ];
 ---
 
 <BaseLayout
   title="Workflows | Community Resilience Hub Toolkit"
-  description="A guided path through the toolkit, organized by where you are relative to a flood: before, responding, and recovering. Choose where you are."
+  description="A guided path through the toolkit, organized by where you are relative to a flood: before, responding, and recovering."
 >
   <section class="py-12">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <p class="text-label uppercase-accent text-primary mb-3">Draft for the team</p>
-      <h1 class="text-hero font-semibold mb-4 text-foreground">Resilience Workflows</h1>
-      <p class="text-body-large text-muted-foreground leading-relaxed mb-4">
-        These workflows connect the toolkit's trainings, tools, and pages into one
-        navigable system, organized by where you are relative to a flood. They are a
-        map of the pieces you already have, not new instructions. Choose where you are.
+    <div class="container mx-auto px-4 max-w-5xl">
+      <p class="text-label uppercase-accent text-primary mb-3">Draft</p>
+      <h1 class="text-hero font-semibold mb-3 text-foreground">Resilience Workflows</h1>
+      <p class="text-body-large text-muted-foreground leading-relaxed">
+        Choose where you are relative to a flood.
       </p>
-      <p class="text-body text-muted-foreground">
-        This is an early draft we are shaping together. Some paths are still being
-        written. Tell us what is missing or what reads wrong.
-      </p>
-    </div>
-  </section>
-
-  <section class="pb-8">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <div class="grid gap-5 md:grid-cols-3">
-        {paths.map((p) => (
-          <a
-            href={p.href}
-            class={`group block rounded-lg border border-border border-t-4 ${p.accent} bg-card p-6 shadow-card hover:shadow-raised transition-shadow`}
-          >
-            <h2 class="text-title font-semibold text-foreground mb-2">{p.label}</h2>
-            <p class="text-body text-muted-foreground mb-4">{p.here}</p>
-            <div class="flex items-center justify-between">
-              <span class="text-body-small text-muted-foreground">{p.hint}</span>
-              <span class="text-primary font-medium group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
-            </div>
-          </a>
-        ))}
-      </div>
     </div>
   </section>
 
   <section class="pb-16">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <div class="rounded-lg border border-border bg-muted p-5">
-        <p class="text-body text-muted-foreground">
-          These phases are a cycle, not a line. What a community learns recovering
-          from one flood becomes the capacity it carries into the next time it
-          prepares. Recovery feeds the next <a href="/workflows/before" class="text-primary underline underline-offset-2">before</a>.
-        </p>
+    <div class="container mx-auto px-4 max-w-5xl">
+      <!-- Continuum rail (desktop only): time flows left to right, the flood is the pivot -->
+      <div class="hidden md:block mb-6" aria-hidden="true">
+        <!-- flood label sits above the line, at the Before / During boundary -->
+        <div class="relative h-4">
+          <span class="absolute left-1/3 -translate-x-1/2 text-label uppercase-accent text-muted-foreground whitespace-nowrap">Flood</span>
+        </div>
+        <!-- line + dots + flood tick + time arrow -->
+        <div class="relative h-4">
+          <div class="absolute top-1/2 left-0 right-2 -translate-y-1/2 h-0.5 bg-gradient-to-r from-primary to-secondary"></div>
+          <div class="absolute top-1/2 right-0 -translate-y-1/2 h-0 w-0 border-y-[5px] border-y-transparent border-l-[7px] border-l-secondary"></div>
+          <div class="absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 h-4 w-0.5 bg-foreground/40"></div>
+          <div class="grid h-full grid-cols-3 items-center gap-6">
+            {phases.map((p) => (
+              <div class="flex justify-center">
+                <span class={`relative z-10 h-4 w-4 rounded-full ring-4 ring-background ${p.dot}`}></span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <p class="text-body-small text-muted-foreground mt-6">
+
+      <!-- Phase cards -->
+      <div class="grid gap-6 md:grid-cols-3">
+        {phases.map((p) => (
+          <a
+            href={p.href}
+            class={`group block rounded-lg border border-border border-t-4 ${p.accent} bg-card p-6 shadow-card hover:shadow-raised transition-shadow ${p.hero ? 'ring-1 ring-primary/30' : ''}`}
+          >
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-label uppercase-accent text-muted-foreground">{p.marker}</span>
+              {p.hero && <span class="text-label uppercase-accent text-primary">Start here</span>}
+            </div>
+            <h2 class="text-title font-semibold text-foreground mb-1">{p.label}</h2>
+            <p class="text-body-small text-muted-foreground mb-5">{p.time}</p>
+            <span class="text-primary font-medium group-hover:translate-x-1 transition-transform inline-block" aria-hidden="true">&rarr;</span>
+          </a>
+        ))}
+      </div>
+
+      <p class="text-body-small text-muted-foreground mt-8">
         Shaped by the Resilience Hub Toolkit coalition, with RAFT VT, NEK Organizing,
         and CROs.
       </p>

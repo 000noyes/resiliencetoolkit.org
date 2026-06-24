@@ -1,14 +1,20 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
 
-// DRAFT — "Before a flood" guided path. Wayfinding only; links into cited pages.
-// Step content traced to the coalition workflows running notes (Path 1). No
-// toolkit field content restated.
+// DRAFT — "Before a flood" guided path. Wayfinding over the coalition's own
+// workflow. Step text is VERBATIM from the Workflows Running Notes (Path 1 +
+// the Alternative Workflow); links are wired as written in the source. No
+// toolkit field content is restated. No credentials.
+const SHEET_DIRECTORY = 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1691746306#gid=1691746306&range=A1';
+const EMD_CONTACT = 'https://vem.vermont.gov/programs/emd/contact';
+const ROLES_TOOL = 'https://drive.google.com/drive/folders/15k7TSPaSA0Ed3K9BOBkzSaNlFqkQlN_J';
+const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
 ---
 
 <BaseLayout
   title="Before a flood | Workflows | Resilience Hub Toolkit"
-  description="Getting organized before a flood: a guided path that helps your community build the roles, relationships, and contacts you will rely on when water rises."
+  description="Getting organized before a flood: the coalition's own workflow for building the roles, relationships, and contacts your community will rely on when water rises."
 >
   <section class="py-12">
     <div class="container mx-auto px-4 max-w-3xl">
@@ -19,11 +25,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </nav>
 
       <h1 class="text-hero font-semibold mb-4 text-foreground">Before a flood</h1>
-      <p class="text-body-large text-muted-foreground leading-relaxed mb-3">
-        Getting organized before a disaster. These are the moves that build the
-        roles, relationships, and contacts your community will lean on when water
-        rises. Start wherever fits where you already are.
-      </p>
 
       <!-- Navigation video slot (coming later) -->
       <div class="rounded-lg border border-dashed border-primary/40 bg-muted p-5 my-8">
@@ -33,66 +34,81 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         </p>
       </div>
 
-      <ol class="space-y-6 list-none">
+      <h2 class="text-title font-semibold text-foreground mb-4 pb-2 border-b border-border">
+        Getting organized before a disaster
+      </h2>
+      <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
+        <li>Gather a group of people together</li>
+        <li>Choose a structure that works for the group</li>
         <li>
-          <h2 class="text-subtitle font-semibold text-foreground mb-1">1. Gather a group of people together</h2>
-          <p class="text-body text-muted-foreground">
-            A handful of neighbors who are willing to organize is enough to begin.
-          </p>
-        </li>
-        <li>
-          <h2 class="text-subtitle font-semibold text-foreground mb-1">2. Choose a structure that works for your group</h2>
-          <p class="text-body text-muted-foreground">
-            Keep it as simple as the people you have can sustain.
-          </p>
-        </li>
-        <li>
-          <h2 class="text-subtitle font-semibold text-foreground mb-1">3. Decide on roles that fit the people you have</h2>
-          <p class="text-body text-muted-foreground mb-2">
-            Figure out what each person can reliably offer: volunteer coordination,
-            shelter support, animal care, child care, meals. Roles to consider:
-          </p>
-          <ul class="list-disc pl-6 space-y-1 text-body text-muted-foreground">
+          Decide on roles that will work for the group you have. Figure out what
+          everyone can reliably offer: volunteer coordination, shelter support,
+          animal care, child care, meals, etc. To figure out what you can do, use
+          <ExternalLink href={ROLES_TOOL}>this tool</ExternalLink>.
+          <p class="mt-2 mb-1">Some roles to consider:</p>
+          <ul class="list-disc pl-6 space-y-1">
             <li>Lead organizer</li>
-            <li>Volunteer coordinator</li>
+            <li>Volunteer Coordinator</li>
             <li>Data coordinator</li>
-            <li>Response / tool coordinator</li>
+            <li>Response/tool coordinator</li>
             <li>Outreach coordinator</li>
           </ul>
-          <div class="rounded-lg border border-dashed border-border bg-muted p-4 mt-3">
-            <p class="text-body-small text-muted-foreground">
-              <span class="text-foreground font-medium">Placeholder for the team:</span>
-              the running notes point to a tool that helps a group figure out roles.
-              We will link it here once the team confirms which one.
-            </p>
-          </div>
         </li>
         <li>
-          <h2 class="text-subtitle font-semibold text-foreground mb-1">4. Meet your Emergency Management Director (EMD)</h2>
-          <p class="text-body text-muted-foreground mb-2">
-            Find your EMD through your town clerk. Ask how they want to be reached on
-            day one of an emergency, and who else they want you to contact. Add their
-            contact to the
-            <a href="/modules/emergency-preparedness/1-9#leader-directory" class="text-primary underline underline-offset-2">Directory of Local Leaders</a>.
-          </p>
-          <div class="rounded-lg border border-dashed border-border bg-muted p-4 mt-3">
-            <p class="text-body-small text-muted-foreground">
-              <span class="text-foreground font-medium">Placeholder for the team:</span>
-              if your area needs a regional list rather than a local one, the team is
-              working out a shared regional template. Coming soon.
-            </p>
-          </div>
+          Schedule a meeting with your EMD. You can find your EMD
+          <ExternalLink href={EMD_CONTACT}>here</ExternalLink> or by calling your
+          town clerk.
+        </li>
+        <li>
+          Ask your EMD how they would like to be contacted on Day 1 of emergency
+          and/or who else they'd like you to contact. Add their contact to this
+          spreadsheet and share.
+          <ul class="list-disc pl-6 space-y-2 mt-2">
+            <li><a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a> <span class="text-body-small text-muted-foreground">(<ExternalLink href={SHEET_DIRECTORY}>open the live spreadsheet</ExternalLink>)</span></li>
+            <li>
+              If you're finding the need to have a regional list, rather than a
+              local list, add their contacts to the
+              <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>,
+              and add NEKO's regional spreadsheet as a template.
+              <div class="rounded-lg border border-dashed border-border bg-muted p-4 mt-2">
+                <p class="text-body-small text-muted-foreground">
+                  <span class="text-foreground font-medium">To confirm:</span>
+                  whether this regional spreadsheet template already exists.
+                </p>
+              </div>
+            </li>
+          </ul>
         </li>
       </ol>
 
-      <div class="rounded-lg border border-border bg-muted p-5 mt-10">
-        <p class="text-body text-muted-foreground">
-          This path is the digital companion to the in-person
-          <span class="text-foreground">muck-and-gut workshop</span>, which opens with
-          getting organized before a disaster. The workshop and these workflows are
-          built to fit together.
-        </p>
-      </div>
+      <h2 class="text-title font-semibold text-foreground mt-12 mb-4 pb-2 border-b border-border">
+        Or, start with your EMD
+      </h2>
+      <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
+        <li>
+          Schedule a meeting with your EMD. You can find your EMD
+          <ExternalLink href={EMD_CONTACT}>here</ExternalLink> or by calling your
+          town clerk.
+        </li>
+        <li>Tell them you are interested in supporting disaster efforts and ask what types of help they need.</li>
+        <li>
+          Community Organizing
+          <ul class="list-disc pl-6 space-y-1 mt-1">
+            <li>
+              Bring this list to your friends and neighbors and organize people to
+              fulfill tasks. Assess strengths/skills from who and what is available.
+              Collect people's contact info in the
+              <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>
+            </li>
+          </ul>
+        </li>
+        <li>Report back to your EMD what you can reliably offer.</li>
+        <li>
+          Ask your EMD how they would like to be contacted on Day 1 of emergency
+          and/or who else they'd like you to contact. Add their contact to the
+          <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>
+        </li>
+      </ol>
 
       <nav class="flex items-center justify-between border-t border-border mt-10 pt-6 text-body-small" aria-label="Path navigation">
         <a href="/workflows" class="text-muted-foreground hover:text-primary underline underline-offset-2">All workflows</a>
