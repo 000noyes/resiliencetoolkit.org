@@ -2,11 +2,11 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 
-// DRAFT — "Responding to a flood" guided path. Step text is VERBATIM from the
+// DRAFT: "Responding to a flood" guided path. Step text is VERBATIM from the
 // coalition Workflows Running Notes (Response workflow, Day 1 to 2-3 weeks);
 // links are wired as written in the source. Internal toolkit pages are plain
 // links; external/Drive/YouTube resources use ExternalLink. The shared SignUp
-// Genius LOGIN in the source is never rendered — the tool is named only.
+// Genius LOGIN in the source is never rendered; the tool is named only.
 const SHEET_DIRECTORY = 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=1691746306#gid=1691746306&range=A1';
 const SIGNUP_GENIUS = 'https://www.signupgenius.com/';
 const TRAINING = 'https://docs.google.com/spreadsheets/u/0/d/1wGL8dRUvuzBhJr3wQVdOE3eGHmT-lfxbpuH7wu-NqNQ/edit';
@@ -18,6 +18,7 @@ const YT_SUMP_1 = 'https://www.youtube.com/watch?v=ahviU2JVOTQ';
 const YT_SUMP_2 = 'https://www.youtube.com/watch?v=ZVYbg8bxY1w';
 const VOLUNTEER_MGMT_DRIVE = 'https://drive.google.com/drive/folders/1QGrMJ_mv5LSGZ4ECDOuuOs9OJtcOfZY3';
 const SHEET_TEMPLATES = 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=552434696#gid=552434696';
+const EVENT_TEMPLATE = 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/edit?gid=825618087#gid=825618087&range=A14:D14';
 const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
 ---
 
@@ -50,7 +51,7 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
         <li>Contact local administrators/EMD/fire departments/community contacts on <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a> <span class="text-body-small text-muted-foreground">(<ExternalLink href={SHEET_DIRECTORY}>open the live spreadsheet</ExternalLink>)</span> and/or regional leaders</li>
         <li>Identify areas of the community that were most severely impacted (surveying damage, asking fire chief/EMD, local facebook groups where people are posting photos of damage, get in car/on foot see the damage so when you start mucking and gutting you know where to send people)</li>
         <li>Contact other team members involved in response: 1.9 Neighbor Directory/<a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a></li>
-        <li>Create spreadsheets using templates for this event</li>
+        <li>Create spreadsheets using templates for this event, like <ExternalLink href={EVENT_TEMPLATE}>this one</ExternalLink></li>
         <li><a href="/modules/emergency-preparedness/1-10/" class="text-primary underline underline-offset-2">Coordinate Volunteers</a> to go door-to-door in communities to survey data using Crisis CleanUp and/or damage assessment forms. <a href="/modules/emergency-preparedness/1-10/" class="text-primary underline underline-offset-2">1.10 Volunteer Management</a></li>
         <li>
           Launch <ExternalLink href={SIGNUP_GENIUS}>sign-up genius</ExternalLink> for a few days or more, depending on severity
@@ -72,18 +73,39 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
         </li>
       </ol>
 
-      <!-- "How to use this kit" — verbatim resource list from the source -->
+      <!-- "How to use this kit": grouped resource list, verbatim from the source -->
       <div class="rounded-lg border border-border bg-card p-5 my-6 shadow-card">
         <p class="text-label uppercase-accent text-secondary mb-3">How to use this kit</p>
-        <ul class="space-y-2 text-body text-muted-foreground">
-          <li>Basic overview — <ExternalLink href={RESPONSE_KIT}>Response kit</ExternalLink></li>
-          <li><ExternalLink href={TOOLKIT_OVERVIEW}>Toolkit overview of this work</ExternalLink></li>
-          <li><ExternalLink href={YT_BASEMENT_CLEANUP}>How to Clean Up a Flooded Basement - YouTube</ExternalLink></li>
-          <li><ExternalLink href={TOOLKIT_OVERVIEW}>Field guide for cleanup of flooded homes</ExternalLink></li>
-          <li><ExternalLink href={TOOLKIT_OVERVIEW}>Pumping out basements</ExternalLink></li>
-          <li>Trash water pump — <ExternalLink href={YT_TRASH_PUMP}>How to Use a Gas Trash Pump - Sunbelt Rentals Workshop Series</ExternalLink></li>
-          <li>Sump pump — <ExternalLink href={YT_SUMP_1}>How to Pump Out a Flooded Basement #1, Water Removal, Water Pumping</ExternalLink>; <ExternalLink href={YT_SUMP_2}>How to Pump Out A Flooded Basement #2, Water Removal, Water Pumping - YouTube</ExternalLink></li>
-          <li>Mucking/Gutting guide — <ExternalLink href={TOOLKIT_OVERVIEW}>Mucking and Gutting guide</ExternalLink></li>
+        <ul class="space-y-3 text-body text-muted-foreground">
+          <li>
+            <span class="text-foreground font-medium">Basic overview</span>
+            <ul class="list-disc pl-6 space-y-1 mt-1">
+              <li><ExternalLink href={RESPONSE_KIT}>Response kit</ExternalLink></li>
+              <li><ExternalLink href={TOOLKIT_OVERVIEW}>Toolkit overview of this work</ExternalLink></li>
+              <li><ExternalLink href={YT_BASEMENT_CLEANUP}>How to Clean Up a Flooded Basement (YouTube)</ExternalLink></li>
+              <li><ExternalLink href={TOOLKIT_OVERVIEW}>Field guide for cleanup of flooded homes</ExternalLink></li>
+              <li><ExternalLink href={TOOLKIT_OVERVIEW}>Pumping out basements</ExternalLink></li>
+            </ul>
+          </li>
+          <li>
+            <span class="text-foreground font-medium">Trash water pump</span>
+            <ul class="list-disc pl-6 space-y-1 mt-1">
+              <li><ExternalLink href={YT_TRASH_PUMP}>How to Use a Gas Trash Pump (Sunbelt Rentals Workshop Series)</ExternalLink></li>
+            </ul>
+          </li>
+          <li>
+            <span class="text-foreground font-medium">Sump pump</span>
+            <ul class="list-disc pl-6 space-y-1 mt-1">
+              <li><ExternalLink href={YT_SUMP_1}>How to Pump Out a Flooded Basement #1, Water Removal, Water Pumping</ExternalLink></li>
+              <li><ExternalLink href={YT_SUMP_2}>How to Pump Out a Flooded Basement #2, Water Removal, Water Pumping</ExternalLink></li>
+            </ul>
+          </li>
+          <li>
+            <span class="text-foreground font-medium">Mucking / gutting guide</span>
+            <ul class="list-disc pl-6 space-y-1 mt-1">
+              <li><ExternalLink href={TOOLKIT_OVERVIEW}>Mucking and Gutting guide</ExternalLink></li>
+            </ul>
+          </li>
         </ul>
       </div>
 
@@ -117,6 +139,7 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
       <ul class="space-y-2 text-body text-muted-foreground mb-6">
         <li><ExternalLink href={TOOLKIT_OVERVIEW}>Community Resilience Toolkit</ExternalLink></li>
         <li><ExternalLink href={VOLUNTEER_MGMT_DRIVE}>Volunteer Management</ExternalLink></li>
+        <li><ExternalLink href={SIGNUP_GENIUS}>SignUp Genius</ExternalLink></li>
       </ul>
 
       <div class="rounded-lg border border-border bg-card p-5 shadow-card mb-6">
