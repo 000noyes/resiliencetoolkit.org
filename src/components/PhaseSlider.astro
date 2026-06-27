@@ -1,0 +1,214 @@
+---
+/**
+ * PhaseSlider — the before / during / after "phases of a flood" continuum chooser.
+ *
+ * Primary wayfinding entry into the toolkit. Zero client JS, static Astro, offline
+ * pure, mobile-first. The form is deliberately NOT a card grid with colored top
+ * borders: it is ONE orange->green gradient stroke with three differentiated nodes
+ * sitting on the line (Before filled, During the gradient midpoint, After an open
+ * ring that reads as honestly unfinished). Hierarchy comes from Outfit type, not
+ * chrome. Semantics: a navigation landmark over an ordered list, NOT an ARIA stepper.
+ *
+ * Color: orange = Before (--primary), green = After (--chart-1, the REAL green token;
+ * never --secondary, which is blue). During = the literal midpoint of the single
+ * stroke. All text stays in --foreground / --muted-foreground (the accents are
+ * brittle as text and flip light in dark mode); accents are reserved for the
+ * rail/nodes only. Internal links only — no ExternalLink on the chooser.
+ */
+import { phaseStops } from '@/data/phases';
+
+interface Props {
+  heading?: string;
+  class?: string;
+}
+const { heading, class: className } = Astro.props;
+---
+
+<nav aria-label="Phases of a flood" class:list={['phase-slider', className]}>
+  {heading && (
+    <h2 class="phase-slider__heading text-title font-semibold text-foreground">{heading}</h2>
+  )}
+
+  <ol class="phase-slider__rail">
+    {phaseStops.map((stop, i) => (
+      <>
+        <li class:list={['phase-slider__item', stop.incomplete && 'is-incomplete']}>
+          <a href={stop.href} class="phase-slider__link">
+            <span class:list={['phase-slider__node', `phase-slider__node--${stop.phase.toLowerCase()}`]} aria-hidden="true"></span>
+            <span class="phase-slider__body">
+              <span class="phase-slider__marker uppercase-accent">{stop.marker}</span>
+              <span class="phase-slider__name">{stop.name}</span>
+              <span class="phase-slider__time uppercase-accent">{stop.time}</span>
+              {stop.lead && <span class="phase-slider__lead uppercase-accent">{stop.lead}</span>}
+              {stop.incomplete && <span class="sr-only">in progress, help shape this path</span>}
+            </span>
+          </a>
+        </li>
+        {i === 0 && (
+          <li class="phase-slider__flood" aria-hidden="true">
+            <span class="phase-slider__flood-tick"></span>
+            <span class="phase-slider__flood-label uppercase-accent">Flood</span>
+          </li>
+        )}
+      </>
+    ))}
+  </ol>
+
+  <p class="phase-slider__resurgence text-body-small text-muted-foreground">
+    <span class="phase-slider__return" aria-hidden="true">&#8635;</span>
+    What a community recovers here makes the next <em>before</em> stronger.
+  </p>
+</nav>
+
+<style>
+  .phase-slider__heading { margin: 0 0 1.5rem; }
+
+  .phase-slider__rail {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* The continuous orange -> green stroke, behind the nodes. The transition lives
+     IN the line, so "During" is literally its midpoint: no third hue, no boxes. */
+  .phase-slider__rail::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, var(--primary), var(--chart-1));
+    z-index: 0;
+  }
+
+  .phase-slider__item {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+  }
+
+  .phase-slider__link {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    align-items: start;
+    column-gap: 12px;
+    min-height: 48px;
+    padding: 10px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Nodes sit ON the line, punched out by a background-colored ring (the halo is
+     the load-bearing graphical boundary, not the hue). */
+  .phase-slider__node {
+    grid-column: 1;
+    width: 16px;
+    height: 16px;
+    margin: 3px auto 0;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 4px var(--background);
+    transition: transform 120ms ease-out;
+  }
+  .phase-slider__node--before { background: var(--primary); }
+  .phase-slider__node--during { background: color-mix(in oklab, var(--primary), var(--chart-1)); }
+  .phase-slider__node--after {
+    background: var(--background);
+    border: 2px solid var(--chart-1); /* open ring: the node reads as not-yet-filled-in */
+  }
+
+  .phase-slider__body {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .phase-slider__marker { color: var(--muted-foreground); }
+  .phase-slider__name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.3;
+    color: var(--foreground);
+  }
+  .phase-slider__time { color: var(--muted-foreground); }
+  .phase-slider__lead { color: var(--primary); margin-top: 2px; } /* the only accent text */
+
+  .phase-slider__link:hover .phase-slider__node { transform: scale(1.12); }
+
+  /* Scoped neutral focus ring. A class+pseudo selector outscopes the global
+     `a:focus-visible` green --ring rule, which would vanish on the green end of
+     the gradient. Deliberate, documented deviation from the house ring. */
+  .phase-slider__link:focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* The "Flood" pivot: a calm neutral tick between Before and During (the disaster
+     is the transition, not a destination). Never orange/red — it must not read as
+     an alarm in a capacity-not-threat system. */
+  .phase-slider__flood {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0 4px 9px;
+  }
+  .phase-slider__flood-tick {
+    width: 14px;
+    height: 2px;
+    background: color-mix(in oklab, var(--foreground) 45%, transparent);
+  }
+  .phase-slider__flood-label { color: var(--muted-foreground); }
+
+  .phase-slider__resurgence { margin-top: 1.25rem; max-width: 44ch; }
+  .phase-slider__return { color: var(--chart-1); margin-right: 0.4rem; font-size: 1rem; }
+  .phase-slider__resurgence em { font-style: italic; }
+
+  /* DESKTOP: the spine becomes a horizontal rail. Only orientation changes; DOM
+     order stays Before -> During -> After (reading order = announced order). */
+  @media (min-width: 768px) {
+    .phase-slider__rail {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .phase-slider__rail::before {
+      left: 8px;
+      right: 8px;
+      top: 7px;
+      bottom: auto;
+      width: auto;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--chart-1));
+    }
+    .phase-slider__link {
+      grid-template-columns: 1fr;
+      row-gap: 10px;
+      padding: 0;
+      text-align: center;
+    }
+    .phase-slider__node { grid-column: 1; margin: 0 auto 8px; }
+    .phase-slider__body { grid-column: 1; align-items: center; }
+    .phase-slider__name { font-size: 1.25rem; }
+    .phase-slider__flood {
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+      align-self: flex-start;
+    }
+    .phase-slider__flood-tick { width: 2px; height: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phase-slider__node { transition: none; }
+    .phase-slider__link:hover .phase-slider__node { transform: none; }
+  }
+</style>
