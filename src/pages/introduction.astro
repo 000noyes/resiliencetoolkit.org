@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
+import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
 ---
 
 <BaseLayout title="Introduction | Resilience Hub Toolkit" description="Understanding what this toolkit is for, how to use it, and what resilience means for your community.">
@@ -71,16 +72,7 @@ import ExternalLink from '@/components/ExternalLink.astro';
         <p>There are different sections of this toolkit that correspond to the different phases of recovery. The <strong>Baseline</strong> sections of this toolkit are intended for use in the <strong>Preparedness</strong> phase. The <strong>Emergency</strong> sections of this toolkit are relevant for <strong>Preparedness, Short-term Recovery, and Intermediate Recovery</strong> phase after acute disaster. For support with Long-term Recovery see the map of Long Term Recovery Groups, which cover most of our state.</p>
       </section>
 
-      <figure class="my-2">
-        <img
-          src="/images/fema-disaster-recovery-continuum.png"
-          alt="FEMA Disaster Recovery Continuum showing phases from preparedness through long-term recovery"
-          class="w-full max-w-3xl mx-auto my-6"
-        />
-        <figcaption class="text-sm text-text-secondary mb-4 text-center">
-          Phases of Disaster graphic from <ExternalLink href="https://www.fema.gov/sites/default/files/graphics/pg164-recovery-continuum-chart-NDRF-timeline-png.png">FEMA</ExternalLink>.
-        </figcaption>
-      </figure>
+      <RecoveryContinuum class="my-6" />
 
       <section>
         <h2 class="text-title font-semibold mb-4">What's beyond resilience?</h2>

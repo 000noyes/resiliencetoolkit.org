@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import PhaseSlider from '@/components/PhaseSlider.astro';
+import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
 
-// Resilience Workflows hub: the before/during/after "phases of a flood" continuum
-// chooser is the page's primary content, rendered by PhaseSlider (one gradient
-// stroke with three nodes, not a card grid). Wayfinding only; the chooser carries
-// routes + phases + timeframes, never destination Drive URLs.
+// Resilience Workflows hub: the recreated FEMA Disaster Recovery Continuum is the
+// page's primary wayfinding, rendered by RecoveryContinuum (one gradient curve
+// with five phases, three recovery columns, and a parallel table). Wayfinding
+// only; nodes carry routes + phases + timeframes, never destination Drive URLs.
 ---
 
 <BaseLayout
@@ -23,8 +23,8 @@ import PhaseSlider from '@/components/PhaseSlider.astro';
   </section>
 
   <section class="pb-16">
-    <div class="container mx-auto px-4 max-w-3xl">
-      <PhaseSlider />
+    <div class="container mx-auto px-4 max-w-5xl">
+      <RecoveryContinuum />
     </div>
   </section>
 </BaseLayout>
