@@ -67,6 +67,12 @@ export const recoveryPhases: RecoveryPhase[] = [
     href: '/workflows/before',
     lead: 'Start here',
     linkLabel: 'Preparedness, ongoing: start with the before a flood workflows',
+    activities: [
+      { text: 'Pre-disaster recovery planning', source: NDRF },
+      { text: 'Mitigation planning and implementation', source: NDRF },
+      { text: 'Community capacity and resilience building', source: NDRF },
+      { text: 'Disaster preparedness exercises and partnership building', source: NDRF },
+    ],
   },
   {
     id: 'disaster',
@@ -85,9 +91,9 @@ export const recoveryPhases: RecoveryPhase[] = [
     href: '/workflows/response',
     linkLabel: 'Short-term recovery, days: go to the responding workflows',
     activities: [
-      { text: 'Mass care and emergency sheltering', source: NDRF, moduleHref: '/modules/emergency-preparedness' },
+      { text: 'Mass care and emergency sheltering', source: NDRF },
       { text: 'Clearing primary routes and removing debris', source: NDRF },
-      { text: 'Emergency medical care', source: NDRF, moduleHref: '/modules/emergency-preparedness' },
+      { text: 'Emergency medical care', source: NDRF },
       { text: 'Rapid damage and risk assessment', source: NDRF },
     ],
   },
@@ -103,7 +109,7 @@ export const recoveryPhases: RecoveryPhase[] = [
       { text: 'Interim housing', source: NDRF },
       { text: 'Debris removal and infrastructure repair planning', source: NDRF },
       { text: 'Reopening businesses and essential services', source: NDRF },
-      { text: 'Build back stronger information and guidance', source: NDRF, moduleHref: '/modules/baseline-resilience' },
+      { text: 'Build back stronger information and guidance', source: NDRF },
     ],
   },
   {
@@ -119,13 +125,12 @@ export const recoveryPhases: RecoveryPhase[] = [
     href: '/map',
     external: true,
     incomplete: true,
-    lead: 'Help shape this path',
     linkLabel: 'Long-term recovery, months to years: find your Long Term Recovery Group',
     activities: [
       { text: 'Permanent housing', source: NDRF },
       { text: 'Rebuilding infrastructure for future needs', source: NDRF },
       { text: 'Economic revitalization', source: NDRF },
-      { text: 'Comprehensive hazard mitigation', source: NDRF, moduleHref: '/modules/baseline-resilience' },
+      { text: 'Comprehensive hazard mitigation', source: NDRF },
     ],
   },
 ];

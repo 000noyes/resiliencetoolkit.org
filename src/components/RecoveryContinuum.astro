@@ -1,186 +1,77 @@
 ---
 /**
- * RecoveryContinuum — the five-phase FEMA Disaster Recovery Continuum, recreated
- * as accessible, on-brand toolkit wayfinding. Replaces the 3-stop PhaseSlider on
- * /workflows and the contamination-derived PNG on /introduction.
+ * RecoveryContinuum — the FEMA Disaster Recovery Continuum as toolkit wayfinding.
  *
- * A11y model (follows PhaseSlider's proven patterns): the curve is a DECORATIVE
- * inline SVG (aria-hidden) so it carries no meaning on its own; the five phases
- * are SEMANTIC HTML, a navigation landmark over an ordered list of links, and a
- * VISIBLE parallel table is the full text alternative. You cannot have focusable
- * <a> nodes inside an SVG marked role="img" (it hides descendants from AT), so the
- * SVG stays decorative and the links + labels + table carry all meaning.
+ * Uses FEMA's own official Recovery Continuum graphic (a US government work, public
+ * domain), self-hosted for offline use and attributed with a link out to the
+ * National Disaster Recovery Framework. Below the graphic, our own toolkit-mapped
+ * phases: each phase links to the matching workflow, and its recovery activities
+ * cross-walk to toolkit modules where one genuinely matches. The graphic carries
+ * the shape of recovery; the list carries the wayfinding and doubles as the text
+ * alternative to the image. Zero client JS beyond the site's standard external-link
+ * affordance; offline pure.
  *
- * Color comes from nodeStyle + position, never an imported class map: orange
- * --primary, real green --chart-1/--ring, transitioning IN a single gradient
- * stroke (adjacent orange|green solid bands are 1.62:1 and fail 1.4.11). All text
- * stays in --foreground / --muted-foreground (accent-as-text is the bare 4.50:1
- * floor, banned). Zero client JS, offline pure, reduced-motion guarded.
- *
- * Responsive: desktop draws the curve with the nodes positioned on it and the
- * three recovery columns aligned beneath; mobile (<=768px) swaps to a vertical
- * time-spine with each recovery phase's activities stacked under its node (never a
- * shrinking SVG). The two activity renderings are display-swapped by media query,
- * so AT only ever sees one.
+ * Replaces the 3-stop PhaseSlider on /workflows and the wrong contamination PNG on
+ * /introduction. Phase data + invariants live in src/data/recovery-continuum.ts.
  */
 import { recoveryPhases } from '@/data/recovery-continuum';
+import ExternalLink from '@/components/ExternalLink.astro';
 
 interface Props {
   class?: string;
 }
 const { class: className } = Astro.props;
 
-// Presentation-only coordinates for each node on the decorative curve (percent of
-// the chart box). Kept here, NOT in the data file, because they are layout, not
-// content. They match the SVG path's geometry below.
-const coords: Record<string, { x: number; y: number }> = {
-  preparedness: { x: 10, y: 78 },
-  disaster: { x: 24, y: 41 },
-  'short-term': { x: 44, y: 58 },
-  intermediate: { x: 64, y: 27 },
-  'long-term': { x: 87, y: 50 },
-};
+const NDRF_URL = 'https://www.fema.gov/emergency-managers/national-preparedness/frameworks/recovery';
 
-const recoveryColumns = recoveryPhases.filter((p) => p.activities && p.activities.length > 0);
+// The Disaster is the pivot drawn in the graphic, not a wayfinding destination.
+const phases = recoveryPhases.filter((p) => !p.pivot);
 ---
 
-<section class:list={['continuum', className]} aria-labelledby="continuum-intro">
-  <p id="continuum-intro" class="continuum__intro text-body-small text-muted-foreground">
-    This curve traces the phases of recovery, from ongoing preparedness through the
-    long tail of rebuilding. Each recovery phase links to the matching toolkit
-    workflows, and the activities below name the work it involves. The same phases,
-    timeframes, and destinations are listed in the table at the end.
-  </p>
+<section class:list={['continuum', className]}>
+  <div class="continuum__inner">
+    <figure class="continuum__figure">
+      <img
+        class="continuum__img"
+        src="/images/fema-recovery-continuum.png"
+        width="800"
+        height="329"
+        alt="The FEMA Recovery Continuum. Preparedness is ongoing before a disaster. After the disaster, recovery unfolds in overlapping phases that grow in size and scope: short-term over days, intermediate over weeks to months, and long-term over months to years."
+      />
+      <figcaption class="continuum__cite text-body-small text-muted-foreground">
+        Recovery Continuum from FEMA's <ExternalLink href={NDRF_URL}>National Disaster Recovery Framework</ExternalLink>.
+      </figcaption>
+    </figure>
 
-  <div class="continuum__chart">
-    <svg
-      class="continuum__curve"
-      viewBox="0 0 1000 300"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <defs>
-        <linearGradient id="continuum-gradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="var(--primary)"></stop>
-          <stop offset="100%" stop-color="var(--chart-1)"></stop>
-        </linearGradient>
-      </defs>
-      <path
-        d="M0,235 L200,235 L245,120 L290,235 C340,235 380,200 440,175 C520,140 560,95 640,80 C710,68 760,180 800,215 C835,238 855,175 870,150 C915,110 960,108 1000,95"
-        fill="none"
-        stroke="url(#continuum-gradient)"
-        stroke-width="3"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        vector-effect="non-scaling-stroke"
-      ></path>
-    </svg>
-
-    <nav aria-label="Phases of recovery" class="continuum__nav">
-      <ol class="continuum__nodes">
+    <nav aria-label="Phases of recovery">
+      <ol class="continuum__columns">
         {
-          recoveryPhases.map((phase) => {
-            const c = coords[phase.id] ?? { x: 50, y: 50 };
-            const pos = `--x:${c.x}%; --y:${c.y}%;`;
-            if (phase.pivot) {
-              return (
-                <li class="continuum__pivot" aria-hidden="true" style={pos}>
-                  <span class="continuum__pivot-tick" />
-                  <span class="continuum__pivot-label uppercase-accent">Flood</span>
-                </li>
-              );
-            }
-            return (
-              <li class:list={['continuum__lane', phase.incomplete && 'is-incomplete']} style={pos}>
-                <a href={phase.href} class="continuum__node-link" aria-label={phase.linkLabel}>
-                  <span
-                    class:list={['continuum__node', `continuum__node--${phase.nodeStyle}`]}
-                    aria-hidden="true"
-                  />
-                  <span class="continuum__node-body">
-                    <span class="continuum__node-label">{phase.label}</span>
-                    <span class="continuum__node-time uppercase-accent">{phase.timeframe}</span>
-                    {phase.lead && <span class="continuum__node-lead uppercase-accent">{phase.lead}</span>}
-                  </span>
-                </a>
-                {phase.activities && (
-                  <ul class="continuum__activities continuum__activities--inline" aria-label={`${phase.label} recovery activities`}>
-                    {phase.activities.map((a) => (
-                      <li class="continuum__activity">
-                        {a.moduleHref ? (
-                          <a href={a.moduleHref} class="continuum__activity-link">{a.text}</a>
-                        ) : (
-                          <span>{a.text}</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            );
-          })
+          phases.map((phase) => (
+            <li class:list={['continuum__col', `continuum__col--${phase.id}`, phase.incomplete && 'is-incomplete']}>
+              <a href={phase.href} class="continuum__col-link" aria-label={phase.linkLabel}>
+                <span class="continuum__col-name">{phase.label}</span>
+                <span class="continuum__col-time uppercase-accent">{phase.timeframe}</span>
+                {phase.lead && <span class="continuum__col-lead uppercase-accent">{phase.lead}</span>}
+              </a>
+              {phase.activities && (
+                <ul class="continuum__acts" aria-label={`${phase.label} recovery activities`}>
+                  {phase.activities.map((a) => (
+                    <li class="continuum__act">
+                      {a.moduleHref ? (
+                        <a href={a.moduleHref} class="continuum__act-link">{a.text}</a>
+                      ) : (
+                        <span>{a.text}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
         }
       </ol>
     </nav>
   </div>
-
-  <div class="continuum__columns">
-    {
-      recoveryColumns.map((phase) => (
-        <div class="continuum__column" style={`--x:${coords[phase.id]?.x ?? 50}%;`}>
-          <span class="continuum__connector" aria-hidden="true" />
-          <p class="continuum__column-title uppercase-accent">{phase.label}</p>
-          <p class="continuum__column-time text-body-small text-muted-foreground">{phase.timeframe}</p>
-          <ul class="continuum__activities" aria-label={`${phase.label} recovery activities, ${phase.timeframe}`}>
-            {phase.activities!.map((a) => (
-              <li class="continuum__activity">
-                {a.moduleHref ? (
-                  <a href={a.moduleHref} class="continuum__activity-link">{a.text}</a>
-                ) : (
-                  <span>{a.text}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
-    }
-  </div>
-
-  <p class="continuum__resurgence text-body-small text-muted-foreground">
-    <span class="continuum__return" aria-hidden="true">&#8635;</span>
-    What a community recovers here makes the next <em>before</em> stronger.
-  </p>
-
-  <table class="continuum__table">
-    <caption class="continuum__table-caption text-body-small text-muted-foreground">
-      The phases of recovery, as text: each phase, its timeframe, and where it takes you.
-    </caption>
-    <thead>
-      <tr>
-        <th scope="col">Phase</th>
-        <th scope="col">When</th>
-        <th scope="col">Where it takes you</th>
-      </tr>
-    </thead>
-    <tbody>
-      {
-        recoveryPhases.map((phase) => (
-          <tr>
-            <th scope="row">{phase.label}</th>
-            <td>{phase.timeframe}</td>
-            <td>{phase.where}</td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
-
-  <p class="continuum__citation text-body-small text-muted-foreground">
-    Phases and activities adapted from the FEMA National Disaster Recovery
-    Framework, Recovery Continuum (Figure 1).
-  </p>
 </section>
 
 <style>
@@ -188,342 +79,119 @@ const recoveryColumns = recoveryPhases.filter((p) => p.activities && p.activitie
     display: block;
   }
 
-  .continuum__intro {
-    margin: 0 0 1.5rem;
-    max-width: 62ch;
-    line-height: 1.6;
+  /* Image and columns share ONE 800px box so the columns line up under the
+     graphic's phases at any width (both are percentages of the same inner box). */
+  .continuum__inner {
+    max-width: 800px;
+    margin: 0 auto;
   }
 
-  /* ----------------------------------------------------------------------
-     MOBILE-FIRST: a vertical time-spine. Each phase is a row; recovery
-     phases carry their activities inline beneath the node. The decorative
-     SVG curve is hidden here (never a shrinking SVG); the spine is a single
-     orange -> green gradient line behind the nodes.
-     ---------------------------------------------------------------------- */
-  .continuum__curve {
-    display: none;
+  /* ---- the official FEMA graphic ---- */
+  .continuum__figure {
+    margin: 0 0 0.5rem;
+  }
+  .continuum__img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .continuum__cite {
+    margin-top: 0.75rem;
+    text-align: center;
   }
 
-  .continuum__nodes {
-    position: relative;
+  /* ---- MOBILE-FIRST: the four phases stack as a calm vertical reference ---- */
+  .continuum__columns {
     list-style: none;
-    margin: 0;
+    margin: 1.5rem 0 0;
     padding: 0;
-    display: flex;
+  }
+  .continuum__col {
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .continuum__col:first-child {
+    border-top: none;
+    padding-top: 0.5rem;
+  }
+
+  /* the phase name is the wayfinding link; timeframe + lead stack beneath it */
+  .continuum__col-link {
+    display: inline-flex;
     flex-direction: column;
-  }
-
-  /* The spine: a continuous orange -> green stroke behind the nodes. */
-  .continuum__nodes::before {
-    content: '';
-    position: absolute;
-    left: 11px;
-    top: 14px;
-    bottom: 14px;
-    width: 3px;
-    border-radius: 3px;
-    background: linear-gradient(to bottom, var(--primary), var(--chart-1));
-    z-index: 0;
-  }
-
-  .continuum__lane {
-    position: relative;
-    z-index: 1;
-  }
-
-  .continuum__node-link {
-    display: grid;
-    grid-template-columns: 24px 1fr;
-    align-items: start;
-    column-gap: 14px;
-    min-height: 48px;
-    padding: 10px 0;
+    gap: 0.15rem;
     text-decoration: none;
     color: inherit;
   }
-
-  /* Nodes sit ON the spine, punched out by a background-colored halo so the
-     graphical boundary is the halo, not the hue alone (1.4.1 / 1.4.11). */
-  .continuum__node {
-    grid-column: 1;
-    width: 16px;
-    height: 16px;
-    margin: 4px auto 0;
-    border-radius: 9999px;
-    box-shadow: 0 0 0 4px var(--background);
-    transition: transform 120ms ease-out;
-  }
-  .continuum__node--filled {
-    background: var(--primary);
-  }
-  .continuum__node--mix {
-    background: color-mix(in oklab, var(--primary) 70%, var(--chart-1));
-  }
-  .continuum__node--midpoint {
-    background: color-mix(in oklab, var(--primary), var(--chart-1));
-  }
-  .continuum__node--open {
-    /* the open ring: reads as honestly not-yet-filled-in (the LTRG path) */
-    background: var(--background);
-    border: 2px solid var(--chart-1);
-  }
-
-  .continuum__node-body {
-    grid-column: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .continuum__node-label {
+  .continuum__col-name {
     font-weight: 600;
-    font-size: 1.125rem;
+    font-size: 1.15rem;
     line-height: 1.3;
     color: var(--foreground);
   }
-  .continuum__node-time {
+  .continuum__col-link:hover .continuum__col-name {
+    color: var(--primary);
+  }
+  .continuum__col-time {
     color: var(--muted-foreground);
   }
-  .continuum__node-lead {
+  .continuum__col-lead {
     color: var(--primary);
-    margin-top: 2px;
   }
 
-  .continuum__node-link:hover .continuum__node {
-    transform: scale(1.12);
-  }
-
-  /* Scoped neutral focus ring. A class + pseudo selector outscopes the global
-     a:focus-visible green --ring rule, which would vanish on the green end of the
-     curve. Documented deviation from the house ring (matches PhaseSlider). */
-  .continuum__node-link:focus-visible,
-  .continuum__activity-link:focus-visible {
+  /* scoped neutral focus ring (outscopes the global green a:focus-visible) */
+  .continuum__col-link:focus-visible,
+  .continuum__act-link:focus-visible {
     outline: 2px solid var(--foreground);
     outline-offset: 3px;
     border-radius: 4px;
   }
 
-  /* The "Flood" pivot tick: a calm neutral mark between Preparedness and the
-     recovery phases (the disaster is the transition, not a destination). Never
-     orange/red so it cannot read as an alarm in a capacity-not-threat system. */
-  .continuum__pivot {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 0 4px 4px;
-  }
-  .continuum__pivot-tick {
-    width: 14px;
-    height: 2px;
-    background: color-mix(in oklab, var(--foreground) 45%, transparent);
-  }
-  .continuum__pivot-label {
-    color: var(--muted-foreground);
-  }
-
-  /* Inline activities (mobile): a calm left-aligned list under each node. */
-  .continuum__activities {
+  /* activities: left-aligned calm prose, only on the recovery phases */
+  .continuum__acts {
     list-style: none;
-    margin: 0;
+    margin: 0.9rem 0 0;
     padding: 0;
+    max-width: 60ch;
   }
-  .continuum__activities--inline {
-    margin: 0 0 0.5rem 38px;
-    padding-left: 1rem;
-    border-left: 1px solid var(--border);
-  }
-  .continuum__activity {
+  .continuum__act {
+    color: var(--muted-foreground);
     font-size: 0.95rem;
     line-height: 1.5;
-    color: var(--muted-foreground);
-    padding: 3px 0;
+    padding: 0.25rem 0;
   }
-  .continuum__activity-link {
+  .continuum__act-link {
     color: var(--foreground);
     text-decoration: underline;
     text-underline-offset: 2px;
     text-decoration-thickness: 1px;
   }
 
-  /* The desktop columns are hidden on mobile (activities show inline instead),
-     so AT only ever encounters one activity rendering. */
-  .continuum__columns {
-    display: none;
-  }
-
-  .continuum__resurgence {
-    margin: 1.5rem 0 0;
-    max-width: 46ch;
-  }
-  .continuum__return {
-    color: var(--chart-1);
-    margin-right: 0.4rem;
-    font-size: 1rem;
-  }
-  .continuum__resurgence em {
-    font-style: italic;
-  }
-
-  /* Parallel data table: the full text alternative for the decorative curve.
-     Borders organize, they do not frame; no colored fills or headers. */
-  .continuum__table {
-    width: 100%;
-    margin: 2rem 0 0.75rem;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
-  .continuum__table-caption {
-    text-align: left;
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
-  }
-  .continuum__table th,
-  .continuum__table td {
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-    color: var(--foreground);
-  }
-  .continuum__table thead th {
-    font-weight: 600;
-    color: var(--muted-foreground);
-    border-bottom: 2px solid var(--border);
-  }
-  .continuum__table tbody th {
-    font-weight: 600;
-  }
-
-  .continuum__citation {
-    margin: 0;
-    max-width: 62ch;
-    line-height: 1.5;
-  }
-
-  /* ----------------------------------------------------------------------
-     DESKTOP (>=768px): the curve is drawn, the nodes are positioned on it,
-     and the three recovery columns sit beneath, aligned under their nodes by
-     a connector. The inline activities are hidden; the columns show.
-     ---------------------------------------------------------------------- */
+  /* ---- DESKTOP: four columns aligned UNDER the graphic's phases ----
+     Track widths follow the measured phase regions of the 800px image:
+     Preparedness 0-21%, Short-term 21-43%, Intermediate 43-68%, Long-term 68-100%
+     (the Disaster bar at ~18% sits inside the Preparedness track, no column). */
   @media (min-width: 768px) {
-    .continuum__chart {
-      position: relative;
-      height: 340px;
-      margin-top: 0.5rem;
-    }
-    .continuum__curve {
-      display: block;
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .continuum__nodes {
-      position: absolute;
-      inset: 0;
-      display: block;
-    }
-    /* the spine line is the SVG curve on desktop, not the CSS gradient bar */
-    .continuum__nodes::before {
-      display: none;
-    }
-
-    .continuum__lane {
-      position: absolute;
-      left: var(--x);
-      top: var(--y);
-      transform: translate(-50%, -8px);
-      width: 16%;
-      min-width: 9rem;
-    }
-
-    .continuum__node-link {
-      grid-template-columns: 1fr;
-      row-gap: 8px;
-      padding: 0;
-      text-align: center;
-      min-height: 0;
-    }
-    .continuum__node {
-      grid-column: 1;
-      margin: 0 auto;
-    }
-    .continuum__node-body {
-      grid-column: 1;
-      align-items: center;
-    }
-
-    /* hide the mobile inline activities; the aligned columns carry them now */
-    .continuum__activities--inline {
-      display: none;
-    }
-
-    .continuum__pivot {
-      position: absolute;
-      left: var(--x);
-      top: var(--y);
-      transform: translate(-50%, -50%);
-      flex-direction: column;
-      gap: 6px;
-      padding: 0;
-    }
-    .continuum__pivot-tick {
-      width: 2px;
-      height: 16px;
-    }
-
-    /* The three recovery columns, aligned under their nodes. A spacer keeps the
-       first column under Short-term; --x on each column nudges it toward its
-       node so the connector reads as a tether from the curve. */
     .continuum__columns {
       display: grid;
-      grid-template-columns: 30% repeat(3, 1fr);
-      column-gap: 1.5rem;
-      margin-top: 0.5rem;
+      grid-template-columns: 21% 22% 25% 32%;
+      margin-top: 0.75rem;
+      align-items: start;
     }
-    .continuum__column {
-      grid-row: 1;
+    .continuum__col {
+      padding: 0.75rem 1.25rem 0 0;
+      border-top: 2px solid var(--border);
     }
-    .continuum__column:nth-of-type(1) {
-      grid-column: 2;
+    .continuum__col:first-child {
+      border-top: 2px solid var(--border);
+      padding-top: 0.75rem;
     }
-    .continuum__column:nth-of-type(2) {
-      grid-column: 3;
+    .continuum__acts {
+      margin-top: 0.75rem;
+      max-width: none;
     }
-    .continuum__column:nth-of-type(3) {
-      grid-column: 4;
-    }
-    /* a thin vertical connector tethering each column up toward its curve node */
-    .continuum__connector {
-      display: block;
-      width: 2px;
-      height: 24px;
-      margin: 0 auto 0.75rem;
-      background: color-mix(in oklab, var(--foreground) 25%, transparent);
-    }
-    .continuum__column-title {
-      margin: 0 0 0.15rem;
-      color: var(--muted-foreground);
-      text-align: center;
-    }
-    .continuum__column-time {
-      margin: 0 0 0.6rem;
-      text-align: center;
-    }
-    .continuum__activities {
-      max-width: 22ch;
-      margin: 0 auto;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .continuum__node {
-      transition: none;
-    }
-    .continuum__node-link:hover .continuum__node {
-      transform: none;
+    .continuum__act {
+      font-size: 0.9rem;
     }
   }
 </style>
