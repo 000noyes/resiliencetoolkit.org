@@ -25,7 +25,7 @@ function BetaBannerInner() {
       <div className="container mx-auto px-4 py-3">
         <div className="relative flex items-center justify-center">
           <p className="text-sm text-foreground text-center pr-8">
-            Your feedback shapes this site —{' '}
+            Contact us for support —{' '}
             <a
               href="mailto:resiliencetoolkit@gocros.org"
               className="text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline"
