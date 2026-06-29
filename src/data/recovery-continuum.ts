@@ -112,7 +112,11 @@ export const recoveryPhases: RecoveryPhase[] = [
     timeframe: 'Months to years',
     where: 'Long Term Recovery Groups',
     nodeStyle: 'open',
-    href: 'https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0',
+    // The open ring leaves the /workflows wayfinding for the toolkit's town
+    // directory map, which finds the Long Term Recovery Group for a town. Marked
+    // `external` to the continuum (not a /workflows phase page); rewire to
+    // beta.resiliencetoolkit.org when Spawned Initiative #5 builds.
+    href: '/map',
     external: true,
     incomplete: true,
     lead: 'Help shape this path',

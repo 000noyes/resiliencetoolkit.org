@@ -43,6 +43,17 @@ describe('recovery continuum data', () => {
     expect(external?.incomplete).toBe(true);
   });
 
+  it('points the external node at a resolvable destination', () => {
+    const external = recoveryPhases.find((p) => p.external);
+    expect(external?.href).toBeTruthy();
+    // An off-site URL is taken on faith; a same-site path must resolve to a page.
+    if (external!.href!.startsWith('/')) {
+      expect(routeFileExists(external!.href!), `${external!.href} should resolve to a page`).toBe(true);
+    } else {
+      expect(/^https?:\/\//.test(external!.href!)).toBe(true);
+    }
+  });
+
   it('has exactly one Disaster pivot that is neither a link nor a content node', () => {
     const pivots = recoveryPhases.filter((p) => p.pivot);
     expect(pivots).toHaveLength(1);
