@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
+import PhaseSlider from '@/components/PhaseSlider.astro';
 
-// Resilience Workflows hub: the FEMA Disaster Recovery Continuum is the page's
-// primary wayfinding, rendered by RecoveryContinuum (FEMA's official continuum
-// graphic with the phases mapped to toolkit workflows in columns beneath it).
-// Wayfinding only; nodes carry routes + phases + timeframes, never Drive URLs.
+// Resilience Workflows hub: the before / during / after continuum is the page's
+// primary wayfinding, rendered by PhaseSlider as three phase cards on one
+// orange-to-green rail. Wayfinding only; each card carries a route + phase +
+// timeframe, never a Drive URL.
 ---
 
 <BaseLayout
@@ -24,7 +24,7 @@ import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
 
   <section class="pb-16">
     <div class="container mx-auto px-4 max-w-5xl">
-      <RecoveryContinuum />
+      <PhaseSlider />
     </div>
   </section>
 </BaseLayout>
