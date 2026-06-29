@@ -34,25 +34,40 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
         </p>
       </div>
 
-      <h2 class="text-title font-semibold text-foreground mb-4 pb-2 border-b border-border">
+      <h2 class="text-title font-semibold text-foreground mb-1">
         Getting organized before a disaster
       </h2>
+      <p class="text-body-large text-muted-foreground mb-4 pb-2 border-b border-border">
+        Connect volunteers to your Local Emergency Management Director or EMD
+      </p>
       <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
-        <li>Gather a group of people together</li>
-        <li>Choose a structure that works for the group</li>
         <li>
-          Decide on roles that will work for the group you have. Figure out what
-          everyone can reliably offer: volunteer coordination, shelter support,
-          animal care, child care, meals, etc. To figure out what you can do, use
-          <ExternalLink href={ROLES_TOOL}>this tool</ExternalLink>.
-          <p class="mt-2 mb-1">Some roles to consider:</p>
-          <ul class="list-disc pl-6 space-y-1">
-            <li>Lead organizer</li>
-            <li>Volunteer Coordinator</li>
-            <li>Data coordinator</li>
-            <li>Response/tool coordinator</li>
-            <li>Outreach coordinator</li>
-          </ul>
+          Gather a group of people together
+          <ol class="space-y-4 list-[lower-alpha] pl-6 mt-3">
+            <li>
+              Choose a structure that works for the group
+              <ol class="space-y-3 list-decimal pl-6 mt-3">
+                <li>
+                  Decide on roles that will work for the group you have. Figure out
+                  what everyone can reliably offer: volunteer coordination, shelter
+                  support, animal care, child care, meals, etc. To figure out what
+                  you can do, use <ExternalLink href={ROLES_TOOL}>this tool</ExternalLink>.
+                  As you organize, make sure to include
+                  <a href="/modules/emergency-preparedness/1-8/" class="text-primary underline underline-offset-2">folks with specific needs</a>.
+                </li>
+                <li>
+                  Some roles to consider:
+                  <ul class="list-disc pl-6 space-y-1 mt-1">
+                    <li>Lead organizer</li>
+                    <li>Volunteer Coordinator</li>
+                    <li>Data coordinator</li>
+                    <li>Response/tool coordinator</li>
+                    <li>Outreach coordinator</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+          </ol>
         </li>
         <li>
           Schedule a meeting with your EMD. You can find your EMD
@@ -67,7 +82,8 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
             <li><a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a> <span class="text-body-small text-muted-foreground">(<ExternalLink href={SHEET_DIRECTORY}>open the live spreadsheet</ExternalLink>)</span></li>
             <li>
               If you're finding the need to have a regional list, rather than a
-              local list, add their contacts to the
+              local list, and to coordinate across municipalities, add their
+              contacts to the
               <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>,
               and add NEKO's regional spreadsheet as a template.
               <div class="rounded-lg border border-dashed border-border bg-muted p-4 mt-2">
@@ -82,7 +98,7 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
       </ol>
 
       <h2 class="text-title font-semibold text-foreground mt-12 mb-4 pb-2 border-b border-border">
-        Or, start with your EMD
+        Alternative workflow
       </h2>
       <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
         <li>
@@ -90,7 +106,20 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
           <ExternalLink href={EMD_CONTACT}>here</ExternalLink> or by calling your
           town clerk.
         </li>
-        <li>Tell them you are interested in supporting disaster efforts and ask what types of help they need.</li>
+        <li>
+          Meet with your EMD
+          <ol class="space-y-3 list-[lower-alpha] pl-6 mt-3">
+            <li>
+              Tell them you are committed to supporting disaster efforts and ask
+              what types of help they need. If you commit to performing a task, be
+              sure you can reliably follow through.
+            </li>
+            <li>
+              Ask if there are existing Zone Captains in your community or
+              neighborhood. If so, get their contact information and reach out.
+            </li>
+          </ol>
+        </li>
         <li>
           Community Organizing
           <ul class="list-disc pl-6 space-y-1 mt-1">
