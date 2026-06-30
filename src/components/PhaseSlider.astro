@@ -60,11 +60,6 @@ const { heading, class: className } = Astro.props;
       </>
     ))}
   </ol>
-
-  <p class="phase-cards__resurgence text-body-small text-muted-foreground">
-    <span class="phase-cards__return" aria-hidden="true">&#8635;</span>
-    What a community recovers here makes the next <em>before</em> stronger.
-  </p>
 </nav>
 
 <style>
@@ -184,10 +179,6 @@ const { heading, class: className } = Astro.props;
     background: color-mix(in oklab, var(--foreground) 45%, transparent);
   }
   .phase-cards__flood-label { color: var(--muted-foreground); }
-
-  .phase-cards__resurgence { margin-top: 1.5rem; max-width: 46ch; }
-  .phase-cards__return { color: var(--chart-1); margin-right: 0.4rem; font-size: 1rem; }
-  .phase-cards__resurgence em { font-style: italic; }
 
   /* DESKTOP: the rail becomes a horizontal stroke; the three equal-height cards
      sit beneath their nodes. DOM order stays Before -> During -> After. */
