@@ -1,0 +1,232 @@
+---
+/**
+ * PhaseSlider — the before / during / after continuum, rendered as cards.
+ *
+ * Primary wayfinding into the toolkit. Zero client JS, static Astro, offline pure,
+ * mobile-first. Meghan (CROs) asked for cards, so each phase is a card — but the
+ * banned "one colored edge" highlight is deliberately avoided. Color lives ONLY in
+ * the connecting rail and the node sitting on it, never on a card border: every card
+ * carries a uniform neutral border, and the orange->green continuum reads through the
+ * rail, not the card chrome.
+ *
+ * Continuum semantics: ONE orange->green stroke with three nodes — Before filled
+ * (--primary), During the gradient midpoint, After an open ring (--chart-1) that
+ * reads as honestly unfinished. Orange = the work of preparing now; green = the
+ * resilience it builds toward (--chart-1, the REAL green token; never --secondary,
+ * which is blue). The "Flood" pivot is a calm neutral tick between Before and During:
+ * the disaster is the transition, not a destination, and never an alarm color in a
+ * capacity-not-threat system. All card text stays --foreground / --muted-foreground;
+ * accents are reserved for the rail/nodes. Internal links only.
+ *
+ * Layout: a vertical rail-and-card timeline on mobile (rail + node at the left, the
+ * card to its right), flipping to a horizontal rail with the three equal-height cards
+ * beneath their nodes on desktop. A navigation landmark over an ordered list.
+ */
+import { phaseStops } from '@/data/phases';
+
+interface Props {
+  heading?: string;
+  class?: string;
+}
+const { heading, class: className } = Astro.props;
+---
+
+<nav aria-label="Phases of a flood" class:list={['phase-cards', className]}>
+  {heading && (
+    <h2 class="phase-cards__heading text-title font-semibold text-foreground">{heading}</h2>
+  )}
+
+  <ol class="phase-cards__rail">
+    {phaseStops.map((stop, i) => (
+      <>
+        <li class:list={['phase-cards__item', stop.incomplete && 'is-incomplete']}>
+          <a href={stop.href} class="phase-cards__link">
+            <span class:list={['phase-cards__node', `phase-cards__node--${stop.phase.toLowerCase()}`]} aria-hidden="true"></span>
+            <span class="phase-cards__card">
+              <span class="phase-cards__marker text-uppercase-accent">{stop.marker}</span>
+              <span class="phase-cards__name">{stop.name}</span>
+              <span class="phase-cards__time text-uppercase-accent">{stop.time}</span>
+              {stop.lead && <span class="phase-cards__lead text-uppercase-accent">{stop.lead}</span>}
+              {stop.incomplete && <span class="sr-only">in progress, help shape this path</span>}
+            </span>
+          </a>
+        </li>
+        {i === 0 && (
+          <li class="phase-cards__flood" aria-hidden="true">
+            <span class="phase-cards__flood-tick"></span>
+            <span class="phase-cards__flood-label text-uppercase-accent">Flood</span>
+          </li>
+        )}
+      </>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .phase-cards__heading { margin: 0 0 1.5rem; }
+
+  /* MOBILE-FIRST: a vertical timeline. The gradient rail and its nodes sit in a
+     narrow left column; each phase card sits to the right of its node. */
+  .phase-cards__rail {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* The continuous orange -> green stroke down the left, behind the nodes. The
+     transition lives IN the line, so "During" is its midpoint: no third hue, and
+     no colored edge on any card. */
+  .phase-cards__rail::before {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 20px;
+    bottom: 20px;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, var(--primary), var(--chart-1));
+    z-index: 0;
+  }
+
+  .phase-cards__item {
+    position: relative;
+    z-index: 1;
+  }
+
+  .phase-cards__link {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    column-gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Nodes sit ON the rail, punched out by a background-colored halo so the rail
+     reads as passing through them. */
+  .phase-cards__node {
+    grid-column: 1;
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 4px var(--background);
+    transition: transform 120ms ease-out;
+  }
+  .phase-cards__node--before { background: var(--primary); }
+  .phase-cards__node--during { background: color-mix(in oklab, var(--primary), var(--chart-1)); }
+  .phase-cards__node--after {
+    background: var(--background);
+    border: 2px solid var(--chart-1); /* open ring: not-yet-filled-in */
+  }
+
+  /* The card: uniform neutral chrome. NO colored top/edge border (the banned
+     one-edge highlight) — color is carried by the node + rail only. */
+  .phase-cards__card {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 1.1rem 1.25rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 120ms ease-out, transform 120ms ease-out;
+  }
+  .phase-cards__marker { color: var(--muted-foreground); }
+  .phase-cards__name {
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    color: var(--foreground);
+  }
+  .phase-cards__time { color: var(--muted-foreground); margin-top: 0.1rem; }
+  .phase-cards__lead { color: var(--primary); margin-top: 0.35rem; } /* the only accent text */
+
+  .phase-cards__link:hover .phase-cards__card {
+    box-shadow: var(--shadow-raised);
+    transform: translateY(-2px);
+  }
+  .phase-cards__link:hover .phase-cards__name { color: var(--primary); }
+  .phase-cards__link:hover .phase-cards__node { transform: scale(1.12); }
+
+  /* Scoped neutral focus ring. Outscopes the global green a:focus-visible --ring
+     rule, which would vanish on the green end of the gradient. */
+  .phase-cards__link:focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 3px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* The "Flood" pivot: a calm neutral tick between Before and During. Never
+     orange/red — it must not read as an alarm in a capacity-not-threat system. */
+  .phase-cards__flood {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-left: 6px;
+  }
+  .phase-cards__flood-tick {
+    width: 14px;
+    height: 2px;
+    background: color-mix(in oklab, var(--foreground) 45%, transparent);
+  }
+  .phase-cards__flood-label { color: var(--muted-foreground); }
+
+  /* DESKTOP: the rail becomes a horizontal stroke; the three equal-height cards
+     sit beneath their nodes. DOM order stays Before -> During -> After. */
+  @media (min-width: 768px) {
+    .phase-cards__rail {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 1rem;
+    }
+    .phase-cards__rail::before {
+      left: 8px;
+      right: 8px;
+      top: 7px;
+      bottom: auto;
+      width: auto;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--chart-1));
+    }
+    .phase-cards__item {
+      flex: 1 1 0;
+      display: flex;
+    }
+    .phase-cards__link {
+      width: 100%;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      row-gap: 1rem;
+      align-items: stretch;
+    }
+    .phase-cards__node { grid-column: 1; margin: 0 auto; }
+    .phase-cards__card { grid-column: 1; height: 100%; }
+
+    /* the flood pivot: a thin vertical tick on the top rail between the Before and
+       During cards */
+    .phase-cards__flood {
+      flex: 0 0 auto;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding-left: 0;
+      align-self: flex-start;
+    }
+    .phase-cards__flood-tick { width: 2px; height: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phase-cards__node, .phase-cards__card { transition: none; }
+    .phase-cards__link:hover .phase-cards__node { transform: none; }
+    .phase-cards__link:hover .phase-cards__card { transform: none; }
+  }
+</style>

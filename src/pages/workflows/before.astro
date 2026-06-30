@@ -1,0 +1,134 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ExternalLink from '@/components/ExternalLink.astro';
+
+// "Before a flood" guided path. Wayfinding over the coalition's own
+// workflow. Step text is VERBATIM from the Workflows Running Notes (Path 1 +
+// the Alternative Workflow); links are wired as written in the source. No
+// toolkit field content is restated. No credentials.
+const SHEET_DIRECTORY = 'https://docs.google.com/spreadsheets/d/1sJ-inMiVKj5SWsCukg_IimgWcA4oQLVWkbg6lAxcI3E/preview?gid=1691746306';
+const EMD_CONTACT = 'https://vem.vermont.gov/programs/emd/contact';
+const ROLES_TOOL = 'https://drive.google.com/drive/folders/15k7TSPaSA0Ed3K9BOBkzSaNlFqkQlN_J';
+const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
+---
+
+<BaseLayout
+  title="Before a flood | Workflows | Resilience Hub Toolkit"
+  description="Getting organized before a flood: the coalition's own workflow for building the roles, relationships, and contacts your community will rely on when water rises."
+>
+  <section class="py-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <nav class="text-body-small text-muted-foreground mb-6" aria-label="Breadcrumb">
+        <a href="/workflows" class="hover:text-primary underline underline-offset-2">Workflows</a>
+        <span aria-hidden="true"> / </span>
+        <span class="text-foreground">Before a flood</span>
+      </nav>
+
+      <h1 class="text-hero font-semibold mb-4 text-foreground">Before a flood</h1>
+
+      <h2 class="text-title font-semibold text-foreground mb-1">
+        Getting organized before a disaster
+      </h2>
+      <p class="text-body-large text-muted-foreground mb-4 pb-2 border-b border-border">
+        Connect volunteers to your Local Emergency Management Director or EMD
+      </p>
+      <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
+        <li>
+          Gather a group of people together
+          <ol class="space-y-4 list-[lower-alpha] pl-6 mt-3">
+            <li>
+              Choose a structure that works for the group
+              <ol class="space-y-3 list-decimal pl-6 mt-3">
+                <li>
+                  Decide on roles that will work for the group you have. Figure out
+                  what everyone can reliably offer: volunteer coordination, shelter
+                  support, animal care, child care, meals, etc. To figure out what
+                  you can do, use <ExternalLink href={ROLES_TOOL}>this tool</ExternalLink>.
+                  As you organize, make sure to include
+                  <a href="/modules/emergency-preparedness/1-8" class="text-primary underline underline-offset-2">folks with specific needs</a>.
+                </li>
+                <li>
+                  Some roles to consider:
+                  <ul class="list-disc pl-6 space-y-1 mt-1">
+                    <li>Lead organizer</li>
+                    <li>Volunteer Coordinator</li>
+                    <li>Data coordinator</li>
+                    <li>Response/tool coordinator</li>
+                    <li>Outreach coordinator</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Schedule a meeting with your EMD. You can find your EMD
+          <ExternalLink href={EMD_CONTACT}>here</ExternalLink> or by calling your
+          town clerk.
+        </li>
+        <li>
+          Ask your EMD how they would like to be contacted on Day 1 of emergency
+          and/or who else they'd like you to contact. Add their contact to this
+          spreadsheet and share.
+          <ul class="list-disc pl-6 space-y-2 mt-2">
+            <li><a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a> <span class="text-body-small text-muted-foreground">(<ExternalLink href={SHEET_DIRECTORY}>open the live spreadsheet</ExternalLink>)</span></li>
+            <li>
+              If you're finding the need to have a regional list, rather than a
+              local list, and to coordinate across municipalities, add their
+              contacts to the
+              <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>,
+              and add NEKO's regional spreadsheet as a template.
+            </li>
+          </ul>
+        </li>
+      </ol>
+
+      <h2 class="text-title font-semibold text-foreground mt-12 mb-4 pb-2 border-b border-border">
+        Alternative workflow
+      </h2>
+      <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
+        <li>
+          Schedule a meeting with your EMD. You can find your EMD
+          <ExternalLink href={EMD_CONTACT}>here</ExternalLink> or by calling your
+          town clerk.
+        </li>
+        <li>
+          Meet with your EMD
+          <ol class="space-y-3 list-[lower-alpha] pl-6 mt-3">
+            <li>
+              Tell them you are committed to supporting disaster efforts and ask
+              what types of help they need. If you commit to performing a task, be
+              sure you can reliably follow through.
+            </li>
+            <li>
+              Ask if there are existing Zone Captains in your community or
+              neighborhood. If so, get their contact information and reach out.
+            </li>
+          </ol>
+        </li>
+        <li>
+          Community Organizing
+          <ul class="list-disc pl-6 space-y-1 mt-1">
+            <li>
+              Bring this list to your friends and neighbors and organize people to
+              fulfill tasks. Assess strengths/skills from who and what is available.
+              Collect people's contact info in the
+              <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>.
+            </li>
+          </ul>
+        </li>
+        <li>Report back to your EMD what you can reliably offer.</li>
+        <li>
+          Ask your EMD how they would like to be contacted on Day 1 of emergency
+          and/or who else they'd like you to contact. Add their contact to the
+          <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a>.
+        </li>
+      </ol>
+
+      <nav class="flex items-center justify-between border-t border-border mt-10 pt-6 text-body-small" aria-label="Path navigation">
+        <a href="/workflows" class="text-muted-foreground hover:text-primary underline underline-offset-2">All workflows</a>
+        <a href="/workflows/response" class="text-primary font-medium underline underline-offset-2">Next: Responding to a flood &rarr;</a>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>

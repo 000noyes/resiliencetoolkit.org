@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PhaseSlider from '@/components/PhaseSlider.astro';
+
+// Resilience Workflows hub: the before / during / after continuum is the page's
+// primary wayfinding, rendered by PhaseSlider as three phase cards on one
+// orange-to-green rail. Wayfinding only; each card carries a route + phase +
+// timeframe, never a Drive URL.
+---
+
+<BaseLayout
+  title="Workflows | Community Resilience Hub Toolkit"
+  description="A guided path through the toolkit, organized by where you are relative to a flood: before, responding, and recovering."
+>
+  <section class="py-12">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <h1 class="text-hero font-semibold mb-3 text-foreground">Resilience Workflows</h1>
+      <p class="text-body-large text-muted-foreground leading-relaxed">
+        Choose where you are relative to a flood.
+      </p>
+    </div>
+  </section>
+
+  <section class="pb-16">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <PhaseSlider />
+    </div>
+  </section>
+</BaseLayout>
