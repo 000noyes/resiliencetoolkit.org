@@ -2,7 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 
-// DRAFT: "Responding to a flood" guided path. Step text is VERBATIM from the
+// "Responding to a flood" guided path. Step text is VERBATIM from the
 // coalition Workflows Running Notes (Response workflow, Day 1 to 2-3 weeks);
 // links are wired as written in the source. Internal toolkit pages are plain
 // links; external/Drive/YouTube resources use ExternalLink. The shared SignUp
@@ -49,22 +49,13 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
         </p>
       </div>
 
-      <!-- Navigation video slot (coming later) -->
-      <div class="rounded-lg border border-dashed border-primary/40 bg-muted p-5 my-8">
-        <p class="text-label uppercase-accent text-primary mb-1">Walkthrough video, coming soon</p>
-        <p class="text-body-small text-muted-foreground">
-          A short video will walk through how to move through this response path. It
-          is not recorded yet.
-        </p>
-      </div>
-
       <h2 class="text-title font-semibold text-foreground mb-4 pb-2 border-b border-border">In the event of a flood</h2>
       <ol class="space-y-4 list-decimal pl-5 text-body text-muted-foreground">
         <li>Contact local administrators/EMD/fire departments/community contacts on <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a> <span class="text-body-small text-muted-foreground">(<ExternalLink href={SHEET_DIRECTORY}>open the live spreadsheet</ExternalLink>)</span> and/or regional leaders</li>
         <li>Identify areas of the community that were most severely impacted (surveying damage, asking fire chief/EMD, local facebook groups where people are posting photos of damage, get in car/on foot see the damage so when you start mucking and gutting you know where to send people)</li>
-        <li>Contact other team members involved in response: <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9 Neighbor Directory</a>/<a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a></li>
+        <li>Contact other team members involved in response: <a href={MOD_DIRECTORY + '#neighbor-directory'} class="text-primary underline underline-offset-2">1.9 Neighbor Directory</a> / <a href={MOD_DIRECTORY + '#leader-directory'} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a></li>
         <li>Create spreadsheets using templates for this event, like <ExternalLink href={EVENT_TEMPLATE}>this one</ExternalLink></li>
-        <li><a href="/modules/emergency-preparedness/1-10/" class="text-primary underline underline-offset-2">Coordinate Volunteers</a> to go door-to-door in communities to survey data using Crisis CleanUp and/or damage assessment forms. <a href="/modules/emergency-preparedness/1-10/" class="text-primary underline underline-offset-2">1.10 Volunteer Management</a></li>
+        <li><a href="/modules/emergency-preparedness/1-10" class="text-primary underline underline-offset-2">Coordinate Volunteers</a> to go door-to-door in communities to survey data using Crisis CleanUp and/or damage assessment forms. <a href="/modules/emergency-preparedness/1-10" class="text-primary underline underline-offset-2">1.10 Volunteer Management</a></li>
         <li>
           Launch <ExternalLink href={SIGNUP_GENIUS}>sign-up genius</ExternalLink> for a few days or more, depending on severity
           <ul class="list-disc pl-6 space-y-1 mt-1">
@@ -75,9 +66,9 @@ const MOD_DIRECTORY = '/modules/emergency-preparedness/1-9';
           </ul>
         </li>
         <li>Connect with <a href={MOD_DIRECTORY} class="text-primary underline underline-offset-2">1.9: Directory of Local Leaders</a> to access hub and tools/ response kit.</li>
-        <li>When safe, set up and/or open hub for volunteers, response kit, take note of inventory, and gather needed tools <a href="/modules/emergency-preparedness/1-11/" class="text-primary underline underline-offset-2">1.11 Flood Recovery Supplies and Work</a></li>
+        <li>When safe, set up and/or open hub for volunteers, response kit, take note of inventory, and gather needed tools <a href="/modules/emergency-preparedness/1-11" class="text-primary underline underline-offset-2">1.11 Flood Recovery Supplies and Work</a></li>
         <li>
-          Coordinate volunteers for mucking days. Identify team leads and volunteers with trucks to move pumps. <a href="/modules/emergency-preparedness/1-10/" class="text-primary underline underline-offset-2">1.10 Volunteer Management</a>
+          Coordinate volunteers for mucking days. Identify team leads and volunteers with trucks to move pumps. <a href="/modules/emergency-preparedness/1-10" class="text-primary underline underline-offset-2">1.10 Volunteer Management</a>
           <ul class="list-disc pl-6 space-y-1 mt-1">
             <li>Create situation sheets</li>
             <li>Make sure volunteers have necessary tools, waivers and have had <ExternalLink href={TRAINING}>safety briefing/muck and gut training</ExternalLink></li>

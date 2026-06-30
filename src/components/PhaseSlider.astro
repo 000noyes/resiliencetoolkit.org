@@ -43,10 +43,10 @@ const { heading, class: className } = Astro.props;
           <a href={stop.href} class="phase-cards__link">
             <span class:list={['phase-cards__node', `phase-cards__node--${stop.phase.toLowerCase()}`]} aria-hidden="true"></span>
             <span class="phase-cards__card">
-              <span class="phase-cards__marker uppercase-accent">{stop.marker}</span>
+              <span class="phase-cards__marker text-uppercase-accent">{stop.marker}</span>
               <span class="phase-cards__name">{stop.name}</span>
-              <span class="phase-cards__time uppercase-accent">{stop.time}</span>
-              {stop.lead && <span class="phase-cards__lead uppercase-accent">{stop.lead}</span>}
+              <span class="phase-cards__time text-uppercase-accent">{stop.time}</span>
+              {stop.lead && <span class="phase-cards__lead text-uppercase-accent">{stop.lead}</span>}
               {stop.incomplete && <span class="sr-only">in progress, help shape this path</span>}
             </span>
           </a>
@@ -54,7 +54,7 @@ const { heading, class: className } = Astro.props;
         {i === 0 && (
           <li class="phase-cards__flood" aria-hidden="true">
             <span class="phase-cards__flood-tick"></span>
-            <span class="phase-cards__flood-label uppercase-accent">Flood</span>
+            <span class="phase-cards__flood-label text-uppercase-accent">Flood</span>
           </li>
         )}
       </>
