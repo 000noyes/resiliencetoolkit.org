@@ -23,6 +23,7 @@
  */
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import '@/lib/asset-rev'; // re-hash the shared storage chunk past the 2026-06-07 Cloudflare asset-poisoning incident (additive only; no logic/data change)
+import { replayEditJournal } from '@/lib/edit-journal';
 
 /**
  * IndexedDB schema definition
@@ -1489,7 +1490,20 @@ export async function initializeStorage(): Promise<{
     }
 
     // Pre-warm the database connection so components don't pay the cost
-    await getDB();
+    const db = await getDB();
+
+    // Replay the synchronous edit journal into IndexedDB BEFORE anything reads
+    // rows. This recovers edits that were typed but never flushed (tab closed
+    // during the debounce window — the exact loss this floor fixes). Replay is
+    // idempotent, reconciles by updatedAt, and respects deletes; a failure must
+    // not break startup, so it is swallowed like the migrations below.
+    try {
+      await replayEditJournal(db);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('[Storage] edit-journal replay failed:', err);
+      }
+    }
 
     // Idempotent on every load — gated on a metadata marker. Failure to
     // migrate must not break startup; existing UI continues to work even
