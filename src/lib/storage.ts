@@ -1444,6 +1444,94 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
 }
 
 // ============================================================================
+// PERSISTENT STORAGE (durability floor)
+// ============================================================================
+
+/**
+ * One-shot marker: set once persist() has been requested, so we never ask the
+ * browser more than once (some browsers prompt). The grant boolean is still
+ * re-read on every load.
+ */
+export const PERSIST_REQUESTED_MARKER = 'storage_persist_requested_v1';
+
+export interface PersistResult {
+  /** True only on the call that actually invoked persist() (once per device). */
+  requested: boolean;
+  /** The current navigator.storage.persisted() grant boolean. */
+  persisted: boolean;
+  /** Whether the Storage persistence API is available at all. */
+  supported: boolean;
+}
+
+/**
+ * Request durable, eviction-resistant storage for this origin — the fix for
+ * the most insidious "came back, all blank" loss (best-effort IndexedDB is
+ * evicted under storage pressure and by WebKit's 7-day rule). We call
+ * `navigator.storage.persist()` exactly once (marker-gated) and re-read
+ * `persisted()` on every load to keep the health signal current.
+ *
+ * We also record the grant boolean, the deviceId, and a diagnostic breadcrumb
+ * into the metadata store (which persist() protects) rather than localStorage
+ * or the edit journal (both evictable) — so the breadcrumb survives the very
+ * eviction it exists to diagnose (ED1). We drive UI off the boolean only and
+ * never surface `estimate()` quota numbers (browsers deliberately fuzz them).
+ */
+export async function requestPersistentStorage(deviceId: string): Promise<PersistResult> {
+  const supported =
+    typeof navigator !== 'undefined' &&
+    !!navigator.storage &&
+    typeof navigator.storage.persist === 'function';
+
+  let persisted = false;
+  let requested = false;
+
+  if (supported) {
+    const alreadyRequested = (await getMetadata(PERSIST_REQUESTED_MARKER)) !== undefined;
+    if (!alreadyRequested) {
+      // First real init on this device: ask once.
+      try {
+        persisted = await navigator.storage.persist();
+      } catch {
+        persisted = false;
+      }
+      requested = true;
+      await setMetadata(PERSIST_REQUESTED_MARKER, new Date().toISOString());
+    } else {
+      // Already asked; just re-read the current grant.
+      try {
+        persisted =
+          typeof navigator.storage.persisted === 'function'
+            ? await navigator.storage.persisted()
+            : false;
+      } catch {
+        persisted = false;
+      }
+    }
+  }
+
+  // Record the health signal + diagnostic breadcrumb into the (protected)
+  // metadata store. Written in all cases so a loss report always has a
+  // breadcrumb, even where the persistence API is absent.
+  try {
+    await setMetadata('storagePersisted', persisted);
+    await setMetadata('storageDeviceId', deviceId);
+    await setMetadata('storageDiagnostic', {
+      persisted,
+      supported,
+      deviceId,
+      lastCheck: new Date().toISOString(),
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+    });
+  } catch (err) {
+    if (import.meta.env.DEV) {
+      console.error('[Storage] failed to record persist diagnostic:', err);
+    }
+  }
+
+  return { requested, persisted, supported };
+}
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
@@ -1491,6 +1579,17 @@ export async function initializeStorage(): Promise<{
 
     // Pre-warm the database connection so components don't pay the cost
     const db = await getDB();
+
+    // Request eviction-resistant storage once (marker-gated) and record the
+    // grant + a diagnostic breadcrumb into the protected metadata store. Never
+    // break startup on failure.
+    try {
+      await requestPersistentStorage(deviceId);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('[Storage] persist request failed:', err);
+      }
+    }
 
     // Replay the synchronous edit journal into IndexedDB BEFORE anything reads
     // rows. This recovers edits that were typed but never flushed (tab closed
