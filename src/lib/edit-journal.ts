@@ -24,6 +24,13 @@ import type { IDBPDatabase } from 'idb';
 
 export const JOURNAL_KEY = 'rt-edit-journal';
 
+/**
+ * The save-on-change debounce window. This is the exact gap the journal exists
+ * to cover, so the editors that debounce IndexedDB writes and the journal share
+ * one constant rather than each redeclaring it.
+ */
+export const SAVE_DEBOUNCE_MS = 300;
+
 /** A pending row write, replayed with its change-time `updatedAt`. */
 export interface JournalPut {
   id: string;

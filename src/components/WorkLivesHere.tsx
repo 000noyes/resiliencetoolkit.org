@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Download, Check, AlertCircle, HardDrive } from 'lucide-react';
-import { exportAllData } from '@/lib/storage';
+import { downloadFullBackup, LAST_BACKUP_KEY } from '@/lib/backup';
 
 /**
  * "Where your work lives" + one-tap backup, shown on every module page via
  * ModuleLayout.
  *
- * The honest counterpart to the durability floor: the toolkit's work is private
- * and offline (true and worth saying), AND it lives only on this device where a
- * browser could clear it, so keep a backup. One tap exports everything as JSON
- * (the same shape Restore imports) and stamps the last-backup date so the nudge
- * knows when a fresh copy is due.
- *
- * Backups here and the settings-page Export share the `lastExportTimestamp`
- * key, so either one updates the "last backup" date.
+ * The honest counterpart to the durability floor: the work is private and
+ * offline (true and worth saying), and it lives only on this device where a
+ * browser can clear it, so keep a backup. The button runs the same full-toolkit
+ * backup as the dashboard (via downloadFullBackup) and stamps the last-backup
+ * date so the nudge knows when a fresh copy is due. Both surfaces share the
+ * `lastExportTimestamp` key, so either one updates the date.
  */
-const LAST_BACKUP_KEY = 'lastExportTimestamp';
 const STALE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function formatBackupDate(iso: string): string {
@@ -39,22 +36,7 @@ export default function WorkLivesHere() {
   async function handleBackup() {
     setStatus('exporting');
     try {
-      const data = await exportAllData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const ts = new Date().toISOString();
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `resilience-toolkit-backup-${ts.split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      try {
-        localStorage.setItem(LAST_BACKUP_KEY, ts);
-      } catch {
-        // ignore
-      }
+      const ts = await downloadFullBackup();
       setLastBackup(ts);
       setStatus('success');
       setTimeout(() => setStatus('idle'), 2500);
@@ -76,9 +58,9 @@ export default function WorkLivesHere() {
       <HardDrive className="h-5 w-5 flex-shrink-0 text-muted-foreground" strokeWidth={1.75} aria-hidden="true" />
       <div className="flex-1">
         <p className="text-sm text-foreground">
-          <strong>Your work lives on this device.</strong> It stays private and works offline, and it
-          is not saved to the cloud or Google Drive. Back it up to keep a copy you can restore or move
-          to another device.
+          <strong>Your work is saved on this device, and only here.</strong> It stays private and
+          works offline. Nothing goes to the cloud or to Google Drive, so back it up to keep a copy
+          you can reload later or carry to another device.
         </p>
         <p className={`mt-1 text-xs ${isStale ? 'text-amber-700 dark:text-amber-300' : 'text-muted-foreground'}`}>
           {backupLine}

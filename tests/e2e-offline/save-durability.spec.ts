@@ -76,7 +76,7 @@ test('non-durable context (persist denied) shows the storage-health warning', as
     });
   });
   await page.goto('/', { waitUntil: 'load' });
-  await expect(page.getByText(/back it up with Export/i)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/back it up so you do not lose it/i)).toBeVisible({ timeout: 20_000 });
 });
 
 test('persisted origin shows NO storage-health warning', async ({ page }) => {
@@ -93,5 +93,5 @@ test('persisted origin shows NO storage-health warning', async ({ page }) => {
   await page.goto('/', { waitUntil: 'load' });
   // Give the client:idle banner island time to hydrate and check health.
   await page.waitForTimeout(3000);
-  await expect(page.getByText(/back it up with Export/i)).toHaveCount(0);
+  await expect(page.getByText(/back it up so you do not lose it/i)).toHaveCount(0);
 });

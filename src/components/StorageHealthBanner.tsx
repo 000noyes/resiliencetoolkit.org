@@ -33,7 +33,7 @@ function StorageHealthBannerInner() {
     try {
       if (sessionStorage.getItem(DISMISS_KEY) === '1') setDismissed(true);
     } catch {
-      // sessionStorage unavailable — treat as not dismissed
+      // sessionStorage unavailable; treat as not dismissed
     }
 
     const onEvent = () => run();

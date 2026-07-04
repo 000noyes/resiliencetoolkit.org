@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTableRows, saveTableRow, initializeStorage } from '@/lib/storage';
-import { journalRowEdit, clearJournalRow } from '@/lib/edit-journal';
+import { journalRowEdit, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
+import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
-
-const SAVE_DEBOUNCE_MS = 300;
 
 export interface SlotCollectionProps {
   /** moduleKey for IndexedDB scoping (e.g. "knowing-community"). */
@@ -158,9 +157,18 @@ export default function SlotCollection({
     // so an accidental empty row would later cause it to delete un-recovered
     // legacy bytes on a re-import. Only a real content change persists; this
     // keeps "slot exists" meaning "the user actually edited it" (round-5 P1 #1).
-    if (value === savedValuesRef.current[slotIndex]) return;
-
     const rowId = slotRowId(slotIndex + 1);
+
+    if (value === savedValuesRef.current[slotIndex]) {
+      // Reverted to the last-saved value (Escape, or backspacing back). Cancel
+      // any pending debounced save of the intermediate typed value and drop its
+      // journal entry, so a stale debounced write can't later overwrite IDB
+      // with the discarded value and diverge from what is on screen.
+      clearTimeout(saveTimerRef.current);
+      clearJournalRow(moduleKey, tableId, rowId);
+      return;
+    }
+
     const now = new Date().toISOString();
     // Synchronous journal first — survives a tab killed before the debounced
     // write fires. The no-op guard above keeps this to real edits only.
@@ -174,6 +182,9 @@ export default function SlotCollection({
         savedValuesRef.current[slotIndex] = value;
         clearJournalRow(moduleKey, tableId, rowId);
       } catch (err) {
+        if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
+          reportStorageQuotaExceeded();
+        }
         console.error('[SlotCollection] save failed:', err);
       }
     };

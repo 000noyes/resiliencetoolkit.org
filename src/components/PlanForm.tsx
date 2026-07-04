@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getFormData, saveFormField } from '@/lib/storage';
-import { journalRowEdit, clearJournalRow } from '@/lib/edit-journal';
+import { journalRowEdit, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
+import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
-
-const SAVE_DEBOUNCE_MS = 300;
 
 export interface PlanFormField {
   key: string;
@@ -161,6 +160,9 @@ export default function PlanForm({
           clearJournalRow(moduleKey, formId, key);
           setSaveState({ status: 'saved', at: new Date() });
         } catch (e) {
+          if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
+            reportStorageQuotaExceeded();
+          }
           setSaveState({
             status: 'error',
             message: e instanceof Error ? e.message : 'Save failed',

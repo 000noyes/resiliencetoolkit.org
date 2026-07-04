@@ -1488,7 +1488,12 @@ export async function requestPersistentStorage(deviceId: string): Promise<Persis
   if (supported) {
     const alreadyRequested = (await getMetadata(PERSIST_REQUESTED_MARKER)) !== undefined;
     if (!alreadyRequested) {
-      // First real init on this device: ask once.
+      // First real init on this device: ask ONCE, then set the marker even if
+      // denied. Firefox shows a permission prompt on every persist() call, so
+      // retrying on each load would nag; the tradeoff is that an origin that
+      // becomes eligible later is not auto-upgraded (the eng-lock DoD is
+      // request/record/warn, not persisted()===true). The health banner keeps
+      // warning while persisted() stays false.
       try {
         persisted = await navigator.storage.persist();
       } catch {
@@ -1528,7 +1533,27 @@ export async function requestPersistentStorage(deviceId: string): Promise<Persis
     }
   }
 
+  // Nudge the app-wide StorageHealthBanner to re-check now that the grant is
+  // recorded. On first load the banner (client:idle) can read persisted()=false
+  // before this resolves; without this it would linger on a stale "at-risk"
+  // warning until the next visibilitychange. Event name mirrors
+  // storageHealth.ts STORAGE_HEALTH_EVENT, kept literal to avoid a
+  // storage <-> storageHealth import cycle.
+  if (typeof document !== 'undefined') {
+    document.dispatchEvent(new CustomEvent('rt-storage-health-changed'));
+  }
+
   return { requested, persisted, supported };
+}
+
+/**
+ * Flush the synchronous edit journal into IndexedDB on demand. Used before a
+ * backup export so pending, not-yet-persisted keystrokes are included in the
+ * downloaded file. Reconciles by updatedAt exactly like the load-time replay.
+ */
+export async function flushEditJournalToStorage(): Promise<void> {
+  const db = await getDB();
+  await replayEditJournal(db);
 }
 
 // ============================================================================

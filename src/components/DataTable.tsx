@@ -21,7 +21,7 @@
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
-import { journalRowEdit, journalRowDelete, clearJournalRow } from '@/lib/edit-journal';
+import { journalRowEdit, journalRowDelete, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
@@ -80,7 +80,6 @@ export interface DataTableProps {
 // Constants
 // ---------------------------------------------------------------------------
 
-const SAVE_DEBOUNCE_MS = 300;
 const UNDO_WINDOW_MS = 5000;
 
 // ---------------------------------------------------------------------------
@@ -500,6 +499,11 @@ export default function DataTable({
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const addRowLockRef = useRef(false);
   const savedRowsRef = useRef<TableRow[]>([]);
+  // Authoritative, synchronously-updated mirror of `rows`. saveCell reads and
+  // writes it so two edits to different columns of the same row in one batch
+  // (e.g. browser autofill of name + phone + email) both survive; building the
+  // saved/journaled row from the render closure would drop all but the last.
+  const liveRowsRef = useRef<TableRow[]>([]);
   const journalContainerRef = useRef<HTMLDivElement>(null);
 
   // Determine which columns are priority 1
@@ -626,25 +630,43 @@ export default function DataTable({
     loadData();
   }, [loadData]);
 
+  // Keep the synchronous mirror in step with committed state (add / delete /
+  // undo / load). saveCell also updates it synchronously mid-batch.
+  useEffect(() => {
+    liveRowsRef.current = rows;
+  }, [rows]);
+
   // -----------------------------------------------------------------------
   // Save cell
   // -----------------------------------------------------------------------
   const saveCell = useCallback(
     async (rowId: string, columnKey: string, value: string, immediate = false) => {
-      const row = rows.find((r) => r.rowId === rowId);
-      if (!row) return;
+      // Merge onto the LIVE mirror, not the render closure, so a second edit to
+      // a different column of the same row in the same batch does not drop the
+      // first column's value from the saved/journaled row.
+      const base = liveRowsRef.current;
+      const idx = base.findIndex((r) => r.rowId === rowId);
+      if (idx === -1) return;
 
       // Prevent editing readonly columns on pre-populated rows
       const colDef = columns.find((c) => c.key === columnKey);
       if (colDef?.readonly && isInitialRow(rowId)) return;
 
       const updatedRow: TableRow = {
-        ...row,
-        data: { ...row.data, [columnKey]: value },
+        ...base[idx],
+        data: { ...base[idx].data, [columnKey]: value },
         updatedAt: new Date().toISOString(),
       };
-
-      setRows((prev) => prev.map((r) => (r.rowId === rowId ? updatedRow : r)));
+      // Update the mirror synchronously so a same-batch sibling edit builds on
+      // this value; render with a functional merge of the single column.
+      liveRowsRef.current = base.map((r, i) => (i === idx ? updatedRow : r));
+      setRows((prev) =>
+        prev.map((r) =>
+          r.rowId === rowId
+            ? { ...r, data: { ...r.data, [columnKey]: value }, updatedAt: updatedRow.updatedAt }
+            : r,
+        ),
+      );
 
       // Synchronous journal FIRST, before the async IDB write. This captures
       // the edit even if the tab is killed before the debounced write fires or
@@ -720,7 +742,7 @@ export default function DataTable({
         saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
       }
     },
-    [rows, columns, quotaExceeded, moduleKey, tableId],
+    [columns, quotaExceeded, moduleKey, tableId],
   );
 
   // Last-resort flush: persist any dirty rows when the tab is hidden/closed.
@@ -744,6 +766,25 @@ export default function DataTable({
     }
   }, [rows]);
   useFlushOnHide(flushDirtyOnHide);
+
+  // Escape = discard the in-progress edit and restore the last-saved value.
+  // Because onBlur fires synchronously after this and reads the DOM value, we
+  // must (1) restore the element's value so the blur-save writes the saved
+  // value, not the discarded one, (2) cancel any pending debounced save of the
+  // discarded value, and (3) drop its journal entry so replay-on-load cannot
+  // resurrect it. Mirrors SlotCollection's Escape handling.
+  const restoreCellFromSaved = useCallback(
+    (rowId: string, columnKey: string, el: HTMLInputElement | HTMLTextAreaElement) => {
+      const saved = savedRowsRef.current.find((r) => r.rowId === rowId);
+      if (!saved) return;
+      setRows((prev) => prev.map((r) => (r.rowId === rowId ? saved : r)));
+      liveRowsRef.current = liveRowsRef.current.map((r) => (r.rowId === rowId ? saved : r));
+      clearTimeout(saveTimerRef.current);
+      clearJournalRow(saved.moduleKey, saved.tableId, saved.rowId);
+      el.value = saved.data[columnKey] ?? '';
+    },
+    [],
+  );
 
   // -----------------------------------------------------------------------
   // Add row
@@ -1091,18 +1132,11 @@ export default function DataTable({
                   onBlur={(e) => saveCell(row.rowId, responseCol.key, e.target.value, true)}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
-                      const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
-                      if (saved) {
-                        setRows((prev) =>
-                          prev.map((r) =>
-                            r.rowId === row.rowId ? saved : r,
-                          ),
-                        );
-                        // Recalculate height for restored content
-                        requestAnimationFrame(() => {
-                          autoResizeTextarea(e.target as HTMLTextAreaElement);
-                        });
-                      }
+                      restoreCellFromSaved(row.rowId, responseCol.key, e.target as HTMLTextAreaElement);
+                      // Recalculate height for restored content
+                      requestAnimationFrame(() => {
+                        autoResizeTextarea(e.target as HTMLTextAreaElement);
+                      });
                       (e.target as HTMLTextAreaElement).blur();
                     }
                   }}
@@ -1381,15 +1415,7 @@ export default function DataTable({
                                 if (e.key === 'Enter') {
                                   (e.target as HTMLInputElement).blur();
                                 } else if (e.key === 'Escape') {
-                                  // Restore to last-saved value from IndexedDB
-                                  const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
-                                  if (saved) {
-                                    setRows((prev) =>
-                                      prev.map((r) =>
-                                        r.rowId === row.rowId ? saved : r,
-                                      ),
-                                    );
-                                  }
+                                  restoreCellFromSaved(row.rowId, col.key, e.target as HTMLInputElement);
                                   (e.target as HTMLInputElement).blur();
                                 }
                               }}
@@ -1568,14 +1594,7 @@ export default function DataTable({
                             if (e.key === 'Enter') {
                               (e.target as HTMLInputElement).blur();
                             } else if (e.key === 'Escape') {
-                              const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
-                              if (saved) {
-                                setRows((prev) =>
-                                  prev.map((r) =>
-                                    r.rowId === row.rowId ? saved : r,
-                                  ),
-                                );
-                              }
+                              restoreCellFromSaved(row.rowId, col.key, e.target as HTMLInputElement);
                               (e.target as HTMLInputElement).blur();
                             }
                           }}

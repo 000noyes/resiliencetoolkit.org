@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { exportAllData } from '@/lib/storage';
+import { downloadFullBackup } from '@/lib/backup';
 import { Download, Check, AlertCircle } from 'lucide-react';
 
 interface ExportDataButtonProps {
@@ -17,30 +17,8 @@ export default function ExportDataButton({ className = '' }: ExportDataButtonPro
     setStatus('exporting');
 
     try {
-      const data = await exportAllData();
-
-      // Create downloadable JSON file
-      const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: 'application/json',
-      });
-      const url = URL.createObjectURL(blob);
-
-      // Generate filename with timestamp
-      const timestamp = new Date().toISOString().split('T')[0];
-      const filename = `resilience-toolkit-data-${timestamp}.json`;
-
-      // Trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      // Record export timestamp for status panel + dashboard
-      localStorage.setItem('lastExportTimestamp', new Date().toISOString());
-
+      // Shared full-toolkit backup path (flushes pending edits, stamps the date).
+      await downloadFullBackup();
       setStatus('success');
 
       // Reset to idle after 2 seconds

@@ -16,10 +16,10 @@ import WorkLivesHere from './WorkLivesHere';
 describe('WorkLivesHere', () => {
   it('states the work lives on this device and keeps the privacy promise', () => {
     const html = renderToStaticMarkup(createElement(WorkLivesHere));
-    expect(html).toContain('Your work lives on this device');
+    expect(html).toMatch(/saved on this device/i);
     expect(html).toMatch(/private/i);
     // Names the durability caveat: not the cloud / not Google Drive.
-    expect(html).toMatch(/not saved to the cloud or Google Drive/i);
+    expect(html).toMatch(/cloud or to Google Drive/i);
   });
 
   it('offers a one-tap backup and a last-backup line', () => {
