@@ -21,6 +21,8 @@
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
+import { journalRowEdit, journalRowDelete, clearJournalRow } from '@/lib/edit-journal';
+import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
@@ -627,9 +629,7 @@ export default function DataTable({
   // Save cell
   // -----------------------------------------------------------------------
   const saveCell = useCallback(
-    async (rowId: string, columnKey: string, value: string) => {
-      if (quotaExceeded) return;
-
+    async (rowId: string, columnKey: string, value: string, immediate = false) => {
       const row = rows.find((r) => r.rowId === rowId);
       if (!row) return;
 
@@ -645,11 +645,19 @@ export default function DataTable({
 
       setRows((prev) => prev.map((r) => (r.rowId === rowId ? updatedRow : r)));
 
-      // Debounced save
+      // Synchronous journal FIRST, before the async IDB write. This captures
+      // the edit even if the tab is killed before the debounced write fires or
+      // if IDB is full — the flood-grade durability backstop.
+      journalRowEdit(updatedRow);
+
+      // If storage is full we still keep the edit on screen and in the journal,
+      // but there is no point scheduling an IDB write that will throw.
+      if (quotaExceeded) return;
+
       clearTimeout(saveTimerRef.current);
       setSaveState({ status: 'saving' });
 
-      saveTimerRef.current = setTimeout(async () => {
+      const doSave = async () => {
         try {
           await saveTableRow({
             moduleKey: updatedRow.moduleKey,
@@ -660,6 +668,8 @@ export default function DataTable({
           savedRowsRef.current = savedRowsRef.current.map((r) =>
             r.rowId === rowId ? updatedRow : r,
           );
+          // Durable in IDB now — drop the journal backstop for this row.
+          clearJournalRow(updatedRow.moduleKey, updatedRow.tableId, updatedRow.rowId);
           setSaveState({ status: 'saved', at: new Date() });
 
           // Notify dashboard/streak components
@@ -698,10 +708,40 @@ export default function DataTable({
           }
           console.error('[DataTable] Save error:', err);
         }
-      }, SAVE_DEBOUNCE_MS);
+      };
+
+      // Blur = immediate save; typing (onChange) = debounced save-on-change.
+      // Either way the journal above already holds the edit.
+      if (immediate) {
+        await doSave();
+      } else {
+        saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
+      }
     },
-    [rows, columns, quotaExceeded],
+    [rows, columns, quotaExceeded, moduleKey, tableId],
   );
+
+  // Last-resort flush: persist any dirty rows when the tab is hidden/closed.
+  // Every edit was already journaled synchronously on change, so this is a
+  // best-effort net for the pending debounced write, not the guarantee.
+  const flushDirtyOnHide = useCallback(() => {
+    clearTimeout(saveTimerRef.current);
+    const saved = savedRowsRef.current;
+    for (const row of rows) {
+      const savedRow = saved.find((r) => r.rowId === row.rowId);
+      if (!savedRow || JSON.stringify(savedRow.data) !== JSON.stringify(row.data)) {
+        saveTableRow({
+          moduleKey: row.moduleKey,
+          tableId: row.tableId,
+          rowId: row.rowId,
+          data: row.data,
+        }).catch(() => {
+          // best-effort on unload; the journal remains the durable record
+        });
+      }
+    }
+  }, [rows]);
+  useFlushOnHide(flushDirtyOnHide);
 
   // -----------------------------------------------------------------------
   // Add row
@@ -798,9 +838,18 @@ export default function DataTable({
 
   const confirmDelete = useCallback(async () => {
     if (!pendingDelete) return;
+    const { rowId } = pendingDelete.row;
+    // Tombstone the journal synchronously BEFORE the async IDB delete. This
+    // replaces any pending edit entry for the row, so replay-on-load can never
+    // resurrect a row the user deleted (the resurrection class the reconcile
+    // test guards).
+    journalRowDelete(moduleKey, tableId, rowId, new Date().toISOString());
     try {
-      await deleteTableRow(moduleKey, tableId, pendingDelete.row.rowId);
+      await deleteTableRow(moduleKey, tableId, rowId);
+      savedRowsRef.current = savedRowsRef.current.filter((r) => r.rowId !== rowId);
+      clearJournalRow(moduleKey, tableId, rowId);
     } catch (err) {
+      // Leave the tombstone in the journal so the delete replays next load.
       console.error('[DataTable] Delete error:', err);
     }
     setPendingDelete(null);
@@ -1031,16 +1080,12 @@ export default function DataTable({
                   value={responseValue}
                   placeholder="Write your response..."
                   onChange={(e) => {
-                    setRows((prev) =>
-                      prev.map((r) =>
-                        r.rowId === row.rowId
-                          ? { ...r, data: { ...r.data, [responseCol.key]: e.target.value } }
-                          : r,
-                      ),
-                    );
+                    // Save-on-change (debounced) + synchronous journal, so a
+                    // type-then-close without blur cannot lose the edit.
+                    saveCell(row.rowId, responseCol.key, e.target.value);
                     autoResizeTextarea(e.target);
                   }}
-                  onBlur={(e) => saveCell(row.rowId, responseCol.key, e.target.value)}
+                  onBlur={(e) => saveCell(row.rowId, responseCol.key, e.target.value, true)}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
                       const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
@@ -1327,16 +1372,8 @@ export default function DataTable({
                               value={cellValue}
                               placeholder={col.placeholder || ''}
                               aria-label={`${col.label} for row ${idx + 1}`}
-                              onChange={(e) =>
-                                setRows((prev) =>
-                                  prev.map((r) =>
-                                    r.rowId === row.rowId
-                                      ? { ...r, data: { ...r.data, [col.key]: e.target.value } }
-                                      : r,
-                                  ),
-                                )
-                              }
-                              onBlur={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                              onChange={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                              onBlur={(e) => saveCell(row.rowId, col.key, e.target.value, true)}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   (e.target as HTMLInputElement).blur();
@@ -1522,16 +1559,8 @@ export default function DataTable({
                           type="text"
                           value={cellValue}
                           placeholder={col.placeholder || ''}
-                          onChange={(e) =>
-                            setRows((prev) =>
-                              prev.map((r) =>
-                                r.rowId === row.rowId
-                                  ? { ...r, data: { ...r.data, [col.key]: e.target.value } }
-                                  : r,
-                              ),
-                            )
-                          }
-                          onBlur={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                          onChange={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                          onBlur={(e) => saveCell(row.rowId, col.key, e.target.value, true)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               (e.target as HTMLInputElement).blur();
