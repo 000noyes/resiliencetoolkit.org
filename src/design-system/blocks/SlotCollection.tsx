@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTableRows, saveTableRow, initializeStorage } from '@/lib/storage';
+import { journalRowEdit, clearJournalRow } from '@/lib/edit-journal';
+import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
+
+const SAVE_DEBOUNCE_MS = 300;
 
 export interface SlotCollectionProps {
   /** moduleKey for IndexedDB scoping (e.g. "knowing-community"). */
@@ -60,6 +64,9 @@ export default function SlotCollection({
   // a retried migration would otherwise recover (round-5 P1 #2).
   const [loadError, setLoadError] = useState(false);
   const savedValuesRef = useRef<string[]>(Array(count).fill(''));
+  const valuesRef = useRef<string[]>(Array(count).fill(''));
+  valuesRef.current = values;
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLFieldSetElement>(null);
 
   useEffect(() => {
@@ -143,7 +150,7 @@ export default function SlotCollection({
     });
   }, [loading]);
 
-  async function persist(slotIndex: number, value: string) {
+  function commit(slotIndex: number, value: string, immediate: boolean) {
     // Skip no-op writes. A bare focus→blur (no typing) or an Escape-cancel
     // restores the value to what was last saved; persisting it would create
     // an accidental slot row (e.g. { value: '' } on a never-typed slot-1).
@@ -152,18 +159,47 @@ export default function SlotCollection({
     // legacy bytes on a re-import. Only a real content change persists; this
     // keeps "slot exists" meaning "the user actually edited it" (round-5 P1 #1).
     if (value === savedValuesRef.current[slotIndex]) return;
-    try {
-      await saveTableRow({
-        moduleKey,
-        tableId,
-        rowId: slotRowId(slotIndex + 1),
-        data: { value },
-      });
-      savedValuesRef.current[slotIndex] = value;
-    } catch (err) {
-      console.error('[SlotCollection] save failed:', err);
+
+    const rowId = slotRowId(slotIndex + 1);
+    const now = new Date().toISOString();
+    // Synchronous journal first — survives a tab killed before the debounced
+    // write fires. The no-op guard above keeps this to real edits only.
+    journalRowEdit({ moduleKey, tableId, rowId, data: { value }, updatedAt: now });
+
+    clearTimeout(saveTimerRef.current);
+
+    const doSave = async () => {
+      try {
+        await saveTableRow({ moduleKey, tableId, rowId, data: { value } });
+        savedValuesRef.current[slotIndex] = value;
+        clearJournalRow(moduleKey, tableId, rowId);
+      } catch (err) {
+        console.error('[SlotCollection] save failed:', err);
+      }
+    };
+
+    if (immediate) {
+      void doSave();
+    } else {
+      saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
     }
   }
+
+  // Last-resort flush of dirty slots on tab hide/close.
+  function flushDirtyOnHide() {
+    clearTimeout(saveTimerRef.current);
+    const current = valuesRef.current;
+    for (let i = 0; i < current.length; i++) {
+      if (current[i] !== savedValuesRef.current[i]) {
+        saveTableRow({ moduleKey, tableId, rowId: slotRowId(i + 1), data: { value: current[i] } }).catch(
+          () => {
+            // best-effort on unload; the journal remains the durable record
+          },
+        );
+      }
+    }
+  }
+  useFlushOnHide(flushDirtyOnHide);
 
   return (
     <fieldset
@@ -235,9 +271,12 @@ export default function SlotCollection({
                 next[i] = e.target.value;
                 setValues(next);
                 autoResizeTextarea(e.target);
+                // Save-on-change (debounced) + journal, so a type-then-close
+                // without blur cannot lose the response.
+                commit(i, e.target.value, false);
               }}
               onBlur={(e) => {
-                persist(i, e.target.value);
+                commit(i, e.target.value, true);
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
@@ -245,6 +284,11 @@ export default function SlotCollection({
                   const next = [...values];
                   next[i] = saved;
                   setValues(next);
+                  // Cancel any pending debounced save of the typed-then-discarded
+                  // value and drop its journal entry — Escape restores what was
+                  // last saved (which is already in IDB), so nothing to persist.
+                  clearTimeout(saveTimerRef.current);
+                  clearJournalRow(moduleKey, tableId, slotRowId(i + 1));
                   const ta = e.target as HTMLTextAreaElement;
                   // Synchronously assign the textarea DOM value to the
                   // saved string BEFORE blur fires. Without this, the

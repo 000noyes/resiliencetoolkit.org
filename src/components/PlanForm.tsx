@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getFormData, saveFormField } from '@/lib/storage';
+import { journalRowEdit, clearJournalRow } from '@/lib/edit-journal';
+import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
+
+const SAVE_DEBOUNCE_MS = 300;
 
 export interface PlanFormField {
   key: string;
@@ -106,6 +110,10 @@ export default function PlanForm({
   const [values, setValues] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>({ status: 'idle' });
   const containerRef = useRef<HTMLDivElement>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const savedValuesRef = useRef<Record<string, string>>({});
+  const valuesRef = useRef<Record<string, string>>({});
+  valuesRef.current = values;
 
   const resolvedSubtitle = subtitle === undefined ? DEFAULT_SUBTITLE : subtitle;
 
@@ -115,6 +123,7 @@ export default function PlanForm({
       const data = await getFormData(moduleKey, formId);
       if (!cancelled) {
         setValues(data);
+        savedValuesRef.current = { ...data };
         setLoading(false);
       }
     })();
@@ -133,25 +142,71 @@ export default function PlanForm({
     textareas?.forEach(autoResizeTextarea);
   }, [loading, values]);
 
-  const handleChange = useCallback((key: string, value: string) => {
-    setValues((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  // Persist a single field: journal synchronously first (the flood-grade
+  // backstop), then write to IndexedDB — debounced on typing, immediate on blur.
+  const persistField = useCallback(
+    (key: string, value: string, immediate: boolean) => {
+      const now = new Date().toISOString();
+      // Form fields live in the tables store as { value } rows, so they journal
+      // exactly like a table row (rowId = field key).
+      journalRowEdit({ moduleKey, tableId: formId, rowId: key, data: { value }, updatedAt: now });
 
-  const handleBlur = useCallback(
-    async (key: string, value: string) => {
+      clearTimeout(saveTimerRef.current);
       setSaveState({ status: 'saving' });
-      try {
-        await saveFormField(moduleKey, formId, key, value);
-        setSaveState({ status: 'saved', at: new Date() });
-      } catch (e) {
-        setSaveState({
-          status: 'error',
-          message: e instanceof Error ? e.message : 'Save failed',
-        });
+
+      const doSave = async () => {
+        try {
+          await saveFormField(moduleKey, formId, key, value);
+          savedValuesRef.current[key] = value;
+          clearJournalRow(moduleKey, formId, key);
+          setSaveState({ status: 'saved', at: new Date() });
+        } catch (e) {
+          setSaveState({
+            status: 'error',
+            message: e instanceof Error ? e.message : 'Save failed',
+          });
+        }
+      };
+
+      if (immediate) {
+        void doSave();
+      } else {
+        saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
       }
     },
     [moduleKey, formId]
   );
+
+  const handleChange = useCallback(
+    (key: string, value: string) => {
+      setValues((prev) => ({ ...prev, [key]: value }));
+      // Save-on-change (debounced) so a type-then-close without blur is safe.
+      persistField(key, value, false);
+    },
+    [persistField]
+  );
+
+  const handleBlur = useCallback(
+    (key: string, value: string) => {
+      persistField(key, value, true);
+    },
+    [persistField]
+  );
+
+  // Last-resort flush of dirty fields on tab hide/close.
+  const flushDirtyOnHide = useCallback(() => {
+    clearTimeout(saveTimerRef.current);
+    const current = valuesRef.current;
+    const saved = savedValuesRef.current;
+    for (const key of Object.keys(current)) {
+      if (current[key] !== (saved[key] ?? '')) {
+        saveFormField(moduleKey, formId, key, current[key]).catch(() => {
+          // best-effort on unload; the journal remains the durable record
+        });
+      }
+    }
+  }, [moduleKey, formId]);
+  useFlushOnHide(flushDirtyOnHide);
 
   const handleExport = useCallback(() => {
     const html = buildHtmlExport(title, fields, values);
