@@ -23,6 +23,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
 import { journalRowEdit, journalRowDelete, clearJournalRow } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
+import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
@@ -691,6 +692,7 @@ export default function DataTable({
             (err.name === 'QuotaExceededError' || err.code === 22)
           ) {
             setQuotaExceeded(true);
+            reportStorageQuotaExceeded();
             setSaveState({
               status: 'error',
               message: 'Device storage is full. You can export your data but cannot add new entries.',
@@ -809,6 +811,7 @@ export default function DataTable({
         (err.name === 'QuotaExceededError' || err.code === 22)
       ) {
         setQuotaExceeded(true);
+        reportStorageQuotaExceeded();
         setSaveState({
           status: 'error',
           message: 'Device storage is full.',
