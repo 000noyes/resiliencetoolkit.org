@@ -30,6 +30,7 @@ import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { FolderOpen } from 'lucide-react';
 import { TableOfContents, TableOfContentsMobile } from '@/components/TableOfContents';
+import WorkLivesHere from '@/components/WorkLivesHere.tsx';
 
 interface SectionData {
   number: string;
@@ -189,13 +190,7 @@ const showTOC = !!sectionData;
           </ExternalLink>
         ) : null}
 
-        <button
-          disabled
-          class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
-          title="Export functionality coming soon"
-        >
-          Export local data (Coming soon)
-        </button>
+        <WorkLivesHere client:visible />
       </div>
 
       <!-- Module Content -->
