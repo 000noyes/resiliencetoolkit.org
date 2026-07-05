@@ -33,6 +33,24 @@ export default defineConfig({
     {
       name: 'offline',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: '**/webkit-offline-shell.spec.ts',
+    },
+    // WebKit is the engine under iOS Safari and the home screen app, where the
+    // real offline failures happen (small cache budget, aggressive worker
+    // termination, its own Cache API matching). Desktop WebKit is the closest
+    // proxy Playwright can drive; the true gate remains a real iPhone check.
+    // It runs only its own spec file: WebKit cannot simulate offline via
+    // route interception or setOffline without severing the service worker
+    // from top-level navigations, so its spec manages a private server whose
+    // process it stops instead (see webkit-offline-shell.spec.ts).
+    {
+      name: 'offline-webkit',
+      use: { ...devices['Desktop Safari'] },
+      testMatch: '**/webkit-offline-shell.spec.ts',
+      // Each WebKit test boots its own preview server and fills the whole
+      // precache from scratch before it can cut the network, which does not
+      // fit the default 30s budget.
+      timeout: 120_000,
     },
   ],
   webServer: {
