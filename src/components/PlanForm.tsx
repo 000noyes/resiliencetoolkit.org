@@ -109,7 +109,10 @@ export default function PlanForm({
   const [values, setValues] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>({ status: 'idle' });
   const containerRef = useRef<HTMLDivElement>(null);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  // One debounce timer PER FIELD. A single shared timer would let a change to
+  // field B cancel field A's still-pending IDB write (browser autofill fills
+  // several fields with no blur events), leaving A's edit journal-only.
+  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const savedValuesRef = useRef<Record<string, string>>({});
   const valuesRef = useRef<Record<string, string>>({});
   valuesRef.current = values;
@@ -150,14 +153,16 @@ export default function PlanForm({
       // exactly like a table row (rowId = field key).
       journalRowEdit({ moduleKey, tableId: formId, rowId: key, data: { value }, updatedAt: now });
 
-      clearTimeout(saveTimerRef.current);
+      clearTimeout(saveTimersRef.current.get(key));
       setSaveState({ status: 'saving' });
 
       const doSave = async () => {
         try {
           await saveFormField(moduleKey, formId, key, value);
           savedValuesRef.current[key] = value;
-          clearJournalRow(moduleKey, formId, key);
+          // Conditional: keep the journal entry when a newer keystroke was
+          // journaled while this save was in flight.
+          clearJournalRow(moduleKey, formId, key, now);
           setSaveState({ status: 'saved', at: new Date() });
         } catch (e) {
           if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
@@ -173,7 +178,13 @@ export default function PlanForm({
       if (immediate) {
         void doSave();
       } else {
-        saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
+        saveTimersRef.current.set(
+          key,
+          setTimeout(() => {
+            saveTimersRef.current.delete(key);
+            void doSave();
+          }, SAVE_DEBOUNCE_MS),
+        );
       }
     },
     [moduleKey, formId]
@@ -197,7 +208,8 @@ export default function PlanForm({
 
   // Last-resort flush of dirty fields on tab hide/close.
   const flushDirtyOnHide = useCallback(() => {
-    clearTimeout(saveTimerRef.current);
+    for (const timer of saveTimersRef.current.values()) clearTimeout(timer);
+    saveTimersRef.current.clear();
     const current = valuesRef.current;
     const saved = savedValuesRef.current;
     for (const key of Object.keys(current)) {

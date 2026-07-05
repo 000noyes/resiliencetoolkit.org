@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getTableRows, saveTableRow, initializeStorage } from '@/lib/storage';
-import { journalRowEdit, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
+import { getTableRows, saveTableRow, deleteTableRow, initializeStorage } from '@/lib/storage';
+import {
+  journalRowEdit,
+  journalRowDelete,
+  clearJournalRow,
+  SAVE_DEBOUNCE_MS,
+} from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
@@ -65,7 +70,14 @@ export default function SlotCollection({
   const savedValuesRef = useRef<string[]>(Array(count).fill(''));
   const valuesRef = useRef<string[]>(Array(count).fill(''));
   valuesRef.current = values;
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  // One debounce timer PER SLOT. A single shared timer would let typing in
+  // slot B cancel slot A's still-pending IDB write, leaving A journal-only.
+  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  // Count of IDB writes currently IN FLIGHT per slot. The no-op guard in
+  // commit() may only skip the write when nothing is in flight; otherwise an
+  // in-flight save of a since-discarded value lands with no later restoring
+  // write, and reload resurrects the discarded value (codex round-3 P1).
+  const inFlightSavesRef = useRef<Map<string, number>>(new Map());
   const containerRef = useRef<HTMLFieldSetElement>(null);
 
   useEffect(() => {
@@ -159,54 +171,102 @@ export default function SlotCollection({
     // keeps "slot exists" meaning "the user actually edited it" (round-5 P1 #1).
     const rowId = slotRowId(slotIndex + 1);
 
-    if (value === savedValuesRef.current[slotIndex]) {
+    if (
+      value === savedValuesRef.current[slotIndex] &&
+      !(inFlightSavesRef.current.get(rowId) ?? 0)
+    ) {
       // Reverted to the last-saved value (Escape, or backspacing back). Cancel
       // any pending debounced save of the intermediate typed value and drop its
       // journal entry, so a stale debounced write can't later overwrite IDB
-      // with the discarded value and diverge from what is on screen.
-      clearTimeout(saveTimerRef.current);
+      // with the discarded value and diverge from what is on screen. Only THIS
+      // slot's timer — other slots' pending saves must survive.
+      //
+      // The in-flight check: when a save of the discarded value has ALREADY
+      // started, skipping here would leave that write as the final word in
+      // IDB with no restoring write after it. In that case fall through and
+      // persist the reverted value — its transaction is created after the
+      // in-flight one, so it commits last (IDB serializes overlapping
+      // readwrite transactions in creation order). The slot row exists (the
+      // in-flight put creates it), so this is a restoration, never the
+      // accidental-empty-row creation the guard exists to prevent.
+      clearTimeout(saveTimersRef.current.get(rowId));
+      saveTimersRef.current.delete(rowId);
       clearJournalRow(moduleKey, tableId, rowId);
       return;
     }
 
     const now = new Date().toISOString();
+    // An EMPTY value is persisted as a DELETE, never a `{ value: '' }` put.
+    // "Slot row exists" must keep meaning "the user has content there":
+    // migratePlaceCharacteristicsRow0 treats slot-1 existence as authoritative,
+    // and an accidental empty row (via a direct write, a journal replay, a
+    // flush-on-hide, or the in-flight revert fall-through above) would cause
+    // it to drop un-recovered legacy bytes on a re-import. A delete can never
+    // create a row on any of those paths.
+    const isEmpty = value === '';
+
     // Synchronous journal first — survives a tab killed before the debounced
     // write fires. The no-op guard above keeps this to real edits only.
-    journalRowEdit({ moduleKey, tableId, rowId, data: { value }, updatedAt: now });
+    if (isEmpty) {
+      journalRowDelete(moduleKey, tableId, rowId, now);
+    } else {
+      journalRowEdit({ moduleKey, tableId, rowId, data: { value }, updatedAt: now });
+    }
 
-    clearTimeout(saveTimerRef.current);
+    clearTimeout(saveTimersRef.current.get(rowId));
 
     const doSave = async () => {
+      inFlightSavesRef.current.set(rowId, (inFlightSavesRef.current.get(rowId) ?? 0) + 1);
       try {
-        await saveTableRow({ moduleKey, tableId, rowId, data: { value } });
+        if (isEmpty) {
+          await deleteTableRow(moduleKey, tableId, rowId);
+        } else {
+          await saveTableRow({ moduleKey, tableId, rowId, data: { value } });
+        }
         savedValuesRef.current[slotIndex] = value;
-        clearJournalRow(moduleKey, tableId, rowId);
+        // Conditional: keep the journal entry when a newer keystroke was
+        // journaled while this save was in flight.
+        clearJournalRow(moduleKey, tableId, rowId, now);
       } catch (err) {
         if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
           reportStorageQuotaExceeded();
         }
         console.error('[SlotCollection] save failed:', err);
+      } finally {
+        const n = (inFlightSavesRef.current.get(rowId) ?? 1) - 1;
+        if (n <= 0) inFlightSavesRef.current.delete(rowId);
+        else inFlightSavesRef.current.set(rowId, n);
       }
     };
 
     if (immediate) {
       void doSave();
     } else {
-      saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
+      saveTimersRef.current.set(
+        rowId,
+        setTimeout(() => {
+          saveTimersRef.current.delete(rowId);
+          void doSave();
+        }, SAVE_DEBOUNCE_MS),
+      );
     }
   }
 
   // Last-resort flush of dirty slots on tab hide/close.
   function flushDirtyOnHide() {
-    clearTimeout(saveTimerRef.current);
+    for (const timer of saveTimersRef.current.values()) clearTimeout(timer);
+    saveTimersRef.current.clear();
     const current = valuesRef.current;
     for (let i = 0; i < current.length; i++) {
       if (current[i] !== savedValuesRef.current[i]) {
-        saveTableRow({ moduleKey, tableId, rowId: slotRowId(i + 1), data: { value: current[i] } }).catch(
-          () => {
-            // best-effort on unload; the journal remains the durable record
-          },
-        );
+        // Same empty-means-delete rule as commit(): never create a
+        // `{ value: '' }` slot row on the flush path either.
+        const write = current[i] === ''
+          ? deleteTableRow(moduleKey, tableId, slotRowId(i + 1))
+          : saveTableRow({ moduleKey, tableId, rowId: slotRowId(i + 1), data: { value: current[i] } });
+        write.catch(() => {
+          // best-effort on unload; the journal remains the durable record
+        });
       }
     }
   }
@@ -298,7 +358,9 @@ export default function SlotCollection({
                   // Cancel any pending debounced save of the typed-then-discarded
                   // value and drop its journal entry — Escape restores what was
                   // last saved (which is already in IDB), so nothing to persist.
-                  clearTimeout(saveTimerRef.current);
+                  // Only THIS slot's timer; other slots' saves must survive.
+                  clearTimeout(saveTimersRef.current.get(slotRowId(i + 1)));
+                  saveTimersRef.current.delete(slotRowId(i + 1));
                   clearJournalRow(moduleKey, tableId, slotRowId(i + 1));
                   const ta = e.target as HTMLTextAreaElement;
                   // Synchronously assign the textarea DOM value to the

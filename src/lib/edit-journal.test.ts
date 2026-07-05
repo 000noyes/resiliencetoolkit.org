@@ -21,7 +21,8 @@ import {
   clearJournalRow,
   readJournal,
   replayEditJournal,
-  JOURNAL_KEY,
+  applyJournalToTables,
+  JOURNAL_PREFIX,
 } from './edit-journal';
 
 beforeEach(() => {
@@ -114,10 +115,42 @@ describe('journal writers', () => {
     expect(journal['mod-tbl-row-2']).toBeDefined();
   });
 
-  it('readJournal returns {} when empty or corrupt', () => {
+  it('readJournal returns {} when empty; a corrupt entry is skipped without hiding others', () => {
     expect(readJournal()).toEqual({});
-    localStorage.setItem(JOURNAL_KEY, '{not valid json');
-    expect(readJournal()).toEqual({});
+    localStorage.setItem(`${JOURNAL_PREFIX}mod-tbl-corrupt`, '{not valid json');
+    journalRowEdit({ moduleKey: 'mod', tableId: 'tbl', rowId: 'ok', data: {}, updatedAt: 't1' });
+    const journal = readJournal();
+    expect(journal['mod-tbl-corrupt']).toBeUndefined();
+    expect(journal['mod-tbl-ok']).toBeDefined();
+  });
+
+  it('each entry is its own localStorage key (no whole-journal blob rewrite)', () => {
+    journalRowEdit({ moduleKey: 'mod', tableId: 'tbl', rowId: 'row-1', data: {}, updatedAt: 't1' });
+    journalRowEdit({ moduleKey: 'mod', tableId: 'tbl', rowId: 'row-2', data: {}, updatedAt: 't2' });
+    expect(localStorage.getItem(`${JOURNAL_PREFIX}mod-tbl-row-1`)).toBeTruthy();
+    expect(localStorage.getItem(`${JOURNAL_PREFIX}mod-tbl-row-2`)).toBeTruthy();
+    // Clearing one row physically touches only its own key.
+    clearJournalRow('mod', 'tbl', 'row-1');
+    expect(localStorage.getItem(`${JOURNAL_PREFIX}mod-tbl-row-1`)).toBeNull();
+    expect(localStorage.getItem(`${JOURNAL_PREFIX}mod-tbl-row-2`)).toBeTruthy();
+  });
+
+  it('clearJournalRow with ifNotNewerThan KEEPS a newer entry (keystroke during in-flight save)', () => {
+    // The save that is about to confirm was journaled at t1...
+    journalRowEdit({ moduleKey: 'mod', tableId: 'tbl', rowId: 'row-1', data: { a: 'v1' }, updatedAt: '2026-07-05T10:00:00.000Z' });
+    // ...but a newer keystroke was journaled while that save was in flight.
+    journalRowEdit({ moduleKey: 'mod', tableId: 'tbl', rowId: 'row-1', data: { a: 'v2' }, updatedAt: '2026-07-05T10:00:01.000Z' });
+    // The t1 save resolves and tries to clear its backstop.
+    clearJournalRow('mod', 'tbl', 'row-1', '2026-07-05T10:00:00.000Z');
+    const entry = readJournal()['mod-tbl-row-1'];
+    expect(entry).toBeDefined();
+    expect((entry as any).data).toEqual({ a: 'v2' });
+  });
+
+  it('clearJournalRow with ifNotNewerThan clears an equal-or-older entry', () => {
+    journalRowEdit({ moduleKey: 'mod', tableId: 'tbl', rowId: 'row-1', data: { a: 'v1' }, updatedAt: '2026-07-05T10:00:00.000Z' });
+    clearJournalRow('mod', 'tbl', 'row-1', '2026-07-05T10:00:00.000Z');
+    expect(readJournal()['mod-tbl-row-1']).toBeUndefined();
   });
 
   it('swallows a localStorage failure (private mode / disabled storage)', () => {
@@ -220,5 +253,76 @@ describe('replayEditJournal (reconcile by updatedAt + respect deletes)', () => {
   it('no-ops cleanly on an empty journal', async () => {
     const res = await replayEditJournal(db);
     expect(res).toEqual({ recovered: 0, deleted: 0, skipped: 0 });
+  });
+
+  it('does NOT clear an entry that was re-journaled NEWER while replay was in flight', async () => {
+    journalRowEdit({ moduleKey: 'm', tableId: 't', rowId: 'r1', data: { v: 'first' }, updatedAt: '2026-07-05T10:00:00.000Z' });
+    // Wrap the db so that during replay's async put, a newer edit lands in the
+    // journal (same shape as a keystroke in this tab or a write from another).
+    const wrapped = {
+      get: (store: string, id: string) => db.get(store, id),
+      delete: (store: string, id: string) => db.delete(store, id),
+      put: async (store: string, value: any) => {
+        journalRowEdit({ moduleKey: 'm', tableId: 't', rowId: 'r1', data: { v: 'newer' }, updatedAt: '2026-07-05T10:00:05.000Z' });
+        return db.put(store, value);
+      },
+    } as unknown as IDBPDatabase<any>;
+    await replayEditJournal(wrapped);
+    // The snapshot entry was applied, but the NEWER journal entry survives as
+    // the backstop for the not-yet-saved edit.
+    const entry = readJournal()['m-t-r1'];
+    expect(entry).toBeDefined();
+    expect((entry as any).data).toEqual({ v: 'newer' });
+    // And a second replay reconciles it into IDB.
+    const res2 = await replayEditJournal(db);
+    expect(res2.recovered).toBe(1);
+    const row = await db.get('tables', 'm-t-r1');
+    expect(row.data).toEqual({ v: 'newer' });
+    expect(readJournal()['m-t-r1']).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// applyJournalToTables — in-memory export merge (backup completeness under
+// quota pressure, when the replay-into-IDB flush cannot land)
+// ---------------------------------------------------------------------------
+describe('applyJournalToTables (backup export merge)', () => {
+  it('returns the rows unchanged when the journal is empty', () => {
+    const rows = [tableRecord('m', 't', 'r1', { v: 'saved' }, '2026-07-05T10:00:00.000Z')];
+    expect(applyJournalToTables(rows, {})).toBe(rows);
+  });
+
+  it('adds a journal-only edit missing from the export (the quota-loss case)', () => {
+    journalRowEdit({ moduleKey: 'm', tableId: 't', rowId: 'r1', data: { v: 'journal-only' }, updatedAt: '2026-07-05T10:00:00.000Z' });
+    const merged = applyJournalToTables([], readJournal());
+    expect(merged).toHaveLength(1);
+    expect((merged[0] as any).data).toEqual({ v: 'journal-only' });
+  });
+
+  it('replaces an older exported row with the newer journal edit', () => {
+    const rows = [tableRecord('m', 't', 'r1', { v: 'old' }, '2026-07-05T09:00:00.000Z')];
+    journalRowEdit({ moduleKey: 'm', tableId: 't', rowId: 'r1', data: { v: 'new' }, updatedAt: '2026-07-05T10:00:00.000Z' });
+    const merged = applyJournalToTables(rows, readJournal());
+    expect(merged).toHaveLength(1);
+    expect((merged[0] as any).data).toEqual({ v: 'new' });
+  });
+
+  it('does NOT clobber a newer-or-equal exported row (same rule as replay)', () => {
+    const rows = [tableRecord('m', 't', 'r1', { v: 'newer-saved' }, '2026-07-05T11:00:00.000Z')];
+    journalRowEdit({ moduleKey: 'm', tableId: 't', rowId: 'r1', data: { v: 'stale' }, updatedAt: '2026-07-05T10:00:00.000Z' });
+    const merged = applyJournalToTables(rows, readJournal());
+    expect((merged[0] as any).data).toEqual({ v: 'newer-saved' });
+  });
+
+  it('a tombstone removes the exported row unless a newer edit landed', () => {
+    const rows = [
+      tableRecord('m', 't', 'r1', { v: 'deleted' }, '2026-07-05T10:00:00.000Z'),
+      tableRecord('m', 't', 'r2', { v: 'kept-newer' }, '2026-07-05T12:00:00.000Z'),
+    ];
+    journalRowDelete('m', 't', 'r1', '2026-07-05T10:00:05.000Z');
+    journalRowDelete('m', 't', 'r2', '2026-07-05T11:00:00.000Z');
+    const merged = applyJournalToTables(rows, readJournal());
+    expect(merged).toHaveLength(1);
+    expect((merged[0] as any).id).toBe('m-t-r2');
   });
 });

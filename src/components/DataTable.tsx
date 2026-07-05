@@ -496,7 +496,10 @@ export default function DataTable({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const newRowRef = useRef<HTMLElement | null>(null);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  // One debounce timer PER ROW. A single shared timer would let an edit to
+  // row B cancel row A's still-pending IDB write (browser autofill can touch
+  // several rows without blur events), leaving A's edit journal-only.
+  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const addRowLockRef = useRef(false);
   const savedRowsRef = useRef<TableRow[]>([]);
   // Authoritative, synchronously-updated mirror of `rows`. saveCell reads and
@@ -677,7 +680,7 @@ export default function DataTable({
       // but there is no point scheduling an IDB write that will throw.
       if (quotaExceeded) return;
 
-      clearTimeout(saveTimerRef.current);
+      clearTimeout(saveTimersRef.current.get(rowId));
       setSaveState({ status: 'saving' });
 
       const doSave = async () => {
@@ -691,8 +694,15 @@ export default function DataTable({
           savedRowsRef.current = savedRowsRef.current.map((r) =>
             r.rowId === rowId ? updatedRow : r,
           );
-          // Durable in IDB now — drop the journal backstop for this row.
-          clearJournalRow(updatedRow.moduleKey, updatedRow.tableId, updatedRow.rowId);
+          // Durable in IDB now — drop the journal backstop for this row,
+          // UNLESS a newer keystroke was journaled while this save was in
+          // flight (the conditional keeps that newer backstop alive).
+          clearJournalRow(
+            updatedRow.moduleKey,
+            updatedRow.tableId,
+            updatedRow.rowId,
+            updatedRow.updatedAt,
+          );
           setSaveState({ status: 'saved', at: new Date() });
 
           // Notify dashboard/streak components
@@ -739,7 +749,13 @@ export default function DataTable({
       if (immediate) {
         await doSave();
       } else {
-        saveTimerRef.current = setTimeout(doSave, SAVE_DEBOUNCE_MS);
+        saveTimersRef.current.set(
+          rowId,
+          setTimeout(() => {
+            saveTimersRef.current.delete(rowId);
+            void doSave();
+          }, SAVE_DEBOUNCE_MS),
+        );
       }
     },
     [columns, quotaExceeded, moduleKey, tableId],
@@ -749,7 +765,8 @@ export default function DataTable({
   // Every edit was already journaled synchronously on change, so this is a
   // best-effort net for the pending debounced write, not the guarantee.
   const flushDirtyOnHide = useCallback(() => {
-    clearTimeout(saveTimerRef.current);
+    for (const timer of saveTimersRef.current.values()) clearTimeout(timer);
+    saveTimersRef.current.clear();
     const saved = savedRowsRef.current;
     for (const row of rows) {
       const savedRow = saved.find((r) => r.rowId === row.rowId);
@@ -767,21 +784,30 @@ export default function DataTable({
   }, [rows]);
   useFlushOnHide(flushDirtyOnHide);
 
-  // Escape = discard the in-progress edit and restore the last-saved value.
-  // Because onBlur fires synchronously after this and reads the DOM value, we
-  // must (1) restore the element's value so the blur-save writes the saved
-  // value, not the discarded one, (2) cancel any pending debounced save of the
-  // discarded value, and (3) drop its journal entry so replay-on-load cannot
-  // resurrect it. Mirrors SlotCollection's Escape handling.
+  // Escape = discard the in-progress edit of ONE cell and restore its
+  // last-saved value. Restores only the escaped COLUMN: other columns of the
+  // same row can hold legitimate pending edits (browser autofill fills several
+  // columns mid-debounce), and a whole-row restore would silently revert them
+  // and drop their journal backstop.
+  //
+  // The caller blur()s the element right after this, and that blur fires a
+  // synchronous immediate saveCell of the restored value. saveCell merges onto
+  // the live mirror (keeping the other columns' pending edits), cancels this
+  // row's pending debounced save, journals the merged row, and saves it — so
+  // the discarded value can neither persist nor replay, without touching the
+  // rest of the row.
   const restoreCellFromSaved = useCallback(
     (rowId: string, columnKey: string, el: HTMLInputElement | HTMLTextAreaElement) => {
       const saved = savedRowsRef.current.find((r) => r.rowId === rowId);
       if (!saved) return;
-      setRows((prev) => prev.map((r) => (r.rowId === rowId ? saved : r)));
-      liveRowsRef.current = liveRowsRef.current.map((r) => (r.rowId === rowId ? saved : r));
-      clearTimeout(saveTimerRef.current);
-      clearJournalRow(saved.moduleKey, saved.tableId, saved.rowId);
-      el.value = saved.data[columnKey] ?? '';
+      const savedValue = saved.data[columnKey] ?? '';
+      const restoreCol = (r: TableRow) =>
+        r.rowId === rowId ? { ...r, data: { ...r.data, [columnKey]: savedValue } } : r;
+      setRows((prev) => prev.map(restoreCol));
+      liveRowsRef.current = liveRowsRef.current.map(restoreCol);
+      // Restore the DOM value BEFORE the blur fires, so the blur-save reads
+      // the saved value, not the discarded one.
+      el.value = savedValue;
     },
     [],
   );
@@ -865,6 +891,33 @@ export default function DataTable({
   // -----------------------------------------------------------------------
   // Delete row
   // -----------------------------------------------------------------------
+  // The actual IDB delete + journal tombstone for one row. Shared by the
+  // undo-toast expiry and by startDelete when a SECOND delete arrives while
+  // the first is still in its undo window.
+  const commitDelete = useCallback(
+    async (rowId: string) => {
+      // Cancel any still-pending debounced save of this row so it cannot land
+      // after the delete.
+      clearTimeout(saveTimersRef.current.get(rowId));
+      saveTimersRef.current.delete(rowId);
+      const ts = new Date().toISOString();
+      // Tombstone the journal synchronously BEFORE the async IDB delete. This
+      // replaces any pending edit entry for the row, so replay-on-load can never
+      // resurrect a row the user deleted (the resurrection class the reconcile
+      // test guards).
+      journalRowDelete(moduleKey, tableId, rowId, ts);
+      try {
+        await deleteTableRow(moduleKey, tableId, rowId);
+        savedRowsRef.current = savedRowsRef.current.filter((r) => r.rowId !== rowId);
+        clearJournalRow(moduleKey, tableId, rowId, ts);
+      } catch (err) {
+        // Leave the tombstone in the journal so the delete replays next load.
+        console.error('[DataTable] Delete error:', err);
+      }
+    },
+    [moduleKey, tableId],
+  );
+
   const startDelete = useCallback(
     (rowId: string) => {
       const idx = rows.findIndex((r) => r.rowId === rowId);
@@ -874,30 +927,29 @@ export default function DataTable({
       // Don't allow deleting readonly pre-populated rows
       if (isInitialRow(rowId)) return;
 
+      // A second delete while another row's undo toast is still open would
+      // otherwise REPLACE pendingDelete and the first row would never be
+      // deleted from IndexedDB — it silently reappears on the next load.
+      // Commit the first delete now; its undo window ends here.
+      if (pendingDelete) {
+        void commitDelete(pendingDelete.row.rowId);
+      }
+
       setPendingDelete({ row, index: idx });
       setRows((prev) => prev.filter((r) => r.rowId !== rowId));
     },
-    [rows],
+    [rows, pendingDelete, commitDelete],
   );
 
+  // If the tab closes or navigates away while an undo toast is open, the
+  // pending delete is deliberately NOT committed: the row reappears on the
+  // next load. Resurrection is the fail-safe direction for this app; silently
+  // finalizing a delete the user might have undone is not.
   const confirmDelete = useCallback(async () => {
     if (!pendingDelete) return;
-    const { rowId } = pendingDelete.row;
-    // Tombstone the journal synchronously BEFORE the async IDB delete. This
-    // replaces any pending edit entry for the row, so replay-on-load can never
-    // resurrect a row the user deleted (the resurrection class the reconcile
-    // test guards).
-    journalRowDelete(moduleKey, tableId, rowId, new Date().toISOString());
-    try {
-      await deleteTableRow(moduleKey, tableId, rowId);
-      savedRowsRef.current = savedRowsRef.current.filter((r) => r.rowId !== rowId);
-      clearJournalRow(moduleKey, tableId, rowId);
-    } catch (err) {
-      // Leave the tombstone in the journal so the delete replays next load.
-      console.error('[DataTable] Delete error:', err);
-    }
+    await commitDelete(pendingDelete.row.rowId);
     setPendingDelete(null);
-  }, [pendingDelete, moduleKey, tableId]);
+  }, [pendingDelete, commitDelete]);
 
   const undoDelete = useCallback(() => {
     if (!pendingDelete) return;

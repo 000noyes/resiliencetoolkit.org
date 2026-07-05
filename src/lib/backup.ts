@@ -1,4 +1,5 @@
 import { exportAllData, flushEditJournalToStorage } from '@/lib/storage';
+import { applyJournalToTables, readJournal } from '@/lib/edit-journal';
 
 /**
  * Backup = the whole toolkit, one JSON file, one code path.
@@ -17,6 +18,15 @@ export async function downloadFullBackup(): Promise<string> {
   await flushEditJournalToStorage();
 
   const data = await exportAllData();
+
+  // Under quota pressure the flush above can fail per-entry (the IDB writes
+  // are exactly what a full device rejects), leaving the newest keystrokes
+  // journal-only. Merge any leftover entries into the export in memory so the
+  // downloaded file is complete even when IndexedDB cannot accept them.
+  const leftover = readJournal();
+  if (Object.keys(leftover).length > 0) {
+    data.tables = applyJournalToTables(data.tables, leftover);
+  }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const ts = new Date().toISOString();
