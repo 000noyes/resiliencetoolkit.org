@@ -1,104 +1,202 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-
 // Offline fallback page. The service worker serves this whenever a
 // navigation fails and the requested page is not in the cache. It is part
 // of the worker's essential precache, so it is always available offline.
+//
+// DELIBERATELY STANDALONE: no BaseLayout, no external CSS or JS. The app
+// shell's stylesheet and scripts are hashed /_astro/ assets that are NOT in
+// the worker's ESSENTIAL_ASSETS, so in the essentials-only window (worker
+// killed before top-up) a layout-dependent page would render unstyled with
+// dead controls. This page is the one screen whose entire job is degraded
+// states, so everything it needs ships inline in its own HTML: whenever its
+// HTML is servable, the whole page works. Colors mirror base.css tokens.
 ---
 
-<BaseLayout
-  title="Offline | Resilience Hub Toolkit"
-  description="This page is not saved on this device yet. Pages already saved for offline use are listed here."
->
-  <article class="container mx-auto px-4 py-12 max-w-2xl">
-    <header class="mb-8">
-      <h1 class="text-hero font-semibold mb-4 text-foreground">
-        This page is not saved on this device yet
-      </h1>
-      <p class="text-body-large text-muted-foreground mb-3">
-        You are offline right now, and the page you tried to open has not been
-        saved for offline use. It will be saved automatically the next time you
-        open it with a connection.
-      </p>
-      <p class="text-body-large text-muted-foreground">
-        Everything below is already saved on this device and will open without
-        a connection.
-      </p>
-    </header>
-
-    <div class="mb-10 flex flex-wrap items-center gap-4">
-      <button
-        id="offline-retry"
-        class="inline-flex items-center px-5 py-2.5 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity"
-      >
-        Try again
-      </button>
-      <a href="/" class="text-primary font-medium hover:underline">
-        Go to the home page
-      </a>
-    </div>
-
-    <section aria-labelledby="saved-pages-heading">
-      <h2 id="saved-pages-heading" class="text-xl font-semibold mb-4 text-foreground">
-        Saved on this device
-      </h2>
-      <ul id="saved-pages" class="space-y-2"></ul>
-      <p id="saved-pages-empty" class="text-muted-foreground hidden">
-        No pages are saved yet. Open the toolkit once with a connection and it
-        saves itself onto this device for offline use.
-      </p>
-    </section>
-  </article>
-
-  <script>
-    document.getElementById('offline-retry')?.addEventListener('click', () => {
-      window.location.reload();
-    });
-
-    // List every page route currently in the cache, labeled by its own
-    // <title>, so people can see exactly what will open without a connection.
-    async function listSavedPages() {
-      const list = document.getElementById('saved-pages');
-      const empty = document.getElementById('saved-pages-empty');
-      if (!list || !('caches' in window)) return;
-
-      const paths = new Set<string>();
-      for (const name of await caches.keys()) {
-        const cache = await caches.open(name);
-        for (const req of await cache.keys()) {
-          const path = new URL(req.url).pathname;
-          if (path.endsWith('/') && path !== '/offline/') paths.add(path);
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline | Resilience Hub Toolkit</title>
+    <meta
+      name="description"
+      content="This page is not saved on this device yet. Pages already saved for offline use are listed here."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- is:inline on the style is as load-bearing as on the script: Astro
+         otherwise extracts page styles into a hashed /_astro/ asset, which
+         is exactly the dependency this page must not have. -->
+    <style is:inline>
+      :root {
+        --background: oklch(0.9911 0 0);
+        --foreground: oklch(0.2046 0 0);
+        --muted-foreground: oklch(0.2435 0 0);
+        --primary: oklch(0.5756 0.1368 42.8);
+        --primary-foreground: oklch(0.994 0.0135 42.8);
+        --primary-hover: oklch(0.4756 0.1368 42.8);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: oklch(0.1822 0 0);
+          --foreground: oklch(0.9288 0.0126 255.5078);
+          --muted-foreground: oklch(0.82 0.01 255.5);
+          --primary: oklch(0.75 0.15 42.8);
+          --primary-foreground: oklch(0.2626 0.0147 42.8);
+          --primary-hover: oklch(0.68 0.15 42.8);
         }
       }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 3rem 1rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+      }
+      p {
+        color: var(--muted-foreground);
+        margin: 0 0 0.75rem;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem 0 2.5rem;
+      }
+      button#offline-retry {
+        font: inherit;
+        font-weight: 500;
+        color: var(--primary-foreground);
+        background: var(--primary);
+        border: none;
+        border-radius: 0.375rem;
+        padding: 0.625rem 1.25rem;
+        cursor: pointer;
+      }
+      button#offline-retry:hover {
+        background: var(--primary-hover);
+      }
+      a {
+        color: var(--primary);
+        font-weight: 500;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      ul#saved-pages {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      ul#saved-pages li {
+        margin: 0 0 0.5rem;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>This page is not saved on this device yet</h1>
+        <p>
+          You are offline right now, and the page you tried to open has not been
+          saved for offline use. It will be saved automatically the next time you
+          open it with a connection.
+        </p>
+        <p>
+          Everything below is already saved on this device and will open without
+          a connection.
+        </p>
+      </header>
 
-      const sorted = [...paths].sort();
-      for (const path of sorted) {
-        let label = path === '/' ? 'Home' : path;
-        try {
-          const res = await caches.match(path, { ignoreVary: true });
-          if (res) {
-            const html = await res.text();
-            const match = html.match(/<title>([^<]*)<\/title>/i);
-            if (match) {
-              const cleaned = match[1].replace(/\s*\|\s*Resilience Hub Toolkit\s*$/i, '').trim();
-              if (cleaned) label = cleaned;
-            }
+      <div class="actions">
+        <button id="offline-retry">Try again</button>
+        <a href="/">Go to the home page</a>
+      </div>
+
+      <section aria-labelledby="saved-pages-heading">
+        <h2 id="saved-pages-heading">Saved on this device</h2>
+        <ul id="saved-pages"></ul>
+        <p id="saved-pages-empty" class="hidden">
+          No pages are saved yet. Open the toolkit once with a connection and it
+          saves itself onto this device for offline use.
+        </p>
+      </section>
+    </main>
+
+    <!-- is:inline is load-bearing: a processed script becomes a hashed
+         /_astro/ module this page must not depend on. Plain JS only
+         (inline scripts skip the TypeScript pipeline). -->
+    <script is:inline>
+      document.getElementById('offline-retry')?.addEventListener('click', () => {
+        window.location.reload();
+      });
+
+      // List every page route currently in the cache, labeled by its own
+      // <title>, so people can see exactly what will open without a connection.
+      async function listSavedPages() {
+        const list = document.getElementById('saved-pages');
+        const empty = document.getElementById('saved-pages-empty');
+        if (!list || !('caches' in window)) return;
+
+        const paths = new Set();
+        for (const name of await caches.keys()) {
+          const cache = await caches.open(name);
+          for (const req of await cache.keys()) {
+            const path = new URL(req.url).pathname;
+            if (path.endsWith('/') && path !== '/offline/') paths.add(path);
           }
-        } catch {
-          // Keep the pathname label if the cached page cannot be read.
         }
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = path;
-        a.textContent = label;
-        a.className = 'text-primary hover:underline';
-        li.appendChild(a);
-        list.appendChild(li);
+
+        const sorted = [...paths].sort();
+        for (const path of sorted) {
+          let label = path === '/' ? 'Home' : path;
+          try {
+            const res = await caches.match(path, { ignoreVary: true });
+            if (res) {
+              const html = await res.text();
+              const match = html.match(/<title>([^<]*)<\/title>/i);
+              if (match) {
+                const cleaned = match[1].replace(/\s*\|\s*Resilience Hub Toolkit\s*$/i, '').trim();
+                if (cleaned) label = cleaned;
+              }
+            }
+          } catch {
+            // Keep the pathname label if the cached page cannot be read.
+          }
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = path;
+          a.textContent = label;
+          li.appendChild(a);
+          list.appendChild(li);
+        }
+
+        if (!sorted.length && empty) empty.classList.remove('hidden');
       }
 
-      if (!sorted.length && empty) empty.classList.remove('hidden');
-    }
-
-    listSavedPages();
-  </script>
-</BaseLayout>
+      listSavedPages();
+    </script>
+  </body>
+</html>

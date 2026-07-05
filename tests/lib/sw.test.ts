@@ -768,6 +768,21 @@ describe('sw.js — navigation handler (cache-first precache, offline fallback)'
     expect(sandbox.fetchMock).not.toHaveBeenCalled();
   });
 
+  it('treats the explicit /index.html form as the same precached route (cache-first)', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/dashboard/index.html`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('cached:/dashboard/');
+    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+  });
+
   it('serves a precached route cache-first at its slashed URL too', async () => {
     const { sandbox } = createSandbox();
     const store = fillCurrentComplete(sandbox);

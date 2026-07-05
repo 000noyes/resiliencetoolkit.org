@@ -43,6 +43,13 @@ const PRECACHE_ASSETS = [/* auto-generated, do not edit manually */];
 // terminate a worker mid-install. The full page list arrives right after
 // activation via topUpPrecache(), which also retries on every page load and
 // via the PRECACHE_WARM/PRECACHE_TOPUP messages until the cache is whole.
+//
+// These two routes are DELIBERATELY exempt from top-up's "route HTML only
+// after all assets" gate: they must exist before anything else so a first
+// install has a floor at all, and both degrade acceptably without hashed
+// assets. `/offline/` is fully standalone by construction (inline style and
+// script, no /_astro/ dependency); `/` renders readable-but-unstyled in the
+// seconds-wide first-install window, which beats having nothing offline.
 const ESSENTIAL_ASSETS = [
   '/',
   '/offline/',
@@ -305,9 +312,15 @@ self.addEventListener('message', (event) => {
 // while in-page links are slashless (`/dashboard`); online the CDN
 // normalizes that difference with a redirect, offline this match has to.
 // Matching by pathname string also drops any query, which is correct for a
-// fully static site. The lookup is global across cache generations: while a
-// new build's cache is still filling, the previous complete generation keeps
-// serving (it is pruned only once the new one is whole).
+// fully static site.
+//
+// The lookup is GLOBAL across cache generations ON PURPOSE. While a new
+// build's cache is still filling, the previous complete generation keeps
+// serving: its HTML references its own hashed assets, which it still holds,
+// so every page it serves is whole. Old generations are pruned only once the
+// new one is complete. Scoping this match to the current cache would serve
+// new HTML whose hashed assets may not be cached yet, breaking pages offline
+// exactly during an interrupted update.
 async function matchNavigation(request) {
   const pathname = new URL(request.url).pathname;
   const candidates = [pathname];
@@ -337,9 +350,16 @@ async function matchNavigation(request) {
 // the completeness accounting stays clean.
 async function handleNavigation(event) {
   const url = new URL(event.request.url);
+  // Normalize the explicit-file form so `/dashboard/index.html` gets the
+  // same cache-first treatment as `/dashboard/` (matchNavigation already
+  // normalizes it for the lookup; this keeps the ROUTING decision in step).
+  let path = url.pathname;
+  if (path.endsWith('/index.html')) {
+    path = path.slice(0, -'index.html'.length);
+  }
   const isPrecachedRoute =
-    PRECACHE_ROUTES.has(url.pathname) ||
-    (!url.pathname.endsWith('/') && PRECACHE_ROUTES.has(url.pathname + '/'));
+    PRECACHE_ROUTES.has(path) ||
+    (!path.endsWith('/') && PRECACHE_ROUTES.has(path + '/'));
 
   if (isPrecachedRoute) {
     const cached = await matchNavigation(event.request);
