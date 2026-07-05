@@ -73,8 +73,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
+      # WebKit runs the same offline suite because the field failure mode is
+      # iOS Safari and the home screen app, which Chromium does not model.
+      # The hosts entry backs up rt.localhost resolution for WebKit, which
+      # uses the system resolver (Chromium resolves *.localhost internally).
+      - name: Install Playwright browsers
+        run: |
+          pnpm exec playwright install --with-deps chromium webkit
+          grep -q rt.localhost /etc/hosts || echo "127.0.0.1 rt.localhost" | sudo tee -a /etc/hosts
 
       # The offline project builds dist/ and serves it via astro preview itself
       # (see playwright.offline.config.ts webServer), then runs the real-browser
