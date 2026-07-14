@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { getPersonalNotes, savePersonalNotes } from '@/lib/storage';
+import { FLUSH_WRITES_EVENT } from '@/lib/flush-writes';
 import { StickyNote, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PersonalNotesProps {
@@ -84,6 +85,33 @@ export default function PersonalNotes({ className = '' }: PersonalNotesProps) {
         clearTimeout(saveTimeoutRef.current);
       }
     };
+  }, []);
+
+  // Latest notes value, readable from the flush listener without re-subscribing.
+  const notesRef = useRef('');
+  notesRef.current = notes;
+
+  // Flush pending debounced save (service worker rotation / tab hide): commit
+  // the pending value immediately instead of waiting out the 500ms debounce.
+  useEffect(() => {
+    const onFlush = () => {
+      if (!saveTimeoutRef.current) return;
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+      const value = notesRef.current;
+      savePersonalNotes(value)
+        .then(() => {
+          setHasNotes(value.length > 0);
+        })
+        .catch((error) => {
+          console.error('Failed to save notes:', error);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
+    };
+    document.addEventListener(FLUSH_WRITES_EVENT, onFlush);
+    return () => document.removeEventListener(FLUSH_WRITES_EVENT, onFlush);
   }, []);
 
   function handleNotesChange(e: React.ChangeEvent<HTMLTextAreaElement>) {

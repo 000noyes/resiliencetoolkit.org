@@ -24,6 +24,7 @@ import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type Tab
 import { journalRowEdit, journalRowDelete, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
+import { FLUSH_WRITES_EVENT, dirtyRows } from '@/lib/flush-writes';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
@@ -508,6 +509,9 @@ export default function DataTable({
   // saved/journaled row from the render closure would drop all but the last.
   const liveRowsRef = useRef<TableRow[]>([]);
   const journalContainerRef = useRef<HTMLDivElement>(null);
+  // Latest rows, readable from the flush listener without re-subscribing.
+  const rowsRef = useRef<TableRow[]>([]);
+  rowsRef.current = rows;
 
   // Determine which columns are priority 1
   const priorityCols = columns.filter((c) => (c.priority ?? 1) === 1).slice(0, 3);
@@ -811,6 +815,36 @@ export default function DataTable({
     },
     [],
   );
+
+  // -----------------------------------------------------------------------
+  // Flush pending debounced saves (service worker rotation / tab hide).
+  // The shared debounce timer means only the LAST edited row has a pending
+  // save; earlier rows edited inside the window were silently cancelled.
+  // Sweep every row against its saved copy and commit the stragglers now.
+  // -----------------------------------------------------------------------
+  useEffect(() => {
+    const onFlush = () => {
+      clearTimeout(saveTimerRef.current);
+      for (const row of dirtyRows(rowsRef.current, savedRowsRef.current)) {
+        saveTableRow({
+          moduleKey: row.moduleKey,
+          tableId: row.tableId,
+          rowId: row.rowId,
+          data: row.data,
+        })
+          .then(() => {
+            savedRowsRef.current = savedRowsRef.current.map((r) =>
+              r.rowId === row.rowId ? row : r,
+            );
+          })
+          .catch((err) => {
+            console.error('[DataTable] Flush save error:', err);
+          });
+      }
+    };
+    document.addEventListener(FLUSH_WRITES_EVENT, onFlush);
+    return () => document.removeEventListener(FLUSH_WRITES_EVENT, onFlush);
+  }, []);
 
   // -----------------------------------------------------------------------
   // Add row

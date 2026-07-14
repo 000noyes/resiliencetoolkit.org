@@ -21,6 +21,25 @@
  */
 export const FLUSH_WRITES_EVENT = 'rt:flush-pending-writes';
 
+/**
+ * Rows whose current edit has not reached IndexedDB yet. DataTable's shared
+ * debounce timer means a second row edited inside the window silently
+ * cancels the first row's save, so the flush sweep compares EVERY row
+ * against its saved copy rather than trusting the last timer. Rows without
+ * a saved counterpart are skipped: add-row saves immediately, so absence
+ * means that initial save is still in flight and owns the write.
+ */
+export function dirtyRows<T extends { rowId: string; updatedAt: string }>(
+  current: T[],
+  saved: T[]
+): T[] {
+  const savedById = new Map(saved.map((r) => [r.rowId, r]));
+  return current.filter((r) => {
+    const savedRow = savedById.get(r.rowId);
+    return savedRow !== undefined && savedRow.updatedAt !== r.updatedAt;
+  });
+}
+
 export function flushPendingWrites(): void {
   if (typeof document === 'undefined') return;
   const el = document.activeElement as HTMLElement | null;
