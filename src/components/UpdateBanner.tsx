@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { SW_UPDATE_READY_EVENT, READY_DATASET_KEY, applyUpdate } from '@/lib/sw-register';
 import { isSuppressed, recordDismissal } from '@/lib/update-banner';
+import { setActiveNotice } from '@/lib/notices';
 
 /**
  * Update notice: shown only when a new service worker is installed AND has
@@ -41,6 +42,13 @@ export default function UpdateBanner() {
     return () => document.removeEventListener(SW_UPDATE_READY_EVENT, onReadyChange);
   }, []);
 
+  // Own the notice slot while visible; release it on hide (the contact
+  // banner steps back in). Keyed on visibility, not readiness.
+  useEffect(() => {
+    setActiveNotice(version ? 'update' : null);
+    return () => setActiveNotice(null);
+  }, [version]);
+
   if (!version) return null;
 
   const handleRefresh = () => {
@@ -59,7 +67,7 @@ export default function UpdateBanner() {
       <div className="container mx-auto px-4 py-3">
         <div className="relative flex items-center justify-center gap-3 pr-8">
           <p className="text-sm text-foreground text-center">
-            A newer version of this site is ready.
+            A newer version of this site is ready. Refreshing keeps your saved work.
           </p>
           <button
             type="button"

@@ -125,6 +125,10 @@ test('banner -> tap -> one rotation; data intact; old generation stripped to ass
   const banner = page.getByRole('status').filter({ hasText: 'A newer version of this site is ready.' });
   await expect(banner).toBeVisible({ timeout: 45_000 });
 
+  // One notice at a time: the contact banner yields while the update notice
+  // holds the slot.
+  await expect(page.getByText('Contact us for support')).toBeHidden();
+
   await banner.getByRole('button', { name: 'Refresh' }).click();
 
   // Rotation: flush wait -> SKIP_WAITING -> activate (prune inside waitUntil)
