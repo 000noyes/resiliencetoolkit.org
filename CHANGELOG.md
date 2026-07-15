@@ -5,11 +5,22 @@ All notable changes to ResilienceToolkit.org are documented here.
 ## [Unreleased]
 
 ### Fixed
+- Returning visitors no longer see weeks-old pages. Devices pinned to an old
+  service worker that never handed off now pick up the current site on their
+  next visit, with no action needed and no effect on saved answers (all user
+  data lives in on-device storage that updates never touch). `sw.js` is now
+  served uncacheable so future updates reach devices promptly.
 - Offline durability: the service worker now precaches the full built asset
   manifest, so a precached-but-unvisited page opened offline renders fully
   styled and interactive instead of unstyled. Service-worker cache matching now
   ignores the `Vary` header so cross-origin-imported module bundles resolve
   offline.
+
+### Added
+- A quiet "A newer version of this site is ready" notice with a Refresh
+  button appears when an update has fully downloaded. Refreshing is always
+  optional: ignored updates apply on their own the next time the site is not
+  being looked at, and edits in progress are saved before any refresh.
 
 ### Removed
 - Third-party analytics and trackers (Umami + Cloudflare Web Analytics),
