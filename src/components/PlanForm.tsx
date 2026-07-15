@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getFormData, saveFormField } from '@/lib/storage';
+import { journalRowEdit, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
+import { useFlushOnHide } from '@/lib/useFlushOnHide';
+import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 
 export interface PlanFormField {
@@ -106,6 +109,13 @@ export default function PlanForm({
   const [values, setValues] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>({ status: 'idle' });
   const containerRef = useRef<HTMLDivElement>(null);
+  // One debounce timer PER FIELD. A single shared timer would let a change to
+  // field B cancel field A's still-pending IDB write (browser autofill fills
+  // several fields with no blur events), leaving A's edit journal-only.
+  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const savedValuesRef = useRef<Record<string, string>>({});
+  const valuesRef = useRef<Record<string, string>>({});
+  valuesRef.current = values;
 
   const resolvedSubtitle = subtitle === undefined ? DEFAULT_SUBTITLE : subtitle;
 
@@ -115,6 +125,7 @@ export default function PlanForm({
       const data = await getFormData(moduleKey, formId);
       if (!cancelled) {
         setValues(data);
+        savedValuesRef.current = { ...data };
         setLoading(false);
       }
     })();
@@ -133,25 +144,83 @@ export default function PlanForm({
     textareas?.forEach(autoResizeTextarea);
   }, [loading, values]);
 
-  const handleChange = useCallback((key: string, value: string) => {
-    setValues((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  // Persist a single field: journal synchronously first (the flood-grade
+  // backstop), then write to IndexedDB — debounced on typing, immediate on blur.
+  const persistField = useCallback(
+    (key: string, value: string, immediate: boolean) => {
+      const now = new Date().toISOString();
+      // Form fields live in the tables store as { value } rows, so they journal
+      // exactly like a table row (rowId = field key).
+      journalRowEdit({ moduleKey, tableId: formId, rowId: key, data: { value }, updatedAt: now });
 
-  const handleBlur = useCallback(
-    async (key: string, value: string) => {
+      clearTimeout(saveTimersRef.current.get(key));
       setSaveState({ status: 'saving' });
-      try {
-        await saveFormField(moduleKey, formId, key, value);
-        setSaveState({ status: 'saved', at: new Date() });
-      } catch (e) {
-        setSaveState({
-          status: 'error',
-          message: e instanceof Error ? e.message : 'Save failed',
-        });
+
+      const doSave = async () => {
+        try {
+          await saveFormField(moduleKey, formId, key, value);
+          savedValuesRef.current[key] = value;
+          // Conditional: keep the journal entry when a newer keystroke was
+          // journaled while this save was in flight.
+          clearJournalRow(moduleKey, formId, key, now);
+          setSaveState({ status: 'saved', at: new Date() });
+        } catch (e) {
+          if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.code === 22)) {
+            reportStorageQuotaExceeded();
+          }
+          setSaveState({
+            status: 'error',
+            message: e instanceof Error ? e.message : 'Save failed',
+          });
+        }
+      };
+
+      if (immediate) {
+        void doSave();
+      } else {
+        saveTimersRef.current.set(
+          key,
+          setTimeout(() => {
+            saveTimersRef.current.delete(key);
+            void doSave();
+          }, SAVE_DEBOUNCE_MS),
+        );
       }
     },
     [moduleKey, formId]
   );
+
+  const handleChange = useCallback(
+    (key: string, value: string) => {
+      setValues((prev) => ({ ...prev, [key]: value }));
+      // Save-on-change (debounced) so a type-then-close without blur is safe.
+      persistField(key, value, false);
+    },
+    [persistField]
+  );
+
+  const handleBlur = useCallback(
+    (key: string, value: string) => {
+      persistField(key, value, true);
+    },
+    [persistField]
+  );
+
+  // Last-resort flush of dirty fields on tab hide/close.
+  const flushDirtyOnHide = useCallback(() => {
+    for (const timer of saveTimersRef.current.values()) clearTimeout(timer);
+    saveTimersRef.current.clear();
+    const current = valuesRef.current;
+    const saved = savedValuesRef.current;
+    for (const key of Object.keys(current)) {
+      if (current[key] !== (saved[key] ?? '')) {
+        saveFormField(moduleKey, formId, key, current[key]).catch(() => {
+          // best-effort on unload; the journal remains the durable record
+        });
+      }
+    }
+  }, [moduleKey, formId]);
+  useFlushOnHide(flushDirtyOnHide);
 
   const handleExport = useCallback(() => {
     const html = buildHtmlExport(title, fields, values);

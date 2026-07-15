@@ -21,6 +21,9 @@
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
+import { journalRowEdit, journalRowDelete, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
+import { useFlushOnHide } from '@/lib/useFlushOnHide';
+import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
@@ -77,7 +80,6 @@ export interface DataTableProps {
 // Constants
 // ---------------------------------------------------------------------------
 
-const SAVE_DEBOUNCE_MS = 300;
 const UNDO_WINDOW_MS = 5000;
 
 // ---------------------------------------------------------------------------
@@ -494,9 +496,17 @@ export default function DataTable({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const newRowRef = useRef<HTMLElement | null>(null);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  // One debounce timer PER ROW. A single shared timer would let an edit to
+  // row B cancel row A's still-pending IDB write (browser autofill can touch
+  // several rows without blur events), leaving A's edit journal-only.
+  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const addRowLockRef = useRef(false);
   const savedRowsRef = useRef<TableRow[]>([]);
+  // Authoritative, synchronously-updated mirror of `rows`. saveCell reads and
+  // writes it so two edits to different columns of the same row in one batch
+  // (e.g. browser autofill of name + phone + email) both survive; building the
+  // saved/journaled row from the render closure would drop all but the last.
+  const liveRowsRef = useRef<TableRow[]>([]);
   const journalContainerRef = useRef<HTMLDivElement>(null);
 
   // Determine which columns are priority 1
@@ -623,33 +633,57 @@ export default function DataTable({
     loadData();
   }, [loadData]);
 
+  // Keep the synchronous mirror in step with committed state (add / delete /
+  // undo / load). saveCell also updates it synchronously mid-batch.
+  useEffect(() => {
+    liveRowsRef.current = rows;
+  }, [rows]);
+
   // -----------------------------------------------------------------------
   // Save cell
   // -----------------------------------------------------------------------
   const saveCell = useCallback(
-    async (rowId: string, columnKey: string, value: string) => {
-      if (quotaExceeded) return;
-
-      const row = rows.find((r) => r.rowId === rowId);
-      if (!row) return;
+    async (rowId: string, columnKey: string, value: string, immediate = false) => {
+      // Merge onto the LIVE mirror, not the render closure, so a second edit to
+      // a different column of the same row in the same batch does not drop the
+      // first column's value from the saved/journaled row.
+      const base = liveRowsRef.current;
+      const idx = base.findIndex((r) => r.rowId === rowId);
+      if (idx === -1) return;
 
       // Prevent editing readonly columns on pre-populated rows
       const colDef = columns.find((c) => c.key === columnKey);
       if (colDef?.readonly && isInitialRow(rowId)) return;
 
       const updatedRow: TableRow = {
-        ...row,
-        data: { ...row.data, [columnKey]: value },
+        ...base[idx],
+        data: { ...base[idx].data, [columnKey]: value },
         updatedAt: new Date().toISOString(),
       };
+      // Update the mirror synchronously so a same-batch sibling edit builds on
+      // this value; render with a functional merge of the single column.
+      liveRowsRef.current = base.map((r, i) => (i === idx ? updatedRow : r));
+      setRows((prev) =>
+        prev.map((r) =>
+          r.rowId === rowId
+            ? { ...r, data: { ...r.data, [columnKey]: value }, updatedAt: updatedRow.updatedAt }
+            : r,
+        ),
+      );
 
-      setRows((prev) => prev.map((r) => (r.rowId === rowId ? updatedRow : r)));
+      // Synchronous journal FIRST, before the async IDB write. This captures
+      // the edit even if the tab is killed before the debounced write fires or
+      // if IDB is full — the flood-grade durability backstop.
+      journalRowEdit(updatedRow);
 
-      // Debounced save
-      clearTimeout(saveTimerRef.current);
+      // If storage is full we still keep the edit on screen and in the journal,
+      // but there is no point scheduling an IDB write that will throw.
+      if (quotaExceeded) return;
+
+      clearTimeout(saveTimersRef.current.get(rowId));
       setSaveState({ status: 'saving' });
 
-      saveTimerRef.current = setTimeout(async () => {
+      const doSave = async () => {
         try {
           await saveTableRow({
             moduleKey: updatedRow.moduleKey,
@@ -659,6 +693,15 @@ export default function DataTable({
           });
           savedRowsRef.current = savedRowsRef.current.map((r) =>
             r.rowId === rowId ? updatedRow : r,
+          );
+          // Durable in IDB now — drop the journal backstop for this row,
+          // UNLESS a newer keystroke was journaled while this save was in
+          // flight (the conditional keeps that newer backstop alive).
+          clearJournalRow(
+            updatedRow.moduleKey,
+            updatedRow.tableId,
+            updatedRow.rowId,
+            updatedRow.updatedAt,
           );
           setSaveState({ status: 'saved', at: new Date() });
 
@@ -681,6 +724,7 @@ export default function DataTable({
             (err.name === 'QuotaExceededError' || err.code === 22)
           ) {
             setQuotaExceeded(true);
+            reportStorageQuotaExceeded();
             setSaveState({
               status: 'error',
               message: 'Device storage is full. You can export your data but cannot add new entries.',
@@ -698,9 +742,74 @@ export default function DataTable({
           }
           console.error('[DataTable] Save error:', err);
         }
-      }, SAVE_DEBOUNCE_MS);
+      };
+
+      // Blur = immediate save; typing (onChange) = debounced save-on-change.
+      // Either way the journal above already holds the edit.
+      if (immediate) {
+        await doSave();
+      } else {
+        saveTimersRef.current.set(
+          rowId,
+          setTimeout(() => {
+            saveTimersRef.current.delete(rowId);
+            void doSave();
+          }, SAVE_DEBOUNCE_MS),
+        );
+      }
     },
-    [rows, columns, quotaExceeded],
+    [columns, quotaExceeded, moduleKey, tableId],
+  );
+
+  // Last-resort flush: persist any dirty rows when the tab is hidden/closed.
+  // Every edit was already journaled synchronously on change, so this is a
+  // best-effort net for the pending debounced write, not the guarantee.
+  const flushDirtyOnHide = useCallback(() => {
+    for (const timer of saveTimersRef.current.values()) clearTimeout(timer);
+    saveTimersRef.current.clear();
+    const saved = savedRowsRef.current;
+    for (const row of rows) {
+      const savedRow = saved.find((r) => r.rowId === row.rowId);
+      if (!savedRow || JSON.stringify(savedRow.data) !== JSON.stringify(row.data)) {
+        saveTableRow({
+          moduleKey: row.moduleKey,
+          tableId: row.tableId,
+          rowId: row.rowId,
+          data: row.data,
+        }).catch(() => {
+          // best-effort on unload; the journal remains the durable record
+        });
+      }
+    }
+  }, [rows]);
+  useFlushOnHide(flushDirtyOnHide);
+
+  // Escape = discard the in-progress edit of ONE cell and restore its
+  // last-saved value. Restores only the escaped COLUMN: other columns of the
+  // same row can hold legitimate pending edits (browser autofill fills several
+  // columns mid-debounce), and a whole-row restore would silently revert them
+  // and drop their journal backstop.
+  //
+  // The caller blur()s the element right after this, and that blur fires a
+  // synchronous immediate saveCell of the restored value. saveCell merges onto
+  // the live mirror (keeping the other columns' pending edits), cancels this
+  // row's pending debounced save, journals the merged row, and saves it — so
+  // the discarded value can neither persist nor replay, without touching the
+  // rest of the row.
+  const restoreCellFromSaved = useCallback(
+    (rowId: string, columnKey: string, el: HTMLInputElement | HTMLTextAreaElement) => {
+      const saved = savedRowsRef.current.find((r) => r.rowId === rowId);
+      if (!saved) return;
+      const savedValue = saved.data[columnKey] ?? '';
+      const restoreCol = (r: TableRow) =>
+        r.rowId === rowId ? { ...r, data: { ...r.data, [columnKey]: savedValue } } : r;
+      setRows((prev) => prev.map(restoreCol));
+      liveRowsRef.current = liveRowsRef.current.map(restoreCol);
+      // Restore the DOM value BEFORE the blur fires, so the blur-save reads
+      // the saved value, not the discarded one.
+      el.value = savedValue;
+    },
+    [],
   );
 
   // -----------------------------------------------------------------------
@@ -769,6 +878,7 @@ export default function DataTable({
         (err.name === 'QuotaExceededError' || err.code === 22)
       ) {
         setQuotaExceeded(true);
+        reportStorageQuotaExceeded();
         setSaveState({
           status: 'error',
           message: 'Device storage is full.',
@@ -781,6 +891,33 @@ export default function DataTable({
   // -----------------------------------------------------------------------
   // Delete row
   // -----------------------------------------------------------------------
+  // The actual IDB delete + journal tombstone for one row. Shared by the
+  // undo-toast expiry and by startDelete when a SECOND delete arrives while
+  // the first is still in its undo window.
+  const commitDelete = useCallback(
+    async (rowId: string) => {
+      // Cancel any still-pending debounced save of this row so it cannot land
+      // after the delete.
+      clearTimeout(saveTimersRef.current.get(rowId));
+      saveTimersRef.current.delete(rowId);
+      const ts = new Date().toISOString();
+      // Tombstone the journal synchronously BEFORE the async IDB delete. This
+      // replaces any pending edit entry for the row, so replay-on-load can never
+      // resurrect a row the user deleted (the resurrection class the reconcile
+      // test guards).
+      journalRowDelete(moduleKey, tableId, rowId, ts);
+      try {
+        await deleteTableRow(moduleKey, tableId, rowId);
+        savedRowsRef.current = savedRowsRef.current.filter((r) => r.rowId !== rowId);
+        clearJournalRow(moduleKey, tableId, rowId, ts);
+      } catch (err) {
+        // Leave the tombstone in the journal so the delete replays next load.
+        console.error('[DataTable] Delete error:', err);
+      }
+    },
+    [moduleKey, tableId],
+  );
+
   const startDelete = useCallback(
     (rowId: string) => {
       const idx = rows.findIndex((r) => r.rowId === rowId);
@@ -790,21 +927,29 @@ export default function DataTable({
       // Don't allow deleting readonly pre-populated rows
       if (isInitialRow(rowId)) return;
 
+      // A second delete while another row's undo toast is still open would
+      // otherwise REPLACE pendingDelete and the first row would never be
+      // deleted from IndexedDB — it silently reappears on the next load.
+      // Commit the first delete now; its undo window ends here.
+      if (pendingDelete) {
+        void commitDelete(pendingDelete.row.rowId);
+      }
+
       setPendingDelete({ row, index: idx });
       setRows((prev) => prev.filter((r) => r.rowId !== rowId));
     },
-    [rows],
+    [rows, pendingDelete, commitDelete],
   );
 
+  // If the tab closes or navigates away while an undo toast is open, the
+  // pending delete is deliberately NOT committed: the row reappears on the
+  // next load. Resurrection is the fail-safe direction for this app; silently
+  // finalizing a delete the user might have undone is not.
   const confirmDelete = useCallback(async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteTableRow(moduleKey, tableId, pendingDelete.row.rowId);
-    } catch (err) {
-      console.error('[DataTable] Delete error:', err);
-    }
+    await commitDelete(pendingDelete.row.rowId);
     setPendingDelete(null);
-  }, [pendingDelete, moduleKey, tableId]);
+  }, [pendingDelete, commitDelete]);
 
   const undoDelete = useCallback(() => {
     if (!pendingDelete) return;
@@ -1031,30 +1176,19 @@ export default function DataTable({
                   value={responseValue}
                   placeholder="Write your response..."
                   onChange={(e) => {
-                    setRows((prev) =>
-                      prev.map((r) =>
-                        r.rowId === row.rowId
-                          ? { ...r, data: { ...r.data, [responseCol.key]: e.target.value } }
-                          : r,
-                      ),
-                    );
+                    // Save-on-change (debounced) + synchronous journal, so a
+                    // type-then-close without blur cannot lose the edit.
+                    saveCell(row.rowId, responseCol.key, e.target.value);
                     autoResizeTextarea(e.target);
                   }}
-                  onBlur={(e) => saveCell(row.rowId, responseCol.key, e.target.value)}
+                  onBlur={(e) => saveCell(row.rowId, responseCol.key, e.target.value, true)}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
-                      const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
-                      if (saved) {
-                        setRows((prev) =>
-                          prev.map((r) =>
-                            r.rowId === row.rowId ? saved : r,
-                          ),
-                        );
-                        // Recalculate height for restored content
-                        requestAnimationFrame(() => {
-                          autoResizeTextarea(e.target as HTMLTextAreaElement);
-                        });
-                      }
+                      restoreCellFromSaved(row.rowId, responseCol.key, e.target as HTMLTextAreaElement);
+                      // Recalculate height for restored content
+                      requestAnimationFrame(() => {
+                        autoResizeTextarea(e.target as HTMLTextAreaElement);
+                      });
                       (e.target as HTMLTextAreaElement).blur();
                     }
                   }}
@@ -1327,29 +1461,13 @@ export default function DataTable({
                               value={cellValue}
                               placeholder={col.placeholder || ''}
                               aria-label={`${col.label} for row ${idx + 1}`}
-                              onChange={(e) =>
-                                setRows((prev) =>
-                                  prev.map((r) =>
-                                    r.rowId === row.rowId
-                                      ? { ...r, data: { ...r.data, [col.key]: e.target.value } }
-                                      : r,
-                                  ),
-                                )
-                              }
-                              onBlur={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                              onChange={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                              onBlur={(e) => saveCell(row.rowId, col.key, e.target.value, true)}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   (e.target as HTMLInputElement).blur();
                                 } else if (e.key === 'Escape') {
-                                  // Restore to last-saved value from IndexedDB
-                                  const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
-                                  if (saved) {
-                                    setRows((prev) =>
-                                      prev.map((r) =>
-                                        r.rowId === row.rowId ? saved : r,
-                                      ),
-                                    );
-                                  }
+                                  restoreCellFromSaved(row.rowId, col.key, e.target as HTMLInputElement);
                                   (e.target as HTMLInputElement).blur();
                                 }
                               }}
@@ -1522,28 +1640,13 @@ export default function DataTable({
                           type="text"
                           value={cellValue}
                           placeholder={col.placeholder || ''}
-                          onChange={(e) =>
-                            setRows((prev) =>
-                              prev.map((r) =>
-                                r.rowId === row.rowId
-                                  ? { ...r, data: { ...r.data, [col.key]: e.target.value } }
-                                  : r,
-                              ),
-                            )
-                          }
-                          onBlur={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                          onChange={(e) => saveCell(row.rowId, col.key, e.target.value)}
+                          onBlur={(e) => saveCell(row.rowId, col.key, e.target.value, true)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               (e.target as HTMLInputElement).blur();
                             } else if (e.key === 'Escape') {
-                              const saved = savedRowsRef.current.find((r) => r.rowId === row.rowId);
-                              if (saved) {
-                                setRows((prev) =>
-                                  prev.map((r) =>
-                                    r.rowId === row.rowId ? saved : r,
-                                  ),
-                                );
-                              }
+                              restoreCellFromSaved(row.rowId, col.key, e.target as HTMLInputElement);
                               (e.target as HTMLInputElement).blur();
                             }
                           }}
