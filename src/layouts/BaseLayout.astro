@@ -8,6 +8,7 @@ import Footer from '../components/Footer.astro';
 import StatusBanner from '../components/StatusBanner.astro';
 import BetaBanner from '../components/BetaBanner.tsx';
 import StorageHealthBanner from '../components/StorageHealthBanner.tsx';
+import UpdateBanner from '../components/UpdateBanner.tsx';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
 
@@ -82,6 +83,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
 
     {!isPrintMode && <BetaBanner client:idle />}
     {!isPrintMode && <StorageHealthBanner client:idle />}
+    {!isPrintMode && <UpdateBanner client:idle />}
     {!isPrintMode && <StatusBanner />}
     {!isPrintMode && <Header />}
 

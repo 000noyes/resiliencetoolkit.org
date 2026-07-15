@@ -24,6 +24,7 @@ import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type Tab
 import { journalRowEdit, journalRowDelete, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
+import { FLUSH_WRITES_EVENT, dirtyRows, type FlushWritesDetail } from '@/lib/flush-writes';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
@@ -496,10 +497,12 @@ export default function DataTable({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const newRowRef = useRef<HTMLElement | null>(null);
-  // One debounce timer PER ROW. A single shared timer would let an edit to
+  // One SHARED debounce timer. On its own a shared timer would let an edit to
   // row B cancel row A's still-pending IDB write (browser autofill can touch
-  // several rows without blur events), leaving A's edit journal-only.
-  const saveTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  // several rows without blur events), so the timer callback never trusts its
+  // own row: it sweeps EVERY dirty row against its saved copy and commits the
+  // stragglers too.
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const addRowLockRef = useRef(false);
   const savedRowsRef = useRef<TableRow[]>([]);
   // Authoritative, synchronously-updated mirror of `rows`. saveCell reads and
@@ -640,6 +643,72 @@ export default function DataTable({
   }, [rows]);
 
   // -----------------------------------------------------------------------
+  // Commit one row to IndexedDB with the FULL save semantics (indicator,
+  // dashboard notification, trust-ack, quota handling). Both the debounce
+  // timer and the flush listener go through here so the two paths cannot
+  // drift.
+  // -----------------------------------------------------------------------
+  const commitRow = useCallback(
+    async (row: TableRow) => {
+      try {
+        await saveTableRow({
+          moduleKey: row.moduleKey,
+          tableId: row.tableId,
+          rowId: row.rowId,
+          data: row.data,
+        });
+        savedRowsRef.current = savedRowsRef.current.map((r) =>
+          r.rowId === row.rowId ? row : r,
+        );
+        // Durable in IDB now, so drop the journal backstop for this row,
+        // UNLESS a newer keystroke was journaled while this save was in
+        // flight (the conditional keeps that newer backstop alive).
+        clearJournalRow(row.moduleKey, row.tableId, row.rowId, row.updatedAt);
+        setSaveState({ status: 'saved', at: new Date() });
+
+        // Notify dashboard/streak components
+        document.dispatchEvent(
+          new CustomEvent('table-changed', {
+            detail: { moduleKey, tableId, rowId: row.rowId },
+          }),
+        );
+
+        // Mark trust acknowledged on first save
+        try {
+          localStorage.setItem('rt-trust-acknowledged', 'true');
+        } catch {
+          // ignore
+        }
+      } catch (err) {
+        if (
+          err instanceof DOMException &&
+          (err.name === 'QuotaExceededError' || err.code === 22)
+        ) {
+          setQuotaExceeded(true);
+          reportStorageQuotaExceeded();
+          setSaveState({
+            status: 'error',
+            message: 'Device storage is full. You can export your data but cannot add new entries.',
+          });
+        } else if (err instanceof DOMException && err.name === 'UpgradeBlockedError') {
+          setSaveState({
+            status: 'error',
+            message: 'Another tab is updating. Please reload this page.',
+          });
+        } else {
+          setSaveState({
+            status: 'error',
+            message: 'Could not save. Please try again.',
+          });
+        }
+        console.error('[DataTable] Save error:', err);
+        throw err;
+      }
+    },
+    [moduleKey, tableId],
+  );
+
+  // -----------------------------------------------------------------------
   // Save cell
   // -----------------------------------------------------------------------
   const saveCell = useCallback(
@@ -680,108 +749,51 @@ export default function DataTable({
       // but there is no point scheduling an IDB write that will throw.
       if (quotaExceeded) return;
 
-      clearTimeout(saveTimersRef.current.get(rowId));
+      clearTimeout(saveTimerRef.current);
       setSaveState({ status: 'saving' });
 
-      const doSave = async () => {
-        try {
-          await saveTableRow({
-            moduleKey: updatedRow.moduleKey,
-            tableId: updatedRow.tableId,
-            rowId: updatedRow.rowId,
-            data: updatedRow.data,
-          });
-          savedRowsRef.current = savedRowsRef.current.map((r) =>
-            r.rowId === rowId ? updatedRow : r,
-          );
-          // Durable in IDB now — drop the journal backstop for this row,
-          // UNLESS a newer keystroke was journaled while this save was in
-          // flight (the conditional keeps that newer backstop alive).
-          clearJournalRow(
-            updatedRow.moduleKey,
-            updatedRow.tableId,
-            updatedRow.rowId,
-            updatedRow.updatedAt,
-          );
-          setSaveState({ status: 'saved', at: new Date() });
-
-          // Notify dashboard/streak components
-          document.dispatchEvent(
-            new CustomEvent('table-changed', {
-              detail: { moduleKey, tableId, rowId },
+      // The sweep commits EVERY dirty row, not just this one: the shared
+      // timer means an edit to another row inside the window silently
+      // cancelled that row's save while the indicator already showed Saved.
+      // Rows come from the synchronously updated live mirror, so a blur-time
+      // (immediate) sweep sees THIS edit before any re-render, and commitRow
+      // drops each row's journal backstop only after its IDB write is durable.
+      const sweepDirty = async () => {
+        await Promise.all(
+          dirtyRows(liveRowsRef.current, savedRowsRef.current).map((row) =>
+            commitRow(row).catch(() => {
+              // Error state already surfaced by commitRow.
             }),
-          );
-
-          // Mark trust acknowledged on first save
-          try {
-            localStorage.setItem('rt-trust-acknowledged', 'true');
-          } catch {
-            // ignore
-          }
-        } catch (err) {
-          if (
-            err instanceof DOMException &&
-            (err.name === 'QuotaExceededError' || err.code === 22)
-          ) {
-            setQuotaExceeded(true);
-            reportStorageQuotaExceeded();
-            setSaveState({
-              status: 'error',
-              message: 'Device storage is full. You can export your data but cannot add new entries.',
-            });
-          } else if (err instanceof DOMException && err.name === 'UpgradeBlockedError') {
-            setSaveState({
-              status: 'error',
-              message: 'Another tab is updating. Please reload this page.',
-            });
-          } else {
-            setSaveState({
-              status: 'error',
-              message: 'Could not save. Please try again.',
-            });
-          }
-          console.error('[DataTable] Save error:', err);
-        }
+          ),
+        );
       };
 
       // Blur = immediate save; typing (onChange) = debounced save-on-change.
       // Either way the journal above already holds the edit.
       if (immediate) {
-        await doSave();
+        await sweepDirty();
       } else {
-        saveTimersRef.current.set(
-          rowId,
-          setTimeout(() => {
-            saveTimersRef.current.delete(rowId);
-            void doSave();
-          }, SAVE_DEBOUNCE_MS),
-        );
+        saveTimerRef.current = setTimeout(() => {
+          void sweepDirty();
+        }, SAVE_DEBOUNCE_MS);
       }
     },
-    [columns, quotaExceeded, moduleKey, tableId],
+    [columns, quotaExceeded, commitRow],
   );
 
   // Last-resort flush: persist any dirty rows when the tab is hidden/closed.
   // Every edit was already journaled synchronously on change, so this is a
-  // best-effort net for the pending debounced write, not the guarantee.
+  // best-effort net for the pending debounced sweep, not the guarantee. It
+  // routes through commitRow, like the debounce and rotation-flush paths, so
+  // the journal backstop is only dropped after a durable IDB write.
   const flushDirtyOnHide = useCallback(() => {
-    for (const timer of saveTimersRef.current.values()) clearTimeout(timer);
-    saveTimersRef.current.clear();
-    const saved = savedRowsRef.current;
-    for (const row of rows) {
-      const savedRow = saved.find((r) => r.rowId === row.rowId);
-      if (!savedRow || JSON.stringify(savedRow.data) !== JSON.stringify(row.data)) {
-        saveTableRow({
-          moduleKey: row.moduleKey,
-          tableId: row.tableId,
-          rowId: row.rowId,
-          data: row.data,
-        }).catch(() => {
-          // best-effort on unload; the journal remains the durable record
-        });
-      }
+    clearTimeout(saveTimerRef.current);
+    for (const row of dirtyRows(liveRowsRef.current, savedRowsRef.current)) {
+      commitRow(row).catch(() => {
+        // Best-effort on unload; the journal remains the durable record.
+      });
     }
-  }, [rows]);
+  }, [commitRow]);
   useFlushOnHide(flushDirtyOnHide);
 
   // Escape = discard the in-progress edit of ONE cell and restore its
@@ -792,9 +804,9 @@ export default function DataTable({
   //
   // The caller blur()s the element right after this, and that blur fires a
   // synchronous immediate saveCell of the restored value. saveCell merges onto
-  // the live mirror (keeping the other columns' pending edits), cancels this
-  // row's pending debounced save, journals the merged row, and saves it — so
-  // the discarded value can neither persist nor replay, without touching the
+  // the live mirror (keeping the other columns' pending edits), cancels the
+  // pending debounced sweep, journals the merged row, and commits it, so the
+  // discarded value can neither persist nor replay, without touching the
   // rest of the row.
   const restoreCellFromSaved = useCallback(
     (rowId: string, columnKey: string, el: HTMLInputElement | HTMLTextAreaElement) => {
@@ -896,10 +908,9 @@ export default function DataTable({
   // the first is still in its undo window.
   const commitDelete = useCallback(
     async (rowId: string) => {
-      // Cancel any still-pending debounced save of this row so it cannot land
-      // after the delete.
-      clearTimeout(saveTimersRef.current.get(rowId));
-      saveTimersRef.current.delete(rowId);
+      // No per-row save to cancel here: the shared debounce sweep reads the
+      // live rows at fire time, and startDelete already removed this row from
+      // them, so a pending sweep cannot re-save it after the delete.
       const ts = new Date().toISOString();
       // Tombstone the journal synchronously BEFORE the async IDB delete. This
       // replaces any pending edit entry for the row, so replay-on-load can never
@@ -960,6 +971,47 @@ export default function DataTable({
     });
     setPendingDelete(null);
   }, [pendingDelete]);
+
+  // -----------------------------------------------------------------------
+  // Flush pending state (service worker rotation, or tab hide while an
+  // update is waiting). Commits every dirty row through commitRow (full
+  // save semantics) and FINALIZES a pending undo-delete — a rotation reload
+  // before the 5s undo window expires would otherwise resurrect the row.
+  // Initiated save promises are pushed into the flush event's collector so
+  // the rotation can wait for the actual IndexedDB commits.
+  // -----------------------------------------------------------------------
+  const commitRowRef = useRef(commitRow);
+  commitRowRef.current = commitRow;
+  const confirmDeleteRef = useRef(confirmDelete);
+  confirmDeleteRef.current = confirmDelete;
+  const hasPendingDeleteRef = useRef(false);
+  hasPendingDeleteRef.current = pendingDelete !== null;
+
+  useEffect(() => {
+    const onFlush = (event: Event) => {
+      clearTimeout(saveTimerRef.current);
+      const pending: Promise<unknown>[] = [];
+      // Sweep the same synchronously updated live mirror as the debounce and
+      // hide paths. The flush contract blurs the focused editor first, and
+      // that blur-save lands in the mirror before this event fires; sweeping
+      // render state here could commit a stale copy of the same row and then
+      // clear the newer journal entry.
+      for (const row of dirtyRows(liveRowsRef.current, savedRowsRef.current)) {
+        pending.push(
+          commitRowRef.current(row).catch(() => {
+            // Error state already surfaced by commitRow.
+          }),
+        );
+      }
+      if (hasPendingDeleteRef.current) {
+        pending.push(Promise.resolve(confirmDeleteRef.current()).catch(() => {}));
+      }
+      const detail = (event as CustomEvent<FlushWritesDetail>).detail;
+      if (detail?.pending) detail.pending.push(...pending);
+    };
+    document.addEventListener(FLUSH_WRITES_EVENT, onFlush);
+    return () => document.removeEventListener(FLUSH_WRITES_EVENT, onFlush);
+  }, []);
 
   // -----------------------------------------------------------------------
   // CSV export
