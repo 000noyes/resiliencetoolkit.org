@@ -42,11 +42,16 @@ const ESSENTIAL_ASSETS = [
 // JSON, prefetch hints, and other non-document resources.
 const CACHEABLE_DESTINATIONS = new Set(['document', 'style', 'script', 'font', 'image']);
 
-// Any resilience-hub cache that predates the v2 naming scheme. Safe against
-// every historical name (v3…v29, v-build-*): 'resilience-hub-v25-…' diverges
-// from 'resilience-hub-v2-' at the character after "v2".
+// A cache from the pre-v2 naming scheme. Pinned to the two HISTORICAL name
+// shapes (resilience-hub-v<digits>-… and resilience-hub-v-build-<digits>) on
+// purpose — a broad "anything not current" predicate would classify every
+// FUTURE prefix as legacy and re-fire the fleet-wide forced ramp on the next
+// naming change. If the prefix scheme ever moves past v2, delete the ramp
+// (its cohort will be long healed) rather than widening this regex.
+// 'resilience-hub-v25-…' diverges from 'resilience-hub-v2-' at the character
+// after "v2", so no historical name is misclassified as current.
 function isLegacyCacheName(name) {
-  return name.startsWith('resilience-hub-') && !name.startsWith(V2_PREFIX);
+  return /^resilience-hub-(v\d+-|v-build-)/.test(name) && !name.startsWith(V2_PREFIX);
 }
 
 // Trailing v-build timestamp of a cache name (either prefix), or null.
@@ -67,13 +72,27 @@ function precacheRequest(url) {
   return url.startsWith('/_astro/') ? url : new Request(url, { cache: 'no-cache' });
 }
 
+// Pathnames present in a cache, counting ONLY query-less entries. The
+// runtime navigation handler cache.puts full request URLs, so a visit to
+// /route/?utm=x stores a query-carrying key; counting it as /route/ would
+// mark the generation complete while a plain offline navigation to /route/
+// still misses (Cache.match does not ignore the search string).
+async function cleanCachedPaths(cache) {
+  const present = new Set();
+  for (const req of await cache.keys()) {
+    const url = new URL(req.url);
+    if (url.search === '') present.add(url.pathname);
+  }
+  return present;
+}
+
 // The completeness law: every rotation and every prune is gated on this.
 // The length guard makes a generator regression fail SAFE (never prune on an
 // empty list).
 async function precacheComplete() {
   if (PRECACHE_ASSETS.length === 0) return false;
   const cache = await caches.open(CACHE_NAME);
-  const present = new Set((await cache.keys()).map((req) => new URL(req.url).pathname));
+  const present = await cleanCachedPaths(cache);
   return PRECACHE_ASSETS.every((url) => present.has(url));
 }
 
@@ -125,42 +144,52 @@ async function pruneOldCaches() {
   }
 }
 
-// Fill whatever the precache is still missing, a few assets at a time. Assets
-// before route HTML, and route HTML only once EVERY non-route file is present,
-// so a route this generation serves always renders whole. Writes the
-// completeness sentinel and (optionally) prunes when the generation is whole.
-// Retriggered from activate (detached), the first fetch per startup, the
-// PRECACHE_TOPUP page message, and PRECACHE_WARM — so an interrupted fill
-// resumes no matter what vintage of page is being served.
+// Chunked precache fill: a few fetches at a time (a wide parallel fan-out is
+// what gets a worker killed on low-memory phones), failures tolerated and
+// logged — holes converge via the retriggers below.
+async function fillChunked(cache, urls) {
+  for (let i = 0; i < urls.length; i += TOPUP_CHUNK_SIZE) {
+    const chunk = urls.slice(i, i + TOPUP_CHUNK_SIZE);
+    await Promise.allSettled(
+      chunk.map((url) =>
+        cache.add(precacheRequest(url)).catch((e) => {
+          console.warn('SW: failed to cache', url, e);
+          throw e;
+        })
+      )
+    );
+  }
+}
+
+// Fill whatever the precache is still missing. Assets before route HTML, and
+// route HTML only once EVERY non-route file is present, so a route this
+// generation serves always renders whole. Writes the completeness sentinel
+// and (optionally) prunes when the generation is whole. Retriggered from
+// activate (detached), the first fetch per startup, the PRECACHE_TOPUP page
+// message, and PRECACHE_WARM — so an interrupted fill resumes no matter what
+// vintage of page is being served. The sentinel doubles as the steady-state
+// fast path: once the generation verified complete, re-triggers cost one
+// keyed lookup instead of full cache enumerations.
 async function topUpPrecache({ prune = true } = {}) {
   const cache = await caches.open(CACHE_NAME);
-  const cachedPaths = async () =>
-    new Set((await cache.keys()).map((req) => new URL(req.url).pathname));
+  if (await cache.match(SENTINEL_PATH)) return;
   const isRoute = (url) => url.endsWith('/');
 
-  const fill = async (urls) => {
-    for (let i = 0; i < urls.length; i += TOPUP_CHUNK_SIZE) {
-      const chunk = urls.slice(i, i + TOPUP_CHUNK_SIZE);
-      await Promise.allSettled(
-        chunk.map((url) =>
-          cache.add(precacheRequest(url)).catch((e) => {
-            console.warn('SW: failed to cache', url, e);
-            throw e;
-          })
-        )
-      );
-    }
-  };
+  const present = await cleanCachedPaths(cache);
+  await fillChunked(
+    cache,
+    PRECACHE_ASSETS.filter((url) => !isRoute(url) && !present.has(url))
+  );
 
-  const present = await cachedPaths();
-  await fill(PRECACHE_ASSETS.filter((url) => !isRoute(url) && !present.has(url)));
-
-  const midway = await cachedPaths();
+  const midway = await cleanCachedPaths(cache);
   const assetsComplete = PRECACHE_ASSETS.filter((url) => !isRoute(url)).every((url) =>
     midway.has(url)
   );
   if (assetsComplete) {
-    await fill(PRECACHE_ASSETS.filter((url) => isRoute(url) && !midway.has(url)));
+    await fillChunked(
+      cache,
+      PRECACHE_ASSETS.filter((url) => isRoute(url) && !midway.has(url))
+    );
   }
 
   if (await precacheComplete()) {
@@ -179,17 +208,12 @@ self.addEventListener('install', (event) => {
 
       const cache = await caches.open(CACHE_NAME);
       const niceToHave = PRECACHE_ASSETS.filter((url) => !ESSENTIAL_ASSETS.includes(url));
-      await Promise.all([
-        Promise.all(ESSENTIAL_ASSETS.map((url) => cache.add(precacheRequest(url)))),
-        Promise.allSettled(
-          niceToHave.map((url) =>
-            cache.add(precacheRequest(url)).catch((e) => {
-              console.warn('SW: failed to cache', url, e);
-              throw e;
-            })
-          )
-        ),
-      ]);
+      // Essentials are atomic (install fails without them); the rest fills
+      // through the same chunked, failure-tolerant path the top-up uses —
+      // first install is the largest fetch burst of all, so it must not be
+      // the one place that fans out unchunked.
+      await Promise.all(ESSENTIAL_ASSETS.map((url) => cache.add(precacheRequest(url))));
+      await fillChunked(cache, niceToHave);
 
       // One-time legacy ramp: devices pinned to a pre-v2 worker have no page
       // code that can rotate them, so the worker self-promotes ONCE. The
@@ -277,7 +301,26 @@ self.addEventListener('fetch', (event) => {
         ) {
           await caches.open(RAMP_MARKER_CACHE);
         }
-        if (!(await precacheComplete())) await topUpPrecache();
+        // Bounded cleanup for the never-complete path: the prune law only
+        // runs on a complete generation, so a device where some URL
+        // persistently fails would otherwise stack one near-full generation
+        // per deploy until quota eviction (which takes IndexedDB with it).
+        // Delete all but the newest sentinel-less STALE v2 generation — the
+        // newest is usually the assets-stripped skew shield and stays.
+        const ownTs = buildTsOf(CACHE_NAME);
+        const staleIncomplete = [];
+        for (const name of names) {
+          if (!name.startsWith(V2_PREFIX) || name === CACHE_NAME || name === RAMP_MARKER_CACHE) continue;
+          const ts = buildTsOf(name);
+          if (ts === null || ownTs === null || ts >= ownTs) continue;
+          const stale = await caches.open(name);
+          if (!(await stale.match(SENTINEL_PATH))) staleIncomplete.push(name);
+        }
+        staleIncomplete.sort();
+        await Promise.all(staleIncomplete.slice(0, -1).map((name) => caches.delete(name)));
+
+        const cache = await caches.open(CACHE_NAME);
+        if (!(await cache.match(SENTINEL_PATH))) await topUpPrecache();
       })().catch(() => {})
     );
   }

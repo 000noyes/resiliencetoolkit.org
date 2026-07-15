@@ -173,6 +173,22 @@ describe('sw-register — reload discipline', () => {
     await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
     expect(reloadMock).toHaveBeenCalledTimes(1);
   });
+
+  it('frozen-tab guard also covers pages that started life uncontrolled', async () => {
+    // First visit: uncontrolled at load, claimed by v1 (absorbed, no reload).
+    const { container, fire } = await boot({ controller: null });
+    container.controller = {};
+    fire.controllerchange();
+    await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
+    expect(reloadMock).not.toHaveBeenCalled();
+    // v2 rotates while the tab is frozen: controllerchange was swallowed,
+    // only the identity change is observable on resume.
+    container.controller = {};
+    fire.setVisibility('hidden');
+    fire.setVisibility('visible');
+    await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('sw-register — warm pipeline + announce', () => {
@@ -287,13 +303,24 @@ describe('sw-register — idle + resume rotation', () => {
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
   });
 
-  it('short app-switch (<5min) does not rotate; re-warms instead', async () => {
+  it('short app-switch (<5min) does not rotate, and a READY worker is not re-warmed', async () => {
     const { fire, waiting } = await bootReady();
     fire.setVisibility('hidden');
     await vi.advanceTimersByTimeAsync(30_000);
     fire.setVisibility('visible');
     expect(waiting.postMessage).not.toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
+    // Verified-complete generations need no re-warm on every resume.
+    expect(waiting.postMessage).not.toHaveBeenCalledWith({ type: 'PRECACHE_WARM' });
+  });
+
+  it('a waiting worker that is NOT yet ready is re-warmed on return-to-visible', async () => {
+    const waiting = makeWorker();
+    const { fire } = await boot({ waiting });
+    waiting.postMessage.mockClear();
+    fire.setVisibility('hidden');
+    fire.setVisibility('visible');
     expect(waiting.postMessage).toHaveBeenCalledWith({ type: 'PRECACHE_WARM' });
+    expect(waiting.postMessage).not.toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
   });
 });
 

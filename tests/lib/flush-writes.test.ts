@@ -8,7 +8,15 @@
  * including rows whose save was silently cancelled by the shared timer.
  */
 import { describe, it, expect, vi } from 'vitest';
-import { flushPendingWrites, dirtyRows, FLUSH_WRITES_EVENT } from '../../src/lib/flush-writes';
+import {
+  flushPendingWrites,
+  flushAndWait,
+  dirtyRows,
+  FLUSH_WRITES_EVENT,
+  FLUSH_WAIT_MS,
+  FLUSH_MAX_WAIT_MS,
+  type FlushWritesDetail,
+} from '../../src/lib/flush-writes';
 
 describe('flushPendingWrites', () => {
   it('blurs a focused textarea and dispatches the flush event', () => {
@@ -36,6 +44,66 @@ describe('flushPendingWrites', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
     document.removeEventListener(FLUSH_WRITES_EVENT, spy);
+  });
+
+  it('collects save promises listeners push into the event detail', () => {
+    const save = Promise.resolve('committed');
+    const listener = (event: Event) => {
+      (event as CustomEvent<FlushWritesDetail>).detail.pending.push(save);
+    };
+    document.addEventListener(FLUSH_WRITES_EVENT, listener);
+    const pending = flushPendingWrites();
+    document.removeEventListener(FLUSH_WRITES_EVENT, listener);
+    expect(pending).toEqual([save]);
+  });
+});
+
+describe('flushAndWait', () => {
+  it('waits for the floor AND the collected saves, capped', async () => {
+    vi.useFakeTimers();
+    try {
+      let resolveSave: (v: unknown) => void = () => {};
+      const save = new Promise((r) => (resolveSave = r));
+      const listener = (event: Event) => {
+        (event as CustomEvent<FlushWritesDetail>).detail.pending.push(save);
+      };
+      document.addEventListener(FLUSH_WRITES_EVENT, listener);
+
+      let done = false;
+      flushAndWait().then(() => {
+        done = true;
+      });
+      // Floor elapsed but the save is still pending: not done yet.
+      await vi.advanceTimersByTimeAsync(FLUSH_WAIT_MS + 50);
+      expect(done).toBe(false);
+      // Save commits: done (before the cap).
+      resolveSave('ok');
+      await vi.advanceTimersByTimeAsync(0);
+      expect(done).toBe(true);
+      document.removeEventListener(FLUSH_WRITES_EVENT, listener);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('a wedged save cannot stall the rotation past the cap', async () => {
+    vi.useFakeTimers();
+    try {
+      const never = new Promise(() => {});
+      const listener = (event: Event) => {
+        (event as CustomEvent<FlushWritesDetail>).detail.pending.push(never);
+      };
+      document.addEventListener(FLUSH_WRITES_EVENT, listener);
+      let done = false;
+      flushAndWait().then(() => {
+        done = true;
+      });
+      await vi.advanceTimersByTimeAsync(FLUSH_MAX_WAIT_MS + 50);
+      expect(done).toBe(true);
+      document.removeEventListener(FLUSH_WRITES_EVENT, listener);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { getPersonalNotes, savePersonalNotes } from '@/lib/storage';
-import { FLUSH_WRITES_EVENT } from '@/lib/flush-writes';
+import { FLUSH_WRITES_EVENT, type FlushWritesDetail } from '@/lib/flush-writes';
 import { StickyNote, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PersonalNotesProps {
@@ -59,24 +59,34 @@ export default function PersonalNotes({ className = '' }: PersonalNotesProps) {
     }
   }, [notes, isExpanded]);
 
-  // Debounced save function
-  const debouncedSave = useCallback((value: string) => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  // Commit path shared by the debounce timer and the flush listener so the
+  // two cannot drift.
+  const commitNotes = useCallback(async (value: string) => {
+    try {
+      await savePersonalNotes(value);
+      setHasNotes(value.length > 0);
+    } catch (error) {
+      console.error('Failed to save notes:', error);
+    } finally {
+      setIsSaving(false);
     }
-
-    setIsSaving(true);
-    saveTimeoutRef.current = setTimeout(async () => {
-      try {
-        await savePersonalNotes(value);
-        setHasNotes(value.length > 0);
-      } catch (error) {
-        console.error('Failed to save notes:', error);
-      } finally {
-        setIsSaving(false);
-      }
-    }, 500); // 500ms debounce
   }, []);
+
+  // Debounced save function
+  const debouncedSave = useCallback(
+    (value: string) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      setIsSaving(true);
+      saveTimeoutRef.current = setTimeout(() => {
+        saveTimeoutRef.current = null;
+        commitNotes(value);
+      }, 500); // 500ms debounce
+    },
+    [commitNotes],
+  );
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -91,28 +101,22 @@ export default function PersonalNotes({ className = '' }: PersonalNotesProps) {
   const notesRef = useRef('');
   notesRef.current = notes;
 
-  // Flush pending debounced save (service worker rotation / tab hide): commit
-  // the pending value immediately instead of waiting out the 500ms debounce.
+  // Flush pending debounced save (service worker rotation, or tab hide while
+  // an update is waiting): commit the pending value immediately instead of
+  // waiting out the 500ms debounce, and report the save promise to the flush
+  // collector so the rotation can wait for the commit.
   useEffect(() => {
-    const onFlush = () => {
+    const onFlush = (event: Event) => {
       if (!saveTimeoutRef.current) return;
       clearTimeout(saveTimeoutRef.current);
       saveTimeoutRef.current = null;
-      const value = notesRef.current;
-      savePersonalNotes(value)
-        .then(() => {
-          setHasNotes(value.length > 0);
-        })
-        .catch((error) => {
-          console.error('Failed to save notes:', error);
-        })
-        .finally(() => {
-          setIsSaving(false);
-        });
+      const save = commitNotes(notesRef.current);
+      const detail = (event as CustomEvent<FlushWritesDetail>).detail;
+      if (detail?.pending) detail.pending.push(save);
     };
     document.addEventListener(FLUSH_WRITES_EVENT, onFlush);
     return () => document.removeEventListener(FLUSH_WRITES_EVENT, onFlush);
-  }, []);
+  }, [commitNotes]);
 
   function handleNotesChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     const value = e.target.value;

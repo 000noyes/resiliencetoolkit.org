@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { SW_UPDATE_READY_EVENT, applyUpdate } from '@/lib/sw-register';
+import { SW_UPDATE_READY_EVENT, READY_DATASET_KEY, applyUpdate } from '@/lib/sw-register';
 import { isSuppressed, recordDismissal } from '@/lib/update-banner';
 
 /**
@@ -10,31 +10,35 @@ import { isSuppressed, recordDismissal } from '@/lib/update-banner';
  * Presentation-only — the rotation lifecycle lives in sw-register, so a
  * hydration failure here costs nothing (the idle and resume paths still
  * heal the device).
+ *
+ * Readiness state is read from the documentElement dataset flag (single
+ * source of truth across the inline-script and island bundles); the event
+ * is a change notification, with detail.version null meaning readiness was
+ * withdrawn by a newer deploy (the banner resets and waits for the next
+ * verified generation). The Refresh button stays enabled — applyUpdate is
+ * idempotent and the worker refuses unwarmed rotations, so a second tap is
+ * harmless.
  */
-const REENABLE_MS = 10_000;
-
 export default function UpdateBanner() {
   const [version, setVersion] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
-  const reenableTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // The inline-script bundle mirrors READY state onto the root element for
-    // islands that hydrate after the event fired.
-    const initial = document.documentElement.dataset.rtSwUpdateReady;
+    const initial = document.documentElement.dataset[READY_DATASET_KEY];
     if (initial && !isSuppressed(initial, Date.now())) setVersion(initial);
 
-    const onReady = (event: Event) => {
-      const v = String((event as CustomEvent).detail?.version ?? '');
-      if (reenableTimerRef.current) clearTimeout(reenableTimerRef.current);
+    const onReadyChange = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      const v = detail?.version ? String(detail.version) : null;
       setWorking(false);
-      if (v && !isSuppressed(v, Date.now())) setVersion(v);
+      if (v && !isSuppressed(v, Date.now())) {
+        setVersion(v);
+      } else {
+        setVersion(null);
+      }
     };
-    document.addEventListener(SW_UPDATE_READY_EVENT, onReady);
-    return () => {
-      document.removeEventListener(SW_UPDATE_READY_EVENT, onReady);
-      if (reenableTimerRef.current) clearTimeout(reenableTimerRef.current);
-    };
+    document.addEventListener(SW_UPDATE_READY_EVENT, onReadyChange);
+    return () => document.removeEventListener(SW_UPDATE_READY_EVENT, onReadyChange);
   }, []);
 
   if (!version) return null;
@@ -42,15 +46,12 @@ export default function UpdateBanner() {
   const handleRefresh = () => {
     setWorking(true);
     applyUpdate();
-    // A stacked newer deploy is refused worker-side (it re-warms instead of
-    // rotating unwarmed); if no rotation reloads this page, re-enable the
-    // button rather than leaving it stuck. A fresh READY resets the banner.
-    reenableTimerRef.current = setTimeout(() => setWorking(false), REENABLE_MS);
   };
 
   const handleDismiss = () => {
     recordDismissal(version, Date.now());
     setVersion(null);
+    setWorking(false);
   };
 
   return (
@@ -63,8 +64,7 @@ export default function UpdateBanner() {
           <button
             type="button"
             onClick={handleRefresh}
-            disabled={working}
-            className="text-sm font-medium text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline disabled:opacity-60 disabled:hover:no-underline"
+            className="text-sm font-medium text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline"
           >
             {working ? 'Refreshing' : 'Refresh'}
           </button>

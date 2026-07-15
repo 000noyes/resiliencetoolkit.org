@@ -62,32 +62,36 @@ interface AddRecord {
 class FakeCache {
   entries = new Map<string, any>();
   addCalls: AddRecord[] = [];
-  deletedPaths: string[] = [];
   constructor(private sandbox: SWSandbox) {}
-  private pathOf(req: any): string {
+  // Keys keep the search string (real Cache entries are URL-keyed and
+  // Cache.match does not ignore search) so query-carrying runtime writes are
+  // representable.
+  private keyOf(req: any): string {
     const url = typeof req === 'string' ? req : req.url;
-    return url.startsWith('http') ? new URL(url).pathname : url;
+    if (url.startsWith('http')) {
+      const u = new URL(url);
+      return u.pathname + u.search;
+    }
+    return url;
   }
   async add(req: any) {
-    const path = this.pathOf(req);
+    const key = this.keyOf(req);
     const cacheMode = typeof req === 'string' ? undefined : req.cache;
-    this.addCalls.push({ path, cacheMode });
-    if (this.sandbox.addFailures.has(path)) throw new Error(`add failed: ${path}`);
-    this.entries.set(path, new FakeResponse(`cached:${path}`));
+    this.addCalls.push({ path: key, cacheMode });
+    if (this.sandbox.addFailures.has(key)) throw new Error(`add failed: ${key}`);
+    this.entries.set(key, new FakeResponse(`cached:${key}`));
   }
   async put(req: any, response: any) {
-    this.entries.set(this.pathOf(req), response);
+    this.entries.set(this.keyOf(req), response);
   }
   async match(req: any) {
-    return this.entries.get(this.pathOf(req));
+    return this.entries.get(this.keyOf(req));
   }
   async keys() {
     return [...this.entries.keys()].map((p) => ({ url: ORIGIN + p }));
   }
   async delete(req: any) {
-    const path = this.pathOf(req);
-    this.deletedPaths.push(path);
-    return this.entries.delete(path);
+    return this.entries.delete(this.keyOf(req));
   }
 }
 
@@ -107,12 +111,25 @@ interface SWSandbox {
 function createSandbox(opts?: {
   precache?: string[];
   seedCaches?: Record<string, string[]>;
+  /**
+   * Realistic build stamp for tests exercising version ORDERING (prune /
+   * bounded cleanup). The default PENDING placeholder has no timestamp, so
+   * ordering comparisons fail safe (no deletion) — which would let ordering
+   * tests pass vacuously.
+   */
+  cacheVersion?: string;
 }): { sandbox: SWSandbox; context: any } {
   const precache = opts?.precache ?? DEFAULT_PRECACHE;
-  const swSrc = swSrcRaw.replace(
+  let swSrc = swSrcRaw.replace(
     /\/\/ __PRECACHE_ASSETS_START__[\s\S]*?\/\/ __PRECACHE_ASSETS_END__/,
     `// __PRECACHE_ASSETS_START__\nconst PRECACHE_ASSETS = ${JSON.stringify(precache)};\n// __PRECACHE_ASSETS_END__`
   );
+  if (opts?.cacheVersion) {
+    swSrc = swSrc.replace(
+      /const CACHE_VERSION = '[^']*';/,
+      `const CACHE_VERSION = '${opts.cacheVersion}';`
+    );
+  }
 
   const listeners: Record<string, Listener[]> = {};
   const stores = new Map<string, FakeCache>();
@@ -267,10 +284,14 @@ async function runActivate(sandbox: SWSandbox) {
   return event;
 }
 
-/** Fill the current cache with every precache path + sentinel so precacheComplete() is true. */
-function fillCurrentComplete(sandbox: SWSandbox, precache: string[] = DEFAULT_PRECACHE) {
-  const store = sandbox.stores.get(CURRENT_CACHE) ?? new FakeCache(sandbox);
-  sandbox.stores.set(CURRENT_CACHE, store);
+/** Fill the current cache with every precache path so precacheComplete() is true. */
+function fillCurrentComplete(
+  sandbox: SWSandbox,
+  precache: string[] = DEFAULT_PRECACHE,
+  cacheName: string = CURRENT_CACHE
+) {
+  const store = sandbox.stores.get(cacheName) ?? new FakeCache(sandbox);
+  sandbox.stores.set(cacheName, store);
   for (const p of precache) store.entries.set(p, new FakeResponse(`cached:${p}`));
   return store;
 }
@@ -309,12 +330,14 @@ describe('sw.js — legacy ramp gate (one-time skipWaiting at install)', () => {
     expect(sandbox.skipWaitingCalls).toBe(1);
   });
 
-  it('legacy predicate boundaries: v-build-* and v25-* are legacy; v2 names are not', async () => {
+  it('legacy predicate boundaries: only historical name shapes are legacy', async () => {
     for (const [name, isLegacy] of [
       ['resilience-hub-v-build-20260630103410142', true],
       ['resilience-hub-v25-minimal', true],
       ['resilience-hub-v2-ramp', false],
       [CURRENT_CACHE, false],
+      // A future non-historical prefix must NOT re-arm the fleet-wide ramp.
+      ['resilience-hub-data-store', false],
     ] as const) {
       const { sandbox } = createSandbox({ seedCaches: { [name]: name === RAMP_MARKER ? [] : ['/'] } });
       await runInstall(sandbox);
@@ -378,21 +401,30 @@ describe('sw.js — activate: claim, marker, completeness-gated prune', () => {
     expect([...sandbox.stores.keys()]).toContain('resilience-hub-v-build-20260630103410142');
   });
 
-  it('prunes when complete: deletes legacy + unrelated, retains newer/equal v2 generations', async () => {
+  it('prunes when complete: deletes legacy + unrelated + strictly-older v2, retains newer v2', async () => {
+    const own = 'v-build-20260301000000000';
     const { sandbox } = createSandbox({
+      cacheVersion: own,
       seedCaches: {
         'resilience-hub-v25-minimal': ['/'],
         unrelated: ['/x'],
+        'resilience-hub-v2-v-build-20260101000000000': ['/'],
+        'resilience-hub-v2-v-build-20260201000000000': ['/', '/_astro/keep.js'],
         'resilience-hub-v2-v-build-99999999999999999': ['/'],
       },
     });
-    fillCurrentComplete(sandbox);
+    fillCurrentComplete(sandbox, DEFAULT_PRECACHE, `resilience-hub-v2-${own}`);
     await runActivate(sandbox);
     expect(sandbox.deletedCaches).toContain('resilience-hub-v25-minimal');
     expect(sandbox.deletedCaches).toContain('unrelated');
-    // Newer v2 generation (a warming waiting worker's cache) must survive.
+    // Oldest strictly-older v2 is deleted; the NEWEST strictly-older build
+    // becomes the assets-stripped skew shield instead.
+    expect(sandbox.deletedCaches).toContain('resilience-hub-v2-v-build-20260101000000000');
+    const shield = sandbox.stores.get('resilience-hub-v2-v-build-20260201000000000')!;
+    expect([...shield.entries.keys()]).toEqual(['/_astro/keep.js']);
+    // A NEWER v2 generation (a warming waiting worker's cache) survives whole.
     expect([...sandbox.stores.keys()]).toContain('resilience-hub-v2-v-build-99999999999999999');
-    expect([...sandbox.stores.keys()]).toContain(CURRENT_CACHE);
+    expect([...sandbox.stores.keys()]).toContain(`resilience-hub-v2-${own}`);
   });
 
   it('strips the newest previous BUILD cache to /_astro/* entries instead of deleting it', async () => {
@@ -478,6 +510,33 @@ describe('sw.js — topUpPrecache via messages', () => {
     await event._waitPromise;
     const calls = sandbox.stores.get(CURRENT_CACHE)!.addCalls.map((c) => c.path);
     expect(calls).not.toContain('/modules/1-1/');
+  });
+
+  it('query-carrying runtime cache entries never satisfy the completeness law', async () => {
+    // A visit to /modules/1-1/?print=1 runtime-caches a query-keyed entry;
+    // the plain route is still missing, so rotation must be refused (an
+    // offline navigation to /modules/1-1/ would miss the query-keyed entry).
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.delete('/modules/1-1/');
+    store.entries.set('/modules/1-1/?print=1', new FakeResponse('runtime'));
+    const event = makeMessageEvent({ type: 'SKIP_WAITING' });
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    expect(sandbox.skipWaitingCalls).toBe(0);
+  });
+
+  it('sentinel fast path: a verified-complete generation skips re-enumeration and re-fill', async () => {
+    const { sandbox } = createSandbox({
+      seedCaches: { 'resilience-hub-v25-minimal': ['/'] },
+    });
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    const event = makeMessageEvent('PRECACHE_TOPUP');
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    expect(store.addCalls).toEqual([]);
+    expect(sandbox.deletedCaches).toEqual([]);
   });
 
   it('empty PRECACHE_ASSETS fails safe: no sentinel, no prune', async () => {
@@ -615,6 +674,27 @@ describe('sw.js — first-fetch startup task', () => {
     expect(
       sandbox.caches.open.mock.calls.filter((c: any[]) => c[0] === RAMP_MARKER).length
     ).toBe(markerCreations);
+  });
+
+  it('bounded cleanup: deletes all but the newest sentinel-less stale v2 generation', async () => {
+    // Devices where the fill never completes must not stack a generation per
+    // deploy until quota eviction. The newest sentinel-less stale one (often
+    // the assets-stripped skew shield) survives; older ones die. The current
+    // generation is kept INCOMPLETE here so the normal prune law never runs
+    // and the bounded cleanup is the only deleter.
+    const older = 'resilience-hub-v2-v-build-20260101000000000';
+    const newer = 'resilience-hub-v2-v-build-20260201000000000';
+    const { sandbox } = createSandbox({
+      cacheVersion: 'v-build-20260301000000000',
+      seedCaches: { [older]: ['/'], [newer]: ['/_astro/keep.js'] },
+    });
+    sandbox.addFailures.add('/_astro/a.css');
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html></html>'));
+    const e1 = makeFetchEvent({ url: `${ORIGIN}/`, mode: 'navigate', destination: 'document' });
+    sandbox.listeners.fetch[0](e1);
+    await e1._waitPromise;
+    expect(sandbox.deletedCaches).toContain(older);
+    expect([...sandbox.stores.keys()]).toContain(newer);
   });
 });
 

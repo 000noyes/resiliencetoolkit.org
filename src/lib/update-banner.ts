@@ -16,23 +16,17 @@ interface Dismissal {
   at: number;
 }
 
-// Private-mode / quota fallback: suppress in memory for this page lifetime.
-let memoryFallback: Dismissal | null = null;
-
-/** Test hook — clears the in-memory fallback between cases. */
-export function __resetMemoryFallback(): void {
-  memoryFallback = null;
-}
-
 function readDismissal(): Dismissal | null {
   try {
     const raw = sessionStorage.getItem(UPDATE_DISMISS_KEY);
-    if (!raw) return memoryFallback;
+    if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (typeof parsed?.version === 'string' && typeof parsed?.at === 'number') return parsed;
     return null;
   } catch {
-    return memoryFallback;
+    // Private mode / quota / corrupt value: treat as not dismissed — the
+    // banner reappearing is benign for a notice the rotation paths ignore.
+    return null;
   }
 }
 
@@ -43,11 +37,9 @@ export function isSuppressed(version: string, now: number): boolean {
 }
 
 export function recordDismissal(version: string, now: number): void {
-  const dismissal: Dismissal = { version, at: now };
-  memoryFallback = dismissal;
   try {
-    sessionStorage.setItem(UPDATE_DISMISS_KEY, JSON.stringify(dismissal));
+    sessionStorage.setItem(UPDATE_DISMISS_KEY, JSON.stringify({ version, at: now }));
   } catch {
-    // Private mode / quota: the in-memory fallback above covers this tab.
+    // Private mode / quota: dismissal simply doesn't persist.
   }
 }

@@ -12,13 +12,11 @@ import {
   recordDismissal,
   UPDATE_DISMISS_KEY,
   DISMISS_MAX_AGE_MS,
-  __resetMemoryFallback,
 } from '../../src/lib/update-banner';
 
 describe('update-banner dismissal', () => {
   beforeEach(() => {
     sessionStorage.clear();
-    __resetMemoryFallback();
   });
 
   it('not suppressed with no dismissal recorded', () => {
@@ -48,7 +46,7 @@ describe('update-banner dismissal', () => {
     expect(isSuppressed('v1', Date.now())).toBe(false);
   });
 
-  it('falls back to in-memory suppression when sessionStorage throws', () => {
+  it('storage failure (private mode) degrades to not-dismissed, never throws', () => {
     const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('quota');
     });
@@ -56,9 +54,9 @@ describe('update-banner dismissal', () => {
       throw new Error('quota');
     });
     const now = 1_000_000;
-    recordDismissal('v1', now);
-    expect(isSuppressed('v1', now + 60_000)).toBe(true);
-    expect(isSuppressed('v2', now + 60_000)).toBe(false);
+    expect(() => recordDismissal('v1', now)).not.toThrow();
+    // The banner reappearing in private mode is the accepted, benign outcome.
+    expect(isSuppressed('v1', now + 60_000)).toBe(false);
     setItem.mockRestore();
     getItem.mockRestore();
   });
