@@ -29,14 +29,51 @@ export interface StorageHealth {
   message: string | null;
 }
 
-const UNAVAILABLE_MESSAGE =
-  'This browser is not saving your work on this device right now. That can happen in private or restricted browsing. Anything you type will be lost when you close the page, so back it up now to keep a copy.';
+/**
+ * Structured notice copy (LOCKED at /plan-design-review, 2026-07-15). Each
+ * state is a 500-weight lead phrase + a body sentence, with an optional action
+ * link. The banner renders lead and body separately (the lead carries the
+ * severity, since icons were removed); `message` composes them for the
+ * signal-level checks. No em/en dashes.
+ *
+ * The acute-unavailable state has NO backup link on purpose: exportAllData()
+ * needs IndexedDB, which is exactly what is missing there, so a backup link
+ * would be a dead end. It offers the real remedy (leave private browsing).
+ * The consequence sentence in each acute state ("gone when you close this
+ * page" / "will not save until you free up room") is load-bearing and must
+ * survive any future rewording.
+ */
+export interface StorageNoticeCopy {
+  lead: string;
+  body: string;
+  linkLabel?: string;
+  linkHref?: string;
+}
 
-const FULL_MESSAGE =
-  'This device is out of storage space. You can still back up what you already have, but new entries will not save until you free up some room.';
+export const STORAGE_COPY: Record<'soft' | 'unavailable' | 'full', StorageNoticeCopy> = {
+  soft: {
+    lead: 'Work you save here stays on this device.',
+    body: 'Browsers can clear saved work to make room, so keep a backup copy.',
+    linkLabel: 'Back up',
+    linkHref: '/dashboard#backup',
+  },
+  unavailable: {
+    lead: 'This page is not saving your work right now.',
+    body: 'This can happen in private browsing. Anything you type will be gone when you close this page, so open this site in a regular browser window to work safely.',
+  },
+  full: {
+    lead: 'This device is out of storage space.',
+    body: 'New entries will not save until you free up room. Your saved work is still here and you can keep a copy.',
+    linkLabel: 'Back up now',
+    linkHref: '/dashboard#backup',
+  },
+};
 
-const AT_RISK_MESSAGE =
-  'Your work is saved on this device and stays private, but your browser can clear it to make room. Back it up so you do not lose it.';
+const compose = (c: StorageNoticeCopy): string => `${c.lead} ${c.body}`;
+
+const UNAVAILABLE_MESSAGE = compose(STORAGE_COPY.unavailable);
+const FULL_MESSAGE = compose(STORAGE_COPY.full);
+const AT_RISK_MESSAGE = compose(STORAGE_COPY.soft);
 
 // Module-level flag: an editor that hits a QuotaExceededError flips this so the
 // app-wide banner reflects the full-storage state, not just the editor's inline

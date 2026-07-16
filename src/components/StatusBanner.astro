@@ -12,7 +12,7 @@
   aria-live="polite"
   aria-atomic="true"
 >
-  <span id="status-text">You're working offline.</span>
+  <span id="status-text">You're working offline. Your work still saves on this device.</span>
 </div>
 
 <script>
@@ -51,7 +51,7 @@
     clearBackOnlineTimer();
     banner.classList.remove('bg-primary', 'text-primary-foreground');
     banner.classList.add('bg-muted', 'text-muted-foreground');
-    statusText.textContent = "You're working offline.";
+    statusText.textContent = "You're working offline. Your work still saves on this device.";
     claimNotice('status');
     renderWinner();
   }
