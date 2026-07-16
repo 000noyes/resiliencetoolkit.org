@@ -285,6 +285,12 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Fix:** Extend the service worker's stripped-retention rule to keep `/pagefind/*` alongside `/_astro/*` from the newest previous build cache. Touches the SW prune lifecycle, so it needs the full offline test suite and careful review against the update-propagation invariants.
 **Depends on:** Pagefind core precache (shipped in the find-your-path build)
 
+### Retire full-radius pills from labels and buttons (radius-scale sweep)
+**Priority:** P3
+**Description:** Full-radius (9999px) capsules on text labels and buttons read as generic default styling rather than this site's design system. True circles (rail nodes, numbered step circles, spinners, circular icon buttons, progress tracks) are fine and stay. The pill-shaped surfaces: the shared Badge component, the hand-rolled phase/status chips in ModuleLayout and the modules index, the floating feedback and mobile-TOC buttons, an unused `pill` prop on ActionButton, and the print rule keyed to the pill classes.
+**Fix:** One sweep in its own PR: add a radius principle to DESIGN.md (full radius is reserved for true circles; chips, badges, and buttons use the sm/md/lg/xl scale), restyle Badge once, retire the unused ActionButton `pill` prop, convert the hand-rolled chips and the two floating buttons to the radius scale, and update the print-rule selector to match. Pairs with the phase-badge color alignment below (same chips).
+**Depends on:** None (pairs well with the badge-color alignment sweep)
+
 ### Align /modules phase-badge colors with the PhaseSlider continuum
 **Priority:** P3
 **Description:** The homepage now expresses before/during/after only through PhaseSlider's orange-to-green continuum. The `/modules` index badges and the separate local copy in `ModuleLayout.astro` still use the older Before=blue mapping (`phaseColors` in `src/data/modules.ts`), which inverts the brand system. Declared follow-up from the homepage cycle, not silently left contradicting.

@@ -42,7 +42,7 @@ export const phaseStops: PhaseStop[] = [
     name: 'Response',
     description: 'Coordinate response, track needs, manage volunteers, and communicate with your community.',
     time: 'Day 1 to 2-3 weeks',
-    lead: 'If you are in it now',
+    lead: 'In a flood, go here',
   },
   {
     phase: 'After',
@@ -51,7 +51,7 @@ export const phaseStops: PhaseStop[] = [
     name: 'Recovery',
     description: 'Track recovery progress, support rebuilding, and strengthen long-term community resilience.',
     time: 'Weeks to years',
-    lead: 'In progress',
+    lead: 'Still being shaped',
     incomplete: true,
   },
 ];

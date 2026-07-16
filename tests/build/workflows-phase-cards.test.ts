@@ -28,12 +28,12 @@ describe('workflows phase cards (descriptions default-off)', () => {
     }
   });
 
-  it.skipIf(!WORKFLOWS_PRESENT)('During card carries the "If you are in it now" lead', () => {
-    expect(html).toContain('If you are in it now');
+  it.skipIf(!WORKFLOWS_PRESENT)('During card carries the "In a flood, go here" lead', () => {
+    expect(html).toContain('In a flood, go here');
   });
 
-  it.skipIf(!WORKFLOWS_PRESENT)('After card lead is "In progress" (old lead and sr-only duplication gone)', () => {
-    expect(html).toContain('In progress');
+  it.skipIf(!WORKFLOWS_PRESENT)('After card lead is "Still being shaped" (old lead and sr-only duplication gone)', () => {
+    expect(html).toContain('Still being shaped');
     expect(html).not.toContain('Help shape this path');
     expect(html).not.toContain('in progress, help shape this path');
   });
