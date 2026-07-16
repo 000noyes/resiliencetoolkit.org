@@ -27,8 +27,9 @@ import { phaseStops } from '@/data/phases';
 interface Props {
   heading?: string;
   class?: string;
+  showDescriptions?: boolean; // opt-in one-sentence phase descriptions (homepage); /workflows stays off
 }
-const { heading, class: className } = Astro.props;
+const { heading, class: className, showDescriptions = false } = Astro.props;
 ---
 
 <nav aria-label="Phases of a flood" class:list={['phase-cards', className]}>
@@ -45,9 +46,11 @@ const { heading, class: className } = Astro.props;
             <span class="phase-cards__card">
               <span class="phase-cards__marker text-uppercase-accent">{stop.marker}</span>
               <span class="phase-cards__name">{stop.name}</span>
+              {showDescriptions && stop.description && (
+                <span class="phase-cards__description">{stop.description}</span>
+              )}
               <span class="phase-cards__time text-uppercase-accent">{stop.time}</span>
               {stop.lead && <span class="phase-cards__lead text-uppercase-accent">{stop.lead}</span>}
-              {stop.incomplete && <span class="sr-only">in progress, help shape this path</span>}
             </span>
           </a>
         </li>
@@ -144,6 +147,16 @@ const { heading, class: className } = Astro.props;
     font-size: 1.25rem;
     line-height: 1.25;
     color: var(--foreground);
+  }
+  /* One-sentence phase description (showDescriptions callers only). Copy is
+     verbatim-locked, so orphan control is typographic: text-wrap balances the
+     last line instead of edits to the sentence. */
+  .phase-cards__description {
+    color: var(--muted-foreground);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 0.35rem;
+    text-wrap: pretty;
   }
   .phase-cards__time { color: var(--muted-foreground); margin-top: 0.1rem; }
   .phase-cards__lead { color: var(--primary); margin-top: 0.35rem; } /* the only accent text */
