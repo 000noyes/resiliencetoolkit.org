@@ -96,6 +96,62 @@ function precacheRequest(url) {
   return url.startsWith('/_astro/') ? url : new Request(url, { cache: 'no-cache' });
 }
 
+// CDN-poison defense. This origin (Cloudflare Pages) answers ANY unknown
+// path — including an /_astro/* URL the serving deployment does not have,
+// which happens in the window around every deploy — with the homepage as
+// 200 text/html (SPA fallback), and that response is browser-cacheable.
+// Stored under an asset URL it becomes a persistent MIME refusal: every
+// page referencing the asset renders unstyled with dead islands (the
+// 2026-07-16 update flash). HTML is only ever legitimate for a document,
+// so these guards keep it out of every asset slot: the fill leaves a hole
+// (the completeness gate then refuses to rotate onto the generation), the
+// runtime path retries once past the HTTP cache and never caches HTML for
+// an asset destination, and a poisoned entry found at serve time is purged.
+function isHtmlResponse(response) {
+  const contentType =
+    response && response.headers && typeof response.headers.get === 'function'
+      ? response.headers.get('content-type')
+      : null;
+  return typeof contentType === 'string' && contentType.toLowerCase().includes('text/html');
+}
+
+// Destinations for which text/html can only be poison. 'document' is exempt
+// (HTML is its job), as is '' (bare fetch() calls may legitimately load HTML).
+const HTML_POISONABLE_DESTINATIONS = new Set(['style', 'script', 'font', 'image']);
+
+function isPoisonedAssetResponse(response, destination) {
+  return HTML_POISONABLE_DESTINATIONS.has(destination) && isHtmlResponse(response);
+}
+
+// Purge a poisoned entry wherever it lives: runtime writes land in the
+// writing worker's own generation, and the prune-retained previous build
+// cache keeps its /_astro/* entries, so every cache must be swept.
+async function deleteFromAllCaches(request) {
+  for (const name of await caches.keys()) {
+    await (await caches.open(name)).delete(request, { ignoreVary: true });
+  }
+}
+
+// Fetch-and-store one precache entry, refusing HTML in a non-route slot.
+// On poison the entry is retried once with cache:'reload' (a poisoned HTTP
+// cache heals; see the SPA-fallback note above); if the origin still
+// answers HTML the entry is dropped and the error propagates, leaving a
+// hole the completeness law converts into a refused rotation — the user
+// stays on the previous whole generation instead of flashing.
+async function fillOne(cache, url) {
+  await cache.add(precacheRequest(url));
+  if (url.endsWith('/')) return;
+  let stored = await cache.match(url);
+  if (!stored || !isHtmlResponse(stored)) return;
+  await cache.delete(url);
+  await cache.add(new Request(url, { cache: 'reload' }));
+  stored = await cache.match(url);
+  if (stored && isHtmlResponse(stored)) {
+    await cache.delete(url);
+    throw new Error(`precache fetch for ${url} answered text/html`);
+  }
+}
+
 // Pathnames present in a cache, counting ONLY query-less entries. The
 // runtime navigation handler cache.puts full request URLs, so a visit to
 // /route/?utm=x stores a query-carrying key; counting it as /route/ would
@@ -176,7 +232,7 @@ async function fillChunked(cache, urls) {
     const chunk = urls.slice(i, i + TOPUP_CHUNK_SIZE);
     await Promise.allSettled(
       chunk.map((url) =>
-        cache.add(precacheRequest(url)).catch((e) => {
+        fillOne(cache, url).catch((e) => {
           console.warn('SW: failed to cache', url, e);
           throw e;
         })
@@ -237,7 +293,7 @@ self.addEventListener('install', (event) => {
       // topUpPrecache, the one warm mechanism, so install stays small and
       // fast, and the completeness gate still governs rotation and pruning.
       const cache = await caches.open(CACHE_NAME);
-      await Promise.all(ESSENTIAL_ASSETS.map((url) => cache.add(precacheRequest(url))));
+      await Promise.all(ESSENTIAL_ASSETS.map((url) => fillOne(cache, url)));
 
       // One-time legacy ramp: devices pinned to a pre-v2 worker have no page
       // code that can rotate them, so the worker self-promotes ONCE. The
@@ -445,18 +501,42 @@ self.addEventListener('fetch', (event) => {
   // immutable + same-origin, so there is only ever one variant per URL. Safe.
   event.respondWith(
     caches.match(event.request, { ignoreVary: true }).then((cached) => {
-      if (cached && !cached.redirected) return cached;
-      return fetch(event.request).then((response) => {
-        if (
-          response.ok &&
-          !response.redirected &&
-          CACHEABLE_DESTINATIONS.has(event.request.destination)
-        ) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-        }
-        return response;
-      }).catch(() => cached || new Response('Offline', { status: 503 }));
+      // A worker (this one or an earlier generation) may have stored
+      // fallback HTML under this asset URL. Purge it everywhere BEFORE the
+      // refetch (a concurrent purge would race the clean re-cache) and
+      // treat the lookup as a miss — this self-heals devices poisoned
+      // before this worker deployed, instead of MIME-refusing on every
+      // page that needs the asset until the caches are cleared by hand.
+      const poisoned = !!cached && isPoisonedAssetResponse(cached, event.request.destination);
+      if (cached && !poisoned && !cached.redirected) return cached;
+      const offlineFallback = poisoned ? undefined : cached;
+      const purge = poisoned
+        ? deleteFromAllCaches(event.request).catch(() => {})
+        : Promise.resolve();
+      return purge.then(() =>
+        fetch(event.request)
+          .then((response) =>
+            // The HTTP cache (poisoned for up to 4h by the CDN's cacheable
+            // SPA fallback) or a mid-deploy origin answered an asset request
+            // with HTML: retry once straight past the HTTP cache.
+            isPoisonedAssetResponse(response, event.request.destination)
+              ? fetch(event.request.url, { cache: 'reload' })
+              : response
+          )
+          .then((response) => {
+            if (
+              response.ok &&
+              !response.redirected &&
+              CACHEABLE_DESTINATIONS.has(event.request.destination) &&
+              !isPoisonedAssetResponse(response, event.request.destination)
+            ) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+            }
+            return response;
+          })
+          .catch(() => offlineFallback || new Response('Offline', { status: 503 }))
+      );
     })
   );
 });
