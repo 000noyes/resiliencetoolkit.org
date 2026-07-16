@@ -11,6 +11,20 @@ const CONTACT_TEXT = 'Contact us for support';
 
 test.describe('Contact banner', () => {
   test.beforeEach(async ({ page }) => {
+    // Force a durable (persisted) origin so the storage-health reminder stays
+    // silent. Contact is the lowest-priority claim in the single-slot system,
+    // so on a non-persistent origin the soft storage reminder correctly
+    // outranks and masks it; a healthy origin makes contact the sole claimant.
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'storage', {
+        configurable: true,
+        value: {
+          persist: async () => true,
+          persisted: async () => true,
+          estimate: async () => ({ usage: 0, quota: 1e9 }),
+        },
+      });
+    });
     await page.goto('/');
     await page.evaluate(() => window.localStorage.clear());
   });
