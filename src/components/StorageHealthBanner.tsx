@@ -3,6 +3,7 @@ import { X, AlertTriangle } from 'lucide-react';
 import { checkStorageHealth, STORAGE_HEALTH_EVENT, type StorageHealth } from '@/lib/storageHealth';
 import { useNoticeClaim } from '@/lib/useNoticeClaim';
 import { dampNotice } from '@/lib/notices';
+import { isBackupFresh } from '@/lib/backup';
 
 /**
  * App-wide storage-health banner.
@@ -60,8 +61,15 @@ function StorageHealthBannerInner() {
   const acuteState = health?.status === 'unavailable' || health?.status === 'full';
   const softState = health?.status === 'at-risk';
 
+  // Soft reminder stays quiet for 14 days after a completed backup; acute
+  // states ignore suppression entirely. A completed backup dispatches
+  // STORAGE_HEALTH_EVENT, which re-runs the health check above and re-renders
+  // here, so the reminder quiets same-tab without a navigation.
   const acuteWinner = useNoticeClaim('storageAcute', !!acuteState);
-  const softWinner = useNoticeClaim('storageSoft', !!softState && !dismissed);
+  const softWinner = useNoticeClaim(
+    'storageSoft',
+    !!softState && !dismissed && !isBackupFresh(Date.now()),
+  );
 
   const handleDismiss = () => {
     try {
