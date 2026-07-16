@@ -49,14 +49,27 @@ class FakeResponse {
   redirected: boolean;
   status: number;
   body: any;
-  constructor(body: any, init?: { status?: number; redirected?: boolean }) {
+  headers: { get: (name: string) => string | null };
+  private headerMap: Record<string, string>;
+  constructor(
+    body: any,
+    init?: { status?: number; redirected?: boolean; headers?: Record<string, string> }
+  ) {
     this.body = body;
     this.status = init?.status ?? 200;
     this.ok = this.status >= 200 && this.status < 300;
     this.redirected = init?.redirected ?? false;
+    this.headerMap = Object.fromEntries(
+      Object.entries(init?.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v])
+    );
+    this.headers = { get: (name: string) => this.headerMap[name.toLowerCase()] ?? null };
   }
   clone() {
-    return new FakeResponse(this.body, { status: this.status, redirected: this.redirected });
+    return new FakeResponse(this.body, {
+      status: this.status,
+      redirected: this.redirected,
+      headers: this.headerMap,
+    });
   }
 }
 
@@ -94,6 +107,19 @@ class FakeCache {
     const cacheMode = typeof req === 'string' ? undefined : req.cache;
     this.addCalls.push({ path: key, cacheMode });
     if (this.sandbox.addFailures.has(key)) throw new Error(`add failed: ${key}`);
+    // Poison hooks: the origin (or a poisoned HTTP cache) answered this URL
+    // with fallback HTML instead of the asset. `addPoisonsOnce` clears after
+    // one hit — the HTTP-cache case, healed by a cache:'reload' retry.
+    if (this.sandbox.addPoisons.has(key) || this.sandbox.addPoisonsOnce.has(key)) {
+      this.sandbox.addPoisonsOnce.delete(key);
+      this.entries.set(
+        key,
+        new FakeResponse('<html>fallback</html>', {
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
+      );
+      return;
+    }
     this.entries.set(key, new FakeResponse(`cached:${key}`));
   }
   async put(req: any, response: any) {
@@ -116,6 +142,8 @@ interface SWSandbox {
   caches: any;
   fetchMock: ReturnType<typeof vi.fn>;
   addFailures: Set<string>;
+  addPoisons: Set<string>;
+  addPoisonsOnce: Set<string>;
   skipWaitingCalls: number;
   clientsClaimCalls: number;
   windowClients: Array<{ visibilityState?: string }>;
@@ -155,6 +183,8 @@ function createSandbox(opts?: {
     caches: null,
     fetchMock: vi.fn(),
     addFailures: new Set(),
+    addPoisons: new Set(),
+    addPoisonsOnce: new Set(),
     skipWaitingCalls: 0,
     clientsClaimCalls: 0,
     windowClients: [],
@@ -926,5 +956,148 @@ describe('sw.js — D7 asset handler (strategies unchanged)', () => {
     await event._response;
     await new Promise((r) => setTimeout(r, 0));
     expect(sandbox.stores.get(CURRENT_CACHE)?.entries.has('/_astro/x.css') ?? false).toBe(false);
+  });
+});
+
+describe('sw.js — CDN-poison defense (HTML must never be stored or served under an asset URL)', () => {
+  // The origin is a Cloudflare Pages site with SPA fallback: an unknown
+  // /_astro/* URL (a deploy-transition window) is answered with the homepage
+  // as 200 text/html, browser-cacheable. Every layer that could store or
+  // serve that response under an asset URL must refuse (the 2026-07-16
+  // update flash).
+  const POISON_HEADERS = { 'content-type': 'text/html; charset=utf-8' };
+
+  it('fill: an HTML response for a non-route entry leaves a hole, never a sentinel', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.addPoisons.add('/_astro/a.css');
+    const event = makeMessageEvent('PRECACHE_TOPUP');
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    const store = sandbox.stores.get(CURRENT_CACHE)!;
+    expect(store.entries.has('/_astro/a.css')).toBe(false);
+    expect(store.entries.has(SENTINEL)).toBe(false);
+    // The asset hole also keeps route HTML unfetched (assets-before-routes law).
+    expect(store.addCalls.map((c) => c.path)).not.toContain('/modules/1-1/');
+  });
+
+  it('fill: retries once past the HTTP cache before giving the entry up', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.addPoisons.add('/_astro/a.css');
+    const event = makeMessageEvent('PRECACHE_TOPUP');
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    const attempts = sandbox.stores.get(CURRENT_CACHE)!.addCalls.filter(
+      (c) => c.path === '/_astro/a.css'
+    );
+    expect(attempts.length).toBe(2);
+    expect(attempts[1].cacheMode).toBe('reload');
+  });
+
+  it('fill: a poisoned HTTP cache heals via the reload retry and the fill completes', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.addPoisonsOnce.add('/_astro/a.css');
+    const event = makeMessageEvent('PRECACHE_TOPUP');
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    const store = sandbox.stores.get(CURRENT_CACHE)!;
+    expect(store.entries.get('/_astro/a.css')?.body).toBe('cached:/_astro/a.css');
+    expect(store.entries.has(SENTINEL)).toBe(true);
+  });
+
+  it('fill: route HTML entries are exempt (routes are HTML by design)', async () => {
+    const { sandbox } = createSandbox();
+    const event = makeMessageEvent('PRECACHE_TOPUP');
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    const store = sandbox.stores.get(CURRENT_CACHE)!;
+    // No route was retried or dropped: exactly one add per route entry.
+    for (const route of ['/modules/1-1/', '/dashboard/']) {
+      expect(store.addCalls.filter((c) => c.path === route).length).toBe(1);
+      expect(store.entries.has(route)).toBe(true);
+    }
+  });
+
+  it('runtime: an HTML network response for a style request is retried with cache:reload and the clean retry is served + cached', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.fetchMock
+      .mockResolvedValueOnce(new FakeResponse('<html>fallback</html>', { headers: POISON_HEADERS }))
+      .mockResolvedValueOnce(new FakeResponse('body{}', { headers: { 'content-type': 'text/css' } }));
+    const event = makeFetchEvent({ url: `${ORIGIN}/_astro/x.css`, mode: 'no-cors', destination: 'style' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('body{}');
+    expect(sandbox.fetchMock).toHaveBeenCalledTimes(2);
+    expect(sandbox.fetchMock.mock.calls[1][1]).toMatchObject({ cache: 'reload' });
+    await new Promise((r) => setTimeout(r, 0));
+    expect(sandbox.stores.get(CURRENT_CACHE)!.entries.get('/_astro/x.css')?.body).toBe('body{}');
+  });
+
+  it('runtime: HTML that survives the retry is passed through but NEVER cached', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.fetchMock.mockResolvedValue(
+      new FakeResponse('<html>fallback</html>', { headers: POISON_HEADERS })
+    );
+    const event = makeFetchEvent({ url: `${ORIGIN}/_astro/x.css`, mode: 'no-cors', destination: 'style' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('<html>fallback</html>');
+    await new Promise((r) => setTimeout(r, 0));
+    expect(sandbox.stores.get(CURRENT_CACHE)?.entries.has('/_astro/x.css') ?? false).toBe(false);
+  });
+
+  it('serve: a poisoned cached entry is treated as a miss, purged from every cache, and replaced by the network response', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    store.entries.set('/_astro/a.css', new FakeResponse('<html>fallback</html>', { headers: POISON_HEADERS }));
+    // A prune-retained previous generation may carry the same poison.
+    const kept = new FakeCache(sandbox);
+    kept.entries.set('/_astro/a.css', new FakeResponse('<html>fallback</html>', { headers: POISON_HEADERS }));
+    sandbox.stores.set('resilience-hub-v2-v-build-20260101000000000', kept);
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('body{}', { headers: { 'content-type': 'text/css' } }));
+    const event = makeFetchEvent({ url: `${ORIGIN}/_astro/a.css`, mode: 'no-cors', destination: 'style' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('body{}');
+    await new Promise((r) => setTimeout(r, 0));
+    expect(store.entries.get('/_astro/a.css')?.body).toBe('body{}');
+    expect(kept.entries.has('/_astro/a.css')).toBe(false);
+  });
+
+  it('serve: offline with only a poisoned entry -> 503, never the HTML (and never /offline/)', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    store.entries.set('/_astro/a.css', new FakeResponse('<html>fallback</html>', { headers: POISON_HEADERS }));
+    sandbox.fetchMock.mockRejectedValue(new Error('offline'));
+    const event = makeFetchEvent({ url: `${ORIGIN}/_astro/a.css`, mode: 'no-cors', destination: 'style' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.status).toBe(503);
+    expect(response.body).toBe('Offline');
+  });
+
+  it('Q3 pin: a failed uncached asset request falls to a 503, never the /offline/ HTML page', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    sandbox.fetchMock.mockRejectedValue(new Error('offline'));
+    const event = makeFetchEvent({ url: `${ORIGIN}/_astro/never-cached.css`, mode: 'no-cors', destination: 'style' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.status).toBe(503);
+    expect(response.body).not.toBe('cached:/offline/');
+  });
+
+  it('document destinations are exempt: HTML is their job', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html>page</html>', { headers: POISON_HEADERS }));
+    const event = makeFetchEvent({ url: `${ORIGIN}/embedded-frame`, mode: 'no-cors', destination: 'document' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('<html>page</html>');
+    expect(sandbox.fetchMock).toHaveBeenCalledTimes(1);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(sandbox.stores.get(CURRENT_CACHE)!.entries.has('/embedded-frame')).toBe(true);
   });
 });

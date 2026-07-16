@@ -1,0 +1,93 @@
+---
+// Not-found page. Astro emits this as dist/404.html, which Cloudflare Pages
+// serves with a real 404 status for any unknown path. Its presence is
+// load-bearing beyond courtesy: WITHOUT a 404.html, Cloudflare Pages falls
+// back to single-page-app mode and answers every unknown path — including
+// /_astro/* asset URLs from another deploy during the window around a
+// release — with the homepage as 200 text/html. Stored under an asset URL,
+// that response breaks pages with MIME refusals (the 2026-07-16 update
+// flash). A real 404 status means no cache layer will ever keep it.
+//
+// DELIBERATELY STANDALONE, like /offline/: no BaseLayout, no hashed /_astro/
+// dependencies, so this page renders whole no matter which build's assets a
+// device holds. Colors mirror base.css tokens.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page not found | Resilience Hub Toolkit</title>
+    <meta name="description" content="There is no page at this address." />
+    <meta name="robots" content="noindex" />
+    <!-- is:inline keeps the styles in this HTML instead of a hashed /_astro/
+         asset — this page must not depend on any build's asset set. -->
+    <style is:inline>
+      :root {
+        --background: oklch(0.9911 0 0);
+        --foreground: oklch(0.2046 0 0);
+        --muted-foreground: oklch(0.2435 0 0);
+        --primary: oklch(0.5756 0.1368 42.8);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: oklch(0.1822 0 0);
+          --foreground: oklch(0.9288 0.0126 255.5078);
+          --muted-foreground: oklch(0.82 0.01 255.5);
+          --primary: oklch(0.75 0.15 42.8);
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 3rem 1rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+      }
+      p {
+        color: var(--muted-foreground);
+        margin: 0 0 0.75rem;
+      }
+      ul {
+        list-style: none;
+        margin: 2rem 0 0;
+        padding: 0;
+      }
+      li {
+        margin: 0 0 0.5rem;
+      }
+      a {
+        color: var(--primary);
+        font-weight: 500;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>There is no page at this address</h1>
+      <p>The address may have changed or been mistyped.</p>
+      <ul>
+        <li><a href="/">Go to the home page</a></li>
+        <li><a href="/modules">Browse the toolkit modules</a></li>
+      </ul>
+    </main>
+  </body>
+</html>

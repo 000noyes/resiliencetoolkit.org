@@ -5,6 +5,15 @@ All notable changes to ResilienceToolkit.org are documented here.
 ## [Unreleased]
 
 ### Fixed
+- A rare unstyled-page flash around site updates. While a deploy is settling,
+  a request for a stylesheet or script could be answered with a copy of the
+  home page instead of the file, and that wrong answer could be kept and
+  replayed. The site now refuses to keep or serve such responses, holds back
+  the update notice until the downloaded update is verified sound, and repairs
+  itself automatically on the next load (previously a manual hard refresh was
+  needed). Saved answers were never affected.
+- Unknown addresses now show a proper "page not found" message instead of a
+  copy of the home page.
 - Returning visitors no longer see weeks-old pages. Devices pinned to an old
   service worker that never handed off now pick up the current site on their
   next visit, with no action needed and no effect on saved answers (all user
