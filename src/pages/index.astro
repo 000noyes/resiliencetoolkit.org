@@ -131,8 +131,8 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
           </div>
         </div>
 
-        <!-- CTA Button: outline — filled orange on this page is reserved for the
-             hero CTA and the cards' rail -->
+        <!-- CTA Button: outline variant; filled orange on this page is reserved
+             for the hero CTA and the cards' rail -->
         <div class="text-center mt-2">
           <ActionButton href="/modules" variant="outline" size="lg">
             Explore All Modules
@@ -621,7 +621,7 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
           if (results.length > 5) {
             const more = document.createElement('div');
             more.className = 'p-3 text-center text-body-small text-muted-foreground border-t border-border';
-            more.textContent = (results.length - 5) + ' more results \u2014 refine your search to narrow down.';
+            more.textContent = (results.length - 5) + ' more results. Refine your search to narrow down.';
             hitsEl.appendChild(more);
           }
         };
@@ -639,7 +639,7 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
 
           const pf = await loadPagefind();
           if (!pf) {
-            statusEl.textContent = 'Search requires a production build. Run: pnpm build && pnpm preview';
+            statusEl.textContent = 'Search is unavailable right now.';
             return;
           }
 

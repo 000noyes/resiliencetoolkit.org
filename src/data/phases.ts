@@ -22,7 +22,7 @@ export interface PhaseStop {
   description?: string; // one-sentence phase description — rendered only when a caller opts in via PhaseSlider's showDescriptions
   time: string; // FEMA-derived timeframe sub-label (the quiet line)
   lead?: string; // optional accent tag under the node (e.g. "Start here")
-  incomplete?: boolean; // After only — drives the open-ring + sr-only in-progress affordance
+  incomplete?: boolean; // After only — drives the open-ring affordance
 }
 
 export const phaseStops: PhaseStop[] = [
