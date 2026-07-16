@@ -1458,3 +1458,36 @@ table tr td:only-child strong[id] {
     animation: none !important;
   }
 }
+
+/* -----------------------------------------------------------------------------
+   Notice strip whisper tints (design review passes 5-6; hue-aligned to system
+   tokens). Supplementary tint only (~1.05-1.08:1 vs the page) — severity is
+   carried by copy weight + role, never by color. The lead phrase uses
+   --destructive on acute; links on these tinted strips use the foreground
+   color (primary orange fails contrast here). See DESIGN.md.
+   -------------------------------------------------------------------------- */
+.notice-soft {
+  background-color: oklch(0.976 0.016 66);
+  border-color: oklch(0.92 0.022 66);
+}
+.dark .notice-soft {
+  background-color: oklch(0.225 0.014 66);
+  border-color: oklch(0.3 0.016 66);
+}
+.notice-acute {
+  background-color: oklch(0.965 0.014 32.7);
+  border-color: oklch(0.91 0.02 32.7);
+}
+.dark .notice-acute {
+  background-color: oklch(0.222 0.014 32.7);
+  border-color: oklch(0.3 0.018 32.7);
+}
+/* Back-online flash: quiet green, replaces the primary-orange flash. */
+.notice-online-flash {
+  background-color: oklch(0.94 0.035 157);
+  color: oklch(0.31 0.07 157);
+}
+.dark .notice-online-flash {
+  background-color: oklch(0.27 0.045 157);
+  color: oklch(0.87 0.06 157);
+}

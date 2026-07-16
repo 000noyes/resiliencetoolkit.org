@@ -33,11 +33,14 @@ function BetaBannerInner() {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="relative flex items-center justify-center">
-          <p className="text-sm text-foreground text-center pr-8">
+          <p
+            className="text-sm text-foreground text-center pe-11"
+            style={{ textWrap: 'balance' }}
+          >
             Contact us for support at{' '}
             <a
               href="mailto:resiliencetoolkit@gocros.org"
-              className="text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline"
+              className="text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline [overflow-wrap:anywhere]"
             >
               resiliencetoolkit@gocros.org
             </a>
@@ -45,7 +48,7 @@ function BetaBannerInner() {
           <button
             type="button"
             onClick={handleDismiss}
-            className="absolute right-0 text-muted-foreground hover:text-foreground transition-colors p-2 -m-2"
+            className="absolute end-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Dismiss site notice"
             title="Dismiss"
           >

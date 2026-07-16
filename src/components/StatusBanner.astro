@@ -7,7 +7,7 @@
 
 <div
   id="status-banner"
-  class="bg-muted text-muted-foreground px-4 py-2 text-sm text-center transition-all duration-300 hidden no-print"
+  class="bg-muted text-muted-foreground px-4 py-2 text-sm text-center hidden no-print"
   role="status"
   aria-live="polite"
   aria-atomic="true"
@@ -49,7 +49,7 @@
   function showOffline() {
     if (!banner || !statusText) return;
     clearBackOnlineTimer();
-    banner.classList.remove('bg-primary', 'text-primary-foreground');
+    banner.classList.remove('notice-online-flash');
     banner.classList.add('bg-muted', 'text-muted-foreground');
     statusText.textContent = "You're working offline. Your work still saves on this device.";
     claimNotice('status');
@@ -60,7 +60,7 @@
     if (!banner || !statusText) return;
     clearBackOnlineTimer();
     banner.classList.remove('bg-muted', 'text-muted-foreground');
-    banner.classList.add('bg-primary', 'text-primary-foreground');
+    banner.classList.add('notice-online-flash');
     statusText.textContent = "You're back online.";
     claimNotice('status');
     renderWinner();
