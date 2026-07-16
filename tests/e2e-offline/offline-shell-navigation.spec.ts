@@ -42,27 +42,39 @@ async function waitForServiceWorker(page: import('@playwright/test').Page) {
   );
 }
 
-// The precache is complete when the page routes AND the /_astro bundles are
-// present. With the resilient install (essentials first, top-up after
-// activation) this settles a beat later than install, so poll the cache
-// contents rather than assuming install implies completeness.
+// The precache is complete when the worker has written its completeness
+// sentinel. The merged worker fills the precache DETACHED from activation (so
+// a user-triggered rotation never waits on a full fill over a mobile
+// connection), which means "SW ready" no longer implies "precache whole". A
+// proxy count of routes plus /_astro entries can flip true a beat before the
+// route pages land, so wait on the worker's own signal instead: it writes
+// /__rt-precache-complete__ only once every precache path is present.
+//
+// Polled via evaluate rather than page.waitForFunction: an async
+// waitForFunction predicate resolves on its returned promise here (it is not
+// awaited), so a cache lookup inside one would pass before the fill finishes.
+// page.evaluate awaits the async body, so the sentinel check is real.
+const PRECACHE_COMPLETE_SENTINEL = '/__rt-precache-complete__';
+
+async function precacheSentinelPresent(page: import('@playwright/test').Page) {
+  return page.evaluate(async (sentinel) => {
+    const names = await caches.keys();
+    for (const name of names) {
+      const cache = await caches.open(name);
+      if (await cache.match(sentinel)) return true;
+    }
+    return false;
+  }, PRECACHE_COMPLETE_SENTINEL);
+}
+
 async function waitForPrecacheComplete(page: import('@playwright/test').Page) {
-  await page.waitForFunction(
-    async () => {
-      const names = await caches.keys();
-      if (!names.length) return false;
-      const paths = new Set<string>();
-      for (const name of names) {
-        const cache = await caches.open(name);
-        for (const req of await cache.keys()) paths.add(new URL(req.url).pathname);
-      }
-      const routesReady = ['/dashboard/', '/downloads/', '/about/', '/map/'].every((r) => paths.has(r));
-      const astroReady = [...paths].filter((p) => p.startsWith('/_astro/')).length > 20;
-      return routesReady && astroReady;
-    },
-    null,
-    { timeout: 30_000 },
-  );
+  const deadline = Date.now() + 30_000;
+  while (!(await precacheSentinelPresent(page))) {
+    if (Date.now() > deadline) {
+      throw new Error('precache did not write its completeness sentinel within 30s');
+    }
+    await page.waitForTimeout(250);
+  }
 }
 
 // Cut the network for real, then prove it with a guaranteed cache-miss probe

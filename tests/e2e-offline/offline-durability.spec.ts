@@ -48,21 +48,34 @@ test('a cold precached route renders styled + interactive when opened offline', 
   await page.reload({ waitUntil: 'load' });
   await waitForServiceWorker(page);
 
-  // Anti-flake guard: the SW becomes active only after install's waitUntil
-  // (which includes the /_astro precache) settles, but assert the cache is
-  // actually populated before cutting the network so a slow-CI timing miss can
-  // never masquerade as the bug this test guards.
-  await page.waitForFunction(
-    async () => {
+  // Anti-flake guard: assert the precache is actually WHOLE before cutting the
+  // network so a slow-CI timing miss can never masquerade as the bug this test
+  // guards. The merged worker fills the precache DETACHED from activation, so
+  // SW-active does not imply the fill finished, and a raw /_astro count can
+  // flip true before the cold route's assets land. Wait on the worker's own
+  // completeness signal: it writes /__rt-precache-complete__ only once every
+  // precache path (routes plus /_astro bundles) is present.
+  //
+  // Polled via evaluate rather than page.waitForFunction: an async
+  // waitForFunction predicate resolves on its returned promise here (it is not
+  // awaited), so a cache lookup inside one would pass before the fill finishes.
+  // page.evaluate awaits the async body, so the sentinel check is real.
+  const sentinelDeadline = Date.now() + 15_000;
+  for (;;) {
+    const complete = await page.evaluate(async () => {
       const names = await caches.keys();
-      if (!names.length) return false;
-      const cache = await caches.open(names[0]);
-      const keys = await cache.keys();
-      return keys.filter((r) => new URL(r.url).pathname.startsWith('/_astro/')).length > 20;
-    },
-    null,
-    { timeout: 15_000 },
-  );
+      for (const name of names) {
+        const cache = await caches.open(name);
+        if (await cache.match('/__rt-precache-complete__')) return true;
+      }
+      return false;
+    });
+    if (complete) break;
+    if (Date.now() > sentinelDeadline) {
+      throw new Error('precache did not write its completeness sentinel within 15s');
+    }
+    await page.waitForTimeout(250);
+  }
 
   // 2) Start watching for any `/_astro/*` asset that fails to load. Set this up
   //    BEFORE going offline so we capture the cold-route subresource fetches.
