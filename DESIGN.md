@@ -78,7 +78,7 @@
 ## Component Notes (for implementation)
 
 ### Active Components — Quality Assessment
-- **BetaBanner.tsx** — Top-of-every-page beta announcement. Neutral chrome (`bg-card border-b border-border`), copy "Your feedback shapes this site", mailto link in `text-primary`, no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Mounts in BaseLayout above StatusBanner.
+- **BetaBanner.tsx** (the contact strip) — Top-of-every-page contact notice. Neutral chrome (`bg-card border-b border-border`), copy "Contact us for support at resiliencetoolkit@gocros.org", mailto link in `text-primary`, no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Participates in the single-slot notice system as the lowest-priority `contact` claim (see Notice strips below). Mounts in BaseLayout above StatusBanner.
 - **Footer "Last updated" stamp** — Small muted line in Footer (`text-xs text-muted-foreground/80`) showing the build date as `<time datetime="YYYY-MM-DD">`. Quiet transparency that the site is being maintained, in lieu of a public changelog or update prompt.
 - **TableOfContents** (4 files) — Well-structured, no issues
 - **EditableTable** (226 lines) — Being replaced by DataTable in Template Kit v2. Row ID strategy (`rowId < 1000` = initial) is fragile. Storage split across localStorage + IndexedDB.
@@ -86,6 +86,31 @@
 - **ChecklistRow.tsx** (173 lines) — Duplicates Todo logic. Not DRY. Missing print styles.
 - **ExternalLink chain** (~378 lines) — Over-engineered modal for "leaving this site" confirmation. Intent unclear. Flagged P3 in CLAUDE.md.
 - **UserProgressDashboard** (570 lines) — Hardcoded module names/URLs. Event cascade risk on storage changes.
+
+### Notice strips (single-slot system)
+The four top-of-page strips (storage-health, offline/online status, update, contact) never
+stack: they share one slot by priority (storage-acute > status > update > storage-soft >
+contact) and at most one renders at a time. Each island claims the slot on its own condition
+via a presence-only `documentElement` dataset key plus the `rt:notice-changed` event, and
+renders only while it is the winner. This is the house pattern for cross-island coordination:
+the islands stay separate (a hydration failure in one never silences the others, including
+the acute data-loss warning) and share a thin dataset + event convention rather than merging
+into one component. A dismissal damps the slot so the next-lower strip waits for the next
+navigation instead of popping in.
+
+Visual treatment (Variant C, "whisper tint"): no icons — severity is carried by a 500-weight
+lead phrase + ARIA role (acute = `alert`/assertive; others = `status`/polite; contact keeps
+`region`), never by color. Storage strips carry a barely-there tint (~1.05-1.08:1 vs the page)
+hue-aligned to the system tokens:
+- soft (warning hue 66): bg `oklch(0.976 0.016 66)` / border `oklch(0.92 0.022 66)`; dark bg `oklch(0.225 0.014 66)` / border `oklch(0.3 0.016 66)`
+- acute (destructive hue 32.7): bg `oklch(0.965 0.014 32.7)` / border `oklch(0.91 0.02 32.7)`; dark bg `oklch(0.222 0.014 32.7)` / border `oklch(0.3 0.018 32.7)`. Lead phrase in `--destructive`.
+- back-online flash: quiet green `oklch(0.94 0.035 157)` text `oklch(0.31 0.07 157)` (dark `oklch(0.27 0.045 157)` / `oklch(0.87 0.06 157)`), replacing the former primary-orange flash.
+
+Tokens live in `base.css` as `.notice-soft` / `.notice-acute` / `.notice-online-flash`. Links
+on tinted strips use the strip foreground color + underline + 500 weight (primary orange fails
+contrast on the tint); neutral strips keep the `text-primary` link. Dismiss targets are 44x44px
+via logical inset (`end-0`); copy uses `text-wrap: balance` and left-aligns below 400px. Strips
+swap instantly — no height or fade animation.
 
 ### Deferred Components
 - **Reference templates (DO NOT delete):** WhatsNewBanner, OfflineReadyBanner — in `src/design-system/_deferred/`, zero imports. Kept as canonical templates for BetaBanner (top-banner pattern + localStorage dismissal) and the bottom-right fixed-toast pattern should it ever return.
