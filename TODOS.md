@@ -361,6 +361,14 @@ Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: {
 
 **Depends on:** Nothing. Self-contained verifier refinement.
 
+## Accessibility
+
+### Sitewide `text-primary` link contrast on card surfaces (~4.3:1)
+**Priority:** P3
+**Description:** The primary-orange link color used for inline links on neutral card surfaces sits around 4.3:1 against the card background — it clears WCAG AA for normal text (4.5:1) only marginally and misses it in some renderings. The notice strips already route around this (tinted strips use a foreground-colored underlined link), but the sitewide `text-primary` inline-link treatment on `bg-card` / `bg-background` is unaudited.
+**Fix:** Measure `text-primary` against every surface it lands on and either darken the link token on light surfaces or add an underline-by-default rule so the affordance does not rely on color alone. Design-system-level change; the blast radius is every inline link, so it is deliberately scoped out of the notice-system cycle.
+**Depends on:** None.
+
 ## Privacy & Trust
 
 ### Public privacy/trust statement (no accounts, no tracking, on-device)

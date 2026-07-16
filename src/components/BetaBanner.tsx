@@ -1,28 +1,29 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { isDismissed, setDismissed } from '@/lib/beta-banner';
-import { getActiveNotice, NOTICE_CHANGED_EVENT } from '@/lib/notices';
+import { useNoticeClaim } from '@/lib/useNoticeClaim';
+import { dampNotice } from '@/lib/notices';
 
 function BetaBannerInner() {
   const [visible, setVisible] = useState(false);
-  const [yielding, setYielding] = useState(false);
 
   useEffect(() => {
     if (!isDismissed()) setVisible(true);
-    // One notice at a time: step aside while the update notice holds the
-    // slot; return when it releases (refresh, dismissal, or withdrawal).
-    const sync = () => setYielding(getActiveNotice() !== null);
-    sync();
-    document.addEventListener(NOTICE_CHANGED_EVENT, sync);
-    return () => document.removeEventListener(NOTICE_CHANGED_EVENT, sync);
   }, []);
+
+  // Contact is the lowest-priority claim: it wants the slot whenever it is
+  // undismissed, and renders only while it is the winner (every other strip
+  // outranks it). The hook subscribes to the registry so it returns the
+  // moment the higher strip releases.
+  const isWinner = useNoticeClaim('contact', visible);
 
   const handleDismiss = () => {
     setDismissed();
+    dampNotice('contact');
     setVisible(false);
   };
 
-  if (!visible || yielding) return null;
+  if (!visible || !isWinner) return null;
 
   return (
     <div
@@ -32,11 +33,14 @@ function BetaBannerInner() {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="relative flex items-center justify-center">
-          <p className="text-sm text-foreground text-center pr-8">
-            Contact us for support —{' '}
+          <p
+            className="text-sm text-foreground text-center pe-11"
+            style={{ textWrap: 'balance' }}
+          >
+            Contact us for support at{' '}
             <a
               href="mailto:resiliencetoolkit@gocros.org"
-              className="text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline"
+              className="text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline [overflow-wrap:anywhere]"
             >
               resiliencetoolkit@gocros.org
             </a>
@@ -44,7 +48,7 @@ function BetaBannerInner() {
           <button
             type="button"
             onClick={handleDismiss}
-            className="absolute right-0 text-muted-foreground hover:text-foreground transition-colors p-2 -m-2"
+            className="absolute end-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Dismiss site notice"
             title="Dismiss"
           >

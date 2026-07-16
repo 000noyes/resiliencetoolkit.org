@@ -22,6 +22,15 @@ All notable changes to ResilienceToolkit.org are documented here.
   optional: ignored updates apply on their own the next time the site is not
   being looked at, and edits in progress are saved before any refresh.
 
+### Changed
+- Top-of-page notices now show one at a time. When more than one would apply
+  (for example an offline indicator, an update prompt, and a storage reminder),
+  the single most important message shows instead of a stack of bars above the
+  page. The storage reminders were rewritten to be calmer and clearer, and both
+  the soft reminder and the out-of-space warning now link straight to the
+  one-tap backup on the dashboard; the soft reminder stays quiet for two weeks
+  after you back up. The "you're back online" flash is now a quiet green.
+
 ### Removed
 - Third-party analytics and trackers (Umami + Cloudflare Web Analytics),
   including their Content Security Policy entries. The site now makes zero

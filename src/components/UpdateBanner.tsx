@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { SW_UPDATE_READY_EVENT, READY_DATASET_KEY, applyUpdate } from '@/lib/sw-register';
 import { isSuppressed, recordDismissal } from '@/lib/update-banner';
-import { setActiveNotice } from '@/lib/notices';
+import { useNoticeClaim } from '@/lib/useNoticeClaim';
+import { dampNotice } from '@/lib/notices';
 
 /**
  * Update notice: shown only when a new service worker is installed AND has
@@ -19,6 +20,11 @@ import { setActiveNotice } from '@/lib/notices';
  * verified generation). The Refresh button stays enabled — applyUpdate is
  * idempotent and the worker refuses unwarmed rotations, so a second tap is
  * harmless.
+ *
+ * Notice-slot participation: the strip claims priority `update` while a
+ * verified version is waiting (its own show-condition), and renders only
+ * while it is the winner (useNoticeClaim). Dismissal damps the floor so the
+ * next-lower strip waits for the next navigation instead of popping in.
  */
 export default function UpdateBanner() {
   const [version, setVersion] = useState<string | null>(null);
@@ -42,14 +48,10 @@ export default function UpdateBanner() {
     return () => document.removeEventListener(SW_UPDATE_READY_EVENT, onReadyChange);
   }, []);
 
-  // Own the notice slot while visible; release it on hide (the contact
-  // banner steps back in). Keyed on visibility, not readiness.
-  useEffect(() => {
-    setActiveNotice(version ? 'update' : null);
-    return () => setActiveNotice(null);
-  }, [version]);
+  // Claim the slot while a verified version waits; render only while winner.
+  const isWinner = useNoticeClaim('update', version !== null);
 
-  if (!version) return null;
+  if (!version || !isWinner) return null;
 
   const handleRefresh = () => {
     setWorking(true);
@@ -58,15 +60,21 @@ export default function UpdateBanner() {
 
   const handleDismiss = () => {
     recordDismissal(version, Date.now());
+    dampNotice('update');
     setVersion(null);
     setWorking(false);
   };
 
   return (
-    <div className="bg-card border-b border-border no-print" role="status" aria-live="polite">
+    <div
+      className="bg-card border-b border-border no-print"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       <div className="container mx-auto px-4 py-3">
-        <div className="relative flex items-center justify-center gap-3 pr-8">
-          <p className="text-sm text-foreground text-center">
+        <div className="relative flex items-center justify-center gap-3 pe-11">
+          <p className="text-sm text-foreground text-center" style={{ textWrap: 'balance' }}>
             A newer version of this site is ready. Refreshing keeps your saved work.
           </p>
           <button
@@ -79,7 +87,7 @@ export default function UpdateBanner() {
           <button
             type="button"
             onClick={handleDismiss}
-            className="absolute right-0 text-muted-foreground hover:text-foreground transition-colors p-2 -m-2"
+            className="absolute end-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Dismiss this notice"
             title="Dismiss"
           >

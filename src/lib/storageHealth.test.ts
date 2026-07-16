@@ -35,23 +35,25 @@ describe('checkStorageHealth', () => {
     expect(h.message).toBeNull();
   });
 
-  it('reports at-risk (with a back-it-up message) when not persisted', async () => {
+  it('reports at-risk (with the mechanism-phrased soft copy) when not persisted', async () => {
     setPersisted(false);
     const h = await checkStorageHealth();
     expect(h.status).toBe('at-risk');
-    expect(h.message).toMatch(/back it up/i);
-    // Keeps the privacy promise intact in the copy.
-    expect(h.message).toMatch(/private/i);
+    // Soft copy: mechanism phrasing pointing at a backup, no alarm words.
+    expect(h.message).toMatch(/stays on this device/i);
+    expect(h.message).toMatch(/keep a backup copy/i);
   });
 
-  it('reports unavailable when IndexedDB is missing', async () => {
+  it('reports unavailable with the remedy copy (no backup dead-end) when IndexedDB is missing', async () => {
     const original = window.indexedDB;
     // @ts-expect-error force-remove for the test
     delete window.indexedDB;
     try {
       const h = await checkStorageHealth();
       expect(h.status).toBe('unavailable');
-      expect(h.message).toMatch(/lost when you close/i);
+      // Load-bearing consequence sentence + the real remedy (leave private browsing).
+      expect(h.message).toMatch(/gone when you close this page/i);
+      expect(h.message).toMatch(/regular browser window/i);
     } finally {
       Object.defineProperty(window, 'indexedDB', { value: original, configurable: true });
     }
@@ -62,7 +64,8 @@ describe('checkStorageHealth', () => {
     reportStorageQuotaExceeded();
     const h = await checkStorageHealth();
     expect(h.status).toBe('full');
-    expect(h.message).toMatch(/out of storage/i);
+    expect(h.message).toMatch(/out of storage space/i);
+    expect(h.message).toMatch(/free up room/i);
   });
 
   it('reportStorageQuotaExceeded dispatches the health-changed event', async () => {
