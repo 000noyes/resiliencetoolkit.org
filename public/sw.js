@@ -1,6 +1,8 @@
 // Service Worker — Resilience Hub Toolkit
-// Cache-first for static assets, network-first for navigation.
-// CACHE_VERSION is rewritten by scripts/generate-sw-precache.mjs at build time.
+// Cache-first for precached pages and static assets, network-first for any
+// route outside the precache. A cache miss offline lands on /offline/, never
+// a raw 503. CACHE_VERSION is rewritten by scripts/generate-sw-precache.mjs
+// at build time.
 //
 // Update policy: a new worker announces itself to the page once its cache
 // generation is verified complete; activation is user-initiated (SKIP_WAITING
@@ -10,6 +12,11 @@
 // ramp (install-time skipWaiting) for devices still pinned to a pre-May-2026
 // worker that never hands off — gated on legacy cache names plus a persistent
 // ramp marker so it fires at most once per device.
+//
+// Freshness for cache-first pages comes from the worker update cycle: the
+// browser revalidates sw.js on every load (updateViaCache: 'none'), a new
+// build warms a complete fresh generation in the background, and rotation is
+// completeness-gated as above.
 const CACHE_VERSION = 'v-build-PENDING';
 const V2_PREFIX = 'resilience-hub-v2-';
 const CACHE_NAME = `resilience-hub-v2-${CACHE_VERSION}`;
@@ -26,17 +33,34 @@ const TOPUP_CHUNK_SIZE = 5;
 const LEGACY_BUILD_RE = /^resilience-hub-v-build-\d+$/;
 
 // __PRECACHE_ASSETS_START__
-const PRECACHE_ASSETS = [/* auto-generated — do not edit manually */];
+const PRECACHE_ASSETS = [/* auto-generated, do not edit manually */];
 // __PRECACHE_ASSETS_END__
 
-// Essentials must succeed for install to succeed (Promise.all).
-// Routes are nice-to-have — partial failures are tolerated (Promise.allSettled)
-// and converge to complete via topUpPrecache retriggers.
+// The minimal shell plus the offline fallback page. Essentials must succeed
+// for install to succeed (Promise.all) — install fails, and any previous
+// worker keeps serving, unless every one of these caches. The list stays tiny
+// on purpose: a small, fast install is what survives mobile browsers that
+// terminate a worker mid-install. The full page list arrives right after
+// activation via topUpPrecache(), which also retries on every page load and
+// via the PRECACHE_WARM/PRECACHE_TOPUP messages until the cache is whole.
+//
+// These two routes are DELIBERATELY exempt from top-up's "route HTML only
+// after all assets" gate: they must exist before anything else so a first
+// install has a floor at all, and both degrade acceptably without hashed
+// assets. `/offline/` is fully standalone by construction (inline style and
+// script, no /_astro/ dependency); `/` renders readable-but-unstyled in the
+// seconds-wide first-install window, which beats having nothing offline.
 const ESSENTIAL_ASSETS = [
   '/',
+  '/offline/',
   '/manifest.json',
   '/RHT_orange.svg',
 ];
+
+const OFFLINE_PAGE = '/offline/';
+
+// Directory routes from the precache list, used to route navigations.
+const PRECACHE_ROUTES = new Set(PRECACHE_ASSETS.filter((p) => p.endsWith('/')));
 
 // Runtime cache only writes for these destination types. Excludes XHR/fetch
 // JSON, prefetch hints, and other non-document resources.
@@ -167,9 +191,11 @@ async function fillChunked(cache, urls) {
 // and (optionally) prunes when the generation is whole. Retriggered from
 // activate (detached), the first fetch per startup, the PRECACHE_TOPUP page
 // message, and PRECACHE_WARM — so an interrupted fill resumes no matter what
-// vintage of page is being served. The sentinel doubles as the steady-state
-// fast path: once the generation verified complete, re-triggers cost one
-// keyed lookup instead of full cache enumerations.
+// vintage of page is being served, and an interrupted update never shrinks
+// what already opens offline (old generations survive until this one is
+// complete). The sentinel doubles as the steady-state fast path: once the
+// generation verified complete, re-triggers cost one keyed lookup instead of
+// full cache enumerations.
 async function topUpPrecache({ prune = true } = {}) {
   const cache = await caches.open(CACHE_NAME);
   if (await cache.match(SENTINEL_PATH)) return;
@@ -206,14 +232,12 @@ self.addEventListener('install', (event) => {
       const hasLegacy = names.some(isLegacyCacheName);
       const rampRan = names.includes(RAMP_MARKER_CACHE);
 
+      // Install caches ONLY the essential shell (atomic: install fails
+      // without them). The full page list fills after activation through
+      // topUpPrecache, the one warm mechanism, so install stays small and
+      // fast, and the completeness gate still governs rotation and pruning.
       const cache = await caches.open(CACHE_NAME);
-      const niceToHave = PRECACHE_ASSETS.filter((url) => !ESSENTIAL_ASSETS.includes(url));
-      // Essentials are atomic (install fails without them); the rest fills
-      // through the same chunked, failure-tolerant path the top-up uses —
-      // first install is the largest fetch burst of all, so it must not be
-      // the one place that fans out unchunked.
       await Promise.all(ESSENTIAL_ASSETS.map((url) => cache.add(precacheRequest(url))));
-      await fillChunked(cache, niceToHave);
 
       // One-time legacy ramp: devices pinned to a pre-v2 worker have no page
       // code that can rotate them, so the worker self-promotes ONCE. The
@@ -283,6 +307,80 @@ self.addEventListener('message', (event) => {
   }
 });
 
+// Match a navigation against the cache the way links are actually written.
+// Built pages are directory routes with a trailing slash (`/dashboard/`),
+// while in-page links are slashless (`/dashboard`); online the CDN
+// normalizes that difference with a redirect, offline this match has to.
+// Matching by pathname string also drops any query, which is correct for a
+// fully static site.
+//
+// The lookup is GLOBAL across cache generations ON PURPOSE. While a new
+// build's cache is still filling, the previous complete generation keeps
+// serving: its HTML references its own hashed assets, which it still holds,
+// so every page it serves is whole. Old generations are pruned only once the
+// new one is complete. Scoping this match to the current cache would serve
+// new HTML whose hashed assets may not be cached yet, breaking pages offline
+// exactly during an interrupted update.
+async function matchNavigation(request) {
+  const pathname = new URL(request.url).pathname;
+  const candidates = [pathname];
+  if (pathname.endsWith('/index.html')) {
+    candidates.push(pathname.slice(0, -'index.html'.length));
+  }
+  const lastSegment = pathname.split('/').pop();
+  if (!pathname.endsWith('/') && lastSegment && !lastSegment.includes('.')) {
+    candidates.push(pathname + '/');
+  }
+  for (const candidate of candidates) {
+    const hit = await caches.match(candidate, { ignoreVary: true });
+    if (hit && !hit.redirected) return hit;
+  }
+  return undefined;
+}
+
+// Cache-first for precached pages: on a dying connection, network-first
+// makes every tap wait for the network to fail before the saved page
+// appears, and this app's job is to work when the weather does not. The
+// staleness cost is bounded: a deploy ships a new sw.js, which the browser
+// revalidates on the next online load (updateViaCache: 'none') and swaps in
+// only once its generation verifies complete. Routes outside the precache
+// stay network-first so they are always current, with the runtime cache and
+// then the offline page as fallbacks. Precached routes are never runtime
+// cached here; their entries come from the revalidating precache fill, so
+// the completeness accounting stays clean.
+async function handleNavigation(event) {
+  const url = new URL(event.request.url);
+  // Normalize the explicit-file form so `/dashboard/index.html` gets the
+  // same cache-first treatment as `/dashboard/` (matchNavigation already
+  // normalizes it for the lookup; this keeps the ROUTING decision in step).
+  let path = url.pathname;
+  if (path.endsWith('/index.html')) {
+    path = path.slice(0, -'index.html'.length);
+  }
+  const isPrecachedRoute =
+    PRECACHE_ROUTES.has(path) ||
+    (!path.endsWith('/') && PRECACHE_ROUTES.has(path + '/'));
+
+  if (isPrecachedRoute) {
+    const cached = await matchNavigation(event.request);
+    if (cached) return cached;
+  }
+
+  try {
+    const response = await fetch(event.request);
+    if (response.ok && !response.redirected && !isPrecachedRoute) {
+      const responseToCache = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+    }
+    return response;
+  } catch {
+    const cached = await matchNavigation(event.request);
+    if (cached) return cached;
+    const offlinePage = await caches.match(OFFLINE_PAGE, { ignoreVary: true });
+    return offlinePage || new Response('Offline', { status: 503 });
+  }
+}
+
 // One-shot per SW startup: ensure the ramp marker exists when legacy caches
 // do, and converge an incomplete fill — works even when every page being
 // served is a 2025-era page that posts nothing.
@@ -332,23 +430,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
-  // Network-first for navigation requests. Ensures users see a fresh
-  // deploy on first nav after CACHE_VERSION bumps; falls back to cache
-  // when offline. Also resolves the redirected-response cache pollution
-  // problem because navigation responses go through the redirect-aware
-  // branch every time.
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response.ok && !response.redirected) {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request, { ignoreVary: true }).then((cached) => cached || new Response('Offline', { status: 503 })))
-    );
+    event.respondWith(handleNavigation(event));
     return;
   }
 
@@ -359,7 +442,7 @@ self.addEventListener('fetch', (event) => {
   // `Vary: Origin` on those assets (astro preview's sirv does; a CDN may) would
   // otherwise make caches.match(event.request) miss and 503 the module offline,
   // silently breaking every precached-but-unvisited route. The assets are
-  // immutable + same-origin, so there is only ever one variant per URL — safe.
+  // immutable + same-origin, so there is only ever one variant per URL. Safe.
   event.respondWith(
     caches.match(event.request, { ignoreVary: true }).then((cached) => {
       if (cached && !cached.redirected) return cached;

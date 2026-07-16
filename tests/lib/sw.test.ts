@@ -8,7 +8,12 @@
  *  - prune law (strictly-older only; assets-only retention; marker lifetime)
  *  - message protocol (SKIP_WAITING / SKIP_WAITING_WHEN_HIDDEN / PRECACHE_WARM /
  *    PRECACHE_TOPUP) with tolerance for legacy REGISTER_SYNC and unknown shapes
- *  - D7 fetch-handler behavior (network-first nav, cache-first assets) unchanged.
+ * and the offline navigation contract:
+ *  - essentials-only install (the full page list arrives via top-up)
+ *  - navigation URL normalization (slashless links must hit slashed cache keys)
+ *  - cache-first for precached pages, network-first outside the precache
+ *  - the styled /offline/ page as the miss fallback, never a raw 503
+ *  - D7 asset handling (cache-first with ignoreVary) unchanged.
  */
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -24,8 +29,18 @@ const CURRENT_CACHE = 'resilience-hub-v2-v-build-PENDING';
 const RAMP_MARKER = 'resilience-hub-v2-ramp';
 const SENTINEL = '/__rt-precache-complete__';
 
-// Default injected precache list: two assets + two routes (routes end with /).
-const DEFAULT_PRECACHE = ['/', '/manifest.json', '/RHT_orange.svg', '/_astro/a.css', '/modules/1-1/'];
+// Default injected precache list: three assets + three routes (routes end with /).
+const DEFAULT_PRECACHE = [
+  '/',
+  '/offline/',
+  '/manifest.json',
+  '/RHT_orange.svg',
+  '/_astro/a.css',
+  '/modules/1-1/',
+  '/dashboard/',
+];
+
+const ESSENTIALS = ['/', '/offline/', '/manifest.json', '/RHT_orange.svg'];
 
 type Listener = (event: any) => void;
 
@@ -346,14 +361,26 @@ describe('sw.js — legacy ramp gate (one-time skipWaiting at install)', () => {
   });
 });
 
-describe('sw.js — install fill', () => {
+describe('sw.js — install fill (essentials only; the rest arrives via top-up)', () => {
+  it('install caches only the essential shell', async () => {
+    const { sandbox } = createSandbox();
+    await runInstall(sandbox);
+    const added = sandbox.stores.get(CURRENT_CACHE)!.addCalls.map((c) => c.path).sort();
+    expect(added).toEqual([...ESSENTIALS].sort());
+  });
+
   it('wraps non-/_astro/ URLs as Request with cache:no-cache; /_astro/ passed bare', async () => {
     const { sandbox } = createSandbox();
     await runInstall(sandbox);
     const calls = sandbox.stores.get(CURRENT_CACHE)!.addCalls;
     const manifest = calls.find((c) => c.path === '/manifest.json');
-    const astro = calls.find((c) => c.path === '/_astro/a.css');
     expect(manifest?.cacheMode).toBe('no-cache');
+    // The hashed asset arrives via top-up, not install; it must be passed
+    // bare so the immutable HTTP cache stays a valid source for it.
+    const event = makeMessageEvent('PRECACHE_TOPUP');
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    const astro = sandbox.stores.get(CURRENT_CACHE)!.addCalls.find((c) => c.path === '/_astro/a.css');
     expect(astro?.cacheMode).toBeUndefined();
   });
 
@@ -365,7 +392,15 @@ describe('sw.js — install fill', () => {
     await expect(event._waitPromise).rejects.toThrow('add failed: /');
   });
 
-  it('resolves when only nice-to-have assets fail (allSettled tolerance)', async () => {
+  it('rejects when the offline fallback page fails to cache (it is essential)', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.addFailures.add('/offline/');
+    const event = makeExtendableEvent();
+    sandbox.listeners.install[0](event);
+    await expect(event._waitPromise).rejects.toThrow('add failed: /offline/');
+  });
+
+  it('resolves even when non-essential precache entries would fail (they are not fetched at install)', async () => {
     const { sandbox } = createSandbox();
     sandbox.addFailures.add('/modules/1-1/');
     const event = makeExtendableEvent();
@@ -698,7 +733,7 @@ describe('sw.js — first-fetch startup task', () => {
   });
 });
 
-describe('sw.js — D7 fetch handler (strategies unchanged)', () => {
+describe('sw.js — navigation handler (cache-first precache, offline fallback)', () => {
   it('does not call respondWith for non-GET requests', () => {
     const { sandbox } = createSandbox();
     for (const method of ['POST', 'PUT', 'DELETE', 'PATCH']) {
@@ -715,27 +750,142 @@ describe('sw.js — D7 fetch handler (strategies unchanged)', () => {
     expect(event._responded).toBe(false);
   });
 
-  it('uses network-first for navigation requests', async () => {
+  it('serves precached navigations cache-first, normalizing the missing trailing slash', async () => {
+    // The cache holds only the built slashed route; the link-shaped request
+    // has no trailing slash. This normalization is the fix for the field
+    // failure where every sub-page died offline with a raw 503.
     const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/dashboard`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('cached:/dashboard/');
+    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('treats the explicit /index.html form as the same precached route (cache-first)', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/dashboard/index.html`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('cached:/dashboard/');
+    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('serves a precached route cache-first at its slashed URL too', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/modules/1-1/`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('cached:/modules/1-1/');
+    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('a precached route missing from the cache falls through to the network', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    store.entries.delete('/modules/1-1/');
     sandbox.fetchMock.mockResolvedValueOnce(new FakeResponse('<html>fresh</html>'));
-    const event = makeFetchEvent({ url: `${ORIGIN}/modules/1-1/`, mode: 'navigate', destination: 'document' });
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/modules/1-1/`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('<html>fresh</html>');
+    // The precache fill owns this entry, so the network success is NOT
+    // runtime-cached (a runtime put would bypass the revalidating fill).
+    await new Promise((r) => setTimeout(r, 0));
+    expect(store.entries.has('/modules/1-1/')).toBe(false);
+  });
+
+  it('uses network-first for navigations outside the precache and runtime-caches the response', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    sandbox.fetchMock.mockResolvedValueOnce(new FakeResponse('<html>fresh</html>'));
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/changelog/`,
+      mode: 'navigate',
+      destination: 'document',
+    });
     sandbox.listeners.fetch[0](event);
     expect(event._responded).toBe(true);
     const response = await event._response;
     expect(response.body).toBe('<html>fresh</html>');
     expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(store.entries.has('/changelog/')).toBe(true);
   });
 
-  it('falls back to cache when navigation network fails', async () => {
+  it('falls back to the runtime cache when a non-precached navigation fails', async () => {
     const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    store.entries.set('/changelog/', new FakeResponse('<html>runtime cached</html>'));
     sandbox.fetchMock.mockRejectedValue(new Error('offline'));
-    sandbox.caches.match.mockResolvedValueOnce(new FakeResponse('<html>cached</html>'));
-    const event = makeFetchEvent({ url: `${ORIGIN}/modules/1-1/`, mode: 'navigate', destination: 'document' });
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/changelog/`,
+      mode: 'navigate',
+      destination: 'document',
+    });
     sandbox.listeners.fetch[0](event);
     const response = await event._response;
-    expect(response.body).toBe('<html>cached</html>');
+    expect(response.body).toBe('<html>runtime cached</html>');
   });
 
+  it('falls back to the offline page, not a raw 503, when an uncached navigation fails', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    sandbox.fetchMock.mockRejectedValue(new Error('offline'));
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/changelog/`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('cached:/offline/');
+    expect(response.status).toBe(200);
+  });
+
+  it('returns a 503 only when even the offline page is missing', async () => {
+    const { sandbox } = createSandbox();
+    sandbox.fetchMock.mockRejectedValue(new Error('offline'));
+    // Every add fails so the concurrent startup top-up cannot fill /offline/.
+    for (const p of DEFAULT_PRECACHE) sandbox.addFailures.add(p);
+    const event = makeFetchEvent({
+      url: `${ORIGIN}/changelog/`,
+      mode: 'navigate',
+      destination: 'document',
+    });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.status).toBe(503);
+  });
+});
+
+describe('sw.js — D7 asset handler (strategies unchanged)', () => {
   it('does not write runtime cache for non-whitelisted destinations', async () => {
     const { sandbox } = createSandbox();
     sandbox.fetchMock.mockResolvedValue(new FakeResponse('{}'));
