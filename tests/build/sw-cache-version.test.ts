@@ -42,6 +42,8 @@ function setupTmpProject(opts: { astroAssets?: string[] } = {}): string {
   mkdirSync(scriptsDir, { recursive: true });
   mkdirSync(distDir, { recursive: true });
   cpSync(SCRIPT_PATH, join(scriptsDir, 'generate-sw-precache.mjs'));
+  // The generator imports its pagefind collector as a sibling module.
+  cpSync(join(ROOT, 'scripts/pagefind-precache.mjs'), join(scriptsDir, 'pagefind-precache.mjs'));
   cpSync(PUBLIC_SW, join(distDir, 'sw.js'));
   // Need at least one index.html so PRECACHE_ASSETS isn't empty
   writeFileSync(join(distDir, 'index.html'), '<!doctype html><html></html>');

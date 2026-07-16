@@ -15,6 +15,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { readdirSync } from 'node:fs';
 import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { findPagefindAssets } from './pagefind-precache.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
@@ -144,7 +145,13 @@ for (const asset of STATIC_ASSETS) {
 const astroAssets = findAstroAssets(distDir);
 astroAssets.sort();
 
-const allAssets = [...routes, ...staticAssets, ...astroAssets];
+// --- Collect the Pagefind core subset (offline search) ---
+// Nice-to-have tier like the /_astro pool: a miss degrades search, never the
+// SW install. See scripts/pagefind-precache.mjs for the core/UI split.
+
+const pagefindAssets = findPagefindAssets(distDir);
+
+const allAssets = [...routes, ...staticAssets, ...astroAssets, ...pagefindAssets];
 
 if (allAssets.length === 0) {
   console.error('SW generator: PRECACHE_ASSETS list is empty after filtering. Something is wrong.');
@@ -200,5 +207,5 @@ writeFileSync(swPath, final, 'utf-8');
 
 console.log(
   `SW generator: ${routes.length} routes + ${staticAssets.length} static assets + ` +
-  `${astroAssets.length} /_astro bundles → dist/sw.js (${cacheVersion})`
+  `${astroAssets.length} /_astro bundles + ${pagefindAssets.length} pagefind assets → dist/sw.js (${cacheVersion})`
 );
