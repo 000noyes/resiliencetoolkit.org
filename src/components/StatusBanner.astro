@@ -1,5 +1,8 @@
 ---
-// Status banner shows online/offline status and sync information
+// Status banner shows online/offline status and sync information.
+// Its script is Astro-processed (bundled, not is:inline), so it can import
+// from @/lib/notices and participate in the single-slot notice registry the
+// React banners use.
 ---
 
 <div
@@ -7,49 +10,81 @@
   class="bg-muted text-muted-foreground px-4 py-2 text-sm text-center transition-all duration-300 hidden no-print"
   role="status"
   aria-live="polite"
+  aria-atomic="true"
 >
   <span id="status-text">You're working offline.</span>
 </div>
 
 <script>
+  import { claimNotice, releaseNotice, getActiveNotice, NOTICE_CHANGED_EVENT } from '@/lib/notices';
+
   const banner = document.getElementById('status-banner');
   const statusText = document.getElementById('status-text');
 
-  function updateStatus(online: boolean) {
-    if (!banner || !statusText) return;
+  // The single 3s back-online timer. Held so a re-offline event within the
+  // flash window can clear it — otherwise the stale timer would hide the
+  // freshly re-shown offline notice.
+  let backOnlineTimer: ReturnType<typeof setTimeout> | null = null;
 
-    if (online) {
-      banner.classList.remove('bg-muted');
-      banner.classList.add('bg-primary');
-      banner.classList.remove('text-muted-foreground');
-      banner.classList.add('text-primary-foreground');
-      statusText.textContent = 'You\'re back online.';
-
-      // Hide after 3 seconds
-      setTimeout(() => {
-        banner.classList.add('hidden');
-      }, 3000);
-    } else {
-      banner.classList.remove('bg-primary');
-      banner.classList.add('bg-muted');
-      banner.classList.remove('text-primary-foreground');
-      banner.classList.add('text-muted-foreground');
-      statusText.textContent = 'You\'re working offline.';
-      banner.classList.remove('hidden');
+  function clearBackOnlineTimer() {
+    if (backOnlineTimer !== null) {
+      clearTimeout(backOnlineTimer);
+      backOnlineTimer = null;
     }
   }
 
-  // Initialize status
-  if (!navigator.onLine) {
-    updateStatus(false);
+  // Render only while `status` is the registry winner; the single slot keeps
+  // the strip hidden whenever a higher-priority notice (acute storage) holds it.
+  function renderWinner() {
+    if (!banner) return;
+    let winner: boolean;
+    try {
+      winner = getActiveNotice() === 'status';
+    } catch {
+      winner = true; // fail toward showing our own claim
+    }
+    banner.classList.toggle('hidden', !winner);
   }
+
+  function showOffline() {
+    if (!banner || !statusText) return;
+    clearBackOnlineTimer();
+    banner.classList.remove('bg-primary', 'text-primary-foreground');
+    banner.classList.add('bg-muted', 'text-muted-foreground');
+    statusText.textContent = "You're working offline.";
+    claimNotice('status');
+    renderWinner();
+  }
+
+  function showBackOnline() {
+    if (!banner || !statusText) return;
+    clearBackOnlineTimer();
+    banner.classList.remove('bg-muted', 'text-muted-foreground');
+    banner.classList.add('bg-primary', 'text-primary-foreground');
+    statusText.textContent = "You're back online.";
+    claimNotice('status');
+    renderWinner();
+    // Flash for 3s, then release the slot and let the next claimant appear.
+    backOnlineTimer = setTimeout(() => {
+      backOnlineTimer = null;
+      releaseNotice('status');
+      renderWinner();
+    }, 3000);
+  }
+
+  // Initialize status
+  if (!navigator.onLine) showOffline();
 
   // Listen for network status changes
   document.addEventListener('network-status-change', ((event: CustomEvent) => {
-    updateStatus(event.detail.online);
+    if (event.detail.online) showBackOnline();
+    else showOffline();
   }) as EventListener);
 
   // Also listen to native events as backup
-  window.addEventListener('online', () => updateStatus(true));
-  window.addEventListener('offline', () => updateStatus(false));
+  window.addEventListener('online', () => showBackOnline());
+  window.addEventListener('offline', () => showOffline());
+
+  // Recompute our winner state whenever any strip claims or releases the slot.
+  document.addEventListener(NOTICE_CHANGED_EVENT, renderWinner);
 </script>

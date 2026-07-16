@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { checkStorageHealth, STORAGE_HEALTH_EVENT, type StorageHealth } from '@/lib/storageHealth';
+import { useNoticeClaim } from '@/lib/useNoticeClaim';
+import { dampNotice } from '@/lib/notices';
 
 /**
  * App-wide storage-health banner.
@@ -14,6 +16,12 @@ import { checkStorageHealth, STORAGE_HEALTH_EVENT, type StorageHealth } from '@/
  * It re-checks when the tab becomes visible and when an editor reports a quota
  * hit, so a device that fills up mid-session surfaces the warning app-wide
  * rather than only inside the table that failed to save.
+ *
+ * Notice-slot participation: the acute states claim priority `storageAcute`
+ * (top of the queue, non-dismissible), the soft at-risk state claims
+ * `storageSoft` (near the bottom). Each claims on its own condition and
+ * renders only while it is the winner; the two claims are mutually exclusive
+ * because a given health status is exactly one of acute / soft / healthy.
  */
 const DISMISS_KEY = 'rt-storage-health-dismissed';
 
@@ -49,11 +57,11 @@ function StorageHealthBannerInner() {
     };
   }, []);
 
-  if (!health || health.status === 'healthy' || !health.message) return null;
+  const acuteState = health?.status === 'unavailable' || health?.status === 'full';
+  const softState = health?.status === 'at-risk';
 
-  const acute = health.status === 'unavailable' || health.status === 'full';
-  const dismissible = !acute;
-  if (dismissible && dismissed) return null;
+  const acuteWinner = useNoticeClaim('storageAcute', !!acuteState);
+  const softWinner = useNoticeClaim('storageSoft', !!softState && !dismissed);
 
   const handleDismiss = () => {
     try {
@@ -61,8 +69,15 @@ function StorageHealthBannerInner() {
     } catch {
       // ignore
     }
+    dampNotice('storageSoft');
     setDismissed(true);
   };
+
+  const winner = acuteWinner ? 'acute' : softWinner ? 'soft' : null;
+  if (!health || !health.message || !winner) return null;
+
+  const acute = winner === 'acute';
+  const dismissible = !acute;
 
   const tone = acute
     ? 'bg-red-50 text-red-900 border-red-200 dark:bg-red-950 dark:text-red-100 dark:border-red-900'

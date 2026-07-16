@@ -1,28 +1,29 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { isDismissed, setDismissed } from '@/lib/beta-banner';
-import { getActiveNotice, NOTICE_CHANGED_EVENT } from '@/lib/notices';
+import { useNoticeClaim } from '@/lib/useNoticeClaim';
+import { dampNotice } from '@/lib/notices';
 
 function BetaBannerInner() {
   const [visible, setVisible] = useState(false);
-  const [yielding, setYielding] = useState(false);
 
   useEffect(() => {
     if (!isDismissed()) setVisible(true);
-    // One notice at a time: step aside while the update notice holds the
-    // slot; return when it releases (refresh, dismissal, or withdrawal).
-    const sync = () => setYielding(getActiveNotice() !== null);
-    sync();
-    document.addEventListener(NOTICE_CHANGED_EVENT, sync);
-    return () => document.removeEventListener(NOTICE_CHANGED_EVENT, sync);
   }, []);
+
+  // Contact is the lowest-priority claim: it wants the slot whenever it is
+  // undismissed, and renders only while it is the winner (every other strip
+  // outranks it). The hook subscribes to the registry so it returns the
+  // moment the higher strip releases.
+  const isWinner = useNoticeClaim('contact', visible);
 
   const handleDismiss = () => {
     setDismissed();
+    dampNotice('contact');
     setVisible(false);
   };
 
-  if (!visible || yielding) return null;
+  if (!visible || !isWinner) return null;
 
   return (
     <div
