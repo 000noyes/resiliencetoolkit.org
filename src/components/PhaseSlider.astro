@@ -32,7 +32,7 @@ interface Props {
 const { heading, class: className, showDescriptions = false } = Astro.props;
 ---
 
-<nav aria-label="Phases of a flood" class:list={['phase-cards', className]}>
+<nav aria-label="Phases of a flood" class:list={['phase-cards', className, showDescriptions && 'phase-cards--descriptions']}>
   {heading && (
     <h2 class="phase-cards__heading text-title font-semibold text-foreground">{heading}</h2>
   )}
@@ -149,14 +149,22 @@ const { heading, class: className, showDescriptions = false } = Astro.props;
     color: var(--foreground);
   }
   /* One-sentence phase description (showDescriptions callers only). Copy is
-     verbatim-locked, so orphan control is typographic: text-wrap balances the
-     last line instead of edits to the sentence. */
+     verbatim-locked, so orphan control is purely typographic: text-wrap
+     balance plus the width/size tuning below keep every card's last line at
+     3+ words (verified 320-1440px; greedy/pretty wrapping strands
+     "community." alone at most card widths). */
   .phase-cards__description {
     color: var(--muted-foreground);
     font-size: 14px;
     line-height: 1.5;
     margin-top: 0.35rem;
-    text-wrap: pretty;
+    text-wrap: balance;
+  }
+  @media (max-width: 383px) {
+    .phase-cards__description { font-size: 12.5px; }
+  }
+  @media (min-width: 768px) {
+    .phase-cards__description { font-size: clamp(12.5px, 1.1vw + 4px, 14px); }
   }
   .phase-cards__time { color: var(--muted-foreground); margin-top: 0.1rem; }
   .phase-cards__lead { color: var(--primary); margin-top: 0.35rem; } /* the only accent text */
@@ -235,6 +243,17 @@ const { heading, class: className, showDescriptions = false } = Astro.props;
       align-self: flex-start;
     }
     .phase-cards__flood-tick { width: 2px; height: 16px; }
+  }
+
+  /* Descriptions variant only (the homepage): slightly tighter card padding
+     and rail gap in the horizontal layout buy the text width the last-line
+     gate needs. Scoped to the modifier so /workflows renders unchanged. */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .phase-cards--descriptions .phase-cards__card { padding: 1.1rem 0.8rem; }
+    .phase-cards--descriptions .phase-cards__rail { gap: 0.75rem; }
+  }
+  @media (min-width: 1024px) {
+    .phase-cards--descriptions .phase-cards__card { padding: 1.1rem 1rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {

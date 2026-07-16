@@ -190,7 +190,9 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
     }
     .module-links__sep {
       color: var(--muted-foreground);
-      margin: 0 0.5rem 0 0.65rem;
+      /* px, not rem: text zoom must not widen the nowrap units more than the
+         13px-per-link text itself grows */
+      margin: 0 8px 0 10px;
     }
   </style>
 
