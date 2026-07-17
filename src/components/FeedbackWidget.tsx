@@ -40,7 +40,7 @@ export default function FeedbackWidget() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="feedback-widget-button fixed bottom-lg right-lg md:bottom-lg md:right-lg bottom-md right-md z-40 h-12 md:h-12 h-10 px-lg md:px-lg px-md rounded-full bg-primary text-primary-foreground shadow-raised hover:shadow-modal transition-all duration-default ease-default active:translate-y-px flex items-center gap-xs text-body font-medium hover:-translate-y-0.5"
+        className="feedback-widget-button fixed bottom-lg right-lg md:bottom-lg md:right-lg bottom-md right-md z-40 h-12 md:h-12 h-10 px-lg md:px-lg px-md rounded-xl bg-primary text-primary-foreground shadow-raised hover:shadow-modal transition-all duration-default ease-default active:translate-y-px flex items-center gap-xs text-body font-medium hover:-translate-y-0.5"
         aria-label="Open feedback form"
       >
         {/* Question mark icon */}
@@ -136,7 +136,7 @@ export default function FeedbackWidget() {
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="mt-md h-10 px-lg rounded-full border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-all duration-default"
+                      className="mt-md h-10 px-lg rounded-lg border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-all duration-default"
                     >
                       Close
                     </button>
@@ -168,14 +168,14 @@ export default function FeedbackWidget() {
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="h-10 px-lg rounded-full border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-all duration-default shadow-sm hover:shadow-raised active:translate-y-px"
+                    className="h-10 px-lg rounded-lg border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-all duration-default shadow-sm hover:shadow-raised active:translate-y-px"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={!feedback.trim()}
-                    className="h-10 px-lg rounded-full bg-primary text-primary-foreground text-body font-medium shadow-sm hover:shadow-raised transition-all duration-default active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-sm"
+                    className="h-10 px-lg rounded-lg bg-primary text-primary-foreground text-body font-medium shadow-sm hover:shadow-raised transition-all duration-default active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-sm"
                   >
                     Send
                   </button>

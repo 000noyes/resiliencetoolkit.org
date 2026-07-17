@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { phaseColors, getSortedModules } from '@/data/modules';
+import { getSortedModules } from '@/data/modules';
 
 // Auth protection is handled by middleware (src/middleware/index.ts)
 
@@ -40,7 +40,8 @@ const sortedModules = getSortedModules();
             {module.frontmatter.phases && module.frontmatter.phases.length > 0 && (
               <div class="flex gap-1.5">
                 {module.frontmatter.phases.map((phase) => (
-                  <span class={`px-2 py-1 rounded-full text-xs font-medium ${phaseColors[phase]}`}>
+                  <span class="meta-chip px-2 py-1 text-xs font-medium">
+                    <span class={`meta-chip__dot meta-chip__dot--${phase.toLowerCase()}`} aria-hidden="true"></span>
                     {phase}
                   </span>
                 ))}

@@ -2,7 +2,9 @@
 /**
  * Badge Component - Resilience Toolkit UI Design System
  *
- * Soft rounded pill with uppercase label text and small drop shadow.
+ * Soft rounded label chip with uppercase text and small drop shadow.
+ * Uses the hierarchical radius scale (md); full radius is reserved for
+ * true circles (see DESIGN.md).
  * Supports multiple variants: primary, neutral, success, warning, info, danger.
  *
  * Usage:
@@ -30,10 +32,10 @@ const variantStyles = {
 
 <span
   class:list={[
-    // Base styles - soft rounded pill
+    // Base styles - soft rounded label chip
     'inline-flex items-center justify-center',
     'px-2.5 py-0.5',
-    'rounded-full',
+    'rounded-md',
     'text-uppercase-accent uppercase',
     'font-medium',
     'whitespace-nowrap',

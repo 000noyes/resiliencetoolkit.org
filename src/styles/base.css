@@ -77,6 +77,11 @@
   --radius-lg: 0.5rem;
   --radius-xl: calc(0.5rem + 4px);
 
+  /* Phase continuum midpoint (During) — shared by PhaseSlider nodes and the
+     phase chips so the two surfaces cannot drift. Derives from the theme
+     tokens, so it adapts to dark mode automatically. */
+  --phase-during: color-mix(in oklab, var(--primary), var(--chart-1));
+
   /* Shadows - Design system spec */
   --shadow-ambient: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
   --shadow-raised: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
@@ -507,13 +512,17 @@ a.button-link:focus-visible {
   }
 
   /* Badges and labels - convert to readable text */
-  .px-3.py-1.rounded-full,
-  .px-2.py-1.rounded {
+  .meta-chip {
     border: 1px solid #333 !important;
     background: white !important;
     color: black !important;
     padding: 2px 6px;
     display: inline-block;
+  }
+
+  /* Phase dots carry no meaning without color - hide in print */
+  .meta-chip__dot {
+    display: none !important;
   }
 
   /* Prose content optimization */
@@ -1296,7 +1305,7 @@ table tr td:only-child strong[id] {
   z-index: 40;
   height: 40px;
   padding: 0 var(--spacing-md);
-  border-radius: 9999px;
+  border-radius: var(--radius-xl);
   background: var(--primary);
   color: var(--primary-foreground);
   border: none;
@@ -1490,4 +1499,39 @@ table tr td:only-child strong[id] {
 .dark .notice-online-flash {
   background-color: oklch(0.27 0.045 157);
   color: oklch(0.87 0.06 157);
+}
+
+/* -----------------------------------------------------------------------------
+   Metadata chips (module phase / difficulty / time, /modules index badges).
+   Quiet muted chip on the radius scale; the phase variant carries a small dot
+   that echoes the PhaseSlider node colors (Before = primary orange, During =
+   the continuum midpoint, After = the open green ring), so the phase model
+   reads as one color system across homepage, /workflows, /modules, and module
+   pages. Callers keep their own padding + text-size utilities. See DESIGN.md.
+   -------------------------------------------------------------------------- */
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+}
+.meta-chip__dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 9999px; /* a true circle — the reserved full-radius case */
+  box-sizing: border-box;
+}
+.meta-chip__dot--before {
+  background: var(--primary);
+}
+.meta-chip__dot--during {
+  background: var(--phase-during);
+}
+.meta-chip__dot--after {
+  background: transparent;
+  border: 2px solid var(--chart-1); /* open ring: still being shaped */
 }

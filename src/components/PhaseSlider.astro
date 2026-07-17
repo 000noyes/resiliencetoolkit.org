@@ -121,7 +121,7 @@ const { heading, class: className, showDescriptions = false } = Astro.props;
     transition: transform 120ms ease-out;
   }
   .phase-cards__node--before { background: var(--primary); }
-  .phase-cards__node--during { background: color-mix(in oklab, var(--primary), var(--chart-1)); }
+  .phase-cards__node--during { background: var(--phase-during); }
   .phase-cards__node--after {
     background: var(--background);
     border: 2px solid var(--chart-1); /* open ring: not-yet-filled-in */
