@@ -1,35 +1,18 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ActionButton from '@/components/ActionButton.astro';
 import Badge from '@/components/Badge.astro';
 import Card from '@/components/Card.astro';
-import { modules, getPhaseCounts, phaseDotColors } from '@/data/modules';
+import PhaseSlider from '@/components/PhaseSlider.astro';
+import { modules } from '@/data/modules';
+import culvertRoad from '@/assets/culvert-road.png';
+import riverBendWashout from '@/assets/river-bend-washout.png';
 
-// Phase filter configuration
-const phases = ['All', 'Before', 'During', 'After'] as const;
-const phaseCounts = getPhaseCounts();
-
-// DISABLED 2026-03-28: Field snapshot photos removed to reduce homepage complexity.
-// Components and images preserved for potential future use.
-// To re-enable: uncomment this block and the Field Snapshot section + dialogs below,
-// and restore the fieldSnapshotData script tag + inline script at the bottom of the file.
-//
-// const fieldSnapshots = [
-//   {
-//     label: 'Field Snapshot',
-//     image: '/images/culvert-road.png',
-//     alt: 'Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs.',
-//     caption: 'Road closed for culvert repair, July 2023'
-//   },
-//   {
-//     label: 'Field Snapshot',
-//     image: '/images/river-bend-washout.png',
-//     alt: 'River bend washout where floodwaters carved a channel dangerously close to the gravel road.',
-//     caption: 'River bend washout cutting off access, July 2023'
-//   }
-// ];
-//
-// const defaultSnapshot = fieldSnapshots[0];
+// The two 2023 field photographs render as still, captioned figures in the
+// Origin Story section below (the rotating Field Snapshot gallery removed
+// 2026-03-28 stays retired). Sources live in src/assets/ so astro:assets
+// emits optimized /_astro derivatives, which the service worker precaches.
 ---
 
 <BaseLayout
@@ -70,144 +53,47 @@ const phaseCounts = getPhaseCounts();
     </div>
   </section>
 
-  <!-- Explore the Toolkit Section -->
-  <section class="py-12 bg-card" id="explore-toolkit">
+  <!-- Find Your Path Section -->
+  <section class="py-12" id="find-your-path">
     <div class="container mx-auto px-4 max-w-4xl">
-      <div class="bg-background border border-border rounded-3xl shadow-xl px-6 py-10 md:px-12 md:py-12">
 
-        <!-- Header -->
-        <div class="text-center mb-8">
-          <h2 class="text-headline font-semibold text-foreground mb-3">
-            Explore the toolkit yourself.
-          </h2>
-          <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
-            Select a phase or topic to jump into the guides. Everything works offline.
-          </p>
-        </div>
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h2 class="text-headline font-semibold text-foreground mb-3">
+          Find your path
+        </h2>
+        <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
+          Choose where you are relative to a flood. Everything works offline.
+        </p>
+      </div>
 
-        <!-- Phase Filter Pills -->
-        <div
-          class="flex flex-wrap justify-center gap-2 mb-8"
-          role="group"
-          aria-label="Filter modules by phase"
-          data-phase-filter-group
-        >
-          {phases.map((phase, index) => (
-            <button
-              type="button"
-              class:list={[
-                'px-4 py-2 rounded-full text-body font-medium',
-                'transition-all duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                index === 0
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground bg-muted/50 hover:text-foreground hover:bg-muted'
-              ]}
-              data-phase-filter={phase}
-              aria-pressed={index === 0 ? 'true' : 'false'}
-            >
-              {phase}
-              <span class="ml-1.5 text-body-small opacity-75">
-                ({phaseCounts[phase as keyof typeof phaseCounts]})
-              </span>
-            </button>
+      <!-- Phase cards on the orange-to-green rail, with descriptions folded in -->
+      <PhaseSlider showDescriptions />
+
+      <!-- Module links: quiet underlined text links, real list with hidden separators -->
+      <div class="text-center mt-10">
+        <p class="text-body-small text-muted-foreground mb-2">Or start from a module:</p>
+        <ul class="module-links" aria-label="Toolkit modules">
+          {modules.map((module, i) => (
+            <li class="module-links__item">
+              <a href={module.url} class="module-links__link text-body-small text-foreground">
+                {module.frontmatter.title}
+              </a>
+              {i < modules.length - 1 && (
+                <span class="module-links__sep" aria-hidden="true">&middot;</span>
+              )}
+            </li>
           ))}
-        </div>
+        </ul>
+      </div>
 
-        <!-- Module Explorer: Pills + Detail Panel -->
-        <div class="flex flex-col lg:flex-row gap-6 mb-8" data-module-explorer>
-
-          <!-- Module Pills Grid -->
-          <div class="flex-1">
-            <div
-              class="flex flex-wrap gap-3 justify-center lg:justify-start"
-              role="list"
-              aria-label="Toolkit modules"
-              data-module-pills
-            >
-              {modules.map((module) => (
-                <a
-                  href={module.url}
-                  class:list={[
-                    'group inline-flex items-center gap-2',
-                    'px-4 py-2.5 rounded-full min-h-[44px]',
-                    'border border-border bg-card',
-                    'text-body font-medium text-foreground',
-                    'transition-all duration-200',
-                    'hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/50',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                  ]}
-                  data-module-pill
-                  data-module-slug={module.slug}
-                  data-module-phases={module.frontmatter.phases?.join(',') || ''}
-                  data-module-summary={module.frontmatter.summary}
-                  data-module-title={module.frontmatter.title}
-                >
-                  <module.icon
-                    className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
-                    strokeWidth={1.5}
-                  />
-                  <span>{module.frontmatter.title}</span>
-                  {module.frontmatter.phases && module.frontmatter.phases.length > 0 && (
-                    <span class="flex gap-0.5 ml-1">
-                      {module.frontmatter.phases.map((phase) => (
-                        <span
-                          class={`w-2 h-2 rounded-full ${phaseDotColors[phase]}`}
-                          title={phase}
-                        />
-                      ))}
-                    </span>
-                  )}
-                </a>
-              ))}
-            </div>
-
-            <!-- Mobile Detail Panel (shown below pills on small screens) -->
-            <div
-              class="lg:hidden mt-4 hidden"
-              data-mobile-detail-panel
-            >
-              <div class="p-4 rounded-xl bg-muted/30 border border-border">
-                <h4 class="text-subtitle font-semibold text-foreground mb-2" data-mobile-detail-title></h4>
-                <p class="text-body-small text-muted-foreground mb-3" data-mobile-detail-summary></p>
-                <a
-                  href="#"
-                  class="inline-flex items-center gap-1 text-primary font-medium text-body-small hover:underline"
-                  data-mobile-detail-link
-                >
-                  Open module
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Desktop Detail Panel (sticky on right side) -->
-          <div
-            class="lg:w-72 flex-shrink-0 hidden lg:block"
-            data-detail-panel
-            aria-live="polite"
-          >
-            <div class="sticky top-24 p-5 rounded-xl bg-muted/30 border border-border min-h-[140px]">
-              <p class="text-body-small text-muted-foreground italic" data-detail-placeholder>
-                Hover over a module to see its description.
-              </p>
-              <div class="hidden" data-detail-content>
-                <h4 class="text-subtitle font-semibold text-foreground mb-2" data-detail-title></h4>
-                <p class="text-body-small text-muted-foreground" data-detail-summary></p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Search Row -->
-        <div class="mb-8" data-pagefind-search>
+        <!-- Search Row: ships hidden; the Pagefind init script reveals it early,
+             so JS-off users never see a dead input -->
+        <div class="mt-10 mb-8" data-pagefind-search hidden>
           <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center">
-            <p class="text-body-small text-muted-foreground text-center sm:text-left">
-              Or search by keyword:
-            </p>
+            <label for="pagefind-search" class="text-body-small text-muted-foreground text-center sm:text-left">
+              Search by keyword:
+            </label>
             <div class="relative w-full sm:w-80">
               <div class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -233,30 +119,31 @@ const phaseCounts = getPhaseCounts();
             </div>
           </div>
 
-          <!-- Search Results Container -->
+          <!-- Search Results Container: internal scroll so queries never shift the page -->
           <div
-            class="mt-4 rounded-xl border border-border bg-card overflow-hidden hidden"
+            class="mt-4 rounded-xl border border-border bg-card max-h-96 overflow-y-auto hidden"
             data-search-results
           >
-            <div class="p-4 text-center text-body-small text-muted-foreground" data-search-status>
+            <div class="p-4 text-center text-body-small text-muted-foreground" data-search-status role="status">
               Searching...
             </div>
             <div data-search-hits></div>
           </div>
         </div>
 
-        <!-- CTA Button -->
-        <div class="text-center">
-          <ActionButton href="/modules" variant="primary" size="lg">
+        <!-- CTA Button: outline variant; filled orange on this page is reserved
+             for the hero CTA and the cards' rail -->
+        <div class="text-center mt-2">
+          <ActionButton href="/modules" variant="outline" size="lg">
             Explore All Modules
           </ActionButton>
         </div>
 
-        <!-- No-JS Fallback -->
+        <!-- No-JS Fallback: carries the module summaries -->
         <noscript>
-          <div class="mt-8 p-6 bg-muted/30 rounded-xl border border-border">
+          <div class="mt-10 max-w-2xl mx-auto text-left border-t border-border pt-8">
             <h3 class="text-subtitle font-semibold text-foreground mb-4">All Modules</h3>
-            <ul class="space-y-3">
+            <ul class="space-y-4">
               {modules.map((module) => (
                 <li>
                   <a
@@ -265,8 +152,8 @@ const phaseCounts = getPhaseCounts();
                   >
                     {module.frontmatter.title}
                   </a>
-                  <span class="text-muted-foreground ml-2">
-                    — {module.frontmatter.summary}
+                  <span class="block text-body-small text-muted-foreground">
+                    {module.frontmatter.summary}
                   </span>
                 </li>
               ))}
@@ -274,14 +161,40 @@ const phaseCounts = getPhaseCounts();
           </div>
         </noscript>
 
-      </div>
     </div>
   </section>
 
-  <!-- DISABLED 2026-03-28: Field Snapshot section removed to reduce homepage complexity.
-       Section, dialogs, and images (public/images/culvert-road.png, river-bend-washout.png) preserved.
-       To re-enable: uncomment the fieldSnapshots data in the frontmatter above,
-       then restore this entire block and the fieldSnapshotData script tag + inline script at the bottom. -->
+  <style>
+    /* Module links row: each list item is one nowrap unit (link + trailing
+       middot), so no wrapped line can ever start with a dangling separator.
+       Vertical padding on the inline links widens the touch target to ~44px
+       without changing the visual line box. */
+    .module-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .module-links__item {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .module-links__link {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: color-mix(in oklab, var(--foreground) 40%, transparent);
+      padding-block: 0.75rem;
+    }
+    .module-links__link:hover {
+      color: var(--primary);
+      text-decoration-color: var(--primary);
+    }
+    .module-links__sep {
+      color: var(--muted-foreground);
+      /* px, not rem: text zoom must not widen the nowrap units more than the
+         13px-per-link text itself grows */
+      margin: 0 8px 0 10px;
+    }
+  </style>
 
   <!-- Origin Story Section -->
   <section class="py-12 bg-card">
@@ -319,57 +232,56 @@ const phaseCounts = getPhaseCounts();
           </p>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- How It Works -->
-  <section class="py-12">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <h2 class="text-headline font-semibold text-center text-foreground mb-10">
-        Before, During, and After
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Before -->
-        <div class="text-center p-6">
-          <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-            <svg class="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
-          </div>
-          <h3 class="text-subtitle font-semibold text-foreground mb-2">Before</h3>
-          <p class="text-body-small text-muted-foreground">
-            Map assets, build networks, prepare supplies, and train volunteers before disaster strikes.
-          </p>
-        </div>
-
-        <!-- During -->
-        <div class="text-center p-6">
-          <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
-            <svg class="w-8 h-8 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-          </div>
-          <h3 class="text-subtitle font-semibold text-foreground mb-2">During</h3>
-          <p class="text-body-small text-muted-foreground">
-            Coordinate response, track needs, manage volunteers, and communicate with your community.
-          </p>
-        </div>
-
-        <!-- After -->
-        <div class="text-center p-6">
-          <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-            <svg class="w-8 h-8 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <h3 class="text-subtitle font-semibold text-foreground mb-2">After</h3>
-          <p class="text-body-small text-muted-foreground">
-            Track recovery progress, support rebuilding, and strengthen long-term community resilience.
-          </p>
-        </div>
+      <!-- Field photographs: real 2023 flood documentation, still captioned figures -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+        <figure class="origin-photo">
+          <Image
+            src={culvertRoad}
+            alt="Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs."
+            widths={[480, 896, 1344]}
+            sizes="(min-width: 768px) 434px, calc(100vw - 2rem)"
+            loading="lazy"
+            decoding="async"
+            class="origin-photo__img"
+          />
+          <figcaption class="origin-photo__caption">Plainfield road closed for culvert repair, July 2023</figcaption>
+        </figure>
+        <figure class="origin-photo">
+          <Image
+            src={riverBendWashout}
+            alt="The Great Brook cutting off a meander, floodwater carving a new channel beside the gravel road."
+            widths={[480, 896, 1344]}
+            sizes="(min-width: 768px) 434px, calc(100vw - 2rem)"
+            loading="lazy"
+            decoding="async"
+            class="origin-photo__img"
+          />
+          <figcaption class="origin-photo__caption">The Great Brook reclaiming ground, Plainfield, July 2023</figcaption>
+        </figure>
       </div>
     </div>
   </section>
+
+  <style>
+    .origin-photo {
+      margin: 0;
+    }
+    .origin-photo__img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .origin-photo__caption {
+      margin-top: 0.5rem;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted-foreground);
+    }
+  </style>
 
   <!-- Partner Organizations -->
   <section class="py-12">
@@ -619,6 +531,12 @@ const phaseCounts = getPhaseCounts();
         const hitsEl = document.querySelector('[data-search-hits]');
         if (!input || !resultsContainer || !statusEl || !hitsEl) return;
 
+        // Reveal the search row EARLY, before the pagefind import: the row
+        // ships with `hidden` so JS-off users never see a dead input, and a
+        // slow index load must not keep the row hidden for JS users.
+        const searchRow = input.closest('[data-pagefind-search]');
+        if (searchRow) searchRow.removeAttribute('hidden');
+
         let pagefind = null;
         let debounceTimer = null;
 
@@ -703,7 +621,7 @@ const phaseCounts = getPhaseCounts();
           if (results.length > 5) {
             const more = document.createElement('div');
             more.className = 'p-3 text-center text-body-small text-muted-foreground border-t border-border';
-            more.textContent = (results.length - 5) + ' more results \u2014 refine your search to narrow down.';
+            more.textContent = (results.length - 5) + ' more results. Refine your search to narrow down.';
             hitsEl.appendChild(more);
           }
         };
@@ -721,7 +639,7 @@ const phaseCounts = getPhaseCounts();
 
           const pf = await loadPagefind();
           if (!pf) {
-            statusEl.textContent = 'Search requires a production build. Run: pnpm build && pnpm preview';
+            statusEl.textContent = 'Search is unavailable right now.';
             return;
           }
 
@@ -765,116 +683,6 @@ const phaseCounts = getPhaseCounts();
       padding: 0 2px;
     }
   </style>
-
-  <!-- Module Explorer Interactivity -->
-  <script is:inline>
-    (() => {
-      const run = () => {
-        if (typeof window === 'undefined') return;
-
-        // Phase filter functionality
-        const filterGroup = document.querySelector('[data-phase-filter-group]');
-        const filterButtons = filterGroup?.querySelectorAll('[data-phase-filter]');
-        const modulePills = document.querySelectorAll('[data-module-pill]');
-
-        if (filterButtons && modulePills.length) {
-          filterButtons.forEach((btn) => {
-            btn.addEventListener('click', () => {
-              const phase = btn.getAttribute('data-phase-filter');
-
-              // Update button states
-              filterButtons.forEach((b) => {
-                const isActive = b === btn;
-                b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-                b.classList.toggle('bg-primary', isActive);
-                b.classList.toggle('text-primary-foreground', isActive);
-                b.classList.toggle('shadow-sm', isActive);
-                b.classList.toggle('text-muted-foreground', !isActive);
-                b.classList.toggle('bg-muted/50', !isActive);
-              });
-
-              // Filter modules (phaseless modules always visible)
-              modulePills.forEach((pill) => {
-                const pillPhases = pill.getAttribute('data-module-phases');
-                const phases = pillPhases ? pillPhases.split(',') : [];
-                // Show if: "All" selected, OR module has no phases, OR module includes selected phase
-                const shouldShow = phase === 'All' || phases.length === 0 || phases.includes(phase);
-
-                pill.style.display = shouldShow ? '' : 'none';
-                pill.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
-              });
-            });
-          });
-        }
-
-        // Desktop detail panel hover functionality
-        const detailPanel = document.querySelector('[data-detail-panel]');
-        const detailPlaceholder = document.querySelector('[data-detail-placeholder]');
-        const detailContent = document.querySelector('[data-detail-content]');
-        const detailTitle = document.querySelector('[data-detail-title]');
-        const detailSummary = document.querySelector('[data-detail-summary]');
-
-        // Mobile detail panel elements
-        const mobilePanel = document.querySelector('[data-mobile-detail-panel]');
-        const mobileTitle = document.querySelector('[data-mobile-detail-title]');
-        const mobileSummary = document.querySelector('[data-mobile-detail-summary]');
-        const mobileLink = document.querySelector('[data-mobile-detail-link]');
-
-        const showDesktopDetail = (pill) => {
-          const title = pill.getAttribute('data-module-title');
-          const summary = pill.getAttribute('data-module-summary');
-
-          if (detailTitle) detailTitle.textContent = title;
-          if (detailSummary) detailSummary.textContent = summary;
-          if (detailPlaceholder) detailPlaceholder.classList.add('hidden');
-          if (detailContent) detailContent.classList.remove('hidden');
-        };
-
-        const hideDesktopDetail = () => {
-          if (detailPlaceholder) detailPlaceholder.classList.remove('hidden');
-          if (detailContent) detailContent.classList.add('hidden');
-        };
-
-        const showMobileDetail = (pill) => {
-          const title = pill.getAttribute('data-module-title');
-          const summary = pill.getAttribute('data-module-summary');
-          const url = pill.getAttribute('href');
-
-          if (mobileTitle) mobileTitle.textContent = title;
-          if (mobileSummary) mobileSummary.textContent = summary;
-          if (mobileLink) mobileLink.setAttribute('href', url);
-          if (mobilePanel) mobilePanel.classList.remove('hidden');
-        };
-
-        if (modulePills.length) {
-          modulePills.forEach((pill) => {
-            // Desktop: hover and focus
-            pill.addEventListener('mouseenter', () => showDesktopDetail(pill));
-            pill.addEventListener('focus', () => showDesktopDetail(pill));
-
-            // Mobile: show detail on focus (touch triggers focus)
-            pill.addEventListener('focus', () => {
-              if (window.innerWidth < 1024) {
-                showMobileDetail(pill);
-              }
-            });
-          });
-
-          // Hide desktop detail when leaving the pills area
-          const pillsContainer = document.querySelector('[data-module-pills]');
-          if (pillsContainer && detailPanel) {
-            pillsContainer.addEventListener('mouseleave', hideDesktopDetail);
-          }
-        }
-      };
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', run, { once: true });
-      } else {
-        run();
-      }
-    })();
-  </script>
 
   <!-- DISABLED 2026-03-28: Field snapshot data + JS removed (companion to disabled section above).
        To re-enable: restore fieldSnapshots frontmatter data, the Field Snapshot HTML section,

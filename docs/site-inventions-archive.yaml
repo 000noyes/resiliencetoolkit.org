@@ -3255,3 +3255,112 @@ categories:
       archived_in_commit: 'feat(verify): add structural_flatten archive category and runner check'
       restore_commit: null
       proposed_canonical_field: null
+
+  # Homepage find-your-path redesign (2026-07-16): the boxed module explorer
+  # and the duplicate "Before, During, and After" section were replaced by the
+  # unified Find your path section (PhaseSlider cards + module text links +
+  # labeled search). Everything removed from src/pages/index.astro is archived
+  # here at the entry-per-unit grain. Candidate future feature: none specific —
+  # preserved for the record per the archive discipline.
+  homepage_explorer_removals:
+    - id: archive-homepage-explore-heading
+      module: homepage
+      location: index.astro Explore the Toolkit section h2 (line 80 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Explore the toolkit yourself.
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Section heading of the boxed explore island. Replaced by the new
+        "Find your path" heading in the unified section (design doc D1).
+      proposed_canonical_field: null
+    - id: archive-homepage-explore-lede
+      module: homepage
+      location: index.astro Explore the Toolkit section lede paragraph (line 83 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Select a phase or topic to jump into the guides. Everything works offline.
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Island lede. Its offline promise survives in the new lede ("Choose
+        where you are relative to a flood. Everything works offline.").
+      proposed_canonical_field: null
+    - id: archive-homepage-bda-section-heading
+      module: homepage
+      location: index.astro How It Works section h2 (line 329 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Before, During, and After
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Heading of the standalone 3-column phase section (design doc D2). The
+        section's three one-sentence phase descriptions were NOT removed: they
+        moved VERBATIM onto the PhaseSlider cards via the new description field
+        in src/data/phases.ts. Only the heading and the icons were dropped.
+      proposed_canonical_field: null
+    - id: archive-homepage-bda-icon-svgs
+      module: homepage
+      location: index.astro How It Works section, three icon circles (lines 334-362 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Three decorative icon SVGs in colored circles: Before = clipboard icon
+        (blue-100 circle), During = warning-triangle icon (orange-100 circle),
+        After = check-circle icon (green-100 circle). Inline stroke SVGs, full
+        markup in git history at the removal commit.
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Decorative phase icons carrying the older Before=blue mapping that
+        inverts the brand continuum (PhaseSlider: orange=Before, green=After).
+        The phase color story now lives only in the cards' rail.
+      proposed_canonical_field: null
+    - id: archive-homepage-phase-filter-pills
+      module: homepage
+      location: index.astro Phase Filter Pills row (lines 88-115 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Filter button row "All (5) / Before (4) / During (2) / After (4)"
+        (labels + live module counts from getPhaseCounts), aria-label "Filter
+        modules by phase", aria-pressed toggle behavior via the inline
+        module-explorer script.
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Five modules do not need filtering (design doc D1). The pills, their
+        counts, and the filter script are removed with the island; the
+        getPhaseCounts/phaseDotColors exports stay in src/data/modules.ts.
+      proposed_canonical_field: null
+    - id: archive-homepage-detail-panel-placeholder
+      module: homepage
+      location: index.astro desktop detail panel placeholder (line 194 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Hover over a module to see its description.
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Placeholder microcopy of the removed hover detail panel. Module
+        summaries remain one click away on /modules and in the noscript list.
+      proposed_canonical_field: null
+    - id: archive-homepage-detail-panel-open-module
+      module: homepage
+      location: index.astro mobile detail panel link (line 177 pre-redesign)
+      type: homepage_explorer_removals
+      content: |
+        Open module
+      inferred_source: null
+      date_removed: '2026-07-16'
+      removed_in_commit: 'feat: Find your path section replaces the module explorer (phases 2-3/6)'
+      rationale: |
+        Link label of the removed mobile focus detail panel. The module links
+        row now links each title directly.
+      proposed_canonical_field: null

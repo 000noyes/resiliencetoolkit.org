@@ -275,11 +275,27 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Priority:** P3
 **Status:** Fixed in v0.0.8 (2026-04-13). Pagefind restored as devDependency with build script step. Content-scoped indexing via `data-pagefind-body` on ModuleLayout article element (17 section pages indexed, nav/footer/homepage excluded). Try/catch error handling added. Dead SearchField.astro removed.
 
-### Offline search via SW pre-cache
+### ~~Offline search via SW pre-cache~~ RESOLVED
 **Priority:** P3
-**Description:** Extend the SW precache generator (`scripts/generate-sw-precache.mjs`) to include pagefind index chunks so search works offline. The generator currently only scans for `index.html` files, so pagefind's `.pf` chunks and `pagefind.js` are not cached. Aligns with the site's local-first mission (pages work offline, search does not yet).
-**Fix:** Add a pagefind glob to the generator's asset collection, or add a separate pagefind precache step. Measure total chunk size first (may be 50-200KB for 17 pages). Test cache invalidation on reindex.
-**Depends on:** Pagefind restored (v0.0.8)
+**Status:** Fixed in the homepage find-your-path build. `scripts/pagefind-precache.mjs` collects the pagefind core subset (pagefind.js, entry, meta, wasm, index and fragment chunks, ~230KB) into the precache nice-to-have tier, excluding the unused UI bundles. Globbed from `dist/pagefind` after every build so hashed chunk names cannot go stale. Covered by unit tests plus an offline e2e that searches with the network cut.
+
+### Pagefind cross-generation offline retention
+**Priority:** P3
+**Description:** After a deploy rotates the service worker cache, an old page that has not been refreshed loses offline search until its next refresh: the new cache generation holds the new pagefind chunks, and the retained previous-build cache is stripped to `/_astro/*` only, so the old page's pagefind requests miss. Graceful degradation (pages and cards still work offline; search needs a refresh first), but it contradicts the offline promise for the un-refreshed window.
+**Fix:** Extend the service worker's stripped-retention rule to keep `/pagefind/*` alongside `/_astro/*` from the newest previous build cache. Touches the SW prune lifecycle, so it needs the full offline test suite and careful review against the update-propagation invariants.
+**Depends on:** Pagefind core precache (shipped in the find-your-path build)
+
+### Retire full-radius pills from labels and buttons (radius-scale sweep)
+**Priority:** P3
+**Description:** Full-radius (9999px) capsules on text labels and buttons read as generic default styling rather than this site's design system. True circles (rail nodes, numbered step circles, spinners, circular icon buttons, progress tracks) are fine and stay. The pill-shaped surfaces: the shared Badge component, the hand-rolled phase/status chips in ModuleLayout and the modules index, the floating feedback and mobile-TOC buttons, an unused `pill` prop on ActionButton, and the print rule keyed to the pill classes.
+**Fix:** One sweep in its own PR: add a radius principle to DESIGN.md (full radius is reserved for true circles; chips, badges, and buttons use the sm/md/lg/xl scale), restyle Badge once, retire the unused ActionButton `pill` prop, convert the hand-rolled chips and the two floating buttons to the radius scale, and update the print-rule selector to match. Pairs with the phase-badge color alignment below (same chips).
+**Depends on:** None (pairs well with the badge-color alignment sweep)
+
+### Align /modules phase-badge colors with the PhaseSlider continuum
+**Priority:** P3
+**Description:** The homepage now expresses before/during/after only through PhaseSlider's orange-to-green continuum. The `/modules` index badges and the separate local copy in `ModuleLayout.astro` still use the older Before=blue mapping (`phaseColors` in `src/data/modules.ts`), which inverts the brand system. Declared follow-up from the homepage cycle, not silently left contradicting.
+**Fix:** Remap the badge palette to the continuum (note PhaseSlider's During color is a `color-mix`, not a token — promote it to a CSS var if the badges adopt it) or retire the phase badges. Decide with a small design pass across /modules and ModuleLayout together.
+**Depends on:** None
 
 ### ~~Search analytics via Umami events~~ WON'T DO
 **Priority:** P3

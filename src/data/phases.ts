@@ -19,9 +19,10 @@ export interface PhaseStop {
   marker: string; // short before/during/after eyebrow (the FEMA-continuum read)
   href: string; // internal /workflows route only — no Drive/Docs URLs
   name: string; // human-state lead label (the loud line)
+  description?: string; // one-sentence phase description — rendered only when a caller opts in via PhaseSlider's showDescriptions
   time: string; // FEMA-derived timeframe sub-label (the quiet line)
   lead?: string; // optional accent tag under the node (e.g. "Start here")
-  incomplete?: boolean; // After only — drives the open-ring + sr-only in-progress affordance
+  incomplete?: boolean; // After only — drives the open-ring affordance
 }
 
 export const phaseStops: PhaseStop[] = [
@@ -30,6 +31,7 @@ export const phaseStops: PhaseStop[] = [
     marker: 'Before',
     href: '/workflows/before',
     name: 'Preparedness',
+    description: 'Map assets, build networks, prepare supplies, and train volunteers before disaster strikes.',
     time: 'Ongoing',
     lead: 'Start here',
   },
@@ -38,15 +40,18 @@ export const phaseStops: PhaseStop[] = [
     marker: 'During',
     href: '/workflows/response',
     name: 'Response',
+    description: 'Coordinate response, track needs, manage volunteers, and communicate with your community.',
     time: 'Day 1 to 2-3 weeks',
+    lead: 'In a flood, go here',
   },
   {
     phase: 'After',
     marker: 'After',
     href: '/workflows/recover',
     name: 'Recovery',
+    description: 'Track recovery progress, support rebuilding, and strengthen long-term community resilience.',
     time: 'Weeks to years',
-    lead: 'Help shape this path',
+    lead: 'Still being shaped',
     incomplete: true,
   },
 ];
