@@ -10,8 +10,7 @@
  * This is recreated EXTERNAL reference content, never the pg164 contamination text.
  *
  * Color is decided in RecoveryContinuum.astro from `nodeStyle` + position, so this
- * file carries NO Tailwind class strings and imports NEITHER the modules.ts
- * `phaseColors` map (older Before=blue mapping, inverts the brand) NOR ModuleLayout.
+ * file carries NO Tailwind class strings and imports no badge/chip styling.
  */
 
 /** A single attributed recovery activity sitting in one of the three recovery columns. */

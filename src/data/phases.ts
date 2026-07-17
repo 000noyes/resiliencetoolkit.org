@@ -7,10 +7,11 @@
  * class strings (color is decided in PhaseSlider by `phase`, so a second caller
  * cannot drift and Tailwind cannot purge a dynamic class).
  *
- * Reuses the canonical Phase type. Do NOT reuse modules.ts `phaseColors` /
- * `phaseDotColors`: those encode the older Before=blue / During=orange / After=green
- * mapping (the homepage-pill semantic), which inverts the brand. PhaseSlider derives
- * its own brand-correct color (orange=Before, green=After) from `phase` internally.
+ * Reuses the canonical Phase type. Phase color lives in ONE system: PhaseSlider
+ * derives its node colors from `phase` internally (orange=Before, the
+ * --phase-during midpoint, green=After), and the module-page/index chips echo
+ * the same tokens via `.meta-chip__dot--*` in base.css. The older Before=blue
+ * `phaseColors`/`phaseDotColors` maps were removed from modules.ts (2026-07-16).
  */
 import type { Phase } from '@/data/modules'; // 'Before' | 'During' | 'After'
 

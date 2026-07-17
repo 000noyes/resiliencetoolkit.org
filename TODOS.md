@@ -285,17 +285,13 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Fix:** Extend the service worker's stripped-retention rule to keep `/pagefind/*` alongside `/_astro/*` from the newest previous build cache. Touches the SW prune lifecycle, so it needs the full offline test suite and careful review against the update-propagation invariants.
 **Depends on:** Pagefind core precache (shipped in the find-your-path build)
 
-### Retire full-radius pills from labels and buttons (radius-scale sweep)
+### ~~Retire full-radius pills from labels and buttons (radius-scale sweep)~~ RESOLVED
 **Priority:** P3
-**Description:** Full-radius (9999px) capsules on text labels and buttons read as generic default styling rather than this site's design system. True circles (rail nodes, numbered step circles, spinners, circular icon buttons, progress tracks) are fine and stay. The pill-shaped surfaces: the shared Badge component, the hand-rolled phase/status chips in ModuleLayout and the modules index, the floating feedback and mobile-TOC buttons, an unused `pill` prop on ActionButton, and the print rule keyed to the pill classes.
-**Fix:** One sweep in its own PR: add a radius principle to DESIGN.md (full radius is reserved for true circles; chips, badges, and buttons use the sm/md/lg/xl scale), restyle Badge once, retire the unused ActionButton `pill` prop, convert the hand-rolled chips and the two floating buttons to the radius scale, and update the print-rule selector to match. Pairs with the phase-badge color alignment below (same chips).
-**Depends on:** None (pairs well with the badge-color alignment sweep)
+**Status:** Resolved in the radius-scale sweep. DESIGN.md carries the durable rule (full radius is reserved for true circles; text chips, badges, and buttons use the sm/md/lg/xl scale). Badge moved to md, the phase/meta chips became the shared `.meta-chip` class (md), the FeedbackWidget form buttons moved to lg, the floating feedback and mobile-TOC triggers to xl, the unused ActionButton `pill` prop was deleted, and the print rule is keyed to `.meta-chip`. Guarded by `tests/build/radius-scale-chips.test.ts`.
 
-### Align /modules phase-badge colors with the PhaseSlider continuum
+### ~~Align /modules phase-badge colors with the PhaseSlider continuum~~ RESOLVED
 **Priority:** P3
-**Description:** The homepage now expresses before/during/after only through PhaseSlider's orange-to-green continuum. The `/modules` index badges and the separate local copy in `ModuleLayout.astro` still use the older Before=blue mapping (`phaseColors` in `src/data/modules.ts`), which inverts the brand system. Declared follow-up from the homepage cycle, not silently left contradicting.
-**Fix:** Remap the badge palette to the continuum (note PhaseSlider's During color is a `color-mix`, not a token — promote it to a CSS var if the badges adopt it) or retire the phase badges. Decide with a small design pass across /modules and ModuleLayout together.
-**Depends on:** None
+**Status:** Resolved with the radius-scale sweep. The Before=blue `phaseColors`/`phaseDotColors` maps were removed from `src/data/modules.ts` and the local copy from `ModuleLayout.astro`. Phase chips are quiet muted `.meta-chip`s whose dot echoes the PhaseSlider node exactly (Before = primary, During = the shared `--phase-during` token the slider now also uses, After = the open green ring): one phase color system across homepage, /workflows, /modules, and module pages.
 
 ### ~~Search analytics via Umami events~~ WON'T DO
 **Priority:** P3

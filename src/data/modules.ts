@@ -91,24 +91,6 @@ export const modules: Module[] = [
 ];
 
 /**
- * Phase color classes for badges and indicators
- */
-export const phaseColors: Record<Phase, string> = {
-  Before: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  During: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  After: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-};
-
-/**
- * Dot colors for phase indicators on module pills
- */
-export const phaseDotColors: Record<Phase, string> = {
-  Before: 'bg-blue-500',
-  During: 'bg-orange-500',
-  After: 'bg-green-500',
-};
-
-/**
  * Get modules filtered by phase
  * Note: Phaseless modules (Introduction, Resource Library) are always included
  */

@@ -67,12 +67,6 @@ const pageTitle = sectionData
   ? `${sectionData.number} ${sectionData.title} | ${sectionData.moduleTitle}`
   : frontmatter?.title || title || 'Module';
 
-const phaseColors = {
-  Before: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  During: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  After: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-};
-
 // Generate moduleKey for TOC progress tracking
 const moduleKey = sectionData
   ? `${sectionData.modulePath?.split('/').pop() || 'module'}-${sectionData.number.replace('.', '-')}`
@@ -116,17 +110,18 @@ const showTOC = !!sectionData;
           <>
             <div class="flex flex-wrap items-center gap-2 mb-3">
               {frontmatter.phase && (
-                <span class={`px-3 py-1 rounded-full text-sm font-medium ${phaseColors[frontmatter.phase]}`}>
+                <span class="meta-chip px-3 py-1 text-sm font-medium">
+                  <span class={`meta-chip__dot meta-chip__dot--${frontmatter.phase.toLowerCase()}`} aria-hidden="true"></span>
                   {frontmatter.phase}
                 </span>
               )}
               {frontmatter.difficulty && (
-                <span class="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+                <span class="meta-chip px-3 py-1 text-sm font-medium">
                   {frontmatter.difficulty}
                 </span>
               )}
               {frontmatter.time_to_complete && (
-                <span class="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+                <span class="meta-chip px-3 py-1 text-sm font-medium">
                   {frontmatter.time_to_complete}
                 </span>
               )}

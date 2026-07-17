@@ -2,11 +2,11 @@
 /**
  * ActionButton Component - Resilience Toolkit UI Design System (Updated)
  *
- * Supports pill-shaped primary buttons with mint fill and shadow,
- * plus outline secondary buttons and legacy rounded variants.
+ * Supports primary buttons with mint fill and shadow,
+ * plus outline secondary buttons.
  *
  * Usage:
- * <ActionButton variant="primary" pill>Start a Hub</ActionButton>
+ * <ActionButton variant="primary">Start a Hub</ActionButton>
  * <ActionButton variant="outline">Learn More</ActionButton>
  */
 
@@ -14,7 +14,6 @@ interface Props {
   href?: string;
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
-  pill?: boolean;
   class?: string;
   type?: 'button' | 'submit' | 'reset';
 }
@@ -23,7 +22,6 @@ const {
   href,
   variant = 'primary',
   size = 'md',
-  pill = false,
   class: className = '',
   type = 'button'
 } = Astro.props;
@@ -60,8 +58,8 @@ const Element = href ? 'a' : 'button';
     // Active state: compress by -1px translateY
     'active:translate-y-px',
 
-    // Border radius - pill or standard
-    pill ? 'rounded-full' : 'rounded-lg',
+    // Border radius - standard scale
+    'rounded-lg',
 
     // Variant styles
     variantClasses[variant],
