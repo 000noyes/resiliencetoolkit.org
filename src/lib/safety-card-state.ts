@@ -95,7 +95,7 @@ const OVERLAY_RECEIPTS = {
 
 const QUIET_LINES = {
   full: 'This device is low on space. Backing up now keeps everything safe.',
-  atRisk: 'This browser may clear saved work when space runs low, so a backup matters more here.',
+  atRisk: 'This browser may clear saved work when space runs low. A backup keeps a copy you can restore.',
   offline: 'You are offline. Backing up still works; the file saves to this device.',
 } as const;
 
@@ -121,9 +121,7 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
   switch (state) {
     case 'empty':
       headline = 'No saved work on this device yet.';
-      receipt.push(
-        'As you work through the toolkit, everything you type is saved on this device, and this is where you keep it safe.',
-      );
+      receipt.push('Your toolkit work saves to this device. A backup is a file you keep.');
       break;
     case 'first-work':
       headline = 'This device has work ready to back up.';

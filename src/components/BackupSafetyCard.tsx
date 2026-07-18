@@ -247,7 +247,6 @@ export default function BackupSafetyCard() {
 
   const showFireDrill = card.state === 'fresh' || card.state === 'just-backed-up';
   const showKeepACopy = card.state === 'fresh' || card.state === 'just-backed-up';
-  const showHomeScreenNudge = card.state === 'empty' || card.state === 'first-work';
   const { meter } = loaded;
   const hasMeter = meter.rows.length > 0;
 
@@ -269,33 +268,22 @@ export default function BackupSafetyCard() {
         </p>
       )}
 
-      {card.state === 'empty' ? (
-        <a
-          href="/modules"
-          data-testid="rt-safety-explore-link"
-          className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-          style={{ minHeight: 44 }}
-        >
-          Explore the modules
-        </a>
-      ) : (
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-          <BackupButton state={card.buttonState} onClick={handleBackup} />
-          {canShareFiles && (
-            <button
-              type="button"
-              data-testid="rt-share-button"
-              onClick={handleShareRequest}
-              disabled={card.buttonState === 'working'}
-              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium border border-border bg-card text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
-              style={{ minHeight: 44 }}
-            >
-              <Share2 className="h-4 w-4" aria-hidden="true" />
-              Send a copy to a device you own
-            </button>
-          )}
-        </div>
-      )}
+      <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <BackupButton state={card.buttonState} onClick={handleBackup} />
+        {canShareFiles && card.state !== 'empty' && (
+          <button
+            type="button"
+            data-testid="rt-share-button"
+            onClick={handleShareRequest}
+            disabled={card.buttonState === 'working'}
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium border border-border bg-card text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
+            style={{ minHeight: 44 }}
+          >
+            <Share2 className="h-4 w-4" aria-hidden="true" />
+            Send a copy to a device you own
+          </button>
+        )}
+      </div>
 
       {card.state !== 'empty' && (
         <p className="mt-3 text-xs text-muted-foreground" data-testid="rt-device-name">
@@ -370,11 +358,6 @@ export default function BackupSafetyCard() {
         <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-fire-drill">
           Want to be sure the file works? Restore below shows what a backup holds without changing
           anything.
-        </p>
-      )}
-      {showHomeScreenNudge && (
-        <p className="mt-3 text-xs text-muted-foreground max-w-prose" data-testid="rt-home-nudge">
-          Tip: add this site to your home screen so it is easy to find again.
         </p>
       )}
       {card.quietLines.map((line) => (

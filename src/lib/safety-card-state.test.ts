@@ -39,10 +39,14 @@ function base(overrides: Partial<SafetyCardInputs> = {}): SafetyCardInputs {
 }
 
 describe('base state headlines (the decided sentence table)', () => {
-  it('Empty: no saved work on this device yet', () => {
+  it('Empty: no saved work on this device yet, receipt stays factual (not preachy)', () => {
     const card = deriveSafetyCard(base({ counts: noWork }));
     expect(card.state).toBe('empty');
     expect(card.headline).toBe('No saved work on this device yet.');
+    const receipt = card.receipt.join(' ');
+    expect(receipt).toContain('this device');
+    // Register cut (operator design review): no "keep it safe" hand-holding.
+    expect(receipt).not.toContain('keep it safe');
   });
 
   it('First work: work exists, never backed up', () => {
@@ -209,6 +213,8 @@ describe('overlay contract', () => {
     expect(card.quietLines.length).toBeGreaterThan(0);
     expect(card.quietLines.join(' ')).toContain('clear saved work');
     expect(card.quietLines.join(' ')).toContain('offline');
+    // Register cut (operator design review): the at-risk line no longer dangles.
+    expect(card.quietLines.join(' ')).not.toContain('matters more');
   });
 
   it('multiple overlays: loss leads, the rest collapse to quiet lines', () => {
