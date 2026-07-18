@@ -1,0 +1,73 @@
+---
+/**
+ * Printable recovery card (DR11): one small page a person prints and keeps
+ * with their emergency papers. It tells them, or anyone helping them, how to
+ * bring toolkit work back on any device. The wording is dictation-stable
+ * (DR10): every name on this card can be read aloud over a phone.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Recovery card - Resilience Hub Toolkit"
+  description="A printable card with the steps to bring your toolkit work back on any device."
+>
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
+    <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground no-print">
+      Print this and keep it with your emergency papers
+    </p>
+
+    <div class="mt-4 rounded-lg border-2 border-border bg-card p-6 sm:p-8" id="recovery-card">
+      <h1 class="text-xl font-semibold text-foreground">Resilience Toolkit recovery card</h1>
+      <p class="mt-3 text-sm text-foreground">
+        Your toolkit work lives on your own device, not in the cloud. A backup is a file you keep.
+        This card tells you, or anyone helping you, how to bring that work back.
+      </p>
+
+      <ol class="mt-4 space-y-3 text-sm text-foreground list-decimal list-inside">
+        <li>
+          On the device you want the work on, open
+          <strong>resiliencetoolkit.org/dashboard</strong>
+        </li>
+        <li>Choose <strong>Restore from a backup</strong></li>
+        <li>
+          Pick your backup file. Its name starts with
+          <strong>resilience-toolkit-backup</strong>, then the date it was made
+        </li>
+        <li>The preview shows what the file holds before anything changes</li>
+      </ol>
+
+      <p class="mt-4 text-sm text-foreground">
+        Saying it over the phone: the site is resiliencetoolkit dot org, slash dashboard. The file
+        is resilience dash toolkit dash backup, then the date.
+      </p>
+
+      <p class="mt-4 text-xs text-muted-foreground">
+        Keep your backup file on a device you own, or print your key pages too. A fresh backup is
+        one tap on the dashboard: Back up my work.
+      </p>
+    </div>
+
+    <button
+      id="print-card"
+      class="no-print mt-6 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+      style="min-height: 44px"
+    >
+      Print this card
+    </button>
+  </div>
+
+  <script>
+    document.getElementById('print-card')?.addEventListener('click', () => {
+      window.print();
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  @media print {
+    #recovery-card {
+      border-color: #000;
+    }
+  }
+</style>
