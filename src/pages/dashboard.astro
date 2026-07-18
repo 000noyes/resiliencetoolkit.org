@@ -14,12 +14,11 @@ import UserProgressDashboard from '../components/UserProgressDashboard';
 import PersonalNotes from '../components/PersonalNotes';
 import BackupSafetyCard from '../components/BackupSafetyCard';
 import RestoreBackupZone from '../components/RestoreBackupZone';
-import WhatsNewCard from '../components/WhatsNewCard';
 import { BookOpen, Download } from 'lucide-react';
 ---
 
 <BaseLayout title="Dashboard - Resilience Hub Toolkit">
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <div class="bg-background min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28">
       <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground">Dashboard</p>
 
@@ -38,30 +37,11 @@ import { BookOpen, Download } from 'lucide-react';
             </h2>
             <p class="mt-2 text-sm text-muted-foreground max-w-prose">
               Restoring reads your backup file and shows you what it holds before anything changes.
-              It works with any backup made on this site, old or new.
             </p>
             <div class="mt-4">
               <RestoreBackupZone client:load />
             </div>
-            <p class="mt-3 text-xs text-muted-foreground">
-              <a href="/recovery-card" class="underline underline-offset-2 hover:text-foreground">
-                Print a recovery card
-              </a>
-              to keep with your emergency papers.
-            </p>
-            <details class="mt-3">
-              <summary class="text-xs text-muted-foreground cursor-pointer">
-                Used www.resiliencetoolkit.org before?
-              </summary>
-              <p class="mt-1 text-xs text-muted-foreground max-w-prose">
-                Your work is safe. Open the www dashboard, tap Back up my work there, then restore
-                the file here.
-              </p>
-            </details>
           </section>
-
-          <!-- DEMOTED -->
-          <WhatsNewCard client:load />
         </div>
 
         <!-- SECONDARY COLUMN -->
@@ -71,20 +51,20 @@ import { BookOpen, Download } from 'lucide-react';
 
           <!-- Quick Links -->
           <section
-            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+            class="bg-card rounded-lg shadow-sm border border-border p-6"
           >
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
+            <h3 class="text-lg font-semibold text-foreground mb-4">Quick Links</h3>
             <nav class="space-y-2">
               <a
                 href="/downloads"
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+                class="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
               >
                 <Download className="w-4 h-4" />
                 Downloads
               </a>
               <a
                 href="/about"
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+                class="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
               >
                 <BookOpen className="w-4 h-4" />
                 About the Toolkit
