@@ -20,6 +20,7 @@ import {
   deriveSafetyCard,
   computeWorkMeter,
   formatByteSize,
+  moduleCardBackupLine,
   type SafetyCardInputs,
 } from './safety-card-state';
 
@@ -248,6 +249,44 @@ describe('register rules', () => {
       const all = [card.headline, ...card.receipt, ...card.quietLines].join(' ');
       expect(all).not.toMatch(/[–—]/);
     }
+  });
+});
+
+describe('module-card backup line (the shared cue line, never time-based)', () => {
+  it('never backed up', () => {
+    expect(
+      moduleCardBackupLine({ counter: 'unknown', lastBackupAt: null, lastBackupHash: null }),
+    ).toBe('You have not backed up yet.');
+  });
+
+  it('changes since, in the one unit grammar', () => {
+    const line = moduleCardBackupLine({
+      counter: 3,
+      lastBackupAt: '2026-07-14T00:00:00.000Z',
+      lastBackupHash: 'h',
+    });
+    expect(line).toContain('Last backup:');
+    expect(line).toContain('3 changes since.');
+  });
+
+  it('zero counter states the date without a time-based nudge', () => {
+    const line = moduleCardBackupLine({
+      counter: 0,
+      lastBackupAt: '2026-01-04T00:00:00.000Z',
+      lastBackupHash: 'h',
+    });
+    expect(line).toContain('Last backup:');
+    expect(line).not.toContain('fresh backup');
+    expect(line).not.toContain('since');
+  });
+
+  it('unknown counter invites one backup, no false calm and no false alarm', () => {
+    const line = moduleCardBackupLine({
+      counter: 'unknown',
+      lastBackupAt: '2026-07-01T00:00:00.000Z',
+      lastBackupHash: null,
+    });
+    expect(line).toContain('Back up once to make this current.');
   });
 });
 

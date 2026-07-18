@@ -22,10 +22,12 @@ describe('WorkLivesHere', () => {
     expect(html).toMatch(/cloud or to Google Drive/i);
   });
 
-  it('offers a one-tap backup and a last-backup line', () => {
+  it('offers a one-tap backup with no state claim before the cue resolves', () => {
     const html = renderToStaticMarkup(createElement(WorkLivesHere));
     expect(html).toMatch(/Back up my work/i);
-    // Server render has no localStorage read yet, so it shows the not-yet state.
-    expect(html).toMatch(/not backed up yet/i);
+    // The backup line renders from the shared work-based cue after mount;
+    // the server shell claims no state it cannot know (and never a
+    // time-based nudge).
+    expect(html).not.toMatch(/Time for a fresh backup/i);
   });
 });

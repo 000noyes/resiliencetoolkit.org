@@ -15,6 +15,7 @@
  * device and a browser can clear it, so back it up.
  */
 import { getMetadata } from '@/lib/storage';
+import type { WorkCanary } from '@/lib/backup-cue';
 
 /** Editors dispatch this on the document when the storage picture changes (e.g. quota hit). */
 export const STORAGE_HEALTH_EVENT = 'rt-storage-health-changed';
@@ -94,6 +95,30 @@ export function reportStorageQuotaExceeded(): void {
 /** Test seam: reset the shared quota flag. */
 export function resetStorageHealthForTest(): void {
   quotaExceeded = false;
+}
+
+/**
+ * Reconciliation R1: the work-aware soft-strip claim boolean, stated so no
+ * one has to guess. storageSoft claims the slot when (at-risk health) AND
+ * (not dismissed this session) AND (work exists: the has-work canary) AND
+ * (unprotected work exists: the counter is nonzero or unknown). The at-risk
+ * conjunct stays: a persisted, healthy origin never gets the site-wide strip
+ * even with unprotected work (the dashboard card carries the cue there). The
+ * no-work case is unconditional: a visitor with nothing saved never sees the
+ * soft storage strip anywhere. Acute states never consult this. Pure; the
+ * caller supplies one canary read and one counter read, never the hash.
+ */
+export function shouldClaimStorageSoft(inputs: {
+  atRisk: boolean;
+  dismissed: boolean;
+  canary: WorkCanary | null;
+  counter: number | 'unknown';
+}): boolean {
+  const { atRisk, dismissed, canary, counter } = inputs;
+  if (!atRisk || dismissed) return false;
+  const hasWork = canary !== null && Object.keys(canary.modules).length > 0;
+  if (!hasWork) return false;
+  return counter === 'unknown' || counter > 0;
 }
 
 /**
