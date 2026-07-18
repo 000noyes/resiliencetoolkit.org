@@ -30,6 +30,25 @@ const sectionNames: Record<string, string> = {
       </p>
     </header>
 
+    <!-- Where typed work lives (the journey's one pointer on this page) -->
+    <section class="mb-12" data-testid="rt-downloads-work-card">
+      <div
+        class="bg-card border border-border rounded-lg p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+      >
+        <p class="flex-1 text-sm text-muted-foreground">
+          <strong class="text-foreground">Work you save on this site stays on this device.</strong>
+          Back it up from your dashboard to keep a copy you can bring back on any device.
+        </p>
+        <a
+          href="/dashboard#backup"
+          class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm border border-border bg-background text-foreground hover:bg-muted transition-colors whitespace-nowrap"
+          style="min-height: 44px"
+        >
+          Back up my work
+        </a>
+      </div>
+    </section>
+
     <!-- How Automatic Offline Works -->
     <!-- <section class="mb-12">
       <div class="bg-primary/5 border border-primary/20 rounded-lg p-6">
@@ -397,7 +416,7 @@ const sectionNames: Record<string, string> = {
             Will my information be saved if I fill out forms on this website?
           </summary>
           <p class="text-sm text-muted-foreground mt-3">
-            Yes. Your information is saved on your device (in your web browser's storage). It stays private, never leaves your device, and works completely offline. Because it lives only on this device, your browser could clear it to free up space, so keep a backup with the "Back up my work" button on any module page and store that file somewhere safe.
+            Yes. Your information is saved on your device (in your web browser's storage). It stays private, never leaves your device, and works completely offline. Because it lives only on this device, your browser could clear it to free up space, so back up your work: one tap on any module page or on your dashboard makes a backup file you keep somewhere safe.
           </p>
         </details>
 
@@ -406,7 +425,7 @@ const sectionNames: Record<string, string> = {
             How do I save my work and use it on a different device?
           </summary>
           <p class="text-sm text-muted-foreground mt-3">
-            On any module page, click "Back up my work" to download your information. You can then email it to yourself or save it to a USB drive to transfer to another device.
+            On any module page or on your dashboard, tap "Back up my work" to make a backup file. Carry that file to the other device (your own inbox or a USB drive works), then open the dashboard there and choose "Restore from a backup". The preview shows what the file holds before anything changes.
           </p>
         </details>
 

@@ -54,6 +54,36 @@ export interface ChangelogEntry {
 
 export const changelogEntries: ChangelogEntry[] = [
   {
+    id: '0003',
+    date: 'Jul 18, 2026',
+    isoDate: '2026-07-18',
+    title: 'Your dashboard now answers one question first',
+    summary: [
+      'The dashboard opens by telling you whether your work is backed up, in one sentence',
+      'One set of words everywhere: you back up your work, and you restore it from a backup file',
+      'Restoring shows you what a backup file holds before anything on your device changes',
+      'Backup files now carry the date and time they were made, and the name of the device that made them if you set one',
+      'A printable recovery card you can keep with your emergency papers',
+    ],
+    sections: [
+      {
+        heading: 'Is my work safe?',
+        content: `
+          <p>The dashboard now leads with the answer to the question that matters most: is the work on this device backed up? When there are changes ready to back up it says how many, and one tap makes the backup file. When everything is backed up, it says so plainly.</p>
+          <p>Below the answer, a small table shows what is saved on this device, module by module, so you always know what a backup would hold.</p>
+          <p><a href="/dashboard">Go to your dashboard</a></p>
+        `,
+      },
+      {
+        heading: 'Bringing work back',
+        content: `
+          <p>Restoring from a backup now shows a preview first: the file's name, the date it was made, and what it holds. Nothing on your device changes until you say so, and if the file may be missing newer work on your device, the dashboard offers to back this device up first.</p>
+          <p>Every backup file this site has ever made still restores, including files from before this change.</p>
+        `,
+      },
+    ],
+  },
+  {
     id: '0002',
     draft: true,
     date: 'Feb 8, 2026',
@@ -123,7 +153,7 @@ export const changelogEntries: ChangelogEntry[] = [
     isoDate: '2026-02-07',
     title: 'Dashboard, Search, Navigation & More',
     summary: [
-      'New personal dashboard tracks your progress, recent activity, and streaks across all modules',
+      'New personal dashboard tracks your progress and recent activity across all modules',
       'Browse and filter modules by disaster phase on the homepage, with a built-in keyword search',
       '"On this page" sidebar on module pages helps you see what\'s covered and jump to any section',
       'Community Resilience Map added to the /map page',
@@ -135,13 +165,13 @@ export const changelogEntries: ChangelogEntry[] = [
         content: `
           <p>A new dashboard gives you a personal overview of your preparedness journey. As you work through the toolkit's checklists, the dashboard tracks your progress across all modules—showing items completed, modules started, and your most recent activity.</p>
           <p>Expand any module in "Progress by Module" to see a per-section breakdown (e.g., how many Emergency Kits items you've checked off vs. Food & Water). The sidebar on each module page also reflects your progress in real time, so you always know where you left off.</p>
-          <p>Set a weekly goal and build a streak to stay motivated. All data is stored locally on your device—nothing is sent to any server.</p>
+          <p>All data is stored locally on your device—nothing is sent to any server.</p>
           <p><a href="/dashboard">Go to your Dashboard</a></p>
         `,
         image: {
           src: '/changelog/001-dashboard.png',
           alt: 'Personal dashboard showing items completed, modules started, recent activity, and progress by module',
-          caption: 'The new personal dashboard with progress tracking and streaks',
+          caption: 'The new personal dashboard with progress tracking',
         },
       },
       {
