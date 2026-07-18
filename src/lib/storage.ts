@@ -490,6 +490,24 @@ export async function exportAllData(): Promise<{
 }
 
 /**
+ * Metadata keys that never merge in from an imported file (DX3): the
+ * receiving device's identity, its persist diagnostics (the file's are
+ * another device's), and the cue baseline the import re-stamps itself.
+ */
+export const IMPORT_METADATA_EXCLUSIONS: ReadonlySet<string> = new Set([
+  'storageDeviceId',
+  'deviceName',
+  'storageDiagnostic',
+  'storagePersisted',
+  'storage_persist_requested_v1', // PERSIST_REQUESTED_MARKER (declared below)
+  BACKUP_WRITE_COUNTER_KEY,
+  LAST_BACKUP_AT_KEY,
+  LAST_BACKUP_HASH_KEY,
+  'lastBackupTransport',
+  'shareCautionShown',
+]);
+
+/**
  * Validate and import data from a JSON export file.
  * Uses a multi-store IDB transaction — if any write fails, the entire import rolls back.
  *
@@ -546,11 +564,16 @@ export async function importAllData(data: unknown): Promise<{ todosImported: num
       await tableStore.put(table as unknown as ResilienceDB['tables']['value']);
     }
 
-    // Import metadata if present
+    // Import metadata if present, minus the exclusion keyset (DX3): a
+    // restored device keeps its own identity and its own cue baseline. Letting
+    // the file's deviceId through would give two devices one identity and
+    // corrupt provenance before sync ever exists; letting the cue keys through
+    // would resurrect a stale count.
     const metadataStore = tx.objectStore('metadata');
     if (obj.metadata && typeof obj.metadata === 'object' && !Array.isArray(obj.metadata)) {
       const metadata = obj.metadata as Record<string, unknown>;
       for (const [key, value] of Object.entries(metadata)) {
+        if (IMPORT_METADATA_EXCLUSIONS.has(key)) continue;
         await metadataStore.put({
           key,
           value: value as MetadataValue,
@@ -558,6 +581,28 @@ export async function importAllData(data: unknown): Promise<{ todosImported: num
         });
       }
     }
+
+    // Re-stamp the cue baseline in the same transaction. The counter resets
+    // to exact zero (the imported state IS the file), and when the file
+    // carries its own timestamp and snapshot hash they become the baseline:
+    // the device's content now equals the file the person holds, which is
+    // exactly what "backed up" means. A legacy file clears the baseline
+    // instead of faking one.
+    const now = new Date().toISOString();
+    await metadataStore.put({ key: BACKUP_WRITE_COUNTER_KEY, value: 0, updatedAt: now });
+    const exportedAtRaw = obj.exportedAt;
+    if (typeof exportedAtRaw === 'string' && Number.isFinite(Date.parse(exportedAtRaw))) {
+      await metadataStore.put({ key: LAST_BACKUP_AT_KEY, value: exportedAtRaw, updatedAt: now });
+    } else {
+      await metadataStore.delete(LAST_BACKUP_AT_KEY);
+    }
+    const fileHash = obj.backupSnapshotHash;
+    if (typeof fileHash === 'string' && fileHash) {
+      await metadataStore.put({ key: LAST_BACKUP_HASH_KEY, value: fileHash, updatedAt: now });
+    } else {
+      await metadataStore.delete(LAST_BACKUP_HASH_KEY);
+    }
+    await metadataStore.delete('lastBackupTransport');
 
     // The imported snapshot may carry a stale or malformed migration
     // marker (e.g., set on an older device that had `no_data` and is now
