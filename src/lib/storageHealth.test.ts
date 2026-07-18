@@ -6,7 +6,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import 'fake-indexeddb/auto';
 
-import { checkStorageHealth, reportStorageQuotaExceeded, resetStorageHealthForTest } from './storageHealth';
+import {
+  checkStorageHealth,
+  reportStorageQuotaExceeded,
+  resetStorageHealthForTest,
+  shouldClaimStorageSoft,
+} from './storageHealth';
 
 function setPersisted(value: boolean | null) {
   if (value === null) {
@@ -74,5 +79,38 @@ describe('checkStorageHealth', () => {
     reportStorageQuotaExceeded();
     expect(handler).toHaveBeenCalled();
     document.removeEventListener('rt-storage-health-changed', handler);
+  });
+});
+
+describe('shouldClaimStorageSoft (reconciliation R1: the work-aware claim boolean)', () => {
+  const canary = { modules: { m: true }, updatedAt: '2026-07-18T00:00:00.000Z' };
+
+  it('claims only on at-risk + not dismissed + work exists + unprotected work', () => {
+    expect(shouldClaimStorageSoft({ atRisk: true, dismissed: false, canary, counter: 3 })).toBe(true);
+    expect(shouldClaimStorageSoft({ atRisk: true, dismissed: false, canary, counter: 'unknown' })).toBe(true);
+  });
+
+  it('the no-work case is unconditional: no canary work, no strip, anywhere', () => {
+    expect(shouldClaimStorageSoft({ atRisk: true, dismissed: false, canary: null, counter: 'unknown' })).toBe(false);
+    expect(
+      shouldClaimStorageSoft({
+        atRisk: true,
+        dismissed: false,
+        canary: { modules: {}, updatedAt: 'x' },
+        counter: 5,
+      }),
+    ).toBe(false);
+  });
+
+  it('a healthy or acute origin never claims the soft slot here', () => {
+    expect(shouldClaimStorageSoft({ atRisk: false, dismissed: false, canary, counter: 5 })).toBe(false);
+  });
+
+  it('fully backed-up work stays quiet even at risk', () => {
+    expect(shouldClaimStorageSoft({ atRisk: true, dismissed: false, canary, counter: 0 })).toBe(false);
+  });
+
+  it('session dismissal stays quiet', () => {
+    expect(shouldClaimStorageSoft({ atRisk: true, dismissed: true, canary, counter: 3 })).toBe(false);
   });
 });

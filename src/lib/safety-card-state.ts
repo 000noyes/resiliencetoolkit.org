@@ -212,6 +212,32 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
   };
 }
 
+/** "Jul 14, 2026" style short date for the module-card line. */
+function formatShortDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return 'an earlier date';
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+/**
+ * The module-page WorkLivesHere backup line, rendered from the same cue as
+ * the dashboard card so the two surfaces can never disagree (reconciliation
+ * R1 retires the card's old 7-day time-based nudge).
+ */
+export function moduleCardBackupLine(cue: CueState): string {
+  if (!cue.lastBackupAt) return 'You have not backed up yet.';
+  const date = `Last backup: ${formatShortDate(cue.lastBackupAt)}.`;
+  if (typeof cue.counter === 'number' && cue.counter > 0) {
+    return cue.counter > 99
+      ? `${date} Many changes since.`
+      : `${date} ${countNoun(cue.counter, 'change')} since.`;
+  }
+  if (cue.counter === 'unknown') {
+    return `${date} Back up once to make this current.`;
+  }
+  return date;
+}
+
 // ============================================================================
 // HONEST METER
 // ============================================================================

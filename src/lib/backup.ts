@@ -46,22 +46,6 @@ export function lastBackupAt(): number | null {
   }
 }
 
-/** Soft storage reminder suppresses for this long after a completed backup.
- * Retired by the work-based cue (notice reconciliation R1); kept only until
- * the banner's claim moves to the shared cue later in this same PR. */
-export const LAST_BACKUP_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
-
-/**
- * Whether a backup was taken within `maxAgeMs` of `now`. Absent/unreadable
- * counts as NOT fresh, so the soft reminder shows (fail toward honesty).
- * Retired alongside LAST_BACKUP_MAX_AGE_MS by reconciliation R1.
- */
-export function isBackupFresh(now: number, maxAgeMs: number = LAST_BACKUP_MAX_AGE_MS): boolean {
-  const at = lastBackupAt();
-  if (at === null) return false;
-  return now - at < maxAgeMs;
-}
-
 export type BackupTransport = 'share' | 'picker' | 'anchor';
 
 export interface BackupData {
