@@ -2,7 +2,53 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
-## [Unreleased]
+## [0.0.14.0] - 2026-07-18
+
+### Added
+- The dashboard now answers one question first: whether the work on this
+  device is backed up, in one sentence, with the count of changes ready to
+  back up when there are any. Below the answer, a small table shows what is
+  saved on this device, module by module, with sizes.
+- Restoring from a backup shows a preview first: the file's name, the date it
+  was made, and what it holds. Nothing changes until you say so. When the
+  file may be missing newer work on this device, the dashboard offers to back
+  this device up first and the replace choice steps back. A file holding
+  fewer modules than the device says exactly what replacing would remove.
+- Backup files now carry the date and time they were made, the name of the
+  device that made them when one is set, and a plain sentence inside telling
+  whoever finds the file where it goes.
+- On phones that support it, a "Send a copy to a device you own" option
+  shares the backup file directly, with a one-time reminder to send it only
+  somewhere private that you own.
+- A printable recovery card at /recovery-card with the restore steps in words
+  that can be read aloud over a phone.
+- Every backup file this site has ever made keeps restoring, and test files
+  from each format are now checked on every change to keep it that way.
+- A brief "Updating to the latest version." note now appears at the bottom of
+  the page in the moment before the site refreshes to apply an update, so the
+  refresh reads as an update instead of a glitch. Edits in progress are still
+  saved before any refresh.
+- A quiet "A newer version of this site is ready" notice with a Refresh
+  button appears when an update has fully downloaded. Refreshing is always
+  optional: ignored updates apply on their own the next time the site is not
+  being looked at, and edits in progress are saved before any refresh.
+
+### Changed
+- One set of words everywhere: you back up your work and you restore it from
+  a backup file. The dashboard, module pages, downloads page, questions and
+  answers, and the offline page all tell the same story the same way.
+- The storage reminder is now based on your work, not the calendar: it
+  appears only when unprotected work exists on a device at risk, and never
+  for a visitor who has not saved anything. Backing up quiets it immediately.
+- The streak and goal card is retired. Keeping work safe is not a game, and
+  a broken streak should never greet someone coming back after a hard week.
+- Top-of-page notices now show one at a time. When more than one would apply
+  (for example an offline indicator, an update prompt, and a storage reminder),
+  the single most important message shows instead of a stack of bars above the
+  page. The storage reminders were rewritten to be calmer and clearer, and both
+  the soft reminder and the out-of-space warning now link straight to the
+  one-tap backup on the dashboard. The "you're back online" flash is now a
+  quiet green.
 
 ### Fixed
 - The dashboard no longer treats an untouched module as started. Opening a
@@ -37,25 +83,6 @@ All notable changes to ResilienceToolkit.org are documented here.
   styled and interactive instead of unstyled. Service-worker cache matching now
   ignores the `Vary` header so cross-origin-imported module bundles resolve
   offline.
-
-### Added
-- A brief "Updating to the latest version." note now appears at the bottom of
-  the page in the moment before the site refreshes to apply an update, so the
-  refresh reads as an update instead of a glitch. Edits in progress are still
-  saved before any refresh.
-- A quiet "A newer version of this site is ready" notice with a Refresh
-  button appears when an update has fully downloaded. Refreshing is always
-  optional: ignored updates apply on their own the next time the site is not
-  being looked at, and edits in progress are saved before any refresh.
-
-### Changed
-- Top-of-page notices now show one at a time. When more than one would apply
-  (for example an offline indicator, an update prompt, and a storage reminder),
-  the single most important message shows instead of a stack of bars above the
-  page. The storage reminders were rewritten to be calmer and clearer, and both
-  the soft reminder and the out-of-space warning now link straight to the
-  one-tap backup on the dashboard; the soft reminder stays quiet for two weeks
-  after you back up. The "you're back online" flash is now a quiet green.
 
 ### Removed
 - Third-party analytics and trackers (Umami + Cloudflare Web Analytics),
