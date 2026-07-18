@@ -67,3 +67,10 @@ Fidelity machinery.
 **Revisit later:** we may widen the gate to exports/deps once the verifier's
 public surface is audited and an intentional-export allowlist is curated. Until
 then, run `pnpm knip` locally for the full report (files + exports + deps).
+
+## 2026-07-18 — backup journey revamp (streak retirement)
+
+| File | Why removed |
+|------|-------------|
+| `src/components/StreakGoalCard.tsx` | Streak and goal card retired from the dashboard: a broken streak reads as shame, and safety is never gamified here. The underlying metadata is untouched; only the card is gone. Recover from git history. |
+| `src/components/ExportDataButton.tsx` | Absorbed into the dashboard safety card island (one backup surface, one vocabulary). Recover from git history. |

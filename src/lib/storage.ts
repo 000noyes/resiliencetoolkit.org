@@ -840,6 +840,14 @@ const MODULE_DISPLAY_NAMES: Record<string, string> = {
 };
 
 /**
+ * Human display name for a moduleKey (shared by the progress views and the
+ * dashboard work meter, so the two can never disagree on a module's name).
+ */
+export function getModuleDisplayName(key: string): string {
+  return MODULE_DISPLAY_NAMES[key] || formatModuleKey(key);
+}
+
+/**
  * Format module key to display name
  */
 function formatModuleKey(key: string): string {
