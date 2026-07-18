@@ -181,14 +181,6 @@ test.describe('the journey', () => {
   });
 });
 
-test.describe('phone relay (DR10)', () => {
-  test('the recovery card spells the site and the filename in speakable words', async ({ page }) => {
-    await page.goto('/recovery-card', { waitUntil: 'load' });
-    await expect(page.getByText('resiliencetoolkit dot org')).toBeVisible();
-    await expect(page.getByText('resilience dash toolkit dash backup')).toBeVisible();
-  });
-});
-
 test.describe('JS-dead shell (DR8)', () => {
   test.use({ javaScriptEnabled: false });
 

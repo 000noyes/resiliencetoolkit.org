@@ -75,3 +75,14 @@ then, run `pnpm knip` locally for the full report (files + exports + deps).
 | `src/components/StreakGoalCard.tsx` | Streak and goal card retired from the dashboard: a broken streak reads as shame, and safety is never gamified here. The underlying metadata is untouched; only the card is gone. Recover from git history. |
 | `src/components/ExportDataButton.tsx` | Absorbed into the dashboard safety card island (one backup surface, one vocabulary). Recover from git history. |
 | `src/components/ImportDataButton.tsx` | Absorbed into the restore zone island, which adds the preview-before-anything-changes step. Recover from git history. |
+
+## 2026-07-18 — dashboard design-review fix pass
+
+Operator design review of the built dashboard overrode parts of the ratified
+spec. Two surfaces were pulled entirely (each due its own redesign later), which
+orphaned their files under the files-only `knip` gate.
+
+| File | Why removed |
+|------|-------------|
+| `src/components/WhatsNewCard.tsx` | Pulled from the dashboard: the What's New / changelog card is due its own redesign outside this scope, and it was the card's only mount point. The changelog itself still lives at `/changelog`. Recover from git history. |
+| `src/pages/recovery-card.astro` | The printable recovery card (DR11) is rethought in a future cycle; the standalone page did not carry a backup control and read as a wasted surface. The precache regenerates from `dist/` automatically; its phone-relay e2e assertion was removed with it. Recover from git history. |
