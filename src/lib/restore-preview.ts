@@ -161,7 +161,8 @@ export function buildRestorePreview(
   const missingModules = Array.from(device.moduleKeys).filter((k) => !fileModules.has(k));
   if (deviceHasWork && missingModules.length > 0 && fileModules.size > 0) {
     const total = device.moduleKeys.size;
-    partialWarning = `This file holds ${fileModules.size} of your ${total} modules; replacing removes the other ${missingModules.length}.`;
+    const kept = total - missingModules.length;
+    partialWarning = `This file holds ${kept} of your ${total} modules; replacing removes the other ${missingModules.length}.`;
     demoteReplace = true;
   }
 

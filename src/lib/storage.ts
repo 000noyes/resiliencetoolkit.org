@@ -259,6 +259,23 @@ export async function saveTableRow(row: Omit<TableRow, 'id' | 'updatedAt'>): Pro
 }
 
 /**
+ * Land a MACHINE-written table row (a component seeding its pre-populated
+ * template rows on first render). Deliberately bypasses the backup cue: a
+ * seed is not user work, so it must never bump the write counter or mark the
+ * has-work canary — a browse-only visitor who opens a module page has
+ * nothing to protect and must never be nudged (the no-work silence rule).
+ */
+export async function seedTableRow(row: Omit<TableRow, 'id' | 'updatedAt'>): Promise<void> {
+  const db = await getDB();
+  const id = `${row.moduleKey}-${row.tableId}-${row.rowId}`;
+  await db.put('tables', {
+    ...row,
+    id,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+/**
  * Delete a table row
  */
 export async function deleteTableRow(
