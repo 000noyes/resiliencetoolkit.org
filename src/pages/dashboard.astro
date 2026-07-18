@@ -98,11 +98,15 @@ import { BookOpen, Download } from 'lucide-react';
 </BaseLayout>
 
 <style is:global>
-  /* On this page the backup button owns the filled action color: the floating
-     feedback trigger steps back to a neutral outline and must never overlap
-     the backup controls (acceptance criterion at 1280 and 390; the page's
-     bottom padding keeps scrolled-to-end controls clear of it). */
+  /* On this page the backup button owns the filled action color and the
+     feedback trigger must never overlap any control at 1280 or 390 (an
+     acceptance criterion, not polish). A fixed corner trigger always ends up
+     over something on a long page, so here it leaves the fixed layer
+     entirely: a quiet outline block in the flow after the footer. */
   .feedback-widget-button {
+    position: static;
+    display: inline-flex;
+    margin: 1.25rem auto 2rem;
     background-color: var(--card);
     color: var(--muted-foreground);
     border: 1px solid var(--border);
@@ -110,5 +114,6 @@ import { BookOpen, Download } from 'lucide-react';
   }
   .feedback-widget-button:hover {
     color: var(--foreground);
+    transform: none;
   }
 </style>
