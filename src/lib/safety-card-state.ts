@@ -170,9 +170,15 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
     }
   }
 
-  // The persistent receipt: date only, never the location claim.
+  // The persistent receipt: date only, never the location claim. The one
+  // exception is the plain-anchor transport, which has no completion signal:
+  // its "check your Downloads" caution persists into the calm state so the
+  // card never claims a confirmed calm on a click alone.
   if (state !== 'just-backed-up' && state !== 'just-restored' && cue.lastBackupAt) {
     receipt.unshift(`Backed up ${formatReceiptDate(cue.lastBackupAt)}.`);
+    if (state === 'fresh' && cue.lastBackupTransport === 'anchor') {
+      receipt.push('The file should be in your Downloads or Files. Not there? Back up again.');
+    }
   }
 
   // Overlay contract: loss and full replace the headline (one leads by

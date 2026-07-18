@@ -109,6 +109,37 @@ describe('base state headlines (the decided sentence table)', () => {
     expect(receipt).toContain('Not there? Back up again.');
   });
 
+  it('Fresh on the plain-anchor transport persists the caution line (never a confirmed calm)', () => {
+    const card = deriveSafetyCard(
+      base({
+        cue: {
+          counter: 0,
+          lastBackupAt: '2026-07-14T00:00:00.000Z',
+          lastBackupHash: 'h',
+          lastBackupTransport: 'anchor',
+        },
+        hashMatch: true,
+      }),
+    );
+    expect(card.state).toBe('fresh');
+    expect(card.receipt.join(' ')).toContain('Not there? Back up again.');
+  });
+
+  it('Fresh on a signal-bearing transport carries only the date', () => {
+    const card = deriveSafetyCard(
+      base({
+        cue: {
+          counter: 0,
+          lastBackupAt: '2026-07-14T00:00:00.000Z',
+          lastBackupHash: 'h',
+          lastBackupTransport: 'share',
+        },
+        hashMatch: true,
+      }),
+    );
+    expect(card.receipt.join(' ')).not.toContain('Downloads');
+  });
+
   it('the persistent receipt carries the date but never the location claim', () => {
     const card = deriveSafetyCard(
       base({

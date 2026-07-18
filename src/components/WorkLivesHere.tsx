@@ -36,8 +36,13 @@ export default function WorkLivesHere() {
   async function handleBackup() {
     setStatus('exporting');
     try {
-      const ts = await downloadFullBackup();
-      setLastBackup(ts);
+      const result = await downloadFullBackup();
+      if (!result.completed) {
+        // Canceled save dialog: quiet no-op, never an error state.
+        setStatus('idle');
+        return;
+      }
+      setLastBackup(result.timestamp);
       setStatus('success');
       setTimeout(() => setStatus('idle'), 2500);
     } catch (error) {

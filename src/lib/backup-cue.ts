@@ -110,6 +110,8 @@ export const VOLATILE_METADATA_KEYS: ReadonlySet<string> = new Set([
   'weeklyGoal',
   'bookmarkedModules',
   'deviceName',
+  'lastBackupTransport',
+  'shareCautionShown',
 ]);
 
 /** Any exported row: identified by its composite id, all other fields carried through. */
@@ -191,6 +193,8 @@ export interface CueState {
   lastBackupAt: string | null;
   /** Canonical snapshot hash recorded at the last completed backup. */
   lastBackupHash: string | null;
+  /** Transport that completed the last backup ('anchor' persists caution). */
+  lastBackupTransport?: 'share' | 'picker' | 'anchor' | null;
 }
 
 /**
@@ -201,6 +205,7 @@ export async function getCueState(): Promise<CueState> {
   let counter: number | 'unknown' = 'unknown';
   let lastBackupAt: string | null = null;
   let lastBackupHash: string | null = null;
+  let lastBackupTransport: CueState['lastBackupTransport'] = null;
 
   try {
     const raw = await getMetadata(BACKUP_WRITE_COUNTER_KEY);
@@ -214,6 +219,10 @@ export async function getCueState(): Promise<CueState> {
     const hash = await getMetadata(LAST_BACKUP_HASH_KEY);
     if (typeof hash === 'string' && hash) {
       lastBackupHash = hash;
+    }
+    const transport = await getMetadata('lastBackupTransport');
+    if (transport === 'share' || transport === 'picker' || transport === 'anchor') {
+      lastBackupTransport = transport;
     }
   } catch {
     // A failed metadata read maps to counter-unknown, which claims the cue.
@@ -232,7 +241,7 @@ export async function getCueState(): Promise<CueState> {
     }
   }
 
-  return { counter, lastBackupAt, lastBackupHash };
+  return { counter, lastBackupAt, lastBackupHash, lastBackupTransport };
 }
 
 /**
