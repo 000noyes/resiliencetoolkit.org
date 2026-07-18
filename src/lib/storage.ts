@@ -160,6 +160,7 @@ export async function saveTodo(todo: Omit<Todo, 'id'>): Promise<void> {
   const db = await getDB();
   const id = `${todo.moduleKey}-${todo.todoId}`;
   await db.put('todos', { ...todo, id });
+  await noteUserWrite(1, [todo.moduleKey]);
 }
 
 /**
@@ -206,6 +207,7 @@ export async function deleteTodo(moduleKey: string, todoId: string): Promise<voi
   const db = await getDB();
   const id = `${moduleKey}-${todoId}`;
   await db.delete('todos', id);
+  await noteUserWrite(1, [moduleKey]);
 }
 
 // ============================================================================
@@ -253,6 +255,7 @@ export async function saveTableRow(row: Omit<TableRow, 'id' | 'updatedAt'>): Pro
     id,
     updatedAt: new Date().toISOString(),
   });
+  await noteUserWrite(1, [row.moduleKey]);
 }
 
 /**
@@ -266,6 +269,7 @@ export async function deleteTableRow(
   const db = await getDB();
   const id = `${moduleKey}-${tableId}-${rowId}`;
   await db.delete('tables', id);
+  await noteUserWrite(1, [moduleKey]);
 }
 
 // ============================================================================
@@ -337,6 +341,94 @@ export async function setMetadata(key: string, value: MetadataValue): Promise<vo
 export async function deleteMetadata(key: string): Promise<void> {
   const db = await getDB();
   await db.delete('metadata', key);
+}
+
+// ============================================================================
+// BACKUP CUE PRIMITIVES (work-based cue; see backup-cue.ts for the read side)
+// ============================================================================
+
+/**
+ * The unprotected-work write counter (metadata store, persist-protected).
+ * Personal-class: local safety instrumentation, never synced or surfaced as a
+ * per-person metric. Reset to 0 only by a completed backup's baseline record;
+ * ABSENT means unknown (cold start) and increments never invent a number from
+ * absence, so an existing user's pre-ship work is never painted as "1 change".
+ */
+export const BACKUP_WRITE_COUNTER_KEY = 'backupWriteCounter';
+
+/** Last completed backup timestamp (ISO), in the persist-protected metadata store. */
+export const LAST_BACKUP_AT_KEY = 'lastBackupAt';
+
+/** Canonical work-snapshot hash recorded at the last completed backup. */
+export const LAST_BACKUP_HASH_KEY = 'lastBackupHash';
+
+/**
+ * The has-work canary, deliberately in localStorage: its divergent survival
+ * versus IndexedDB (canary says work existed, stores are empty) is the
+ * loss-detected signal. Value is a small JSON map of the moduleKeys that have
+ * ever held user work, so a loss report can name what was there (DR6).
+ */
+export const HAS_WORK_CANARY_KEY = 'rt-has-work';
+
+/** Mark the canary for a set of moduleKeys. Sync, cheap, never throws. */
+function markHasWorkCanary(moduleKeys: string[]): void {
+  if (moduleKeys.length === 0) return;
+  try {
+    let modules: Record<string, boolean> = {};
+    const raw = localStorage.getItem(HAS_WORK_CANARY_KEY);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed.modules && typeof parsed.modules === 'object') {
+          modules = parsed.modules;
+        }
+      } catch {
+        // corrupt canary: rewrite it fresh
+      }
+    }
+    let changed = false;
+    for (const key of moduleKeys) {
+      if (!modules[key]) {
+        modules[key] = true;
+        changed = true;
+      }
+    }
+    if (changed || !raw) {
+      localStorage.setItem(
+        HAS_WORK_CANARY_KEY,
+        JSON.stringify({ modules, updatedAt: new Date().toISOString() }),
+      );
+    }
+  } catch {
+    // localStorage unavailable; the canary is best-effort by design
+  }
+}
+
+/**
+ * Record that user work landed: mark the has-work canary and bump the write
+ * counter. Called ONLY from the leaf writers (and the load-time journal-replay
+ * call site), never from generic setMetadata — diagnostics writes must not
+ * self-count. An absent counter stays absent (cold-start unknown); a failure
+ * never breaks the save it follows.
+ */
+async function noteUserWrite(count: number, moduleKeys: string[]): Promise<void> {
+  markHasWorkCanary(moduleKeys);
+  if (count <= 0) return;
+  try {
+    const db = await getDB();
+    const existing = await db.get('metadata', BACKUP_WRITE_COUNTER_KEY);
+    const current = existing?.value;
+    if (typeof current === 'number' && !Number.isNaN(current)) {
+      await db.put('metadata', {
+        key: BACKUP_WRITE_COUNTER_KEY,
+        value: current + count,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } catch {
+    // Never break a user save over cue accounting. The cue read side maps a
+    // failed counter read to "unknown", which claims the cue (fails honest).
+  }
 }
 
 
@@ -552,6 +644,10 @@ export async function batchUpdateChecklistItems(
   }
 
   await tx.done;
+  await noteUserWrite(
+    updates.length,
+    Array.from(new Set(updates.map((u) => u.moduleKey))),
+  );
 }
 
 /**
@@ -576,6 +672,7 @@ export async function clearCompletedItems(
   }
 
   await tx.done;
+  await noteUserWrite(completedItems.length, [moduleKey]);
   return completedItems.length;
 }
 
@@ -986,6 +1083,10 @@ export async function getPersonalNotes(): Promise<string> {
  */
 export async function savePersonalNotes(notes: string): Promise<void> {
   await setMetadata('personalNotes', notes);
+  // Increment lives HERE, at the leaf, never in generic setMetadata: the
+  // diagnostics and cue writes that also pass through setMetadata must not
+  // self-count as unprotected work.
+  await noteUserWrite(1, ['personal-notes']);
 }
 
 // ============================================================================
@@ -1286,6 +1387,12 @@ export async function migrateSeniorsAndDisabilities(): Promise<SeniorsAndDisabil
 
   await tx.done;
 
+  // A migration that landed writes is a post-backup data reshape: count it
+  // once so the cue can never show false calm over reshaped work.
+  if (todosCopied > 0) {
+    await noteUserWrite(1, [SENIORS_AND_DISABILITIES_MERGED_KEY]);
+  }
+
   // Status is derived from the work this tx actually did, NOT from the
   // pre-tx `hasMarker` snapshot. Concurrent tabs can both pass the
   // pre-check with `hasMarker === false`, get serialized by IDB, and
@@ -1448,6 +1555,10 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
     updatedAt: now,
   });
   await tx.done;
+
+  // Same rule as the seniors migration: a landed reshape counts once, so a
+  // post-backup migration can never leave a false-calm cue behind.
+  await noteUserWrite(1, [PLACE_CHARACTERISTICS_ROW0_MODULE_KEY]);
 
   return { status: 'migrated', slotsCopied: 1 };
 }
@@ -1631,7 +1742,15 @@ export async function initializeStorage(): Promise<{
     // idempotent, reconciles by updatedAt, and respects deletes; a failure must
     // not break startup, so it is swallowed like the migrations below.
     try {
-      await replayEditJournal(db);
+      const replay = await replayEditJournal(db);
+      // A keystroke that only reached the journal before tab close is still
+      // unprotected work: count the rows the load-time replay landed. The
+      // backup's own pre-export flush (flushEditJournalToStorage) deliberately
+      // does NOT count — this call site is the only counting replay.
+      const landed = replay.recovered + replay.deleted;
+      if (landed > 0) {
+        await noteUserWrite(landed, []);
+      }
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error('[Storage] edit-journal replay failed:', err);
