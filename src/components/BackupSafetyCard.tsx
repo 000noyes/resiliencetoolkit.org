@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Download } from 'lucide-react';
-import { exportAllData } from '@/lib/storage';
+import { Download, Share2 } from 'lucide-react';
+import { exportAllData, getMetadata, setMetadata } from '@/lib/storage';
 import {
   buildWorkSnapshot,
   computeSnapshotHash,
@@ -19,7 +19,7 @@ import {
   type WorkMeter,
 } from '@/lib/safety-card-state';
 import { checkStorageHealth, STORAGE_HEALTH_EVENT } from '@/lib/storageHealth';
-import { downloadFullBackup } from '@/lib/backup';
+import { downloadFullBackup, shareBackup } from '@/lib/backup';
 
 /**
  * The dashboard safety zone: the answer first, at display scale.
@@ -52,6 +52,10 @@ export default function BackupSafetyCard() {
   });
   const [activity, setActivity] = useState<CardActivity>('idle');
   const [lastBackupFilename, setLastBackupFilename] = useState<string | undefined>(undefined);
+  const [canShareFiles, setCanShareFiles] = useState(false);
+  const [shareCaution, setShareCaution] = useState<'closed' | 'open'>('closed');
+  const [deviceName, setDeviceName] = useState<string>('');
+  const [namingDevice, setNamingDevice] = useState(false);
   const requestRef = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -80,7 +84,9 @@ export default function BackupSafetyCard() {
         // cue and calm stays unclaimed, which fails toward honesty.
       }
       const loss = detectPossibleLoss(readCanary(), counts);
+      const rawName = await getMetadata('deviceName').catch(() => undefined);
       if (requestId !== requestRef.current) return; // a newer refresh superseded this one
+      setDeviceName(typeof rawName === 'string' ? rawName : '');
       setLoaded({ cue, counts, hashMatch, currentHash, meter: computeWorkMeter(snapshot) });
       setOverlays({
         loss,
@@ -95,6 +101,16 @@ export default function BackupSafetyCard() {
 
   useEffect(() => {
     refresh();
+    try {
+      const probe = new File(['x'], 'probe.json', { type: 'application/json' });
+      setCanShareFiles(
+        typeof navigator !== 'undefined' &&
+          typeof navigator.canShare === 'function' &&
+          navigator.canShare({ files: [probe] }),
+      );
+    } catch {
+      setCanShareFiles(false);
+    }
     const onHealth = () => refresh();
     const onVisible = () => {
       if (document.visibilityState === 'visible') refresh();
@@ -116,14 +132,60 @@ export default function BackupSafetyCard() {
   async function handleBackup() {
     setActivity('backing-up');
     try {
-      const ts = await downloadFullBackup();
-      setLastBackupFilename(`resilience-toolkit-backup-${ts.split('T')[0]}.json`);
+      const result = await downloadFullBackup();
+      if (!result.completed) {
+        // Canceled save dialog: a quiet no-op, never an error state.
+        setActivity('idle');
+        return;
+      }
+      setLastBackupFilename(result.filename ?? undefined);
       setActivity('just-backed-up');
       await refresh();
     } catch (error) {
       console.error('[BackupSafetyCard] backup failed:', error);
       setActivity('failed');
       await refresh();
+    }
+  }
+
+  async function handleShareRequest() {
+    // One-time caution interstitial BEFORE share(), so the reject-on-cancel
+    // completion signal survives (DR2 guard 2).
+    const shown = await getMetadata('shareCautionShown').catch(() => undefined);
+    if (shown === undefined) {
+      setShareCaution('open');
+      return;
+    }
+    await runShare();
+  }
+
+  async function runShare() {
+    setShareCaution('closed');
+    try {
+      await setMetadata('shareCautionShown', new Date().toISOString());
+    } catch {
+      // the interstitial simply shows again next time
+    }
+    setActivity('backing-up');
+    try {
+      const result = await shareBackup();
+      setActivity('idle');
+      if (result.completed) await refresh();
+    } catch (error) {
+      console.error('[BackupSafetyCard] share failed:', error);
+      setActivity('failed');
+      await refresh();
+    }
+  }
+
+  async function saveDeviceName(name: string) {
+    setNamingDevice(false);
+    const trimmed = name.trim();
+    try {
+      await setMetadata('deviceName', trimmed);
+      setDeviceName(trimmed);
+    } catch {
+      // metadata unavailable; the name is a nicety
     }
   }
 
@@ -194,7 +256,84 @@ export default function BackupSafetyCard() {
           Explore the modules
         </a>
       ) : (
-        <BackupButton state={card.buttonState} onClick={handleBackup} />
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <BackupButton state={card.buttonState} onClick={handleBackup} />
+          {canShareFiles && (
+            <button
+              type="button"
+              data-testid="rt-share-button"
+              onClick={handleShareRequest}
+              disabled={card.buttonState === 'working'}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium border border-border bg-card text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
+              style={{ minHeight: 44 }}
+            >
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              Send a copy to a device you own
+            </button>
+          )}
+        </div>
+      )}
+
+      {card.state !== 'empty' && (
+        <p className="mt-3 text-xs text-muted-foreground" data-testid="rt-device-name">
+          {namingDevice ? (
+            <NameDeviceInput initial={deviceName} onSave={saveDeviceName} onCancel={() => setNamingDevice(false)} />
+          ) : deviceName ? (
+            <>
+              This device is named {deviceName}, so your backup files carry its name.{' '}
+              <button type="button" className="underline underline-offset-2" onClick={() => setNamingDevice(true)}>
+                Rename
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" className="underline underline-offset-2" onClick={() => setNamingDevice(true)}>
+                Name this device
+              </button>{' '}
+              and your backup files will carry its name.
+            </>
+          )}
+        </p>
+      )}
+
+      {shareCaution === 'open' && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShareCaution('closed');
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Before you send a copy"
+            className="bg-card border border-border w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-6 shadow-xl"
+            data-testid="rt-share-caution"
+          >
+            <h3 className="text-lg font-semibold text-foreground">Before you send a copy</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Send this file only to a device you own, like your own laptop or your own private
+              inbox. Once it leaves this phone you cannot call it back, and your backup can hold
+              names and phone numbers you typed.
+            </p>
+            <div className="mt-4 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={runShare}
+                className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Send to a device I own
+              </button>
+              <button
+                type="button"
+                onClick={() => setShareCaution('closed')}
+                className="w-full px-4 py-2.5 rounded-lg font-medium text-sm border border-border text-foreground hover:bg-muted transition-colors"
+              >
+                Not now
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showKeepACopy && (
@@ -287,6 +426,41 @@ export default function BackupSafetyCard() {
         </section>
       )}
     </div>
+  );
+}
+
+function NameDeviceInput({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial: string;
+  onSave: (name: string) => void;
+  onCancel: () => void;
+}) {
+  const [value, setValue] = useState(initial);
+  return (
+    <span className="inline-flex items-center gap-2">
+      <input
+        type="text"
+        value={value}
+        autoFocus
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') onSave(value);
+          if (e.key === 'Escape') onCancel();
+        }}
+        placeholder="Kitchen laptop"
+        aria-label="Device name"
+        className="rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground"
+      />
+      <button type="button" className="underline underline-offset-2" onClick={() => onSave(value)}>
+        Save
+      </button>
+      <button type="button" className="underline underline-offset-2" onClick={onCancel}>
+        Cancel
+      </button>
+    </span>
   );
 }
 
