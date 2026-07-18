@@ -1,0 +1,44 @@
+{
+  "todos": [
+    {
+      "id": "seniors-and-disabilities-outreach-directory",
+      "moduleKey": "seniors-and-disabilities",
+      "todoId": "outreach-directory",
+      "completed": true,
+      "completedAt": "2026-07-10T13:40:12.220Z"
+    }
+  ],
+  "tables": [
+    {
+      "id": "knowing-community-place-characteristics-row-0-slots-slot-1",
+      "moduleKey": "knowing-community",
+      "tableId": "place-characteristics-row-0-slots",
+      "rowId": "slot-1",
+      "data": { "value": "River town, one bridge in, long mud season" },
+      "updatedAt": "2026-07-12T10:15:44.101Z"
+    }
+  ],
+  "metadata": {
+    "personalNotes": "Bring the printed recovery card to the next meeting.",
+    "storagePersisted": true,
+    "storageDeviceId": "device-77aa2b0e-1c55-4f6e-b2d9-new-device",
+    "storageDiagnostic": {
+      "persisted": true,
+      "supported": true,
+      "deviceId": "device-77aa2b0e-1c55-4f6e-b2d9-new-device",
+      "lastCheck": "2026-07-18T09:29:55.410Z",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+    },
+    "storage_persist_requested_v1": "2026-07-01T08:00:00.000Z",
+    "deviceName": "Kitchen Laptop",
+    "backupWriteCounter": 0,
+    "lastBackupAt": "2026-07-18T09:30:00.000Z",
+    "lastBackupHash": "9c4d6f1e2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5",
+    "lastBackupTransport": "picker"
+  },
+  "exportedAt": "2026-07-18T09:30:00.000Z",
+  "_readme": "This file holds your saved Resilience Toolkit work. To put it back, open resiliencetoolkit.org/dashboard.",
+  "backupDeviceId": "device-77aa2b0e-1c55-4f6e-b2d9-new-device",
+  "backupCounter": 0,
+  "backupSnapshotHash": "9c4d6f1e2a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5"
+}

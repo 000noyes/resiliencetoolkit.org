@@ -1,0 +1,70 @@
+{
+  "todos": [
+    {
+      "id": "emergency-preparedness-supplies-flashlight",
+      "moduleKey": "emergency-preparedness",
+      "todoId": "supplies-flashlight",
+      "completed": true,
+      "completedAt": "2026-06-10T14:22:05.311Z"
+    },
+    {
+      "id": "senior-citizens-outreach-directory",
+      "moduleKey": "senior-citizens",
+      "todoId": "outreach-directory",
+      "completed": true,
+      "completedAt": "2026-05-28T09:11:40.002Z",
+      "notes": "Started the ring list with the church group"
+    },
+    {
+      "id": "mutual-aid-network-phone-tree",
+      "moduleKey": "mutual-aid",
+      "todoId": "network-phone-tree",
+      "completed": false
+    }
+  ],
+  "tables": [
+    {
+      "id": "knowing-community-place-characteristics-row-0",
+      "moduleKey": "knowing-community",
+      "tableId": "place-characteristics",
+      "rowId": "row-0",
+      "data": {
+        "Prompt": "What are the defining characteristics of your place?",
+        "Your Response": "River town, one bridge in, long mud season"
+      },
+      "updatedAt": "2026-06-12T16:03:22.190Z"
+    },
+    {
+      "id": "food-and-water-storage-inventory-row-2",
+      "moduleKey": "food-and-water",
+      "tableId": "storage-inventory",
+      "rowId": "row-2",
+      "data": {
+        "Item": "Water jugs",
+        "Quantity": "6",
+        "Location": "Basement shelf"
+      },
+      "updatedAt": "2026-06-14T11:45:08.877Z"
+    }
+  ],
+  "metadata": {
+    "personalNotes": "Ask Lena about the school gym keys before fall.",
+    "storagePersisted": true,
+    "storageDeviceId": "device-3f6b1a2c-9d41-4e8b-8f77-old-device",
+    "storageDiagnostic": {
+      "persisted": true,
+      "supported": true,
+      "deviceId": "device-3f6b1a2c-9d41-4e8b-8f77-old-device",
+      "lastCheck": "2026-06-15T08:30:12.001Z",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_8 like Mac OS X) AppleWebKit/605.1.15"
+    },
+    "storage_persist_requested_v1": "2026-05-02T19:12:44.180Z",
+    "currentStreak": 2,
+    "streakLastActivityDate": "2026-06-14",
+    "weekStartDate": "2026-06-09",
+    "weeklyCompleted": 3,
+    "weeklyGoal": 5,
+    "bookmarkedModules": ["mutual-aid"],
+    "migration_seniors_and_disabilities_v1": "2026-05-20T10:00:00.000Z"
+  }
+}

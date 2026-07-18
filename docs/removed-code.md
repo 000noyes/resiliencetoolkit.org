@@ -74,3 +74,4 @@ then, run `pnpm knip` locally for the full report (files + exports + deps).
 |------|-------------|
 | `src/components/StreakGoalCard.tsx` | Streak and goal card retired from the dashboard: a broken streak reads as shame, and safety is never gamified here. The underlying metadata is untouched; only the card is gone. Recover from git history. |
 | `src/components/ExportDataButton.tsx` | Absorbed into the dashboard safety card island (one backup surface, one vocabulary). Recover from git history. |
+| `src/components/ImportDataButton.tsx` | Absorbed into the restore zone island, which adds the preview-before-anything-changes step. Recover from git history. |

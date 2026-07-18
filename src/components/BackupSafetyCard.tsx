@@ -56,6 +56,9 @@ export default function BackupSafetyCard() {
   const [shareCaution, setShareCaution] = useState<'closed' | 'open'>('closed');
   const [deviceName, setDeviceName] = useState<string>('');
   const [namingDevice, setNamingDevice] = useState(false);
+  const [restoredCounts, setRestoredCounts] = useState<
+    { todos: number; tables: number; madeAt?: string | null } | undefined
+  >(undefined);
   const requestRef = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -101,6 +104,25 @@ export default function BackupSafetyCard() {
 
   useEffect(() => {
     refresh();
+    // The restore dialog's success hands off to this card across its reload:
+    // one story in two surfaces.
+    try {
+      const marker = sessionStorage.getItem('rt-just-restored');
+      if (marker) {
+        sessionStorage.removeItem('rt-just-restored');
+        const parsed = JSON.parse(marker);
+        if (parsed && typeof parsed === 'object') {
+          setRestoredCounts({
+            todos: typeof parsed.todos === 'number' ? parsed.todos : 0,
+            tables: typeof parsed.tables === 'number' ? parsed.tables : 0,
+            madeAt: typeof parsed.madeAt === 'string' ? parsed.madeAt : null,
+          });
+          setActivity('just-restored');
+        }
+      }
+    } catch {
+      // no marker, or storage unavailable: the card simply shows live state
+    }
     try {
       const probe = new File(['x'], 'probe.json', { type: 'application/json' });
       setCanShareFiles(
@@ -220,6 +242,7 @@ export default function BackupSafetyCard() {
     overlays,
     activity,
     lastBackupFilename,
+    restoredCounts,
   });
 
   const showFireDrill = card.state === 'fresh' || card.state === 'just-backed-up';
