@@ -150,7 +150,7 @@ export default function RestoreBackupZone() {
 
       <div
         data-testid="rt-restore-zone"
-        className="rounded-lg border border-border bg-card p-6 flex flex-col sm:flex-row items-center gap-4"
+        className="rounded-lg border border-border bg-background p-6 flex flex-col sm:flex-row items-center gap-4"
       >
         <FolderOpen
           className="h-6 w-6 text-muted-foreground flex-shrink-0"
@@ -164,7 +164,7 @@ export default function RestoreBackupZone() {
           type="button"
           data-testid="rt-restore-choose"
           onClick={() => fileInputRef.current?.click()}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm border border-border bg-background text-foreground hover:bg-muted transition-colors"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm border border-border bg-card text-foreground hover:bg-muted transition-colors"
           style={{ minHeight: 44 }}
         >
           <Upload className="w-4 h-4" aria-hidden="true" />
