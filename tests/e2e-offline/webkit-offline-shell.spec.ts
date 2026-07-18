@@ -106,7 +106,12 @@ async function waitForPrecacheComplete(page: import('@playwright/test').Page) {
       }
       const routesReady = ['/dashboard/', '/downloads/', '/about/', '/map/'].every((r) => paths.has(r));
       const astroReady = [...paths].filter((p) => p.startsWith('/_astro/')).length > 20;
-      return routesReady && astroReady;
+      // The worker trusts a generation for cache-first navigation only once
+      // its completeness sentinel is written; cutting the server before that
+      // demotes every offline navigation to the fallback page. Wait for the
+      // sentinel so the offline phase starts from a verified generation.
+      const sentinelReady = paths.has('/__rt-precache-complete__');
+      return routesReady && astroReady && sentinelReady;
     },
     null,
     { timeout: 30_000 },
@@ -119,6 +124,13 @@ async function bootstrap(page: import('@playwright/test').Page) {
   await waitForServiceWorker(page);
   await page.reload({ waitUntil: 'load' });
   await waitForServiceWorker(page);
+  await waitForPrecacheComplete(page);
+  // WebKit's CacheStorage view from the page can lag while the worker's
+  // chunked fill is still landing: a single true read is not proof the
+  // generation is durably visible. Settle, then require the completeness
+  // check to hold again before the server dies, so the offline phase never
+  // starts against a half-visible cache.
+  await page.waitForTimeout(3000);
   await waitForPrecacheComplete(page);
 }
 
@@ -142,7 +154,9 @@ test('a slashless link-shaped navigation serves the cached page offline', async 
   expect(response, 'navigation returned no response').not.toBeNull();
   expect(response!.status(), 'offline slashless navigation must hit the cached route').toBe(200);
 
-  await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+  // The dashboard's answer-first layout has no h1 (the page title is an
+  // eyebrow); the stable marker for the real page is the safety card.
+  await expect(page.getByTestId('rt-safety-card')).toBeVisible({ timeout: 10_000 });
   const fontFamily = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
   expect(fontFamily.toLowerCase()).toContain('outfit');
   const bodyText = (await page.locator('body').innerText()).trim();
@@ -181,7 +195,7 @@ test('a partially filled precache self-heals on the next online page load', asyn
   await assertOffline(page);
   const response = await page.goto(`${ORIGIN}/dashboard`, { waitUntil: 'load' });
   expect(response!.status()).toBe(200);
-  await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByTestId('rt-safety-card')).toBeVisible({ timeout: 10_000 });
   const bodyText = (await page.locator('body').innerText()).trim();
   expect(bodyText, 'raw service worker fallback leaked to the user').not.toBe('Offline');
 });

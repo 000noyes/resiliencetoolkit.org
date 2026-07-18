@@ -115,8 +115,10 @@ test('a slashless link-shaped navigation serves the cached page offline', async 
   expect(response, 'navigation returned no response').not.toBeNull();
   expect(response!.status(), 'offline slashless navigation must hit the cached route').toBe(200);
 
-  // The page must be the real dashboard, styled, not a fallback.
-  await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+  // The page must be the real dashboard, styled, not a fallback. The
+  // dashboard's answer-first layout has no h1 (the page title is an eyebrow;
+  // the state sentence leads), so the stable marker is the safety card.
+  await expect(page.getByTestId('rt-safety-card')).toBeVisible({ timeout: 10_000 });
   const fontFamily = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
   expect(fontFamily.toLowerCase()).toContain('outfit');
   const bodyText = (await page.locator('body').innerText()).trim();

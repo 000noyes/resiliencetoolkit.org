@@ -20,7 +20,7 @@
  * Orphaned note data may remain in localStorage but is not displayed.
  */
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { getTableRows, saveTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
+import { getTableRows, saveTableRow, seedTableRow, deleteTableRow, initializeStorage, type TableRow } from '@/lib/storage';
 import { journalRowEdit, journalRowDelete, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
@@ -605,7 +605,8 @@ export default function DataTable({
         }));
 
         for (const row of newRows) {
-          await saveTableRow({
+          // Machine seed, not user work: must never bump the backup cue.
+          await seedTableRow({
             moduleKey: row.moduleKey,
             tableId: row.tableId,
             rowId: row.rowId,

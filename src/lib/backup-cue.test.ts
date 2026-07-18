@@ -142,6 +142,22 @@ describe('write counter: leaf-writer increments', () => {
   });
 });
 
+describe('machine writes never count as user work', () => {
+  it('seedTableRow lands the row without touching the counter or the canary', async () => {
+    const { seedTableRow, getTableRow } = await import('./storage');
+    await seedCounter(0);
+    await seedTableRow({
+      moduleKey: 'cue-seed-mod',
+      tableId: 'tab',
+      rowId: 'r1',
+      data: { prompt: 'pre-populated' },
+    });
+    expect(await counterValue()).toBe(0);
+    expect(readCanary()).toBeNull();
+    expect(await getTableRow('cue-seed-mod', 'tab', 'r1')).toBeDefined();
+  });
+});
+
 describe('write counter: cold-start honesty (DR7)', () => {
   it('an absent counter stays absent through user writes (unknown, never a fake exact count)', async () => {
     await saveTodo({ moduleKey: 'cue-cold', todoId: 't1', completed: true });

@@ -65,6 +65,10 @@ test('mobile-background (visibilitychange hidden) without blur survives a reload
 
 test('non-durable context (persist denied) shows the storage-health warning', async ({ page }) => {
   // Force the origin to look non-persistent (private mode / eviction-prone).
+  // The soft strip is work-aware (reconciliation R1): it fires only when
+  // unprotected work exists, so seed the has-work canary (an absent counter
+  // reads as unknown, which claims). The no-work silence case has its own
+  // coverage in backup-journey.spec.ts.
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'storage', {
       configurable: true,
@@ -74,6 +78,10 @@ test('non-durable context (persist denied) shows the storage-health warning', as
         estimate: async () => ({ usage: 0, quota: 0 }),
       },
     });
+    localStorage.setItem(
+      'rt-has-work',
+      JSON.stringify({ modules: { 'e2e-durability': true }, updatedAt: new Date().toISOString() }),
+    );
   });
   await page.goto('/', { waitUntil: 'load' });
   await expect(page.getByText(/keep a backup copy/i)).toBeVisible({ timeout: 20_000 });
