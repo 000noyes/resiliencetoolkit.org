@@ -14,7 +14,6 @@ import {
   FileText,
   ChevronRight,
   ChevronDown,
-  Sparkles,
   Activity,
 } from 'lucide-react';
 
@@ -325,13 +324,13 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-28 bg-gray-200 dark:bg-gray-700 rounded-lg"
+              className="h-28 bg-muted rounded-lg"
             />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+          <div className="h-64 bg-muted rounded-lg" />
+          <div className="h-64 bg-muted rounded-lg" />
         </div>
       </div>
     );
@@ -347,29 +346,24 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
 
     return (
       <div className={className}>
-        <div className="py-8 px-6 rounded-lg bg-gradient-to-br from-primary/5 to-transparent border border-primary/10">
-          <div className="text-center mb-6">
-            <div className="mb-3 inline-flex p-3 bg-primary/10 rounded-full">
-              <Sparkles className="w-7 h-7 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-              Ready to start?
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Pick a module to begin building your community's resilience.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-1">
+            Pick a module to start
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Your progress shows up here as you work.
+          </p>
+          <div className="grid grid-cols-1 gap-3">
             {starterModules.map((mod) => (
               <a
                 key={mod.key}
                 href={mod.href}
-                className="flex flex-col p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary/50 hover:shadow-md transition-all group no-underline"
+                className="flex flex-col p-4 rounded-lg border border-border bg-background hover:border-primary/50 hover:shadow-md transition-all group no-underline"
               >
-                <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors mb-1">
+                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors mb-1">
                   {mod.name}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   {mod.desc}
                 </span>
               </a>
@@ -385,53 +379,53 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
       {/* Overview Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Total Progress */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               Items Completed
             </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-gray-900 dark:text-white">
+            <span className="text-3xl font-bold text-foreground">
               {stats?.completedTodos ?? 0}
             </span>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             items completed
           </p>
         </div>
 
         {/* Modules Started */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
               <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               Modules Started
             </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-gray-900 dark:text-white">
+            <span className="text-3xl font-bold text-foreground">
               {stats?.modulesStarted ?? 0}
             </span>
           </div>
         </div>
 
         {/* Last Activity */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 bg-amber-100 dark:bg-amber-900/20 rounded-lg">
               <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-muted-foreground">
               Last Activity
             </span>
           </div>
-          <div className="text-lg font-medium text-gray-900 dark:text-white">
+          <div className="text-lg font-medium text-foreground">
             {stats?.lastActivityDate
               ? formatRelativeTime(stats.lastActivityDate)
               : 'No activity yet'}
@@ -442,10 +436,10 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
       {/* Two Column Layout: Recent Activity & Module Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <Activity className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+        <div className="bg-card border border-border rounded-lg shadow-sm">
+          <div className="px-6 py-4 border-b border-border">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Activity className="w-5 h-5 text-muted-foreground" />
               Recent Activity
             </h3>
           </div>
@@ -455,7 +449,7 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
                 {recentActivity.map((activity, idx) => (
                   <li
                     key={`${activity.moduleKey}-${activity.itemId}-${idx}`}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
                   >
                     <div
                       className={`p-1.5 rounded-md ${
@@ -471,23 +465,23 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 dark:text-white truncate">
+                      <p className="text-sm text-foreground truncate">
                         {activity.type === 'todo_completed'
                           ? 'Completed checklist item'
                           : 'Updated worksheet'}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-muted-foreground">
                         {formatModuleKeyDisplay(activity.moduleKey)}
                       </p>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {formatRelativeTime(activity.timestamp)}
                     </span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+              <p className="text-sm text-muted-foreground text-center py-4">
                 No recent activity
               </p>
             )}
@@ -495,10 +489,10 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
         </div>
 
         {/* Module Progress */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+        <div className="bg-card border border-border rounded-lg shadow-sm">
+          <div className="px-6 py-4 border-b border-border">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-muted-foreground" />
               Progress by Module
             </h3>
           </div>
@@ -515,7 +509,7 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
                       {hasSections ? (
                         <button
                           onClick={() => toggleModuleExpand(module.moduleKey)}
-                          className="p-1 -ml-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                          className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors"
                           aria-label={isExpanded ? 'Collapse' : 'Expand'}
                         >
                           {isExpanded ? (
@@ -529,12 +523,12 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
                       )}
                       <a
                         href={getModuleUrl(module.moduleKey)}
-                        className="flex-1 flex items-center justify-between py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
+                        className="flex-1 flex items-center justify-between py-2 rounded-lg hover:bg-muted transition-colors group"
                       >
-                        <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                        <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
                           {module.displayName}
                         </span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm text-muted-foreground">
                           {module.completedTodos} item{module.completedTodos !== 1 ? 's' : ''}
                         </span>
                       </a>
@@ -542,12 +536,12 @@ export default function UserProgressDashboard({ className = '' }: UserProgressDa
 
                     {/* Child sections (collapsible) */}
                     {isExpanded && hasSections && (
-                      <ul className="ml-6 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-3">
+                      <ul className="ml-6 mt-1 space-y-1 border-l-2 border-border pl-3">
                         {module.sections.map((section) => (
                           <li key={section.moduleKey}>
                             <a
                               href={getModuleUrl(section.moduleKey)}
-                              className="flex items-center justify-between py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+                              className="flex items-center justify-between py-1.5 text-sm text-muted-foreground hover:text-primary dark:hover:text-primary transition-colors"
                             >
                               <span>{section.displayName}</span>
                               <span className="text-xs">
