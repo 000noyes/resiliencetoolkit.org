@@ -9,8 +9,8 @@
  *   - Loss and Full REPLACE the headline; At risk and Offline NEVER take the
  *     headline (quiet line under the receipt); one overlay leads, the rest
  *     collapse to the quiet line
- *   - the persistent receipt says only the date; the location claim appears
- *     only in the just-backed-up receipt
+ *   - the persistent receipt says only the date; no surface asserts where a
+ *     downloaded file landed (a find-it fallback only, never a location claim)
  *   - unit grammar: "checked items" and "saved rows", identical everywhere
  *
  * Run: pnpm vitest run src/lib/safety-card-state.test.ts
@@ -99,7 +99,7 @@ describe('base state headlines (the decided sentence table)', () => {
     expect(withCounter(100).headline).toBe('Many changes are ready to back up.');
   });
 
-  it('Just backed up: headline claims only the file, receipt carries filename + location + retry line', () => {
+  it('Just backed up: headline claims only the file, receipt names it without a location claim', () => {
     const card = deriveSafetyCard(
       base({
         activity: 'just-backed-up',
@@ -111,8 +111,10 @@ describe('base state headlines (the decided sentence table)', () => {
     expect(card.headline).toBe('Your backup file is made.');
     const receipt = card.receipt.join(' ');
     expect(receipt).toContain('resilience-toolkit-backup-2026-07-18.json');
-    expect(receipt).toContain('Downloads');
-    expect(receipt).toContain('Not there? Back up again.');
+    // The location claim is dropped: the transport cannot know where a browser
+    // put the file. An honest find-it fallback only.
+    expect(receipt).not.toContain('Downloads');
+    expect(receipt).toContain('If you cannot find it, back up again.');
   });
 
   it('Fresh on the plain-anchor transport persists the caution line (never a confirmed calm)', () => {
@@ -128,7 +130,8 @@ describe('base state headlines (the decided sentence table)', () => {
       }),
     );
     expect(card.state).toBe('fresh');
-    expect(card.receipt.join(' ')).toContain('Not there? Back up again.');
+    expect(card.receipt.join(' ')).toContain('If you cannot find the file, back up again.');
+    expect(card.receipt.join(' ')).not.toContain('Downloads');
   });
 
   it('Fresh on a signal-bearing transport carries only the date', () => {
@@ -162,6 +165,15 @@ describe('base state headlines (the decided sentence table)', () => {
     const card = deriveSafetyCard(base({ activity: 'failed' }));
     expect(card.headline).toBe('That backup did not finish.');
     expect(card.receipt.join(' ')).toContain('Nothing was lost; your work is still on this device.');
+  });
+
+  it('Share failed: its own honest message, never the backup-failure wording', () => {
+    const card = deriveSafetyCard(base({ activity: 'share-failed' }));
+    expect(card.state).toBe('share-failed');
+    expect(card.headline).toBe('That copy did not send.');
+    // A failed share must not borrow the failed-backup headline.
+    expect(card.headline).not.toBe('That backup did not finish.');
+    expect(card.receipt.join(' ')).toContain('You can back it up instead.');
   });
 
   it('Just restored: work is back, counts live in the receipt not the headline', () => {
@@ -244,6 +256,7 @@ describe('register rules', () => {
       base({ counts: noWork }),
       base(),
       base({ activity: 'failed' }),
+      base({ activity: 'share-failed' }),
       base({ activity: 'just-backed-up', lastBackupFilename: 'f.json' }),
       base({ overlays: { loss: true, full: true, atRisk: true, offline: true } }),
       base({
@@ -317,21 +330,39 @@ describe('honest meter', () => {
     metadata: { personalNotes: 'some notes' },
   };
 
-  it('groups by module with the one unit grammar and a total row', () => {
+  it('groups leaf modules under the three top-level modules, in order', () => {
     const meter = computeWorkMeter(snapshot as any);
-    const knowing = meter.rows.find((r) => r.moduleKey === 'knowing-community')!;
+
+    // The single child that shares its parent's display name folds into the
+    // subtotal instead of self-nesting an identical "Knowing Your Community".
+    const knowing = meter.groups.find((g) => g.key === 'knowing-your-community')!;
+    expect(knowing.name).toBe('Knowing Your Community');
     expect(knowing.detail).toBe('1 checked item · 1 saved row');
-    const mutual = meter.rows.find((r) => r.moduleKey === 'mutual-aid')!;
-    expect(mutual.detail).toBe('2 checked items');
+    expect(knowing.leaves).toHaveLength(0);
+
+    // A distinct child is listed under its parent with the parent carrying the
+    // subtotal.
+    const emergency = meter.groups.find((g) => g.key === 'emergency-preparedness')!;
+    expect(emergency.detail).toBe('2 checked items');
+    expect(emergency.leaves.map((l) => l.name)).toEqual(['Mutual Aid']);
+    expect(emergency.leaves[0].detail).toBe('2 checked items');
+
+    // Order matches PARENT_ORDER, with the notes group last.
+    expect(meter.groups.map((g) => g.key)).toEqual([
+      'knowing-your-community',
+      'emergency-preparedness',
+      'personal-notes',
+    ]);
+
     expect(meter.total.detail).toBe('3 checked items · 1 saved row');
     expect(meter.total.bytes).toBeGreaterThan(0);
   });
 
-  it('includes personal notes as its own row when notes exist', () => {
+  it('includes personal notes as its own group when notes exist', () => {
     const meter = computeWorkMeter(snapshot as any);
-    expect(meter.rows.some((r) => r.name === 'Personal notes')).toBe(true);
+    expect(meter.groups.some((g) => g.name === 'Personal notes')).toBe(true);
     const empty = computeWorkMeter({ todos: [], tables: [], metadata: {} } as any);
-    expect(empty.rows).toHaveLength(0);
+    expect(empty.groups).toHaveLength(0);
   });
 
   it('formats byte sizes in human units', () => {
@@ -361,7 +392,7 @@ describe('honest meter', () => {
       metadata: {},
     });
     const meter = computeWorkMeter(scaffold);
-    expect(meter.rows).toHaveLength(0);
+    expect(meter.groups).toHaveLength(0);
     expect(meter.total.detail).toBe('nothing saved yet');
   });
 });

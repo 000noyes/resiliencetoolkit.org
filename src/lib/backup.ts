@@ -178,15 +178,12 @@ function isAbort(err: unknown): boolean {
 }
 
 /**
- * Download the backup file. Prefers the save picker (a real completion
- * signal) and falls back to the plain anchor, which stamps on the click (the
- * best signal it has) while recording its caution-persisting transport.
- * A canceled picker is a quiet no-op: nothing stamps, nothing errors.
+ * Deliver the backup blob as a downloaded file. Prefers the save picker (a
+ * real completion signal) and falls back to the plain anchor, which stamps on
+ * the click (the best signal it has) while recording its caution-persisting
+ * transport. A canceled picker is a quiet no-op: nothing stamps, nothing errors.
  */
-export async function downloadFullBackup(): Promise<BackupResult> {
-  const payload = await buildBackupPayload();
-  const blob = toBlob(payload);
-
+async function deliverDownload(payload: BackupPayload, blob: Blob): Promise<BackupResult> {
   if (typeof window !== 'undefined' && typeof window.showSaveFilePicker === 'function') {
     try {
       const handle = await window.showSaveFilePicker({
@@ -221,32 +218,53 @@ export async function downloadFullBackup(): Promise<BackupResult> {
 }
 
 /**
- * Share a copy to another device the person owns (DR2). Capability-gated on
- * file share support; the reject-on-cancel completion signal is the strongest
- * of the three transports. The caller shows the one-time caution interstitial
- * BEFORE calling this, so the signal survives.
+ * Download the backup file (the module-page and dashboard "Back up my work"
+ * path).
+ */
+export async function downloadFullBackup(): Promise<BackupResult> {
+  const payload = await buildBackupPayload();
+  return deliverDownload(payload, toBlob(payload));
+}
+
+/**
+ * Send a copy to another device the person owns (DR2). On a platform with Web
+ * Share file support (phones, mostly) this opens the native share sheet, whose
+ * reject-on-cancel signal is the strongest of the transports. Where file share
+ * is unavailable, or the platform advertises it but cannot complete it (the
+ * desktop Web Share files case: canShare({files}) returns true yet share()
+ * throws), the copy is delivered as a download instead, so the click always
+ * produces the file rather than failing silently. The caller shows the
+ * one-time caution interstitial BEFORE calling this, so the share signal
+ * survives.
  */
 export async function shareBackup(): Promise<BackupResult> {
   const payload = await buildBackupPayload();
-  const file = new File([toBlob(payload)], payload.filename, { type: 'application/json' });
+  const blob = toBlob(payload);
+  const file = new File([blob], payload.filename, { type: 'application/json' });
 
   const nav = navigator as Navigator & {
     canShare?: (data: { files: File[] }) => boolean;
     share?: (data: { files: File[] }) => Promise<void>;
   };
-  if (typeof nav.canShare !== 'function' || typeof nav.share !== 'function' || !nav.canShare({ files: [file] })) {
-    return { completed: false, transport: null, timestamp: null, filename: null };
-  }
+  const fileShareSupported =
+    typeof nav.canShare === 'function' &&
+    typeof nav.share === 'function' &&
+    nav.canShare({ files: [file] });
 
-  try {
-    await nav.share({ files: [file] });
-  } catch (err) {
-    if (isAbort(err)) {
-      return { completed: false, transport: null, timestamp: null, filename: null };
+  if (fileShareSupported) {
+    try {
+      await nav.share!({ files: [file] });
+      await stampCompleted(payload, 'share');
+      return { completed: true, transport: 'share', timestamp: payload.timestamp, filename: payload.filename };
+    } catch (err) {
+      if (isAbort(err)) {
+        // The person dismissed the share sheet: a quiet no-op, never an error.
+        return { completed: false, transport: null, timestamp: null, filename: null };
+      }
+      // Advertised but not deliverable (the desktop Web Share files case):
+      // fall through to a download so the copy still arrives.
     }
-    throw err;
   }
 
-  await stampCompleted(payload, 'share');
-  return { completed: true, transport: 'share', timestamp: payload.timestamp, filename: payload.filename };
+  return deliverDownload(payload, blob);
 }

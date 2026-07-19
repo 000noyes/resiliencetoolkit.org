@@ -161,10 +161,30 @@ describe('transport-gated stamping', () => {
     expect(await getMetadata(LAST_BACKUP_AT_KEY)).toBeUndefined();
   });
 
-  it('share is unavailable without file support: capability-gated', async () => {
+  it('share unavailable falls back to a download so the copy still arrives', async () => {
+    await setMetadata(BACKUP_WRITE_COUNTER_KEY, 3);
     (navigator as any).canShare = vi.fn(() => false);
     const result = await shareBackup();
-    expect(result.completed).toBe(false);
-    expect(result.transport).toBeNull();
+    // No file share on this platform: deliver the copy as a download instead of
+    // failing silently.
+    expect(result.completed).toBe(true);
+    expect(result.transport).toBe('anchor');
+    expect(await getMetadata(BACKUP_WRITE_COUNTER_KEY)).toBe(0);
+    expect(await getMetadata('lastBackupTransport')).toBe('anchor');
+  });
+
+  it('share advertised but throwing falls back to a download (the desktop case)', async () => {
+    await setMetadata(BACKUP_WRITE_COUNTER_KEY, 3);
+    // canShare({files}) returns true on desktop, yet share() throws non-abort.
+    (navigator as any).canShare = vi.fn(() => true);
+    (navigator as any).share = vi.fn(async () => {
+      throw new DOMException('not allowed', 'NotAllowedError');
+    });
+    const result = await shareBackup();
+    // The copy still arrives, as a download, rather than a dead click.
+    expect(result.completed).toBe(true);
+    expect(result.transport).toBe('anchor');
+    expect(await getMetadata(BACKUP_WRITE_COUNTER_KEY)).toBe(0);
+    expect(await getMetadata('lastBackupTransport')).toBe('anchor');
   });
 });

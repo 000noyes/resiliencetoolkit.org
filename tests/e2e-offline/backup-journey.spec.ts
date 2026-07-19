@@ -241,6 +241,133 @@ test.describe('empty-scaffold restore (the meter acceptance gate)', () => {
   });
 });
 
+// A touch device that advertises file share but cannot deliver it: touch input
+// present (so the button shows), canShare({files}) true, yet share() throws a
+// non-abort error. This is the phone-with-a-hostile-share-target case the
+// download fallback exists for.
+async function forceShareThrows(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, value: 1 });
+    Object.defineProperty(navigator, 'canShare', {
+      configurable: true,
+      value: (data?: { files?: unknown[] }) => !!(data && data.files),
+    });
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async () => {
+        throw new DOMException('Share is not available on this device.', 'NotAllowedError');
+      },
+    });
+  });
+}
+
+test.describe('send a copy on a share-hostile browser', () => {
+  test('a desktop (no touch) never shows Send a copy', async ({ page }) => {
+    // Default Desktop Chrome has no touch input, so the share sheet has no
+    // useful target: the button is hidden and Back up my work covers it.
+    await page.goto('/dashboard', { waitUntil: 'load' });
+    await seedWork(page);
+    await page.reload({ waitUntil: 'load' });
+    await expect(page.getByTestId('rt-backup-button')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('rt-share-button')).toHaveCount(0);
+  });
+
+  test('a thrown share falls back to a download, never "backup did not finish"', async ({ page }) => {
+    await forceAnchorTransport(page);
+    await forceShareThrows(page);
+
+    await page.goto('/dashboard', { waitUntil: 'load' });
+    await seedWork(page);
+    await page.reload({ waitUntil: 'load' });
+
+    // Touch device with file share advertised, so Send a copy is offered.
+    const shareButton = page.getByTestId('rt-share-button');
+    await expect(shareButton).toBeVisible({ timeout: 20_000 });
+
+    // The one-time caution shows on the first send; confirm it.
+    await shareButton.click();
+    await expect(page.getByTestId('rt-share-caution')).toBeVisible();
+
+    // Confirming calls share(), which throws; the copy comes down as a download
+    // instead of failing, so the click always delivers the file.
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Send to a device I own' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(
+      /^resilience-toolkit-backup-\d{4}-\d{2}-\d{2}-\d{4}\.json$/,
+    );
+
+    // Honest receipt: a made file, never the backup-failure or share-failure words.
+    await expect(page.getByTestId('rt-safety-headline')).toHaveText('Your backup file is made.', {
+      timeout: 20_000,
+    });
+    const body = await page.textContent('body');
+    expect(body).not.toContain('That backup did not finish.');
+    expect(body).not.toContain('That copy did not send.');
+  });
+});
+
+test.describe('your progress list (no self-duplicating or empty dropdowns)', () => {
+  async function seedProgressWork(page: Page) {
+    await page.evaluate(async () => {
+      await new Promise<void>((resolve, reject) => {
+        const req = indexedDB.open('resilience-toolkit', 1);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction(['todos'], 'readwrite');
+          const todos = tx.objectStore('todos');
+          // A checked item in a child module whose display name equals its parent.
+          todos.put({
+            id: 'knowing-community-k1',
+            moduleKey: 'knowing-community',
+            todoId: 'k1',
+            completed: true,
+            completedAt: new Date().toISOString(),
+          });
+          // A glanced-at emergency child with nothing checked (a 0-item scaffold).
+          todos.put({
+            id: 'food-and-water-f1',
+            moduleKey: 'food-and-water',
+            todoId: 'f1',
+            completed: false,
+          });
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        };
+      });
+      localStorage.setItem(
+        'rt-has-work',
+        JSON.stringify({ modules: { 'knowing-community': true }, updatedAt: new Date().toISOString() }),
+      );
+    });
+  }
+
+  test('a single self-duplicating child is a flat row, and a 0-item module never expands', async ({
+    page,
+  }) => {
+    await page.goto('/dashboard', { waitUntil: 'load' });
+    await seedProgressWork(page);
+    await page.reload({ waitUntil: 'load' });
+
+    const progress = page.locator('section[aria-label="Your progress"]');
+    await expect(progress).toBeVisible({ timeout: 20_000 });
+
+    // The child that duplicates its parent name folds into the parent: the name
+    // appears once, with no drill-down chevron.
+    await expect(progress.getByText('Knowing Your Community', { exact: true })).toHaveCount(1);
+    await expect(progress.getByRole('button', { name: /Knowing Your Community/ })).toHaveCount(0);
+
+    // A glanced-at 0-item child does not make its parent expandable.
+    await expect(
+      progress.getByRole('button', { name: /Expand Emergency Preparedness/ }),
+    ).toHaveCount(0);
+  });
+});
+
 test.describe('JS-dead shell (DR8)', () => {
   test.use({ javaScriptEnabled: false });
 
