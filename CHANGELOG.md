@@ -5,6 +5,12 @@ All notable changes to ResilienceToolkit.org are documented here.
 ## [Unreleased]
 
 ### Fixed
+- The dashboard no longer treats an untouched module as started. Opening a
+  community module lays out its workbook prompts as blank rows to fill in;
+  previously those empty prompts — and older backups made of them — could count
+  toward "Modules Started" and show recent activity before anything was
+  entered. Modules started and the last-activity time now reflect only rows
+  where you have written a response. Your saved answers are unchanged.
 - Devices still stuck on a broken mid-July copy of the site now recover on
   their own within a visit or two. The rare cache problem fixed on July 16
   could leave an already-affected device serving pages whose own scripts would
