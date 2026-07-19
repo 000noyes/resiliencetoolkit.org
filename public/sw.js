@@ -8,10 +8,13 @@
 // generation is verified complete; activation is user-initiated (SKIP_WAITING
 // from the refresh notice) or idle (SKIP_WAITING_WHEN_HIDDEN when every window
 // is hidden). Both are completeness-gated HERE, worker-side, so no page code
-// path can activate an incomplete generation. One exception: a one-time forced
-// ramp (install-time skipWaiting) for devices still pinned to a pre-May-2026
-// worker that never hands off — gated on legacy cache names plus a persistent
-// ramp marker so it fires at most once per device.
+// path can activate an incomplete generation. Two exceptions, both one-time
+// install-time skipWaiting ramps for devices whose page code cannot rotate
+// them: the legacy ramp (pinned pre-May-2026 workers; gated on legacy cache
+// names plus a persistent ramp marker) and the guarded-activation heal ramp
+// (devices wedged on a pre-guard 2026-07 worker whose poisoned caches broke
+// the page bundles; gated on a persistent heal marker). Each fires at most
+// once per device.
 //
 // Freshness for cache-first pages comes from the worker update cycle: the
 // browser revalidates sw.js on every load (updateViaCache: 'none'), a new
@@ -23,6 +26,17 @@ const CACHE_NAME = `resilience-hub-v2-${CACHE_VERSION}`;
 // Empty cache whose existence means "a v2 worker already force-activated here".
 // Excluded from every prune; deleted only when no legacy-named cache survives.
 const RAMP_MARKER_CACHE = 'resilience-hub-v2-ramp';
+// Empty cache whose existence means "a worker carrying the July-2026 cache
+// guards has ACTIVATED here". Absent at install → this build self-promotes
+// once (skipWaiting): a device wedged on a pre-guard worker has no working
+// page code to rotate it (the 2026-07 CDN poison broke exactly the hashed
+// chunks that carry the registration module), so the handoff must live
+// worker-side. Created at activate BEFORE clients.claim (a killed install can
+// never suppress an unhappened heal, and claim starts reloads so the flag
+// must already be durable). Write failure is tolerated — the startup task
+// retries, and the worst case is one extra flushed forced rotation. Excluded
+// from every prune. Same shape as the legacy ramp marker above.
+const HEAL_MARKER_CACHE = 'resilience-hub-v2-heal';
 // Synthetic entry written into a generation when it verifies complete. No real
 // route can collide with it and it is never served; it marks a generation as
 // whole (and becomes the trust marker for cache-first navigation later).
@@ -191,7 +205,7 @@ async function pruneOldCaches() {
   const names = await caches.keys();
   const ownTs = buildTsOf(CACHE_NAME);
   const prunable = names.filter((name) => {
-    if (name === CACHE_NAME || name === RAMP_MARKER_CACHE) return false;
+    if (name === CACHE_NAME || name === RAMP_MARKER_CACHE || name === HEAL_MARKER_CACHE) return false;
     if (name.startsWith(V2_PREFIX)) {
       const ts = buildTsOf(name);
       return ts !== null && ownTs !== null && ts < ownTs;
@@ -295,11 +309,19 @@ self.addEventListener('install', (event) => {
       const cache = await caches.open(CACHE_NAME);
       await Promise.all(ESSENTIAL_ASSETS.map((url) => fillOne(cache, url)));
 
-      // One-time legacy ramp: devices pinned to a pre-v2 worker have no page
-      // code that can rotate them, so the worker self-promotes ONCE. The
-      // marker is created at activate (not here) so a killed install can
-      // never suppress a ramp that hasn't actually happened.
-      if (hasLegacy && !rampRan) self.skipWaiting();
+      // One-time forced ramps, a single skipWaiting call for either arm:
+      // (1) legacy ramp — devices pinned to a pre-v2 worker have no page code
+      //     that can rotate them; markers are created at activate (not here)
+      //     so a killed install can never suppress a ramp that hasn't
+      //     actually happened;
+      // (2) guarded-activation heal ramp — no guarded worker has ever
+      //     activated on this device, so the active worker may be a wedged
+      //     pre-guard generation whose rotation paths are all dead (see
+      //     HEAL_MARKER_CACHE). After the first guarded activation the heal
+      //     marker exists and every later deploy uses the normal
+      //     completeness-gated lifecycle.
+      const healRan = names.includes(HEAL_MARKER_CACHE);
+      if ((hasLegacy && !rampRan) || !healRan) self.skipWaiting();
     })()
   );
 });
@@ -307,6 +329,11 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
+      // Heal marker BEFORE claim: claim dispatches controllerchange and pages
+      // begin their flush-and-reload, so the "a guarded worker activated
+      // here" flag must already be durable by then. Tolerated on failure —
+      // activation must never fail or loop over a marker write.
+      await caches.open(HEAL_MARKER_CACHE).catch(() => {});
       await self.clients.claim();
       if ((await caches.keys()).some(isLegacyCacheName)) {
         await caches.open(RAMP_MARKER_CACHE);
@@ -455,6 +482,16 @@ self.addEventListener('fetch', (event) => {
         ) {
           await caches.open(RAMP_MARKER_CACHE);
         }
+        // Heal-marker insurance: an activate killed between claim and the
+        // marker write would re-arm the one-time heal ramp on the next
+        // install. A worker serving fetch events IS active, so the marker is
+        // legitimately owed — write it here, tolerated on failure.
+        if (
+          !names.includes(HEAL_MARKER_CACHE) &&
+          self.registration && self.registration.active
+        ) {
+          await caches.open(HEAL_MARKER_CACHE).catch(() => {});
+        }
         // Bounded cleanup for the never-complete path: the prune law only
         // runs on a complete generation, so a device where some URL
         // persistently fails would otherwise stack one near-full generation
@@ -464,7 +501,7 @@ self.addEventListener('fetch', (event) => {
         const ownTs = buildTsOf(CACHE_NAME);
         const staleIncomplete = [];
         for (const name of names) {
-          if (!name.startsWith(V2_PREFIX) || name === CACHE_NAME || name === RAMP_MARKER_CACHE) continue;
+          if (!name.startsWith(V2_PREFIX) || name === CACHE_NAME || name === RAMP_MARKER_CACHE || name === HEAL_MARKER_CACHE) continue;
           const ts = buildTsOf(name);
           if (ts === null || ownTs === null || ts >= ownTs) continue;
           const stale = await caches.open(name);
