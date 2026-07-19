@@ -324,6 +324,54 @@ describe('sw-register — idle + resume rotation', () => {
   });
 });
 
+describe('sw-register — rotation notice (calm status bar before the rotation reload)', () => {
+  const NOTICE_ID = 'rt-sw-rotation-notice';
+
+  afterEach(() => {
+    document.getElementById(NOTICE_ID)?.remove();
+  });
+
+  it('R1: controllerchange on a controlled page shows the notice before the reload', async () => {
+    const { fire } = await boot();
+    fire.controllerchange();
+    const el = document.getElementById(NOTICE_ID);
+    expect(el).not.toBeNull();
+    expect(el!.getAttribute('role')).toBe('status');
+    expect(el!.textContent).toBe('Updating to the latest version.');
+    expect(reloadMock).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('R2: a second controllerchange never duplicates the notice or the reload', async () => {
+    const { fire } = await boot();
+    fire.controllerchange();
+    fire.controllerchange();
+    expect(document.querySelectorAll(`#${NOTICE_ID}`).length).toBe(1);
+    await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('R3: first-install claim shows no notice (nothing is reloading)', async () => {
+    const { fire } = await boot({ controller: null });
+    fire.controllerchange();
+    expect(document.getElementById(NOTICE_ID)).toBeNull();
+    await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
+    expect(reloadMock).not.toHaveBeenCalled();
+  });
+
+  it('R4: a notice injection failure never blocks the reload', async () => {
+    const { fire } = await boot();
+    const spy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => {
+      throw new Error('detached body');
+    });
+    fire.controllerchange();
+    await vi.advanceTimersByTimeAsync(FLUSH_MS + 50);
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+});
+
 describe('sw-register — applyUpdate', () => {
   it('flushes, blurs, waits, then posts SKIP_WAITING to the waiting worker', async () => {
     const waiting = makeWorker();
