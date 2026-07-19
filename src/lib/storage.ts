@@ -24,6 +24,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import '@/lib/asset-rev'; // re-hash the shared storage chunk past the 2026-06-07 Cloudflare asset-poisoning incident (additive only; no logic/data change)
 import { replayEditJournal } from '@/lib/edit-journal';
+import { rowHasWork } from '@/lib/work-predicate';
 
 /**
  * IndexedDB schema definition
@@ -665,7 +666,11 @@ export interface OverallStats {
  * Get aggregated statistics across all modules
  */
 export async function getOverallStats(): Promise<OverallStats> {
-  const [todos, tables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+  const [todos, allTables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+  // Blank template/scaffold rows are not saved work — filter them out before
+  // deriving anything, so totalTableRows, modulesStarted, and lastActivityDate
+  // all count only rows with a filled input column.
+  const tables = allTables.filter(rowHasWork);
 
   const completedTodos = todos.filter((t) => t.completed).length;
   const uniqueModules = new Set([
@@ -752,7 +757,11 @@ function formatModuleKey(key: string): string {
  * Returns array sorted by completion percentage (descending)
  */
 export async function getModuleProgress(): Promise<ModuleProgress[]> {
-  const [todos, tables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+  const [todos, allTables] = await Promise.all([getAllTodos(), getAllTableRows()]);
+  // Blank template/scaffold rows are not saved work — filter them out before
+  // grouping, so module inclusion, tableRowCount, and per-module lastActivity
+  // all count only rows with a filled input column.
+  const tables = allTables.filter(rowHasWork);
 
   // Group by moduleKey
   const moduleMap = new Map<
