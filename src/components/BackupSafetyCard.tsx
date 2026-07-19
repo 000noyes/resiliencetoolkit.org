@@ -227,8 +227,7 @@ export default function BackupSafetyCard() {
           Your work is saved on this device, and only here.
         </p>
         <p data-testid="rt-safety-receipt" className="mt-2 text-sm text-muted-foreground max-w-prose">
-          A backup is a file you keep. Back up to keep a copy you can bring back on this or another
-          device.
+          Back it up so you can restore it later, here or on another device.
         </p>
         <BackupButton state="ready" onClick={handleBackup} />
       </div>
@@ -286,12 +285,12 @@ export default function BackupSafetyCard() {
       </div>
 
       {card.state !== 'empty' && (
-        <p className="mt-3 text-xs text-muted-foreground" data-testid="rt-device-name">
+        <p className="mt-2 text-xs text-muted-foreground" data-testid="rt-device-name">
           {namingDevice ? (
             <NameDeviceInput initial={deviceName} onSave={saveDeviceName} onCancel={() => setNamingDevice(false)} />
           ) : deviceName ? (
             <>
-              This device is named {deviceName}, so your backup files carry its name.{' '}
+              Named {deviceName}. Your backups carry the name.{' '}
               <button type="button" className="underline underline-offset-2" onClick={() => setNamingDevice(true)}>
                 Rename
               </button>
@@ -301,7 +300,7 @@ export default function BackupSafetyCard() {
               <button type="button" className="underline underline-offset-2" onClick={() => setNamingDevice(true)}>
                 Name this device
               </button>{' '}
-              and your backup files will carry its name.
+              to label your backups.
             </>
           )}
         </p>
@@ -348,7 +347,7 @@ export default function BackupSafetyCard() {
       )}
 
       {showKeepACopy && (
-        <p className="mt-3 text-xs text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
+        <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
           Keep a copy on another device you own too, so it does not drown with this one. If this
           device holds neighbor lists or a phone tree, keep that copy somewhere private, not a
           shared inbox.
@@ -356,8 +355,7 @@ export default function BackupSafetyCard() {
       )}
       {showFireDrill && (
         <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-fire-drill">
-          Want to be sure the file works? Restore below shows what a backup holds without changing
-          anything.
+          Want to check the file works? Restore below previews it, nothing changes.
         </p>
       )}
       {card.quietLines.map((line) => (
@@ -371,12 +369,13 @@ export default function BackupSafetyCard() {
           <h3 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             Work on this device
           </h3>
+          <p className="mt-1 text-xs text-muted-foreground">Everything here is saved in your backup.</p>
 
           {/* Desktop and tablet: the table form */}
           <div className="mt-3 hidden sm:block rounded-lg border border-border bg-card overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/60">
+                <tr className="border-b border-border">
                   <th scope="col" className="text-left font-medium text-muted-foreground px-4 py-2.5">
                     On this device
                   </th>
@@ -400,7 +399,7 @@ export default function BackupSafetyCard() {
                     </td>
                   </tr>
                 ))}
-                <tr className="bg-muted/40">
+                <tr className="border-t border-border">
                   <td className="px-4 py-2.5 font-medium text-foreground">{meter.total.name}</td>
                   <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
                     {meter.total.detail}
@@ -423,7 +422,7 @@ export default function BackupSafetyCard() {
                 </span>
               </li>
             ))}
-            <li className="px-4 py-2.5 bg-muted/40">
+            <li className="px-4 py-2.5">
               <span className="block text-sm font-medium text-foreground">
                 {meter.total.name}: {meter.total.detail} · {formatByteSize(meter.total.bytes)}
               </span>
