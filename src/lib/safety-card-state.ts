@@ -89,14 +89,14 @@ const OVERLAY_HEADLINES = {
 } as const;
 
 const OVERLAY_RECEIPTS = {
-  loss: "Your browser removed it to free space. This is the browser's doing, not yours. If you have a backup file, Restore brings it back.",
-  full: 'Your latest typing is kept in a small emergency journal on this device and will be included in your backup.',
+  loss: "Your browser removed it to free space. This is the browser's doing, not yours. If you have a backup, Restore brings it back.",
+  full: 'Your latest typing is saved on this device and will be in your backup.',
 } as const;
 
 const QUIET_LINES = {
-  full: 'This device is low on space. Backing up now keeps everything safe.',
-  atRisk: 'This browser may clear saved work when space runs low. A backup keeps a copy you can restore.',
-  offline: 'You are offline. Backing up still works; the file saves to this device.',
+  full: 'This device is low on space. Back up now.',
+  atRisk: 'This browser can clear saved work when space runs low. Back up to keep a copy.',
+  offline: 'You are offline. Backing up still works.',
 } as const;
 
 /** Derive everything the card says from the current inputs. Pure. */
@@ -121,11 +121,11 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
   switch (state) {
     case 'empty':
       headline = 'No saved work on this device yet.';
-      receipt.push('Your toolkit work saves to this device. A backup is a file you keep.');
+      receipt.push('Anything you save stays on this device only.');
       break;
     case 'first-work':
       headline = 'This device has work ready to back up.';
-      receipt.push('Your work lives only on this device so far. One tap makes a backup file you keep.');
+      receipt.push('Right now it lives only on this device.');
       break;
     case 'unknown':
       headline = 'Back up once to make this device current.';
@@ -161,7 +161,7 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
         ].filter(Boolean);
         const made = rc.madeAt ? ` from the backup made ${formatReceiptDate(rc.madeAt)}` : '';
         receipt.push(
-          `This device now holds ${parts.length ? parts.join(' and ') : 'your restored work'}${made}. New work from here counts toward your next backup.`,
+          `This device now holds ${parts.length ? parts.join(' and ') : 'your restored work'}${made}.`,
         );
       }
       break;
