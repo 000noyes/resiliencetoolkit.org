@@ -1,0 +1,434 @@
+{
+  "todos": [],
+  "tables": [
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-0",
+      "data": {
+        "Question": "Who do people listen to?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-0",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-1",
+      "data": {
+        "Question": "Which voices are loudest?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-1",
+      "updatedAt": "2026-07-04T23:07:16.636Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-2",
+      "data": {
+        "Question": "Who is always showing up to help?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-2",
+      "updatedAt": "2026-07-04T23:07:16.637Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-3",
+      "data": {
+        "Question": "Who has been in your place the longest?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-3",
+      "updatedAt": "2026-07-04T23:07:16.650Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-4",
+      "data": {
+        "Question": "Who is the newest in your place?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-4",
+      "updatedAt": "2026-07-04T23:07:16.653Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-5",
+      "data": {
+        "Question": "Who is struggling the most?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-5",
+      "updatedAt": "2026-07-04T23:07:16.654Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-6",
+      "data": {
+        "Question": "Who is benefiting from how your place is right now?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-6",
+      "updatedAt": "2026-07-04T23:07:16.655Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-dynamics",
+      "rowId": "row-7",
+      "data": {
+        "Question": "Who in your community might have different needs than most other people? What are those needs?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-community-dynamics-row-7",
+      "updatedAt": "2026-07-04T23:07:16.661Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-0",
+      "data": {
+        "Role": "Long Term Recovery Group (LTRG) (groups established to support individuals after flooding)",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-0",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-1",
+      "data": {
+        "Role": "Fire chief",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-1",
+      "updatedAt": "2026-07-04T23:07:16.636Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-10",
+      "data": {
+        "Role": "State Senator*",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-10",
+      "updatedAt": "2026-07-04T23:07:16.666Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-11",
+      "data": {
+        "Role": "State Representative(s)*",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-11",
+      "updatedAt": "2026-07-04T23:07:16.667Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-2",
+      "data": {
+        "Role": "Road crew",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-2",
+      "updatedAt": "2026-07-04T23:07:16.637Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-3",
+      "data": {
+        "Role": "Emergency Management Director",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-3",
+      "updatedAt": "2026-07-04T23:07:16.650Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-4",
+      "data": {
+        "Role": "Town clerk",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-4",
+      "updatedAt": "2026-07-04T23:07:16.652Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-5",
+      "data": {
+        "Role": "Selectboard members",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-5",
+      "updatedAt": "2026-07-04T23:07:16.653Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-6",
+      "data": {
+        "Role": "Mutual aid/neighbor to neighbor network leaders",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-6",
+      "updatedAt": "2026-07-04T23:07:16.654Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-7",
+      "data": {
+        "Role": "Leaders/vocal people in your community",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-7",
+      "updatedAt": "2026-07-04T23:07:16.661Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-8",
+      "data": {
+        "Role": "School principal",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-8",
+      "updatedAt": "2026-07-04T23:07:16.664Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "community-roles",
+      "rowId": "row-9",
+      "data": {
+        "Role": "General store owner",
+        "Name(s)": ""
+      },
+      "id": "knowing-community-community-roles-row-9",
+      "updatedAt": "2026-07-04T23:07:16.666Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "ecosystem",
+      "rowId": "row-0",
+      "data": {
+        "Question": "What rivers and streams run through your place?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-ecosystem-row-0",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "ecosystem",
+      "rowId": "row-1",
+      "data": {
+        "Question": "Where does it get wet first?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-ecosystem-row-1",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "ecosystem",
+      "rowId": "row-2",
+      "data": {
+        "Question": "What else do you know about the ecosystem in your place?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-ecosystem-row-2",
+      "updatedAt": "2026-07-04T23:07:16.636Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "going-deeper",
+      "rowId": "row-0",
+      "data": {
+        "Question": "What special skills do you have? What skills would you like to learn?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-going-deeper-row-0",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "going-deeper",
+      "rowId": "row-1",
+      "data": {
+        "Question": "What activities/work do you find rewarding? Think about things you do that other people find difficult, but that you enjoy.",
+        "Your Response": ""
+      },
+      "id": "knowing-community-going-deeper-row-1",
+      "updatedAt": "2026-07-04T23:07:16.636Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "going-deeper",
+      "rowId": "row-2",
+      "data": {
+        "Question": "Do you enjoy collaborating with people or working on projects alone?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-going-deeper-row-2",
+      "updatedAt": "2026-07-04T23:07:16.637Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "going-deeper",
+      "rowId": "row-3",
+      "data": {
+        "Question": "Do you like to spend time inside/outside? Working through a list of tasks, or imagining a new project? Do you enjoy words, numbers, visual art, or another medium?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-going-deeper-row-3",
+      "updatedAt": "2026-07-04T23:07:16.651Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "going-deeper",
+      "rowId": "row-4",
+      "data": {
+        "Question": "What problems are you most excited about solving?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-going-deeper-row-4",
+      "updatedAt": "2026-07-04T23:07:16.653Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "going-deeper",
+      "rowId": "row-5",
+      "data": {
+        "Question": "Who in your community inspires you? What do you find inspiring about them?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-going-deeper-row-5",
+      "updatedAt": "2026-07-04T23:07:16.654Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "place-characteristics",
+      "rowId": "row-1",
+      "data": {
+        "Prompt": "What are the biggest challenges in your place?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-place-characteristics-row-1",
+      "updatedAt": "2026-07-04T23:07:16.634Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "place-characteristics",
+      "rowId": "row-2",
+      "data": {
+        "Prompt": "What are the biggest assets in your place?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-place-characteristics-row-2",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "place-characteristics",
+      "rowId": "row-3",
+      "data": {
+        "Prompt": "Describe thriving conditions for your place. Use your imagination!",
+        "Your Response": ""
+      },
+      "id": "knowing-community-place-characteristics-row-3",
+      "updatedAt": "2026-07-04T23:07:16.636Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-0",
+      "data": {
+        "Question": "What emergency supplies are stored in your place, and where?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-0",
+      "updatedAt": "2026-07-04T23:07:16.635Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-1",
+      "data": {
+        "Question": "What infrastructure is important to your place? Is it maintained?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-1",
+      "updatedAt": "2026-07-04T23:07:16.636Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-2",
+      "data": {
+        "Question": "Are there places to gather? What places do people go to most often?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-2",
+      "updatedAt": "2026-07-04T23:07:16.637Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-3",
+      "data": {
+        "Question": "Which systems in your place work well? Which work poorly?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-3",
+      "updatedAt": "2026-07-04T23:07:16.651Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-4",
+      "data": {
+        "Question": "What/who are the active community groups, organizations, and town committees?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-4",
+      "updatedAt": "2026-07-04T23:07:16.653Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-5",
+      "data": {
+        "Question": "How do people receive and share information (local news, social media, gathering places)?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-5",
+      "updatedAt": "2026-07-04T23:07:16.654Z"
+    },
+    {
+      "moduleKey": "knowing-community",
+      "tableId": "systems",
+      "rowId": "row-6",
+      "data": {
+        "Question": "What essential services are available, and which are missing?",
+        "Your Response": ""
+      },
+      "id": "knowing-community-systems-row-6",
+      "updatedAt": "2026-07-04T23:07:16.660Z"
+    }
+  ]
+}
