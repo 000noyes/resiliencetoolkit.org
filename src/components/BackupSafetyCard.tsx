@@ -275,11 +275,11 @@ export default function BackupSafetyCard() {
             data-testid="rt-share-button"
             onClick={handleShareRequest}
             disabled={card.buttonState === 'working'}
-            className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium border border-border bg-card text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
             style={{ minHeight: 44 }}
           >
             <Share2 className="h-4 w-4" aria-hidden="true" />
-            Send a copy to a device you own
+            Send a copy
           </button>
         )}
       </div>
@@ -482,7 +482,7 @@ function BackupButton({
       data-testid="rt-backup-button"
       onClick={onClick}
       disabled={state === 'working'}
-      className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors"
+      className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors"
       style={{ minHeight: 44 }}
     >
       {state === 'working' ? (
