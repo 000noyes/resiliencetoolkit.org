@@ -132,22 +132,5 @@ const eyebrow = 'text-sm font-medium uppercase tracking-wide text-muted-foregrou
     }
     #dash[data-work="has"] .dash-rail { display: flex; }
     #dash[data-work="has"] .dash-starter { display: none; }
-
-    /* The backup button owns the filled action color on this page; the feedback
-       trigger must never overlap a control at 1280 or 390, so it leaves the
-       fixed layer entirely: a quiet outline block in the flow after the footer. */
-    .feedback-widget-button {
-      position: static;
-      display: inline-flex;
-      margin: 1.25rem auto 2rem;
-      background-color: var(--card);
-      color: var(--muted-foreground);
-      border: 1px solid var(--border);
-      box-shadow: none;
-    }
-    .feedback-widget-button:hover {
-      color: var(--foreground);
-      transform: none;
-    }
   </style>
 </BaseLayout>
