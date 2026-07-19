@@ -67,3 +67,33 @@ Fidelity machinery.
 **Revisit later:** we may widen the gate to exports/deps once the verifier's
 public surface is audited and an intentional-export allowlist is curated. Until
 then, run `pnpm knip` locally for the full report (files + exports + deps).
+
+## 2026-07-18 — backup journey revamp (streak retirement)
+
+| File | Why removed |
+|------|-------------|
+| `src/components/StreakGoalCard.tsx` | Streak and goal card retired from the dashboard: a broken streak reads as shame, and safety is never gamified here. The underlying metadata is untouched; only the card is gone. Recover from git history. |
+| `src/components/ExportDataButton.tsx` | Absorbed into the dashboard safety card island (one backup surface, one vocabulary). Recover from git history. |
+| `src/components/ImportDataButton.tsx` | Absorbed into the restore zone island, which adds the preview-before-anything-changes step. Recover from git history. |
+
+## 2026-07-18 — dashboard design-review fix pass
+
+Operator design review of the built dashboard overrode parts of the ratified
+spec. Two surfaces were pulled entirely (each due its own redesign later), which
+orphaned their files under the files-only `knip` gate.
+
+| File | Why removed |
+|------|-------------|
+| `src/components/WhatsNewCard.tsx` | Pulled from the dashboard: the What's New / changelog card is due its own redesign outside this scope, and it was the card's only mount point. The changelog itself still lives at `/changelog`. Recover from git history. |
+| `src/pages/recovery-card.astro` | The printable recovery card (DR11) is rethought in a future cycle; the standalone page did not carry a backup control and read as a wasted surface. The precache regenerates from `dist/` automatically; its phone-relay e2e assertion was removed with it. Recover from git history. |
+
+## 2026-07-18 — dashboard rail redesign (quiet secondary column)
+
+The dashboard's secondary column was a mini-dashboard-within-the-dashboard (3-up
+metric cards, a recent-activity feed, a two-column progress grid) that out-shouted
+the safety answer and crushed in the narrow rail. It is replaced by a single quiet
+`WorkProgress` list (progress, notes, links), which orphaned the old component.
+
+| File | Why removed |
+|------|-------------|
+| `src/components/UserProgressDashboard.tsx` | Retired from the dashboard rail. Its metric cards, activity feed, and off-system blue/amber chips were the inverted-hierarchy problem the redesign fixes; replaced by `WorkProgress.tsx` (a quiet, chroma-0, navigational progress list). It was the component's only mount point. Recover from git history. |

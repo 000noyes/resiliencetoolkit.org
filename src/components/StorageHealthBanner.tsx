@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import {
   checkStorageHealth,
+  shouldClaimStorageSoft,
   STORAGE_HEALTH_EVENT,
   STORAGE_COPY,
   type StorageHealth,
@@ -9,7 +10,7 @@ import {
 } from '@/lib/storageHealth';
 import { useNoticeClaim } from '@/lib/useNoticeClaim';
 import { dampNotice } from '@/lib/notices';
-import { isBackupFresh } from '@/lib/backup';
+import { getCueState, readCanary } from '@/lib/backup-cue';
 
 /**
  * App-wide storage-health banner.
@@ -39,13 +40,40 @@ const DISMISS_KEY = 'rt-storage-health-dismissed';
 function StorageHealthBannerInner() {
   const [health, setHealth] = useState<StorageHealth | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  // null = the cue has not resolved yet, which never claims (appear-late is
+  // fine; flash-then-hide is not).
+  const [softCue, setSoftCue] = useState<boolean | null>(null);
+  const requestRef = useRef(0);
 
   useEffect(() => {
     let mounted = true;
-    const run = () => {
-      checkStorageHealth().then((h) => {
-        if (mounted) setHealth(h);
-      });
+    const run = async () => {
+      // One sequenced async run: health first, then the cue only when health
+      // resolves at-risk, so an IndexedDB failure can never suppress the
+      // acute path. The request id drops stale resolutions from overlapping
+      // visibility rechecks. Cheap reads only: one localStorage canary read
+      // and one metadata counter read; the hash is dashboard-only.
+      const requestId = ++requestRef.current;
+      try {
+        const h = await checkStorageHealth();
+        if (!mounted || requestId !== requestRef.current) return;
+        setHealth(h);
+        if (h.status !== 'at-risk') {
+          setSoftCue(false);
+          return;
+        }
+        const canary = readCanary();
+        let counter: number | 'unknown' = 'unknown';
+        try {
+          counter = (await getCueState()).counter;
+        } catch {
+          // counter-unknown claims, failing toward honesty
+        }
+        if (!mounted || requestId !== requestRef.current) return;
+        setSoftCue(shouldClaimStorageSoft({ atRisk: true, dismissed: false, canary, counter }));
+      } catch {
+        // health unreadable: keep the last known state
+      }
     };
     run();
 
@@ -71,15 +99,13 @@ function StorageHealthBannerInner() {
   const acuteState = health?.status === 'unavailable' || health?.status === 'full';
   const softState = health?.status === 'at-risk';
 
-  // Soft reminder stays quiet for 14 days after a completed backup; acute
-  // states ignore suppression entirely. A completed backup dispatches
-  // STORAGE_HEALTH_EVENT, which re-runs the health check above and re-renders
-  // here, so the reminder quiets same-tab without a navigation.
+  // The soft reminder is work-based (reconciliation R1): it claims only when
+  // unprotected work exists on an at-risk origin, and never for a visitor
+  // with nothing saved. A completed backup dispatches STORAGE_HEALTH_EVENT,
+  // which re-runs the sequenced check above and releases the claim same-tab.
+  // Acute states ignore all of this: data is being lost NOW.
   const acuteWinner = useNoticeClaim('storageAcute', !!acuteState);
-  const softWinner = useNoticeClaim(
-    'storageSoft',
-    !!softState && !dismissed && !isBackupFresh(Date.now()),
-  );
+  const softWinner = useNoticeClaim('storageSoft', !!softState && !dismissed && softCue === true);
 
   const handleDismiss = () => {
     try {

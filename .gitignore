@@ -133,6 +133,7 @@ src/stories/
 .claude/
 
 .github/*
+!.github/PULL_REQUEST_TEMPLATE.md
 !.github/workflows/
 .github/workflows/*
 !.github/workflows/verify.yml

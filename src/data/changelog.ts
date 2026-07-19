@@ -123,7 +123,7 @@ export const changelogEntries: ChangelogEntry[] = [
     isoDate: '2026-02-07',
     title: 'Dashboard, Search, Navigation & More',
     summary: [
-      'New personal dashboard tracks your progress, recent activity, and streaks across all modules',
+      'New personal dashboard tracks your progress and recent activity across all modules',
       'Browse and filter modules by disaster phase on the homepage, with a built-in keyword search',
       '"On this page" sidebar on module pages helps you see what\'s covered and jump to any section',
       'Community Resilience Map added to the /map page',
@@ -135,13 +135,13 @@ export const changelogEntries: ChangelogEntry[] = [
         content: `
           <p>A new dashboard gives you a personal overview of your preparedness journey. As you work through the toolkit's checklists, the dashboard tracks your progress across all modules—showing items completed, modules started, and your most recent activity.</p>
           <p>Expand any module in "Progress by Module" to see a per-section breakdown (e.g., how many Emergency Kits items you've checked off vs. Food & Water). The sidebar on each module page also reflects your progress in real time, so you always know where you left off.</p>
-          <p>Set a weekly goal and build a streak to stay motivated. All data is stored locally on your device—nothing is sent to any server.</p>
+          <p>All data is stored locally on your device—nothing is sent to any server.</p>
           <p><a href="/dashboard">Go to your Dashboard</a></p>
         `,
         image: {
           src: '/changelog/001-dashboard.png',
           alt: 'Personal dashboard showing items completed, modules started, recent activity, and progress by module',
-          caption: 'The new personal dashboard with progress tracking and streaks',
+          caption: 'The new personal dashboard with progress tracking',
         },
       },
       {

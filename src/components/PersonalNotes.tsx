@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { getPersonalNotes, savePersonalNotes } from '@/lib/storage';
 import { FLUSH_WRITES_EVENT, type FlushWritesDetail } from '@/lib/flush-writes';
-import { StickyNote, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PersonalNotesProps {
   className?: string;
@@ -130,70 +130,53 @@ export default function PersonalNotes({ className = '' }: PersonalNotesProps) {
   if (loading) {
     return (
       <div className={`animate-pulse ${className}`}>
-        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+        <div className="h-12 bg-muted rounded-lg" />
       </div>
     );
   }
 
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden ${className}`}
-    >
-      {/* Header - always visible */}
+    <section aria-label="Notes" className={className}>
       <button
+        type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+        className="w-full flex items-center justify-between py-1.5 rounded hover:bg-muted transition-colors group"
+        aria-expanded={isExpanded}
       >
-        <div className="flex items-center gap-2">
-          <StickyNote
-            className={`w-5 h-5 ${
-              hasNotes
-                ? 'text-primary'
-                : 'text-gray-400 dark:text-gray-500'
-            }`}
-          />
-          <span className="font-medium text-gray-900 dark:text-white">
-            Personal Notes
+        <span className="flex items-baseline gap-2">
+          <span className="text-sm font-medium uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">
+            Notes
           </span>
           {hasNotes && !isExpanded && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-              ({notes.length} chars)
-            </span>
+            <span className="text-xs text-muted-foreground">{notes.length} chars</span>
           )}
-        </div>
-        <div className="flex items-center gap-2">
-          {isSaving && (
-            <span className="text-xs text-gray-400">Saving...</span>
-          )}
+        </span>
+        <span className="flex items-center gap-2">
+          {isSaving && <span className="text-xs text-muted-foreground">Saving...</span>}
           {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-gray-400" />
+            <ChevronUp className="w-4 h-4 text-muted-foreground" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-gray-400" />
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
           )}
-        </div>
+        </span>
       </button>
 
-      {/* Expandable content */}
       {isExpanded && (
-        <div className="px-6 pb-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-2">
           <textarea
             ref={textareaRef}
             value={notes}
             onChange={handleNotesChange}
-            placeholder="Write notes about your resilience planning..."
-            className="w-full mt-4 px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all"
+            placeholder="Notes for your own reference"
+            className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all"
             style={{ minHeight: '120px' }}
           />
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-xs text-gray-400">
-              Notes are saved automatically
-            </p>
-            <p className="text-xs text-gray-400">
-              {notes.length}/5000
-            </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs text-muted-foreground">Saved automatically</p>
+            <p className="text-xs text-muted-foreground">{notes.length}/5000</p>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

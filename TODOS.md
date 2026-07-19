@@ -157,7 +157,7 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 ### No clipboard / bulk import into DataTable
 **Priority:** P2
 **Description:** A user migrating a directory from a Google Sheet or existing document must enter every cell by hand. No paste-from-clipboard support, no TSV/CSV bulk import, no multi-row paste. This is the single largest friction for first-time hub onboarding — the whole point of the directory templates is to capture existing community knowledge that already lives in spreadsheets elsewhere.
-**Fix:** (a) Cell-level paste that splits on tab/newline and fills adjacent cells (spreadsheet-parity). (b) A "Paste from clipboard" button on the table header that parses TSV/CSV and appends rows. (c) Later: file-picker CSV import mirroring the existing export format (RFC 4180 + BOM).
+**Fix:** (a) Cell-level paste that splits on tab/newline and fills adjacent cells (spreadsheet-parity). (b) A "Paste from clipboard" button on the table header that parses TSV/CSV and appends rows. (c) Later: file-picker CSV import mirroring the existing export format (RFC 4180 + BOM), completing the spreadsheet round-trip: export a table as CSV, work in a spreadsheet, bring the CSV back into that one table without touching the rest. Per-table CSV import is restore-scoped work and waits on non-destructive per-module restore.
 **Depends on:** None
 
 ### Fixed column widths truncate long text without horizontal scroll on desktop

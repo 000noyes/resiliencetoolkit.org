@@ -14,6 +14,8 @@ import { test, expect, type Page } from '@playwright/test';
  */
 
 // Force a non-durable origin so the soft storage reminder is a live claimant.
+// The strip is work-aware now (reconciliation R1): it also needs the has-work
+// canary set, and an absent counter reads as unknown, which claims.
 async function forceAtRisk(page: Page) {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'storage', {
@@ -24,6 +26,10 @@ async function forceAtRisk(page: Page) {
         estimate: async () => ({ usage: 0, quota: 0 }),
       },
     });
+    localStorage.setItem(
+      'rt-has-work',
+      JSON.stringify({ modules: { 'e2e-arbitration': true }, updatedAt: new Date().toISOString() }),
+    );
   });
 }
 

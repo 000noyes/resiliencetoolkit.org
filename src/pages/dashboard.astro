@@ -2,190 +2,135 @@
 /**
  * Dashboard Page - Local-Only App
  *
- * Shows user progress tracking and quick access to toolkit modules.
- * Displays:
- * - Progress metrics (items completed, modules started, streak)
- * - Recent activity feed
- * - Module-by-module progress
- * - Personal notes section
- * - Export data functionality
+ * One question first: is my work safe? The safety zone leads (state sentence,
+ * receipt, one button, the honest meter), then restore, then a quiet secondary
+ * column. With no saved work the page is a single centered column (no rail, no
+ * canyon) that teaches the one thing; with work it becomes two columns and the
+ * rail carries progress, notes, and links.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
-import UserProgressDashboard from '../components/UserProgressDashboard';
-import StreakGoalCard from '../components/StreakGoalCard';
+import BackupSafetyCard from '../components/BackupSafetyCard';
+import RestoreBackupZone from '../components/RestoreBackupZone';
+import WorkProgress from '../components/WorkProgress';
 import PersonalNotes from '../components/PersonalNotes';
-import ExportDataButton from '../components/ExportDataButton';
-import ImportDataButton from '../components/ImportDataButton';
-import WhatsNewCard from '../components/WhatsNewCard';
-import { HeartPulse, Users, BookOpen, ArrowRight, Siren, HardDrive, Download } from 'lucide-react';
+import { BookOpen, Download } from 'lucide-react';
 
-// Featured modules for quick access
-const featuredModules = [
-  {
-    key: 'knowing-your-community',
-    title: 'Knowing Your Community',
-    description: 'Map local resources and connections',
-    href: '/modules/knowing-your-community',
-    icon: Users,
-  },
-  {
-    key: 'emergency-preparedness',
-    title: 'Emergency Preparedness',
-    description: 'Build your household emergency kit and plan',
-    href: '/modules/emergency-preparedness',
-    icon: Siren,
-  },
-  {
-    key: 'baseline-resilience',
-    title: 'Baseline Resilience',
-    description: 'Assess and improve your community readiness',
-    href: '/modules/baseline-resilience',
-    icon: HeartPulse,
-  },
-];
+const eyebrow = 'text-sm font-medium uppercase tracking-wide text-muted-foreground';
 ---
 
 <BaseLayout title="Dashboard - Resilience Hub Toolkit">
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
-    <!-- Hero Section -->
-    <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">
-              Dashboard
-            </h1>
-            <p class="mt-1 text-gray-600 dark:text-gray-400">
-              Track your resilience journey
+  <div class="bg-background min-h-screen">
+    <div id="dash" data-work="empty" class="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 pb-28">
+      <p class="text-xs font-medium uppercase tracking-widest text-muted-foreground">Dashboard</p>
+
+      <div class="dash-grid mt-6">
+        <!-- MAIN COLUMN: the answer -->
+        <div class="dash-main flex flex-col gap-10">
+          <section id="backup" class="scroll-mt-24" aria-label="Backup status">
+            <BackupSafetyCard client:load />
+          </section>
+
+          <!-- STARTER: shown only with no saved work (single column, no canyon) -->
+          <section class="dash-starter" aria-label="Start with a module">
+            <h2 class={eyebrow}>Start with a module</h2>
+            <ul class="mt-3 rounded-lg border border-border bg-card divide-y divide-border">
+              <li>
+                <a href="/modules/knowing-your-community" class="block px-4 py-3 hover:bg-muted transition-colors no-underline group">
+                  <span class="block text-sm font-medium text-foreground group-hover:text-primary transition-colors">Knowing Your Community</span>
+                  <span class="block text-xs text-muted-foreground">Map your local resources and connections</span>
+                </a>
+              </li>
+              <li>
+                <a href="/modules/emergency-preparedness" class="block px-4 py-3 hover:bg-muted transition-colors no-underline group">
+                  <span class="block text-sm font-medium text-foreground group-hover:text-primary transition-colors">Emergency Preparedness</span>
+                  <span class="block text-xs text-muted-foreground">Build your household emergency kit</span>
+                </a>
+              </li>
+              <li>
+                <a href="/modules/baseline-resilience" class="block px-4 py-3 hover:bg-muted transition-colors no-underline group">
+                  <span class="block text-sm font-medium text-foreground group-hover:text-primary transition-colors">Baseline Resilience</span>
+                  <span class="block text-xs text-muted-foreground">Assess and improve community readiness</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- RESTORE -->
+          <section id="restore" class="scroll-mt-24" aria-label="Restore a backup">
+            <h2 class={eyebrow}>Restore a backup</h2>
+            <p class="mt-2 text-sm text-muted-foreground max-w-prose">
+              See what a backup holds before you restore it.
             </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 flex flex-col gap-6">
-          <!-- User Progress Dashboard -->
-          <UserProgressDashboard client:load />
-
-          <!-- Personal Notes -->
-          <PersonalNotes client:load />
-
-          <!-- What's New -->
-          <WhatsNewCard client:load />
-
-          <!-- Quick Access to Modules -->
-          <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                Toolkit Modules
-              </h2>
-              <a
-                href="/modules"
-                class="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
-              >
-                View all modules
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
-
-            <div class="grid grid-cols-1 gap-4">
-              {featuredModules.map((module) => {
-                const Icon = module.icon;
-                return (
-                  <a
-                    href={module.href}
-                    class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group"
-                  >
-                    <div class="flex items-start gap-3">
-                      <div class="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                        <Icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <div class="flex-1">
-                        <h3 class="font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors">
-                          {module.title}
-                        </h3>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          {module.description}
-                        </p>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
-                    </div>
-                  </a>
-                );
-              })}
+            <div class="mt-4">
+              <RestoreBackupZone client:load />
             </div>
           </section>
         </div>
 
-        <!-- Sidebar -->
-        <div class="flex flex-col gap-6">
-          <!-- Streak & Goal Tracking -->
-          <StreakGoalCard client:load />
-
-          <!-- Quick Links -->
-          <section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
-            <nav class="space-y-2">
-              <a
-                href="/downloads"
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
-              >
-                <Download className="w-4 h-4" />
+        <!-- SECONDARY COLUMN: quiet, shown only when there is saved work -->
+        <aside class="dash-rail flex-col gap-6">
+          <WorkProgress client:load />
+          <div class="border-t border-border"></div>
+          <PersonalNotes client:load />
+          <div class="border-t border-border"></div>
+          <section aria-label="Links">
+            <h2 class={eyebrow}>Links</h2>
+            <nav class="mt-3 space-y-1">
+              <a href="/downloads" class="flex items-center gap-2 py-1 text-sm text-foreground hover:text-primary transition-colors no-underline">
+                <Download className="w-4 h-4 text-muted-foreground" />
                 Downloads
               </a>
-              <a
-                href="/about"
-                class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
-              >
-                <BookOpen className="w-4 h-4" />
-                About the Toolkit
+              <a href="/about" class="flex items-center gap-2 py-1 text-sm text-foreground hover:text-primary transition-colors no-underline">
+                <BookOpen className="w-4 h-4 text-muted-foreground" />
+                About the toolkit
               </a>
             </nav>
           </section>
-
-          <!-- Storage Info -->
-          <section class="bg-primary/5 rounded-lg border border-primary/20 p-4">
-            <div class="flex items-start gap-3">
-              <div class="p-1.5 bg-primary/10 rounded-lg">
-                <HardDrive className="w-4 h-4 text-primary" />
-              </div>
-              <div class="flex-1">
-                <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                  Local Storage
-                </h4>
-                <p class="mt-1 text-xs text-gray-700 dark:text-gray-300">
-                  All your data is stored locally on your device. The toolkit works completely offline.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <!-- Export / Import Data -->
-          <div id="backup" class="space-y-2 scroll-mt-24">
-            <ExportDataButton client:load />
-            <ImportDataButton client:load />
-            <p id="last-export-display" class="text-xs text-gray-500 dark:text-gray-400 text-center mt-1"></p>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
   </div>
 
-  <script>
-    const el = document.getElementById('last-export-display');
-    if (el) {
-      const ts = localStorage.getItem('lastExportTimestamp');
-      if (ts) {
-        const d = new Date(ts);
-        el.textContent = `Last exported: ${d.toLocaleDateString()}`;
-      } else {
-        el.textContent = 'Never exported';
+  <script is:inline>
+    (function () {
+      try {
+        var raw = localStorage.getItem('rt-has-work');
+        if (!raw) return;
+        var c = JSON.parse(raw);
+        if (c && c.modules && Object.keys(c.modules).some(function (k) { return c.modules[k]; })) {
+          var el = document.getElementById('dash');
+          if (el) el.dataset.work = 'has';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style is:global>
+    /* Work-state layout switch. Default (and JS-off) is the single-column empty
+       layout: the answer, a quiet starter list, and restore in one centered
+       column, so there is never a rail-shaped void. The has-work state widens
+       to two columns and reveals the rail. WorkProgress sets #dash[data-work]
+       authoritatively after reading storage; the inline script above sets an
+       early guess from the has-work canary to avoid a layout flash. */
+    #dash { max-width: 42rem; }
+    #dash[data-work="has"] { max-width: 80rem; }
+
+    #dash .dash-grid { display: block; }
+    #dash .dash-rail { display: none; }
+    #dash .dash-starter { display: block; }
+
+    #dash[data-work="has"] .dash-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+    }
+    @media (min-width: 1024px) {
+      #dash[data-work="has"] .dash-grid {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
       }
     }
-  </script>
+    #dash[data-work="has"] .dash-rail { display: flex; }
+    #dash[data-work="has"] .dash-starter { display: none; }
+  </style>
 </BaseLayout>
