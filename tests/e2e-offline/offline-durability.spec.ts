@@ -27,16 +27,22 @@ const COLD_ROUTE = '/modules/baseline-resilience/2-2/';
 
 // Wait for the service worker to install, activate, and claim the page so the
 // next navigation is SW-controlled and the precache has settled.
+// expect.poll, not page.waitForFunction: an async predicate passed to
+// waitForFunction resolves on its pending Promise (truthy) under this repo's
+// Playwright pin, so the gate can pass before the awaited condition holds.
+// expect.poll genuinely awaits page.evaluate's async body (#106).
 async function waitForServiceWorker(page: import('@playwright/test').Page) {
-  await page.waitForFunction(
-    async () => {
-      if (!('serviceWorker' in navigator)) return false;
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      return !!(reg && reg.active && navigator.serviceWorker.controller);
-    },
-    null,
-    { timeout: 20_000 },
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          if (!('serviceWorker' in navigator)) return false;
+          const reg = await navigator.serviceWorker.ready.catch(() => null);
+          return !!(reg && reg.active && navigator.serviceWorker.controller);
+        }),
+      { timeout: 20_000 },
+    )
+    .toBe(true);
 }
 
 test('a cold precached route renders styled + interactive when opened offline', async ({ page, context }) => {

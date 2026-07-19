@@ -82,40 +82,53 @@ test.afterEach(async () => {
   await stopServer().catch(() => {});
 });
 
+// expect.poll, not page.waitForFunction: under this repo's Playwright pin an
+// async predicate passed to waitForFunction resolves on the pending Promise
+// itself (truthy), so the gate passes before the awaited condition holds — a
+// vacuous pass. expect.poll genuinely awaits page.evaluate's async body, so
+// the readiness check is real. This is the #106 fix; on CI's slower WebKit the
+// vacuous gate is what let the server be cut before the heal finished, serving
+// the offline fallback instead of the dashboard (#108, :178 below).
 async function waitForServiceWorker(page: import('@playwright/test').Page) {
-  await page.waitForFunction(
-    async () => {
-      if (!('serviceWorker' in navigator)) return false;
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      return !!(reg && reg.active && navigator.serviceWorker.controller);
-    },
-    null,
-    { timeout: 20_000 },
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          if (!('serviceWorker' in navigator)) return false;
+          const reg = await navigator.serviceWorker.ready.catch(() => null);
+          return !!(reg && reg.active && navigator.serviceWorker.controller);
+        }),
+      { timeout: 20_000 },
+    )
+    .toBe(true);
 }
 
 async function waitForPrecacheComplete(page: import('@playwright/test').Page) {
-  await page.waitForFunction(
-    async () => {
-      const names = await caches.keys();
-      if (!names.length) return false;
-      const paths = new Set<string>();
-      for (const name of names) {
-        const cache = await caches.open(name);
-        for (const req of await cache.keys()) paths.add(new URL(req.url).pathname);
-      }
-      const routesReady = ['/dashboard/', '/downloads/', '/about/', '/map/'].every((r) => paths.has(r));
-      const astroReady = [...paths].filter((p) => p.startsWith('/_astro/')).length > 20;
-      // The worker trusts a generation for cache-first navigation only once
-      // its completeness sentinel is written; cutting the server before that
-      // demotes every offline navigation to the fallback page. Wait for the
-      // sentinel so the offline phase starts from a verified generation.
-      const sentinelReady = paths.has('/__rt-precache-complete__');
-      return routesReady && astroReady && sentinelReady;
-    },
-    null,
-    { timeout: 30_000 },
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          const names = await caches.keys();
+          if (!names.length) return false;
+          const paths = new Set<string>();
+          for (const name of names) {
+            const cache = await caches.open(name);
+            for (const req of await cache.keys()) paths.add(new URL(req.url).pathname);
+          }
+          const routesReady = ['/dashboard/', '/downloads/', '/about/', '/map/'].every((r) =>
+            paths.has(r),
+          );
+          const astroReady = [...paths].filter((p) => p.startsWith('/_astro/')).length > 20;
+          // The worker trusts a generation for cache-first navigation only once
+          // its completeness sentinel is written; cutting the server before that
+          // demotes every offline navigation to the fallback page. Wait for the
+          // sentinel so the offline phase starts from a verified generation.
+          const sentinelReady = paths.has('/__rt-precache-complete__');
+          return routesReady && astroReady && sentinelReady;
+        }),
+      { timeout: 60_000 },
+    )
+    .toBe(true);
 }
 
 async function bootstrap(page: import('@playwright/test').Page) {
@@ -198,9 +211,14 @@ test('a partially filled precache self-heals on the next online page load', asyn
   // before the server dies.
   await page.waitForTimeout(3000);
   await waitForPrecacheComplete(page);
-  await page.waitForFunction(async () => !!(await caches.match('/dashboard/')), null, {
-    timeout: 15_000,
-  });
+  // Real gate (expect.poll), not the vacuous async waitForFunction: this is the
+  // exact guard that was passing before /dashboard/ was durably re-cached, so
+  // the offline nav below raced the heal and got the fallback on CI WebKit.
+  await expect
+    .poll(() => page.evaluate(async () => !!(await caches.match('/dashboard/'))), {
+      timeout: 15_000,
+    })
+    .toBe(true);
 
   await stopServer();
   await assertOffline(page);

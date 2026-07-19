@@ -30,16 +30,22 @@ import { test, expect } from '@playwright/test';
 
 const BOOTSTRAP_ROUTE = '/';
 
+// expect.poll, not page.waitForFunction: an async predicate passed to
+// waitForFunction resolves on its pending Promise (truthy) under this repo's
+// Playwright pin, so the gate can pass before the awaited condition holds.
+// expect.poll genuinely awaits page.evaluate's async body (#106).
 async function waitForServiceWorker(page: import('@playwright/test').Page) {
-  await page.waitForFunction(
-    async () => {
-      if (!('serviceWorker' in navigator)) return false;
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      return !!(reg && reg.active && navigator.serviceWorker.controller);
-    },
-    null,
-    { timeout: 20_000 },
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          if (!('serviceWorker' in navigator)) return false;
+          const reg = await navigator.serviceWorker.ready.catch(() => null);
+          return !!(reg && reg.active && navigator.serviceWorker.controller);
+        }),
+      { timeout: 20_000 },
+    )
+    .toBe(true);
 }
 
 // The precache is complete when the worker has written its completeness

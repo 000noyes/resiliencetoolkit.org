@@ -113,34 +113,42 @@ test.afterEach(() => {
   }
 });
 
+// expect.poll, not page.waitForFunction: an async predicate passed to
+// waitForFunction resolves on its pending Promise (truthy) under this repo's
+// Playwright pin, so the gate can pass before the awaited condition holds.
+// expect.poll genuinely awaits page.evaluate's async body (#106).
 async function waitForServiceWorker(page: Page) {
-  await page.waitForFunction(
-    async () => {
-      if (!('serviceWorker' in navigator)) return false;
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      return !!(reg && reg.active && navigator.serviceWorker.controller);
-    },
-    null,
-    { timeout: 20_000 }
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          if (!('serviceWorker' in navigator)) return false;
+          const reg = await navigator.serviceWorker.ready.catch(() => null);
+          return !!(reg && reg.active && navigator.serviceWorker.controller);
+        }),
+      { timeout: 20_000 }
+    )
+    .toBe(true);
 }
 
 async function waitForPrecachePopulated(page: Page) {
-  await page.waitForFunction(
-    async () => {
-      const names = await caches.keys();
-      for (const name of names) {
-        const cache = await caches.open(name);
-        const keys = await cache.keys();
-        if (keys.filter((r) => new URL(r.url).pathname.startsWith('/_astro/')).length > 20) {
-          return true;
-        }
-      }
-      return false;
-    },
-    null,
-    { timeout: 30_000 }
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          const names = await caches.keys();
+          for (const name of names) {
+            const cache = await caches.open(name);
+            const keys = await cache.keys();
+            if (keys.filter((r) => new URL(r.url).pathname.startsWith('/_astro/')).length > 20) {
+              return true;
+            }
+          }
+          return false;
+        }),
+      { timeout: 30_000 }
+    )
+    .toBe(true);
 }
 
 /**
