@@ -190,6 +190,17 @@ test('a partially filled precache self-heals on the next online page load', asyn
   await page.reload({ waitUntil: 'load' });
   await waitForServiceWorker(page);
   await waitForPrecacheComplete(page);
+  // The self-heal re-fetches the deleted routes, but WebKit's CacheStorage view
+  // from the page lags behind the worker's chunked fill — the same lag bootstrap
+  // settles for. Without this, cutting the server here races the heal and the
+  // offline navigation intermittently gets the fallback page. Settle, re-verify
+  // completeness, then require the healed /dashboard/ to be durably matchable
+  // before the server dies.
+  await page.waitForTimeout(3000);
+  await waitForPrecacheComplete(page);
+  await page.waitForFunction(async () => !!(await caches.match('/dashboard/')), null, {
+    timeout: 15_000,
+  });
 
   await stopServer();
   await assertOffline(page);
