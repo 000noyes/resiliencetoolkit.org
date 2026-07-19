@@ -158,7 +158,7 @@ export default function RestoreBackupZone() {
           aria-hidden="true"
         />
         <p className="flex-1 text-sm text-muted-foreground text-center sm:text-left">
-          Pick the backup file from your Downloads, a drive, or wherever you keep it.
+          Choose your backup file.
         </p>
         <button
           type="button"
@@ -293,8 +293,7 @@ export default function RestoreBackupZone() {
                   ]
                     .filter(Boolean)
                     .join(' and ') || 'your restored work'}
-                  {dialog.madeAt ? ` from the backup made ${formatReceiptDate(dialog.madeAt)}` : ''}. New
-                  work from here counts toward your next backup.
+                  {dialog.madeAt ? ` from the backup made ${formatReceiptDate(dialog.madeAt)}` : ''}.
                 </p>
                 <button
                   type="button"

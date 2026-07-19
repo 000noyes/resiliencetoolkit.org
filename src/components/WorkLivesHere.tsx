@@ -57,9 +57,8 @@ export default function WorkLivesHere() {
       <HardDrive className="h-5 w-5 flex-shrink-0 text-muted-foreground" strokeWidth={1.75} aria-hidden="true" />
       <div className="flex-1">
         <p className="text-sm text-foreground">
-          <strong>Your work is saved on this device, and only here.</strong> It stays private and
-          works offline. Nothing goes to the cloud or to Google Drive, so back it up to keep a copy
-          you can reload later or carry to another device.
+          <strong>Your work is saved on this device, and only here.</strong> It is private and works
+          offline. Nothing goes to the cloud. Back it up to keep a copy.
         </p>
         <p className="mt-1 text-xs text-muted-foreground">{backupLine}</p>
       </div>

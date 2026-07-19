@@ -18,8 +18,8 @@ describe('WorkLivesHere', () => {
     const html = renderToStaticMarkup(createElement(WorkLivesHere));
     expect(html).toMatch(/saved on this device/i);
     expect(html).toMatch(/private/i);
-    // Names the durability caveat: not the cloud / not Google Drive.
-    expect(html).toMatch(/cloud or to Google Drive/i);
+    // Names the durability caveat: nothing goes to the cloud.
+    expect(html).toMatch(/goes to the cloud/i);
   });
 
   it('offers a one-tap backup with no state claim before the cue resolves', () => {
