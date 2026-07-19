@@ -293,8 +293,17 @@ export async function deleteTableRow(
 ): Promise<void> {
   const db = await getDB();
   const id = `${moduleKey}-${tableId}-${rowId}`;
+  const existing = await db.get('tables', id);
   await db.delete('tables', id);
-  await noteUserWrite(1, [moduleKey]);
+  // Same content-conditional cue as saveTableRow: deleting a BLANK scaffold row
+  // is not a change to real work, so it must not mark the has-work canary or
+  // bump the counter — otherwise adding a blank row and deleting it, with no
+  // other work on the device, would fire a false loss overlay (the canary is
+  // only ever written after a real user write). Deleting a row that held work
+  // is a real change and counts.
+  if (existing && rowHasWork(existing)) {
+    await noteUserWrite(1, [moduleKey]);
+  }
 }
 
 // ============================================================================

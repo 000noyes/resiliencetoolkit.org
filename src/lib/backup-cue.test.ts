@@ -193,6 +193,26 @@ describe('content-conditional cue: a blank Add Row is not saved work (D1)', () =
     expect(await counterValue()).toBe(0);
     expect(readCanary()).toBeNull();
   });
+
+  it('deleting a blank row does not mark the canary or bump the counter', async () => {
+    await seedCounter(0);
+    await saveTableRow({ moduleKey: 'cue-del-blank', tableId: 'tab', rowId: 'r1', data: { value: '' } });
+    expect(await counterValue()).toBe(0); // the blank add did not count
+    await deleteTableRow('cue-del-blank', 'tab', 'r1');
+    // Deleting a row that never held work is not a change to protect: the same
+    // add-blank-then-delete path that would otherwise fire a false loss overlay.
+    expect(await counterValue()).toBe(0);
+    expect(readCanary()).toBeNull();
+  });
+
+  it('deleting a row that held work counts as a change and keeps the canary', async () => {
+    await seedCounter(0);
+    await saveTableRow({ moduleKey: 'cue-del-work', tableId: 'tab', rowId: 'r1', data: { value: 'a' } });
+    expect(await counterValue()).toBe(1); // the real write counted
+    await deleteTableRow('cue-del-work', 'tab', 'r1');
+    expect(await counterValue()).toBe(2); // removing real work is a change too
+    expect(readCanary()!.modules['cue-del-work']).toBe(true);
+  });
 });
 
 describe('write counter: cold-start honesty (DR7)', () => {
