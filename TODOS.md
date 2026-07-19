@@ -112,6 +112,11 @@ Cross-check: the site references 24 unique Drive IDs from `src/pages/**`. **22 o
 **Priority:** P3
 **Status:** Fixed in `sw-precache-generator`. `scripts/generate-sw-precache.mjs` runs as `postbuild` and generates PRECACHE_ASSETS from `dist/**/index.html`. List is now auto-computed and can never drift.
 
+### Convert async waitForFunction gates in the offline suite to expect.poll
+**Priority:** P2
+**Description:** A `page.waitForFunction` with an async page function can resolve while the awaited condition is still false — the pending Promise itself is truthy under the pinned Playwright version. `tests/e2e-offline/sw-stuck-worker-heal.spec.ts` was caught by this and uses `expect.poll` for every cache/state gate as a result. `sw-update-rotation.spec.ts` still carries async `waitForFunction` gates; its tests stay correct because hard assertions follow each gate, but the gates themselves may not be gating (they can pass before the condition holds and shift the burden to whatever waits next).
+**Fix:** Replace async `waitForFunction` predicates with `expect.poll(() => page.evaluate(...))` across `tests/e2e-offline/`, matching the pattern documented in `sw-stuck-worker-heal.spec.ts`.
+
 ### Build verification test for SW precache generator
 **Priority:** P2
 **Description:** Post-build Vitest test that reads `dist/sw.js` after build and asserts PRECACHE_ASSETS matches the actual routes in `dist/` minus excluded paths. The `generate-sw-precache.mjs` generator's exit-nonzero check handles empty-list failures; this test would catch partial route exclusions and regression in the exclusion filter logic.

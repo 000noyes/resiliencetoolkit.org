@@ -113,6 +113,17 @@ contrast on the tint); neutral strips keep the `text-primary` link. Dismiss targ
 via logical inset (`end-0`); copy uses `text-wrap: balance` and left-aligns below 400px. Strips
 swap instantly — no height or fade animation.
 
+### Rotation notice (pre-reload status bar)
+A fixed bottom status bar ("Updating to the latest version.", `role="status"` /
+polite) shown by the update lifecycle for the sub-3s flush window before a
+rotation reload. Deliberately OUTSIDE the single-slot strip system and built
+with direct DOM + inline styles in `src/lib/sw-register.ts`: it must render on
+any vintage page — including one whose hashed bundles are broken, the very
+state that forces a rotation — so it cannot be an island and cannot depend on
+CSS variables. Neutral chrome hardcoded from the base.css values (paper
+background `oklch(0.9911 0 0)`, ink text `oklch(0.2046 0 0)`, hairline top
+border), no animation, removed by the reload itself.
+
 ### Deferred Components
 - **Reference templates (DO NOT delete):** WhatsNewBanner, OfflineReadyBanner — in `src/design-system/_deferred/`, zero imports. Kept as canonical templates for BetaBanner (top-banner pattern + localStorage dismissal) and the bottom-right fixed-toast pattern should it ever return.
 - **Safe to delete:** SearchField, EmptyState, SegmentedControl — in `src/design-system/_deferred/`, zero imports, no downstream consumers.
