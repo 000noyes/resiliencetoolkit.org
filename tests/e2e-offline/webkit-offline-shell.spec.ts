@@ -191,12 +191,20 @@ test('an uncached route offline falls back to the styled offline page, not a raw
 test('a partially filled precache self-heals on the next online page load', async ({ page }) => {
   await bootstrap(page);
 
+  // Simulate a worker killed mid-precache: the routes never landed AND the
+  // completeness sentinel was never written (topUpPrecache writes it only once
+  // every path is present). Deleting routes but KEEPING the sentinel is an
+  // impossible real state — the worker trusts the sentinel and short-circuits
+  // its heal — so the sentinel must go too for the next load to actually refill.
+  // ignoreVary: the precached route responses can carry Vary, and a delete
+  // without it silently misses on an engine that honors Vary here.
   await page.evaluate(async () => {
     const names = await caches.keys();
     for (const name of names) {
       const cache = await caches.open(name);
-      await cache.delete('/dashboard/');
-      await cache.delete('/downloads/');
+      await cache.delete('/dashboard/', { ignoreVary: true });
+      await cache.delete('/downloads/', { ignoreVary: true });
+      await cache.delete('/__rt-precache-complete__', { ignoreVary: true });
     }
   });
 

@@ -142,7 +142,7 @@ test('banner -> tap -> one rotation; data intact; old generation stripped to ass
   // Rotation: flush wait -> SKIP_WAITING -> activate (prune inside waitUntil)
   // -> controllerchange -> one reload.
   await expect
-    .poll(() => page.evaluate(() => caches.keys()), { timeout: 30_000 })
+    .poll(() => page.evaluate(() => caches.keys()).catch(() => [] as string[]), { timeout: 30_000 })
     .toContain(`resilience-hub-v2-${BUILD_B_VERSION}`);
   await page.waitForLoadState('load');
   await waitForServiceWorker(page);
@@ -232,7 +232,7 @@ test('legacy ramp: automatic one-time rotation, marker written, no reload loop',
             names.includes(`resilience-hub-v2-${buildB}`) &&
             !names.includes('resilience-hub-v-build-20260630000000000')
           );
-        }, BUILD_B_VERSION),
+        }, BUILD_B_VERSION).catch(() => false),
       { timeout: 45_000 }
     )
     .toBe(true);

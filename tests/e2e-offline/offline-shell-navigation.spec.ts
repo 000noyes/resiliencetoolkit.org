@@ -162,14 +162,20 @@ test('an uncached route offline falls back to the styled offline page, not a raw
 test('a partially filled precache self-heals on the next online page load', async ({ page, context }) => {
   await bootstrap(page, context);
 
-  // Simulate what an aggressive mobile browser does: the worker was killed
-  // mid-precache and some routes never made it into the cache.
+  // Simulate a worker killed mid-precache: the routes never landed AND the
+  // completeness sentinel was never written (topUpPrecache writes it only once
+  // every path is present). Deleting routes but KEEPING the sentinel is an
+  // impossible real state — the worker trusts the sentinel and short-circuits
+  // its heal — so the sentinel must go too for the next load to actually refill.
+  // ignoreVary: the precached route responses can carry Vary, and a delete
+  // without it silently misses on an engine that honors Vary here.
   await page.evaluate(async () => {
     const names = await caches.keys();
     for (const name of names) {
       const cache = await caches.open(name);
-      await cache.delete('/dashboard/');
-      await cache.delete('/downloads/');
+      await cache.delete('/dashboard/', { ignoreVary: true });
+      await cache.delete('/downloads/', { ignoreVary: true });
+      await cache.delete('/__rt-precache-complete__', { ignoreVary: true });
     }
   });
 
@@ -181,7 +187,11 @@ test('a partially filled precache self-heals on the next online page load', asyn
   await goOffline(page, context);
   const response = await page.goto('/dashboard', { waitUntil: 'load' });
   expect(response!.status()).toBe(200);
-  await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+  // The dashboard's answer-first layout has no h1 (the title is an eyebrow); the
+  // stable marker for the real healed page is the safety card, same as the WebKit
+  // twin. A stale h1 marker here would pass on the offline fallback (which has
+  // one) instead of proving the dashboard itself healed.
+  await expect(page.getByTestId('rt-safety-card')).toBeVisible({ timeout: 10_000 });
   const bodyText = (await page.locator('body').innerText()).trim();
   expect(bodyText, 'raw service worker fallback leaked to the user').not.toBe('Offline');
 });
