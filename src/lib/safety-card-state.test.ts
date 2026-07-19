@@ -23,6 +23,7 @@ import {
   moduleCardBackupLine,
   type SafetyCardInputs,
 } from './safety-card-state';
+import { buildWorkSnapshot } from './backup-cue';
 
 const noWork = { todos: 0, tables: 0, hasNotes: false };
 const someWork = { todos: 3, tables: 5, hasNotes: false };
@@ -336,5 +337,31 @@ describe('honest meter', () => {
   it('formats byte sizes in human units', () => {
     expect(formatByteSize(0)).toBe('0 B');
     expect(formatByteSize(11264)).toBe('11 KB');
+  });
+
+  it('a snapshot of only blank scaffold rows reports zero saved rows (the empty-row meter bug)', () => {
+    // The 2026-07-04 legacy backup, projected through the canonical snapshot:
+    // every input cell blank, only the readonly template question filled.
+    const scaffold = buildWorkSnapshot({
+      todos: [],
+      tables: [
+        {
+          id: 'knowing-community-place-characteristics-r1',
+          moduleKey: 'knowing-community',
+          tableId: 'place-characteristics',
+          data: { Question: 'Who do people listen to?', 'Your Response': '' },
+        },
+        {
+          id: 'knowing-community-place-characteristics-r2',
+          moduleKey: 'knowing-community',
+          tableId: 'place-characteristics',
+          data: { Question: 'What matters here?', 'Your Response': '' },
+        },
+      ],
+      metadata: {},
+    });
+    const meter = computeWorkMeter(scaffold);
+    expect(meter.rows).toHaveLength(0);
+    expect(meter.total.detail).toBe('nothing saved yet');
   });
 });

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FolderOpen, Upload, X } from 'lucide-react';
 import { exportAllData, importAllData } from '@/lib/storage';
 import { getCueState } from '@/lib/backup-cue';
+import { rowHasWork } from '@/lib/work-predicate';
 import {
   parseBackupFile,
   buildRestorePreview,
@@ -60,6 +61,8 @@ export default function RestoreBackupZone() {
 
   async function derivePreview(file: ParsedBackup, filename: string) {
     const [cue, data] = [await getCueState(), await exportAllData()];
+    // Device work is real work: a device holding only blank scaffold rows has
+    // nothing to protect, so the preview must not warn "back up first" over it.
     const ids = new Set<string>();
     const moduleKeys = new Set<string>();
     for (const t of data.todos) {
@@ -67,6 +70,7 @@ export default function RestoreBackupZone() {
       moduleKeys.add(t.moduleKey);
     }
     for (const r of data.tables) {
+      if (!rowHasWork(r)) continue;
       ids.add(r.id);
       moduleKeys.add(r.moduleKey);
     }
@@ -113,10 +117,16 @@ export default function RestoreBackupZone() {
     setDialog({ kind: 'importing' });
     try {
       const result = await importAllData(file.raw);
+      // Report the honest saved-row count, matching the meter: every row still
+      // imports (importAllData is untouched), but blank scaffold rows are not
+      // "saved rows" and must not inflate the "your work is back" receipt.
+      const tablesWithWork = file.tables.filter((r) =>
+        rowHasWork({ moduleKey: r.moduleKey ?? '', tableId: r.tableId ?? '', data: r.data ?? {} }),
+      ).length;
       setDialog({
         kind: 'success',
         todos: result.todosImported,
-        tables: result.tablesImported,
+        tables: tablesWithWork,
         madeAt: file.exportedAt,
       });
     } catch (error) {

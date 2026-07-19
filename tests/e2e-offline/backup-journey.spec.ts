@@ -19,6 +19,11 @@ const LEGACY_FIXTURE = path.resolve(
   dirname,
   '../fixtures/backups/resilience-toolkit-backup-2026-06-15.json',
 );
+// 39 blank scaffold rows, 0 todos, no lineage hash: the meter-inflation repro.
+const EMPTY_SCAFFOLD_FIXTURE = path.resolve(
+  dirname,
+  '../fixtures/backups/resilience-toolkit-backup-2026-07-04.json',
+);
 
 // Force a non-durable origin so the soft storage strip is a live claimant.
 async function forceAtRisk(page: Page) {
@@ -178,6 +183,61 @@ test.describe('the journey', () => {
     await expect(page.getByTestId('rt-safety-headline')).toHaveText('Your work is back.', {
       timeout: 20_000,
     });
+  });
+});
+
+test.describe('empty-scaffold restore (the meter acceptance gate)', () => {
+  test('restoring the all-blank legacy backup imports every row yet counts zero, with no loss overlay', async ({
+    page,
+  }) => {
+    // Fresh device, nothing saved. Restore the 39-row all-blank legacy backup
+    // (the exact meter-inflation repro): the honest count is zero saved rows.
+    await page.goto('/dashboard', { waitUntil: 'load' });
+
+    await page.locator('input[type="file"]').first().setInputFiles(EMPTY_SCAFFOLD_FIXTURE);
+    await expect(page.getByTestId('rt-restore-dialog')).toBeVisible();
+    await expect(page.getByTestId('rt-restore-filename')).toContainText(
+      'resilience-toolkit-backup-2026-07-04.json',
+    );
+    // Blank scaffold rows are not saved work: no "back up first" verdict and no
+    // partial-file gate fire over a device that holds nothing and a file that
+    // holds no real work. The single Replace button is offered directly.
+    await expect(page.getByTestId('rt-restore-verdict')).toHaveCount(0);
+    await expect(page.getByTestId('rt-restore-partial')).toHaveCount(0);
+
+    await page.getByTestId('rt-restore-replace').click();
+    await expect(page.getByTestId('rt-restore-success')).toBeVisible({ timeout: 20_000 });
+    await page.getByTestId('rt-restore-finish').click();
+    await page.waitForLoadState('load');
+
+    // Counting fix, not deletion: every one of the 39 rows imported and lives on
+    // the device (import is untouched; the fix filters what is counted, never
+    // what is kept).
+    const rowCount = await page.evaluate(
+      () =>
+        new Promise<number>((resolve, reject) => {
+          const req = indexedDB.open('resilience-toolkit');
+          req.onerror = () => reject(req.error);
+          req.onsuccess = () => {
+            const db = req.result;
+            const countReq = db.transaction('tables').objectStore('tables').count();
+            countReq.onsuccess = () => {
+              db.close();
+              resolve(countReq.result);
+            };
+            countReq.onerror = () => reject(countReq.error);
+          };
+        }),
+    );
+    expect(rowCount).toBe(39);
+
+    // The card is honest: no false "your work may be missing" overlay, and the
+    // meter reads no saved work rather than 39 inflated rows.
+    await page.waitForTimeout(1500); // let the safety-card island settle
+    const body = await page.textContent('body');
+    expect(body).not.toContain('Some saved work may be missing.');
+    // The repro was "39 saved rows" on a device with zero real work.
+    expect(body).not.toContain('39 saved row');
   });
 });
 

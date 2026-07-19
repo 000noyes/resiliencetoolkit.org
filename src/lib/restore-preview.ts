@@ -10,6 +10,7 @@
  */
 import type { CueState } from '@/lib/backup-cue';
 import { countNoun, formatReceiptDate } from '@/lib/safety-card-state';
+import { rowHasWork } from '@/lib/work-predicate';
 
 export type ParseErrorKind = 'not-json' | 'not-a-backup';
 
@@ -21,7 +22,7 @@ export interface ParsedBackupLineage {
 
 export interface ParsedBackup {
   todos: Array<{ id: string; moduleKey?: string }>;
-  tables: Array<{ id: string; moduleKey?: string }>;
+  tables: Array<{ id: string; moduleKey?: string; tableId?: string; data?: Record<string, string> }>;
   metadata: Record<string, unknown>;
   /** The file's own timestamp, or null for legacy files (never a rejection). */
   exportedAt: string | null;
@@ -98,10 +99,20 @@ export interface RestorePreview {
   demoteReplace: boolean;
 }
 
-function moduleKeysOf(data: ParsedBackup): Set<string> {
+/** Table rows that hold saved work; blank scaffold rows are not counted. */
+function workTablesOf(data: ParsedBackup): ParsedBackup['tables'] {
+  return data.tables.filter((r) =>
+    rowHasWork({ moduleKey: r.moduleKey ?? '', tableId: r.tableId ?? '', data: r.data ?? {} }),
+  );
+}
+
+function moduleKeysOf(
+  todos: ParsedBackup['todos'],
+  tables: ParsedBackup['tables'],
+): Set<string> {
   const keys = new Set<string>();
-  for (const t of data.todos) if (t.moduleKey) keys.add(t.moduleKey);
-  for (const r of data.tables) if (r.moduleKey) keys.add(r.moduleKey);
+  for (const t of todos) if (t.moduleKey) keys.add(t.moduleKey);
+  for (const r of tables) if (r.moduleKey) keys.add(r.moduleKey);
   return keys;
 }
 
@@ -110,11 +121,15 @@ export function buildRestorePreview(
   data: ParsedBackup,
   device: DeviceStateForPreview,
 ): RestorePreview {
-  const fileModules = moduleKeysOf(data);
+  // Count and describe only real work: a backup of blank scaffold rows should
+  // not read as modules-and-rows of saved work. The raw rows still import in
+  // full — this governs the count the preview shows, never what is restored.
+  const workTables = workTablesOf(data);
+  const fileModules = moduleKeysOf(data.todos, workTables);
   const parts = [
     `${fileModules.size} ${fileModules.size === 1 ? 'module' : 'modules'}`,
     data.todos.length > 0 ? countNoun(data.todos.length, 'checked item') : '',
-    data.tables.length > 0 ? countNoun(data.tables.length, 'saved row') : '',
+    workTables.length > 0 ? countNoun(workTables.length, 'saved row') : '',
   ].filter(Boolean);
   const summary = `This backup holds ${parts.join(', ')}.`;
 
@@ -147,10 +162,11 @@ export function buildRestorePreview(
     demoteReplace = true;
   }
 
-  // Provable by id difference, composes with the verdict above.
+  // Provable by id difference, composes with the verdict above. Only real work
+  // counts: a blank scaffold row the device lacks is not work it is missing.
   let fileOnly = 0;
   for (const t of data.todos) if (!device.ids.has(t.id)) fileOnly++;
-  for (const r of data.tables) if (!device.ids.has(r.id)) fileOnly++;
+  for (const r of workTables) if (!device.ids.has(r.id)) fileOnly++;
   if (fileOnly > 0 && deviceHasWork) {
     verdicts.push('This file holds work this device does not.');
   }

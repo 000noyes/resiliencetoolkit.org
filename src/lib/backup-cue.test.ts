@@ -158,6 +158,43 @@ describe('machine writes never count as user work', () => {
   });
 });
 
+describe('content-conditional cue: a blank Add Row is not saved work (D1)', () => {
+  it('a blank table row persists but never bumps the counter or marks the canary', async () => {
+    const { getTableRow } = await import('./storage');
+    await seedCounter(0);
+    await saveTableRow({
+      moduleKey: 'cue-blank',
+      tableId: 'tab',
+      rowId: 'r1',
+      data: { 'Your Response': '' },
+    });
+    // Filter-not-delete: the blank row is on the device, importable forever...
+    expect(await getTableRow('cue-blank', 'tab', 'r1')).toBeDefined();
+    // ...but a blank Add Row is not work, so it leaves the cue untouched and can
+    // never make detectPossibleLoss fire a false "work may be missing" overlay.
+    expect(await counterValue()).toBe(0);
+    expect(readCanary()).toBeNull();
+  });
+
+  it('the first typed character makes the row count: the counter bumps and the canary is marked', async () => {
+    await seedCounter(0);
+    await saveTableRow({ moduleKey: 'cue-firstchar', tableId: 'tab', rowId: 'r1', data: { 'Your Response': '' } });
+    expect(await counterValue()).toBe(0);
+    expect(readCanary()).toBeNull();
+    // The same row, now with a typed answer: this is the first real work.
+    await saveTableRow({ moduleKey: 'cue-firstchar', tableId: 'tab', rowId: 'r1', data: { 'Your Response': 'a' } });
+    expect(await counterValue()).toBe(1);
+    expect(readCanary()!.modules['cue-firstchar']).toBe(true);
+  });
+
+  it('a whitespace-only cell is still blank: no count, no canary', async () => {
+    await seedCounter(0);
+    await saveTableRow({ moduleKey: 'cue-ws', tableId: 'tab', rowId: 'r1', data: { value: '   ' } });
+    expect(await counterValue()).toBe(0);
+    expect(readCanary()).toBeNull();
+  });
+});
+
 describe('write counter: cold-start honesty (DR7)', () => {
   it('an absent counter stays absent through user writes (unknown, never a fake exact count)', async () => {
     await saveTodo({ moduleKey: 'cue-cold', todoId: 't1', completed: true });
@@ -259,6 +296,62 @@ describe('canonical work snapshot', () => {
     expect(Object.keys(snap.metadata)).toEqual(['personalNotes']);
     expect(snap.todos).toHaveLength(2);
     expect(snap.tables).toHaveLength(2);
+  });
+
+  it('drops blank scaffold rows so an all-empty backup counts as zero saved rows', () => {
+    // The exact shape of the 2026-07-04 legacy backup: a mapped template table
+    // whose only non-blank cell is the readonly template question.
+    const allEmpty = {
+      todos: [],
+      tables: [
+        {
+          id: 'knowing-community-place-characteristics-r1',
+          moduleKey: 'knowing-community',
+          tableId: 'place-characteristics',
+          rowId: 'r1',
+          data: { Question: 'Who do people listen to?', 'Your Response': '' },
+          updatedAt: '1',
+        },
+        {
+          id: 'knowing-community-place-characteristics-r2',
+          moduleKey: 'knowing-community',
+          tableId: 'place-characteristics',
+          rowId: 'r2',
+          data: { Question: 'What matters here?', 'Your Response': '' },
+          updatedAt: '2',
+        },
+      ],
+      metadata: {},
+    };
+    expect(buildWorkSnapshot(allEmpty as any).tables).toHaveLength(0);
+  });
+
+  it('keeps only rows with a filled input column (mixed snapshot)', () => {
+    const mixed = {
+      todos: [],
+      tables: [
+        {
+          id: 'knowing-community-place-characteristics-r1',
+          moduleKey: 'knowing-community',
+          tableId: 'place-characteristics',
+          rowId: 'r1',
+          data: { Question: 'q', 'Your Response': '' },
+          updatedAt: '1',
+        },
+        {
+          id: 'knowing-community-place-characteristics-r2',
+          moduleKey: 'knowing-community',
+          tableId: 'place-characteristics',
+          rowId: 'r2',
+          data: { Question: 'q', 'Your Response': 'we do' },
+          updatedAt: '2',
+        },
+      ],
+      metadata: {},
+    };
+    const snap = buildWorkSnapshot(mixed as any);
+    expect(snap.tables).toHaveLength(1);
+    expect(snap.tables[0].id).toBe('knowing-community-place-characteristics-r2');
   });
 
   it('serializes deterministically regardless of input order', () => {

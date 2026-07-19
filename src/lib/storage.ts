@@ -255,7 +255,15 @@ export async function saveTableRow(row: Omit<TableRow, 'id' | 'updatedAt'>): Pro
     id,
     updatedAt: new Date().toISOString(),
   });
-  await noteUserWrite(1, [row.moduleKey]);
+  // Content-conditional cue: only a row with a filled input column is saved
+  // work. A blank Add Row (every column empty) or a row cleared back to empty
+  // must never mark the has-work canary or bump the write counter — otherwise
+  // detectPossibleLoss fires a false "your work may be missing" overlay and the
+  // cue disagrees with the honest meter. The first typed character makes
+  // rowHasWork true and the write counts. seedTableRow bypasses this entirely.
+  if (rowHasWork({ moduleKey: row.moduleKey, tableId: row.tableId, data: row.data })) {
+    await noteUserWrite(1, [row.moduleKey]);
+  }
 }
 
 /**

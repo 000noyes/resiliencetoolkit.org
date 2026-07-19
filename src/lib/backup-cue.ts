@@ -21,6 +21,7 @@ import {
   LAST_BACKUP_HASH_KEY,
   HAS_WORK_CANARY_KEY,
 } from '@/lib/storage';
+import { rowHasWork } from '@/lib/work-predicate';
 
 /**
  * Legacy last-backup timestamp key in localStorage (backup.ts LAST_BACKUP_KEY).
@@ -119,6 +120,17 @@ interface SnapshotRow {
   id: string;
 }
 
+/**
+ * An exported TABLE row, as the predicate reads it. The runtime rows from
+ * exportAllData() carry these fields; the shape is optional so a malformed row
+ * (missing data) is treated as no-work and filtered, never a throw.
+ */
+interface SnapshotTableRow extends SnapshotRow {
+  moduleKey?: string;
+  tableId?: string;
+  data?: Record<string, string>;
+}
+
 export interface WorkSnapshot {
   todos: SnapshotRow[];
   tables: SnapshotRow[];
@@ -128,10 +140,18 @@ export interface WorkSnapshot {
 /**
  * Project an exportAllData() result to the canonical work snapshot: todos and
  * tables sorted by id, metadata minus the volatile keyset. Pure.
+ *
+ * Blank template/scaffold rows are filtered here — the single canonical count
+ * origin for the #58 surfaces. Everything derived from the snapshot (the honest
+ * meter, the card's tables/hasWork counts, the calm-gate hash, and the loss
+ * predicate's tables count) inherits this one filter, so no two surfaces can
+ * disagree and a device of only empty scaffold rows reads as no work. The
+ * exported backup file is unaffected: it carries the raw rows and imports them
+ * all back — this filter only governs what is *counted*, never what is kept.
  */
 export function buildWorkSnapshot(data: {
   todos: readonly SnapshotRow[];
-  tables: readonly SnapshotRow[];
+  tables: readonly SnapshotTableRow[];
   metadata: Record<string, unknown>;
 }): WorkSnapshot {
   const byId = (a: SnapshotRow, b: SnapshotRow) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
@@ -141,9 +161,12 @@ export function buildWorkSnapshot(data: {
       metadata[key] = data.metadata[key];
     }
   }
+  const tables = data.tables.filter((r) =>
+    rowHasWork({ moduleKey: r.moduleKey ?? '', tableId: r.tableId ?? '', data: r.data ?? {} }),
+  );
   return {
     todos: [...data.todos].sort(byId),
-    tables: [...data.tables].sort(byId),
+    tables: [...tables].sort(byId),
     metadata,
   };
 }
