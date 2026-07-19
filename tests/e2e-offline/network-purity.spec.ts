@@ -23,15 +23,16 @@ const ROUTES = [
   '/map/',
 ];
 
-const SITE_ORIGIN = 'http://rt.localhost:4321';
-
-test('the built site makes zero cross-origin network requests', async ({ page }) => {
+test('the built site makes zero cross-origin network requests', async ({ page, baseURL }) => {
+  // Derive the origin from the running config's baseURL (single source of
+  // truth) so the purity gate holds no matter which port the suite runs on.
+  const siteOrigin = new URL(baseURL!).origin;
   const crossOrigin = new Set<string>();
   page.on('request', (req) => {
     const url = req.url();
     if (!url.startsWith('http')) return; // ignore data:, blob:, about:
     const origin = new URL(url).origin;
-    if (origin !== SITE_ORIGIN) crossOrigin.add(`${origin}  (${req.resourceType()})`);
+    if (origin !== siteOrigin) crossOrigin.add(`${origin}  (${req.resourceType()})`);
   });
 
   for (const route of ROUTES) {

@@ -25,9 +25,9 @@
  * deploy).
  *
  * Reload discipline: every controlled tab reloads exactly once per rotation
- * (one-shot flag), after flushing pending edits and waiting for the
- * initiated saves to commit (flushAndWait). A first-install claim is
- * absorbed without a reload. A tab that slept through the rotation (iOS
+ * (one-shot flag), after showing a dependency-free status notice, flushing
+ * pending edits, and waiting for the initiated saves to commit
+ * (flushAndWait). A first-install claim is absorbed without a reload. A tab that slept through the rotation (iOS
  * snapshot restore) reloads once on return-to-visible when the controller
  * identity changed under it.
  */
@@ -43,6 +43,40 @@ const UPDATE_CHECK_INTERVAL_MS = 3_600_000;
 const isDev = () =>
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+/** DOM id of the rotation notice; presence doubles as the injection guard. */
+const ROTATION_NOTICE_ID = 'rt-sw-rotation-notice';
+
+/**
+ * Calm status bar for the sub-3s flush window before a rotation reload, so
+ * the reload reads as "the app updated", not a glitch. Direct DOM with inline
+ * styles ON PURPOSE: no island, no hashed asset, no CSS variable — it must
+ * render on any vintage page and can never be broken by the cache states that
+ * force a rotation. Removed by the reload itself; failure is tolerated
+ * because presentation must never block the rotation.
+ */
+function showRotationNotice(): void {
+  try {
+    if (document.getElementById(ROTATION_NOTICE_ID)) return;
+    const el = document.createElement('div');
+    el.id = ROTATION_NOTICE_ID;
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.textContent = 'Updating to the latest version.';
+    // Neutral chrome hardcoded from the base.css tokens (background /
+    // text-primary / a hairline border): the bar must be legible on any
+    // vintage page without depending on CSS variables being present.
+    el.style.cssText =
+      'position:fixed;left:0;right:0;bottom:0;z-index:9999;' +
+      'padding:12px 16px;text-align:center;' +
+      'background:oklch(0.9911 0 0);color:oklch(0.2046 0 0);' +
+      'border-top:1px solid oklch(0.92 0 0);' +
+      'font:500 0.9375rem/1.4 Outfit,system-ui,sans-serif';
+    document.body.appendChild(el);
+  } catch {
+    /* presentation only */
+  }
+}
 
 function getReadyVersion(): string | null {
   return document.documentElement.dataset[READY_DATASET_KEY] || null;
@@ -80,6 +114,7 @@ export function registerServiceWorker() {
   const reloadOnce = () => {
     if (refreshing) return;
     refreshing = true;
+    showRotationNotice();
     flushAndWait().then(() => window.location.reload());
   };
 

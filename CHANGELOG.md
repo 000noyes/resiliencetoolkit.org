@@ -5,6 +5,13 @@ All notable changes to ResilienceToolkit.org are documented here.
 ## [Unreleased]
 
 ### Fixed
+- Devices still stuck on a broken mid-July copy of the site now recover on
+  their own within a visit or two. The rare cache problem fixed on July 16
+  could leave an already-affected device serving pages whose own scripts would
+  not load, even after a reload, because the code that applies updates rides
+  in those same scripts. The service worker itself now hands off to the
+  current version once, with no action needed. Saved answers are never
+  touched.
 - A rare unstyled-page flash around site updates. While a deploy is settling,
   a request for a stylesheet or script could be answered with a copy of the
   home page instead of the file, and that wrong answer could be kept and
@@ -26,6 +33,10 @@ All notable changes to ResilienceToolkit.org are documented here.
   offline.
 
 ### Added
+- A brief "Updating to the latest version." note now appears at the bottom of
+  the page in the moment before the site refreshes to apply an update, so the
+  refresh reads as an update instead of a glitch. Edits in progress are still
+  saved before any refresh.
 - A quiet "A newer version of this site is ready" notice with a Refresh
   button appears when an update has fully downloaded. Refreshing is always
   optional: ignored updates apply on their own the next time the site is not

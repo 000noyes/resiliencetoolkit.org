@@ -27,6 +27,7 @@ const swSrcRaw = readFileSync(join(__dirname, '../../public/sw.js'), 'utf-8');
 const ORIGIN = 'https://resiliencetoolkit.org';
 const CURRENT_CACHE = 'resilience-hub-v2-v-build-PENDING';
 const RAMP_MARKER = 'resilience-hub-v2-ramp';
+const HEAL_MARKER = 'resilience-hub-v2-heal';
 const SENTINEL = '/__rt-precache-complete__';
 
 // Default injected precache list: three assets + three routes (routes end with /).
@@ -161,6 +162,13 @@ function createSandbox(opts?: {
    * tests pass vacuously.
    */
   cacheVersion?: string;
+  /**
+   * The sandbox models a HEALED steady-state device by default: the heal
+   * marker exists, so the one-time guarded-activation ramp stays quiet and
+   * every pre-existing contract reads unchanged. Heal-ramp tests pass
+   * healMarker: false to model a pre-heal device.
+   */
+  healMarker?: boolean;
 }): { sandbox: SWSandbox; context: any } {
   const precache = opts?.precache ?? DEFAULT_PRECACHE;
   let swSrc = swSrcRaw.replace(
@@ -223,6 +231,7 @@ function createSandbox(opts?: {
     const store = openStore(name);
     for (const p of paths) store.entries.set(p, new FakeResponse(`seed:${p}`));
   }
+  if (opts?.healMarker !== false) openStore(HEAL_MARKER);
 
   const self = {
     addEventListener: (type: string, handler: Listener) => {
@@ -388,6 +397,120 @@ describe('sw.js — legacy ramp gate (one-time skipWaiting at install)', () => {
       await runInstall(sandbox);
       expect(sandbox.skipWaitingCalls, name).toBe(isLegacy ? 1 : 0);
     }
+  });
+});
+
+describe('sw.js — guarded-activation heal ramp (one-time skipWaiting when the heal marker is absent)', () => {
+  // A device wedged on a pre-guard worker has no working page code to rotate
+  // it (the 2026-07-16 poison broke the /_astro chunks that carry
+  // sw-register), so the first guarded build must self-promote worker-side.
+
+  it('U1: install fires skipWaiting on a pre-heal device (marker absent, v2 caches only)', async () => {
+    const { sandbox } = createSandbox({
+      healMarker: false,
+      seedCaches: { 'resilience-hub-v2-v-build-20260715000000000': ['/'] },
+    });
+    await runInstall(sandbox);
+    expect(sandbox.skipWaitingCalls).toBe(1);
+  });
+
+  it('U2: install stays quiet when the heal marker exists (healed steady state)', async () => {
+    const { sandbox } = createSandbox({
+      seedCaches: { 'resilience-hub-v2-v-build-20260715000000000': ['/'] },
+    });
+    await runInstall(sandbox);
+    expect(sandbox.skipWaitingCalls).toBe(0);
+  });
+
+  it('U3: activate creates the heal marker BEFORE claiming clients', async () => {
+    const { sandbox, context } = createSandbox({ healMarker: false });
+    let markerPresentAtClaim: boolean | null = null;
+    context.self.clients.claim = () => {
+      markerPresentAtClaim = sandbox.stores.has(HEAL_MARKER);
+      sandbox.clientsClaimCalls += 1;
+      return Promise.resolve();
+    };
+    await runActivate(sandbox);
+    expect(sandbox.clientsClaimCalls).toBe(1);
+    expect(markerPresentAtClaim).toBe(true);
+  });
+
+  it('U3b: a heal-marker write failure is tolerated — activation still claims and settles', async () => {
+    const { sandbox } = createSandbox({ healMarker: false });
+    const realOpen = sandbox.caches.open.getMockImplementation();
+    sandbox.caches.open.mockImplementation(async (name: string) => {
+      if (name === HEAL_MARKER) throw new Error('quota');
+      return realOpen(name);
+    });
+    const event = makeExtendableEvent();
+    sandbox.listeners.activate[0](event);
+    await expect(event._waitPromise).resolves.toBeDefined();
+    expect(sandbox.clientsClaimCalls).toBe(1);
+  });
+
+  it('U4: the startup fetch task writes the missing heal marker under an active worker', async () => {
+    const { sandbox } = createSandbox({ healMarker: false });
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html></html>'));
+    const e1 = makeFetchEvent({ url: `${ORIGIN}/`, mode: 'navigate', destination: 'document' });
+    sandbox.listeners.fetch[0](e1);
+    await e1._waitPromise;
+    expect([...sandbox.stores.keys()]).toContain(HEAL_MARKER);
+  });
+
+  it('U5: the prune law spares the heal marker (and still spares the ramp marker)', async () => {
+    const own = 'v-build-20260301000000000';
+    const { sandbox } = createSandbox({
+      cacheVersion: own,
+      seedCaches: {
+        'resilience-hub-v2-v-build-20260101000000000': ['/'],
+        [RAMP_MARKER]: [],
+        'resilience-hub-v-build-20260630103410142': ['/_astro/keep.js'],
+      },
+    });
+    fillCurrentComplete(sandbox, DEFAULT_PRECACHE, `resilience-hub-v2-${own}`);
+    await runActivate(sandbox);
+    expect(sandbox.deletedCaches).not.toContain(HEAL_MARKER);
+    expect([...sandbox.stores.keys()]).toContain(HEAL_MARKER);
+    expect([...sandbox.stores.keys()]).toContain(RAMP_MARKER);
+  });
+
+  it('U6: the bounded startup cleanup never deletes the heal marker', async () => {
+    const { sandbox } = createSandbox({
+      cacheVersion: 'v-build-20260301000000000',
+      seedCaches: {
+        'resilience-hub-v2-v-build-20260101000000000': ['/'],
+        'resilience-hub-v2-v-build-20260201000000000': ['/'],
+      },
+    });
+    sandbox.addFailures.add('/_astro/a.css');
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html></html>'));
+    const e1 = makeFetchEvent({ url: `${ORIGIN}/`, mode: 'navigate', destination: 'document' });
+    sandbox.listeners.fetch[0](e1);
+    await e1._waitPromise;
+    expect(sandbox.deletedCaches).not.toContain(HEAL_MARKER);
+    expect([...sandbox.stores.keys()]).toContain(HEAL_MARKER);
+  });
+
+  it('U7: legacy device — ONE forced activation arms BOTH markers; a second install fires nothing', async () => {
+    const { sandbox } = createSandbox({
+      healMarker: false,
+      seedCaches: { 'resilience-hub-v-build-20260630103410142': ['/'] },
+    });
+    await runInstall(sandbox);
+    expect(sandbox.skipWaitingCalls).toBe(1);
+    await runActivate(sandbox);
+    expect([...sandbox.stores.keys()]).toContain(RAMP_MARKER);
+    expect([...sandbox.stores.keys()]).toContain(HEAL_MARKER);
+    await runInstall(sandbox);
+    expect(sandbox.skipWaitingCalls).toBe(1);
+  });
+
+  it('U8: the SKIP_WAITING message stays completeness-gated regardless of heal-marker state', async () => {
+    const { sandbox } = createSandbox({ healMarker: false });
+    const event = makeMessageEvent({ type: 'SKIP_WAITING' });
+    sandbox.listeners.message[0](event);
+    await event._waitPromise;
+    expect(sandbox.skipWaitingCalls).toBe(0);
   });
 });
 

@@ -1,3 +1,8 @@
+// FIXTURE — byte-copy of the production service worker as of 2026-07-15
+// (commit 2f51534), the last build BEFORE the asset-poison guards and the
+// guarded-activation heal ramp. Used by sw-stuck-worker-heal.spec.ts to
+// reproduce a device wedged on that generation with a poisoned cache.
+// Do not edit; regenerate with: git show 2f51534:public/sw.js
 // Service Worker — Resilience Hub Toolkit
 // Cache-first for precached pages and static assets, network-first for any
 // route outside the precache. A cache miss offline lands on /offline/, never
@@ -8,13 +13,10 @@
 // generation is verified complete; activation is user-initiated (SKIP_WAITING
 // from the refresh notice) or idle (SKIP_WAITING_WHEN_HIDDEN when every window
 // is hidden). Both are completeness-gated HERE, worker-side, so no page code
-// path can activate an incomplete generation. Two exceptions, both one-time
-// install-time skipWaiting ramps for devices whose page code cannot rotate
-// them: the legacy ramp (pinned pre-May-2026 workers; gated on legacy cache
-// names plus a persistent ramp marker) and the guarded-activation heal ramp
-// (devices wedged on a pre-guard 2026-07 worker whose poisoned caches broke
-// the page bundles; gated on a persistent heal marker). Each fires at most
-// once per device.
+// path can activate an incomplete generation. One exception: a one-time forced
+// ramp (install-time skipWaiting) for devices still pinned to a pre-May-2026
+// worker that never hands off — gated on legacy cache names plus a persistent
+// ramp marker so it fires at most once per device.
 //
 // Freshness for cache-first pages comes from the worker update cycle: the
 // browser revalidates sw.js on every load (updateViaCache: 'none'), a new
@@ -26,17 +28,6 @@ const CACHE_NAME = `resilience-hub-v2-${CACHE_VERSION}`;
 // Empty cache whose existence means "a v2 worker already force-activated here".
 // Excluded from every prune; deleted only when no legacy-named cache survives.
 const RAMP_MARKER_CACHE = 'resilience-hub-v2-ramp';
-// Empty cache whose existence means "a worker carrying the July-2026 cache
-// guards has ACTIVATED here". Absent at install → this build self-promotes
-// once (skipWaiting): a device wedged on a pre-guard worker has no working
-// page code to rotate it (the 2026-07 CDN poison broke exactly the hashed
-// chunks that carry the registration module), so the handoff must live
-// worker-side. Created at activate BEFORE clients.claim (a killed install can
-// never suppress an unhappened heal, and claim starts reloads so the flag
-// must already be durable). Write failure is tolerated — the startup task
-// retries, and the worst case is one extra flushed forced rotation. Excluded
-// from every prune. Same shape as the legacy ramp marker above.
-const HEAL_MARKER_CACHE = 'resilience-hub-v2-heal';
 // Synthetic entry written into a generation when it verifies complete. No real
 // route can collide with it and it is never served; it marks a generation as
 // whole (and becomes the trust marker for cache-first navigation later).
@@ -110,62 +101,6 @@ function precacheRequest(url) {
   return url.startsWith('/_astro/') ? url : new Request(url, { cache: 'no-cache' });
 }
 
-// CDN-poison defense. This origin (Cloudflare Pages) answers ANY unknown
-// path — including an /_astro/* URL the serving deployment does not have,
-// which happens in the window around every deploy — with the homepage as
-// 200 text/html (SPA fallback), and that response is browser-cacheable.
-// Stored under an asset URL it becomes a persistent MIME refusal: every
-// page referencing the asset renders unstyled with dead islands (the
-// 2026-07-16 update flash). HTML is only ever legitimate for a document,
-// so these guards keep it out of every asset slot: the fill leaves a hole
-// (the completeness gate then refuses to rotate onto the generation), the
-// runtime path retries once past the HTTP cache and never caches HTML for
-// an asset destination, and a poisoned entry found at serve time is purged.
-function isHtmlResponse(response) {
-  const contentType =
-    response && response.headers && typeof response.headers.get === 'function'
-      ? response.headers.get('content-type')
-      : null;
-  return typeof contentType === 'string' && contentType.toLowerCase().includes('text/html');
-}
-
-// Destinations for which text/html can only be poison. 'document' is exempt
-// (HTML is its job), as is '' (bare fetch() calls may legitimately load HTML).
-const HTML_POISONABLE_DESTINATIONS = new Set(['style', 'script', 'font', 'image']);
-
-function isPoisonedAssetResponse(response, destination) {
-  return HTML_POISONABLE_DESTINATIONS.has(destination) && isHtmlResponse(response);
-}
-
-// Purge a poisoned entry wherever it lives: runtime writes land in the
-// writing worker's own generation, and the prune-retained previous build
-// cache keeps its /_astro/* entries, so every cache must be swept.
-async function deleteFromAllCaches(request) {
-  for (const name of await caches.keys()) {
-    await (await caches.open(name)).delete(request, { ignoreVary: true });
-  }
-}
-
-// Fetch-and-store one precache entry, refusing HTML in a non-route slot.
-// On poison the entry is retried once with cache:'reload' (a poisoned HTTP
-// cache heals; see the SPA-fallback note above); if the origin still
-// answers HTML the entry is dropped and the error propagates, leaving a
-// hole the completeness law converts into a refused rotation — the user
-// stays on the previous whole generation instead of flashing.
-async function fillOne(cache, url) {
-  await cache.add(precacheRequest(url));
-  if (url.endsWith('/')) return;
-  let stored = await cache.match(url);
-  if (!stored || !isHtmlResponse(stored)) return;
-  await cache.delete(url);
-  await cache.add(new Request(url, { cache: 'reload' }));
-  stored = await cache.match(url);
-  if (stored && isHtmlResponse(stored)) {
-    await cache.delete(url);
-    throw new Error(`precache fetch for ${url} answered text/html`);
-  }
-}
-
 // Pathnames present in a cache, counting ONLY query-less entries. The
 // runtime navigation handler cache.puts full request URLs, so a visit to
 // /route/?utm=x stores a query-carrying key; counting it as /route/ would
@@ -205,7 +140,7 @@ async function pruneOldCaches() {
   const names = await caches.keys();
   const ownTs = buildTsOf(CACHE_NAME);
   const prunable = names.filter((name) => {
-    if (name === CACHE_NAME || name === RAMP_MARKER_CACHE || name === HEAL_MARKER_CACHE) return false;
+    if (name === CACHE_NAME || name === RAMP_MARKER_CACHE) return false;
     if (name.startsWith(V2_PREFIX)) {
       const ts = buildTsOf(name);
       return ts !== null && ownTs !== null && ts < ownTs;
@@ -246,7 +181,7 @@ async function fillChunked(cache, urls) {
     const chunk = urls.slice(i, i + TOPUP_CHUNK_SIZE);
     await Promise.allSettled(
       chunk.map((url) =>
-        fillOne(cache, url).catch((e) => {
+        cache.add(precacheRequest(url)).catch((e) => {
           console.warn('SW: failed to cache', url, e);
           throw e;
         })
@@ -307,21 +242,13 @@ self.addEventListener('install', (event) => {
       // topUpPrecache, the one warm mechanism, so install stays small and
       // fast, and the completeness gate still governs rotation and pruning.
       const cache = await caches.open(CACHE_NAME);
-      await Promise.all(ESSENTIAL_ASSETS.map((url) => fillOne(cache, url)));
+      await Promise.all(ESSENTIAL_ASSETS.map((url) => cache.add(precacheRequest(url))));
 
-      // One-time forced ramps, a single skipWaiting call for either arm:
-      // (1) legacy ramp — devices pinned to a pre-v2 worker have no page code
-      //     that can rotate them; markers are created at activate (not here)
-      //     so a killed install can never suppress a ramp that hasn't
-      //     actually happened;
-      // (2) guarded-activation heal ramp — no guarded worker has ever
-      //     activated on this device, so the active worker may be a wedged
-      //     pre-guard generation whose rotation paths are all dead (see
-      //     HEAL_MARKER_CACHE). After the first guarded activation the heal
-      //     marker exists and every later deploy uses the normal
-      //     completeness-gated lifecycle.
-      const healRan = names.includes(HEAL_MARKER_CACHE);
-      if ((hasLegacy && !rampRan) || !healRan) self.skipWaiting();
+      // One-time legacy ramp: devices pinned to a pre-v2 worker have no page
+      // code that can rotate them, so the worker self-promotes ONCE. The
+      // marker is created at activate (not here) so a killed install can
+      // never suppress a ramp that hasn't actually happened.
+      if (hasLegacy && !rampRan) self.skipWaiting();
     })()
   );
 });
@@ -329,11 +256,6 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // Heal marker BEFORE claim: claim dispatches controllerchange and pages
-      // begin their flush-and-reload, so the "a guarded worker activated
-      // here" flag must already be durable by then. Tolerated on failure —
-      // activation must never fail or loop over a marker write.
-      await caches.open(HEAL_MARKER_CACHE).catch(() => {});
       await self.clients.claim();
       if ((await caches.keys()).some(isLegacyCacheName)) {
         await caches.open(RAMP_MARKER_CACHE);
@@ -482,16 +404,6 @@ self.addEventListener('fetch', (event) => {
         ) {
           await caches.open(RAMP_MARKER_CACHE);
         }
-        // Heal-marker insurance: an activate killed between claim and the
-        // marker write would re-arm the one-time heal ramp on the next
-        // install. A worker serving fetch events IS active, so the marker is
-        // legitimately owed — write it here, tolerated on failure.
-        if (
-          !names.includes(HEAL_MARKER_CACHE) &&
-          self.registration && self.registration.active
-        ) {
-          await caches.open(HEAL_MARKER_CACHE).catch(() => {});
-        }
         // Bounded cleanup for the never-complete path: the prune law only
         // runs on a complete generation, so a device where some URL
         // persistently fails would otherwise stack one near-full generation
@@ -501,7 +413,7 @@ self.addEventListener('fetch', (event) => {
         const ownTs = buildTsOf(CACHE_NAME);
         const staleIncomplete = [];
         for (const name of names) {
-          if (!name.startsWith(V2_PREFIX) || name === CACHE_NAME || name === RAMP_MARKER_CACHE || name === HEAL_MARKER_CACHE) continue;
+          if (!name.startsWith(V2_PREFIX) || name === CACHE_NAME || name === RAMP_MARKER_CACHE) continue;
           const ts = buildTsOf(name);
           if (ts === null || ownTs === null || ts >= ownTs) continue;
           const stale = await caches.open(name);
@@ -538,42 +450,18 @@ self.addEventListener('fetch', (event) => {
   // immutable + same-origin, so there is only ever one variant per URL. Safe.
   event.respondWith(
     caches.match(event.request, { ignoreVary: true }).then((cached) => {
-      // A worker (this one or an earlier generation) may have stored
-      // fallback HTML under this asset URL. Purge it everywhere BEFORE the
-      // refetch (a concurrent purge would race the clean re-cache) and
-      // treat the lookup as a miss — this self-heals devices poisoned
-      // before this worker deployed, instead of MIME-refusing on every
-      // page that needs the asset until the caches are cleared by hand.
-      const poisoned = !!cached && isPoisonedAssetResponse(cached, event.request.destination);
-      if (cached && !poisoned && !cached.redirected) return cached;
-      const offlineFallback = poisoned ? undefined : cached;
-      const purge = poisoned
-        ? deleteFromAllCaches(event.request).catch(() => {})
-        : Promise.resolve();
-      return purge.then(() =>
-        fetch(event.request)
-          .then((response) =>
-            // The HTTP cache (poisoned for up to 4h by the CDN's cacheable
-            // SPA fallback) or a mid-deploy origin answered an asset request
-            // with HTML: retry once straight past the HTTP cache.
-            isPoisonedAssetResponse(response, event.request.destination)
-              ? fetch(event.request.url, { cache: 'reload' })
-              : response
-          )
-          .then((response) => {
-            if (
-              response.ok &&
-              !response.redirected &&
-              CACHEABLE_DESTINATIONS.has(event.request.destination) &&
-              !isPoisonedAssetResponse(response, event.request.destination)
-            ) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-            }
-            return response;
-          })
-          .catch(() => offlineFallback || new Response('Offline', { status: 503 }))
-      );
+      if (cached && !cached.redirected) return cached;
+      return fetch(event.request).then((response) => {
+        if (
+          response.ok &&
+          !response.redirected &&
+          CACHEABLE_DESTINATIONS.has(event.request.destination)
+        ) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+        }
+        return response;
+      }).catch(() => cached || new Response('Offline', { status: 503 }));
     })
   );
 });
