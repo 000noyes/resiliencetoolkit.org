@@ -49,8 +49,12 @@ export default defineConfig({
       testMatch: '**/webkit-offline-shell.spec.ts',
       // Each WebKit test boots its own preview server and fills the whole
       // precache from scratch before it can cut the network, which does not
-      // fit the default 30s budget.
-      timeout: 120_000,
+      // fit the default 30s budget. Headroom raised with the #106 poll-gate
+      // conversion: the readiness gates now genuinely wait (they were vacuous
+      // async waitForFunction gates that resolved instantly), so a slow CI
+      // WebKit fill consumes real wall-clock inside the test instead of racing
+      // past it into the offline phase.
+      timeout: 180_000,
     },
   ],
   webServer: {

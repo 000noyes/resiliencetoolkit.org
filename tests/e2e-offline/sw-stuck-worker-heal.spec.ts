@@ -74,16 +74,22 @@ function deployBuildB() {
   );
 }
 
+// expect.poll, not page.waitForFunction: an async predicate passed to
+// waitForFunction resolves on its pending Promise (truthy) under this repo's
+// Playwright pin, so the gate can pass before the awaited condition holds.
+// expect.poll genuinely awaits page.evaluate's async body (#106).
 async function waitForServiceWorker(page: Page) {
-  await page.waitForFunction(
-    async () => {
-      if (!('serviceWorker' in navigator)) return false;
-      const reg = await navigator.serviceWorker.ready.catch(() => null);
-      return !!(reg && reg.active && navigator.serviceWorker.controller);
-    },
-    null,
-    { timeout: 20_000 }
-  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          if (!('serviceWorker' in navigator)) return false;
+          const reg = await navigator.serviceWorker.ready.catch(() => null);
+          return !!(reg && reg.active && navigator.serviceWorker.controller);
+        }),
+      { timeout: 20_000 }
+    )
+    .toBe(true);
 }
 
 /**
@@ -202,7 +208,7 @@ test('wedged pre-guard worker: reload does not fix it; the heal ramp hands off w
   );
   await triggerUpdateCheck(page);
   await expect
-    .poll(() => page.evaluate(() => caches.keys()), { timeout: 45_000 })
+    .poll(() => page.evaluate(() => caches.keys()).catch(() => [] as string[]), { timeout: 45_000 })
     .toContain(HEAL_MARKER);
 
   // ---- "Next visit": served by the guarded worker; the serve-time purge ----
@@ -287,7 +293,7 @@ test('healed device: next deploy waits for the banner again, and the tap rotatio
 
   await banner.getByRole('button', { name: 'Refresh' }).click();
   await expect
-    .poll(() => page.evaluate(() => caches.keys()), { timeout: 30_000 })
+    .poll(() => page.evaluate(() => caches.keys()).catch(() => [] as string[]), { timeout: 30_000 })
     .toContain(`resilience-hub-v2-${BUILD_B_VERSION}`);
   await page.waitForLoadState('load');
   await waitForServiceWorker(page);
