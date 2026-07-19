@@ -6,6 +6,7 @@ import {
   type ModuleProgress,
 } from '@/lib/storage';
 import { ChevronRight, ChevronDown } from 'lucide-react';
+import { PARENT_ORDER, PARENT_NAMES, parentOf } from '@/lib/module-taxonomy';
 
 /**
  * The secondary column's progress list: the quiet "Your progress" section of
@@ -21,28 +22,6 @@ import { ChevronRight, ChevronDown } from 'lucide-react';
  * layout flash; this authoritative read (which also counts notes-only work)
  * corrects it.
  */
-
-const PARENT_ORDER = ['knowing-your-community', 'emergency-preparedness', 'baseline-resilience'];
-const PARENT_NAMES: Record<string, string> = {
-  'knowing-your-community': 'Knowing Your Community',
-  'emergency-preparedness': 'Emergency Preparedness',
-  'baseline-resilience': 'Baseline Resilience',
-};
-const EMERGENCY = new Set([
-  'emergency-preparedness-kits', 'food-and-water', 'first-aid-medical', 'power-supply',
-  'warming-cooling-shelter', 'vehicles-equipment', 'sanitation-hygiene', 'children-disaster',
-  'senior-citizens', 'people-with-disabilities', 'lep-populations', 'farm-animals',
-  'flood-recovery', 'mutual-aid',
-]);
-const BASELINE = new Set(['basic-needs', 'shared-tools', 'community-building']);
-const KNOWING = new Set(['knowing-community', 'bringing-people-together']);
-
-function parentOf(k: string): string {
-  if (k === 'emergency-preparedness' || EMERGENCY.has(k)) return 'emergency-preparedness';
-  if (k === 'baseline-resilience' || BASELINE.has(k)) return 'baseline-resilience';
-  if (k === 'knowing-your-community' || KNOWING.has(k)) return 'knowing-your-community';
-  return k;
-}
 
 const SECTION_SLUGS: Record<string, string> = {
   'emergency-preparedness-kits': '1-1', 'food-and-water': '1-2', 'first-aid-medical': '1-3',
@@ -140,8 +119,15 @@ export default function WorkProgress() {
       </h2>
       <ul className="mt-3 space-y-0.5">
         {parents.map((p) => {
+          // A progress list shows real work, not pages merely opened. Drill
+          // down only into child sections that have completed items AND a name
+          // distinct from the parent, so glanced-at 0-item modules and the
+          // single child that duplicates its parent name (knowing-community and
+          // bringing-people-together both display as "Knowing Your Community")
+          // never surface as noise. The parent count still rolls up all work.
+          const drilldown = p.sections.filter((s) => s.completed > 0 && s.name !== p.name);
           const isOpen = expanded.has(p.key);
-          const hasSections = p.sections.length > 0;
+          const hasSections = drilldown.length > 0;
           return (
             <li key={p.key}>
               <div className="flex items-center">
@@ -170,7 +156,7 @@ export default function WorkProgress() {
               </div>
               {isOpen && hasSections && (
                 <ul className="ml-5 border-l border-border pl-3 space-y-0.5">
-                  {p.sections.map((s) => (
+                  {drilldown.map((s) => (
                     <li key={s.key}>
                       <a
                         href={urlFor(s.key)}

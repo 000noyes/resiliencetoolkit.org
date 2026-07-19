@@ -14,6 +14,7 @@
 import type { CueState } from '@/lib/backup-cue';
 import type { WorkSnapshot } from '@/lib/backup-cue';
 import { getModuleDisplayName } from '@/lib/storage';
+import { PARENT_ORDER, PARENT_NAMES, parentOf } from '@/lib/module-taxonomy';
 
 // ============================================================================
 // STATE DERIVATION
@@ -32,7 +33,13 @@ export interface OverlayInput {
   offline: boolean;
 }
 
-export type CardActivity = 'idle' | 'backing-up' | 'just-backed-up' | 'failed' | 'just-restored';
+export type CardActivity =
+  | 'idle'
+  | 'backing-up'
+  | 'just-backed-up'
+  | 'failed'
+  | 'share-failed'
+  | 'just-restored';
 
 export interface SafetyCardInputs {
   cue: CueState;
@@ -55,6 +62,7 @@ export type SafetyCardBaseState =
   | 'working-ahead'
   | 'just-backed-up'
   | 'failed'
+  | 'share-failed'
   | 'just-restored';
 
 export interface SafetyCard {
@@ -108,6 +116,7 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
   let state: SafetyCardBaseState;
   if (activity === 'just-backed-up') state = 'just-backed-up';
   else if (activity === 'failed') state = 'failed';
+  else if (activity === 'share-failed') state = 'share-failed';
   else if (activity === 'just-restored') state = 'just-restored';
   else if (!hasWork) state = 'empty';
   else if (!cue.lastBackupAt) state = 'first-work';
@@ -143,13 +152,19 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
       headline = 'Your backup file is made.';
       const name = inputs.lastBackupFilename;
       receipt.push(
-        `${name ? `${name} should` : 'It should'} be in your Downloads or Files. Not there? Back up again.`,
+        name
+          ? `The file is named ${name}. If you cannot find it, back up again.`
+          : 'If you cannot find the file, back up again.',
       );
       break;
     }
     case 'failed':
       headline = 'That backup did not finish.';
       receipt.push('Nothing was lost; your work is still on this device. Try again.');
+      break;
+    case 'share-failed':
+      headline = 'That copy did not send.';
+      receipt.push('Nothing was lost. Your work is still on this device. You can back it up instead.');
       break;
     case 'just-restored': {
       headline = 'Your work is back.';
@@ -168,14 +183,14 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
     }
   }
 
-  // The persistent receipt: date only, never the location claim. The one
+  // The persistent receipt: date only, never a location claim. The one
   // exception is the plain-anchor transport, which has no completion signal:
-  // its "check your Downloads" caution persists into the calm state so the
-  // card never claims a confirmed calm on a click alone.
+  // its find-the-file caution persists into the calm state so the card never
+  // claims a confirmed calm on a click alone.
   if (state !== 'just-backed-up' && state !== 'just-restored' && cue.lastBackupAt) {
     receipt.unshift(`Backed up ${formatReceiptDate(cue.lastBackupAt)}.`);
     if (state === 'fresh' && cue.lastBackupTransport === 'anchor') {
-      receipt.push('The file should be in your Downloads or Files. Not there? Back up again.');
+      receipt.push('If you cannot find the file, back up again.');
     }
   }
 
@@ -197,7 +212,9 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
       receipt.push(OVERLAY_RECEIPTS.full);
     }
   }
-  if (overlays.atRisk) quietLines.push(QUIET_LINES.atRisk);
+  // Right after a backup, the at-risk "back up to keep a copy" nudge is
+  // redundant against the receipt the person is reading, so it stays quiet.
+  if (overlays.atRisk && state !== 'just-backed-up') quietLines.push(QUIET_LINES.atRisk);
   if (overlays.offline) quietLines.push(QUIET_LINES.offline);
 
   return {
@@ -248,8 +265,25 @@ export interface MeterRow {
   bytes: number;
 }
 
+export interface MeterGroup {
+  /** Top-level module key, or a synthetic key for a standalone row (notes). */
+  key: string;
+  name: string;
+  /** Subtotal across the whole group, in the one unit grammar. */
+  detail: string;
+  bytes: number;
+  /**
+   * The distinct child modules under this group. Empty when the group's only
+   * work is its own or shares the group's display name, so it renders as one
+   * flat row (no redundant self-nested child).
+   */
+  leaves: MeterRow[];
+}
+
 export interface WorkMeter {
-  rows: MeterRow[];
+  /** Grouped under the three top-level modules, in PARENT_ORDER, so the meter
+   * reads in the same order and shape as "Your progress". */
+  groups: MeterGroup[];
   total: MeterRow;
 }
 
@@ -305,26 +339,77 @@ export function computeWorkMeter(snapshot: WorkSnapshot): WorkMeter {
     b.bytes += utf8Length(row);
   }
 
-  const rows: MeterRow[] = Array.from(buckets.entries())
-    .map(([moduleKey, b]) => ({
+  // Group leaf modules under their top-level module so the meter reads in the
+  // same order and shape as "Your progress" (one shared taxonomy, no drift).
+  interface RawLeaf {
+    moduleKey: string;
+    name: string;
+    items: number;
+    rows: number;
+    bytes: number;
+  }
+  const groupMap = new Map<string, RawLeaf[]>();
+  for (const [moduleKey, b] of buckets.entries()) {
+    const pk = parentOf(moduleKey);
+    const leaf: RawLeaf = {
       moduleKey,
       name: getModuleDisplayName(moduleKey),
-      detail: detailFor(b.items, b.rows),
+      items: b.items,
+      rows: b.rows,
       bytes: b.bytes,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    };
+    const list = groupMap.get(pk);
+    if (list) list.push(leaf);
+    else groupMap.set(pk, [leaf]);
+  }
+
+  // The three top-level modules first, in their fixed order; then any leftover
+  // group (an unknown or test key) alphabetically by name.
+  const groupKeys = [
+    ...PARENT_ORDER.filter((k) => groupMap.has(k)),
+    ...Array.from(groupMap.keys())
+      .filter((k) => !PARENT_ORDER.includes(k))
+      .sort((a, b) => getModuleDisplayName(a).localeCompare(getModuleDisplayName(b))),
+  ];
+
+  const groups: MeterGroup[] = groupKeys.map((pk) => {
+    const leaves = groupMap.get(pk)!;
+    const name = PARENT_NAMES[pk] ?? getModuleDisplayName(pk);
+    const items = leaves.reduce((s, l) => s + l.items, 0);
+    const rows = leaves.reduce((s, l) => s + l.rows, 0);
+    const bytes = leaves.reduce((s, l) => s + l.bytes, 0);
+    // List only children whose name differs from the group: the leaf that
+    // shares the parent's display name (knowing-community) folds into the
+    // subtotal instead of self-nesting an identical row.
+    const listed: MeterRow[] = leaves
+      .filter((l) => l.name !== name)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((l) => ({
+        moduleKey: l.moduleKey,
+        name: l.name,
+        detail: detailFor(l.items, l.rows),
+        bytes: l.bytes,
+      }));
+    return { key: pk, name, detail: detailFor(items, rows), bytes, leaves: listed };
+  });
 
   const notes = snapshot.metadata['personalNotes'];
   if (typeof notes === 'string' && notes.length > 0) {
-    rows.push({ moduleKey: null, name: 'Personal notes', detail: 'saved', bytes: utf8Length(notes) });
+    groups.push({
+      key: 'personal-notes',
+      name: 'Personal notes',
+      detail: 'saved',
+      bytes: utf8Length(notes),
+      leaves: [],
+    });
   }
 
   const totalItems = snapshot.todos.length;
   const totalRows = snapshot.tables.length;
-  const totalBytes = rows.reduce((sum, r) => sum + r.bytes, 0);
+  const totalBytes = groups.reduce((sum, g) => sum + g.bytes, 0);
 
   return {
-    rows,
+    groups,
     total: {
       moduleKey: null,
       name: 'Everything',

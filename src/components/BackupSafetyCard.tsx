@@ -124,9 +124,18 @@ export default function BackupSafetyCard() {
       // no marker, or storage unavailable: the card simply shows live state
     }
     try {
+      // Only offer Send a copy where the native share sheet genuinely does
+      // something: a device with touch input AND real file-share support. On a
+      // plain desktop (no touch) share({files}) has no useful target and would
+      // only duplicate Back up my work, so the button stays hidden there. This
+      // reads capability (touch presence + canShare), never an unreliable
+      // desktop-vs-mobile user-agent guess. A touch device whose share still
+      // fails at click time is caught by the download fallback in shareBackup.
       const probe = new File(['x'], 'probe.json', { type: 'application/json' });
+      const touchCapable =
+        typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0;
       setCanShareFiles(
-        typeof navigator !== 'undefined' &&
+        touchCapable &&
           typeof navigator.canShare === 'function' &&
           navigator.canShare({ files: [probe] }),
       );
@@ -191,11 +200,24 @@ export default function BackupSafetyCard() {
     setActivity('backing-up');
     try {
       const result = await shareBackup();
-      setActivity('idle');
-      if (result.completed) await refresh();
+      if (!result.completed) {
+        // Dismissed share sheet: a quiet no-op, never an error state.
+        setActivity('idle');
+        return;
+      }
+      if (result.transport === 'share') {
+        // The copy left for another device; the calm cue tells the rest.
+        setActivity('idle');
+      } else {
+        // File share was unavailable, so the copy came down as a download:
+        // show the same made-a-file receipt the backup button shows.
+        setLastBackupFilename(result.filename ?? undefined);
+        setActivity('just-backed-up');
+      }
+      await refresh();
     } catch (error) {
       console.error('[BackupSafetyCard] share failed:', error);
-      setActivity('failed');
+      setActivity('share-failed');
       await refresh();
     }
   }
@@ -247,7 +269,7 @@ export default function BackupSafetyCard() {
   const showFireDrill = card.state === 'fresh' || card.state === 'just-backed-up';
   const showKeepACopy = card.state === 'fresh' || card.state === 'just-backed-up';
   const { meter } = loaded;
-  const hasMeter = meter.rows.length > 0;
+  const hasMeter = meter.groups.length > 0;
 
   return (
     <div data-testid="rt-safety-card">
@@ -323,7 +345,7 @@ export default function BackupSafetyCard() {
             <h3 className="text-lg font-semibold text-foreground">Before you send a copy</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Send this file only to a device you own, like your own laptop or your own private
-              inbox. Once it leaves this phone you cannot call it back, and your backup can hold
+              inbox. Once it leaves this device you cannot call it back, and your backup can hold
               names and phone numbers you typed.
             </p>
             <div className="mt-4 flex flex-col gap-2">
@@ -348,9 +370,8 @@ export default function BackupSafetyCard() {
 
       {showKeepACopy && (
         <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
-          Keep a copy on another device you own too, so it does not drown with this one. If this
-          device holds neighbor lists or a phone tree, keep that copy somewhere private, not a
-          shared inbox.
+          Keep a copy on another device you own too, and keep private lists like a phone tree out of
+          a shared inbox.
         </p>
       )}
       {showFireDrill && (
@@ -388,16 +409,29 @@ export default function BackupSafetyCard() {
                 </tr>
               </thead>
               <tbody>
-                {meter.rows.map((row) => (
-                  <tr key={row.name} className="border-b border-border last:border-b-0">
-                    <td className="px-4 py-2.5 text-foreground">{row.name}</td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground tabular-nums">
-                      {row.detail}
-                    </td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground tabular-nums">
-                      {formatByteSize(row.bytes)}
-                    </td>
-                  </tr>
+                {meter.groups.map((group) => (
+                  <React.Fragment key={group.key}>
+                    <tr className="border-b border-border">
+                      <td className="px-4 py-2.5 font-medium text-foreground">{group.name}</td>
+                      <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
+                        {group.detail}
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
+                        {formatByteSize(group.bytes)}
+                      </td>
+                    </tr>
+                    {group.leaves.map((leaf) => (
+                      <tr key={leaf.moduleKey ?? leaf.name} className="border-b border-border">
+                        <td className="px-4 py-2 pl-8 text-muted-foreground">{leaf.name}</td>
+                        <td className="px-4 py-2 text-right text-muted-foreground tabular-nums">
+                          {leaf.detail}
+                        </td>
+                        <td className="px-4 py-2 text-right text-muted-foreground tabular-nums">
+                          {formatByteSize(leaf.bytes)}
+                        </td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
                 ))}
                 <tr className="border-t border-border">
                   <td className="px-4 py-2.5 font-medium text-foreground">{meter.total.name}</td>
@@ -414,12 +448,24 @@ export default function BackupSafetyCard() {
 
           {/* Small screens: the ledger-row form */}
           <ul className="mt-3 sm:hidden rounded-lg border border-border bg-card divide-y divide-border">
-            {meter.rows.map((row) => (
-              <li key={row.name} className="px-4 py-2.5">
-                <span className="block text-sm text-foreground">{row.name}</span>
+            {meter.groups.map((group) => (
+              <li key={group.key} className="px-4 py-2.5">
+                <span className="block text-sm font-medium text-foreground">{group.name}</span>
                 <span className="block text-xs text-muted-foreground tabular-nums">
-                  {row.detail} · {formatByteSize(row.bytes)}
+                  {group.detail} · {formatByteSize(group.bytes)}
                 </span>
+                {group.leaves.length > 0 && (
+                  <ul className="mt-1.5 ml-3 border-l border-border pl-3 space-y-1">
+                    {group.leaves.map((leaf) => (
+                      <li key={leaf.moduleKey ?? leaf.name}>
+                        <span className="block text-sm text-foreground">{leaf.name}</span>
+                        <span className="block text-xs text-muted-foreground tabular-nums">
+                          {leaf.detail} · {formatByteSize(leaf.bytes)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
             <li className="px-4 py-2.5">
