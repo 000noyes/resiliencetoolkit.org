@@ -266,8 +266,7 @@ export default function BackupSafetyCard() {
     restoredCounts,
   });
 
-  const showFireDrill = card.state === 'fresh' || card.state === 'just-backed-up';
-  const showKeepACopy = card.state === 'fresh' || card.state === 'just-backed-up';
+  const showBackupHygiene = card.state === 'fresh' || card.state === 'just-backed-up';
   const { meter } = loaded;
   const hasMeter = meter.groups.length > 0;
 
@@ -289,22 +288,28 @@ export default function BackupSafetyCard() {
         </p>
       )}
 
-      <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <BackupButton state={card.buttonState} onClick={handleBackup} />
-        {canShareFiles && card.state !== 'empty' && (
-          <button
-            type="button"
-            data-testid="rt-share-button"
-            onClick={handleShareRequest}
-            disabled={card.buttonState === 'working'}
-            className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
-            style={{ minHeight: 44 }}
-          >
-            <Share2 className="h-4 w-4" aria-hidden="true" />
-            Send a copy
-          </button>
-        )}
-      </div>
+      {/* An empty device has nothing to back up, so the action row is hidden:
+          the empty state points to the Start-a-module list and Restore below
+          instead. The pre-hydration shell above still pins the button, since it
+          cannot yet read whether any work exists. */}
+      {card.state !== 'empty' && (
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <BackupButton state={card.buttonState} onClick={handleBackup} />
+          {canShareFiles && (
+            <button
+              type="button"
+              data-testid="rt-share-button"
+              onClick={handleShareRequest}
+              disabled={card.buttonState === 'working'}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
+              style={{ minHeight: 44 }}
+            >
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              Send a copy
+            </button>
+          )}
+        </div>
+      )}
 
       {card.state !== 'empty' && (
         <p className="mt-2 text-xs text-muted-foreground" data-testid="rt-device-name">
@@ -368,15 +373,9 @@ export default function BackupSafetyCard() {
         </div>
       )}
 
-      {showKeepACopy && (
+      {showBackupHygiene && (
         <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
-          Keep a copy on another device you own too, and keep private lists like a phone tree out of
-          a shared inbox.
-        </p>
-      )}
-      {showFireDrill && (
-        <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-fire-drill">
-          Want to check the file works? Restore below previews it, nothing changes.
+          Keep a copy on another device you own too.
         </p>
       )}
       {card.quietLines.map((line) => (
@@ -390,7 +389,7 @@ export default function BackupSafetyCard() {
           <h3 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             Work on this device
           </h3>
-          <p className="mt-1 text-xs text-muted-foreground">Everything here is saved in your backup.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Everything here goes into your backup.</p>
 
           {/* Desktop and tablet: the table form */}
           <div className="mt-3 hidden sm:block rounded-lg border border-border bg-card overflow-hidden">
@@ -433,16 +432,23 @@ export default function BackupSafetyCard() {
                     ))}
                   </React.Fragment>
                 ))}
-                <tr className="border-t border-border">
-                  <td className="px-4 py-2.5 font-medium text-foreground">{meter.total.name}</td>
-                  <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
+              </tbody>
+              {/* The total is a summary band, not another module: its own
+                  section on a muted surface, so it never reads as a peer of
+                  the rows it adds up (most visible when there is only one). */}
+              <tfoot>
+                <tr className="border-t-2 border-border bg-muted/60">
+                  <th scope="row" className="px-4 py-3 text-left font-semibold text-foreground">
+                    {meter.total.name}
+                  </th>
+                  <td className="px-4 py-3 text-right font-semibold text-foreground tabular-nums">
                     {meter.total.detail}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
+                  <td className="px-4 py-3 text-right font-semibold text-foreground tabular-nums">
                     {formatByteSize(meter.total.bytes)}
                   </td>
                 </tr>
-              </tbody>
+              </tfoot>
             </table>
           </div>
 
@@ -468,8 +474,8 @@ export default function BackupSafetyCard() {
                 )}
               </li>
             ))}
-            <li className="px-4 py-2.5">
-              <span className="block text-sm font-medium text-foreground">
+            <li className="px-4 py-3 border-t-2 border-border bg-muted/60">
+              <span className="block text-sm font-semibold text-foreground">
                 {meter.total.name}: {meter.total.detail} · {formatByteSize(meter.total.bytes)}
               </span>
             </li>

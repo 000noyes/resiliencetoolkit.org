@@ -40,31 +40,43 @@ function urlFor(k: string): string {
 interface Section {
   key: string;
   name: string;
-  completed: number;
+  count: number;
 }
 interface Parent {
   key: string;
   name: string;
-  completed: number;
+  count: number;
   sections: Section[];
 }
 
-function aggregate(progress: ModuleProgress[]): Parent[] {
+/**
+ * Saved work in a module: checked items plus filled table rows. This is the
+ * same quantity the safety card's "Work on this device" meter reports (its
+ * rows are already blank-row filtered upstream), so the two dashboard surfaces
+ * show the same number for any module both list. completedTodos alone dropped
+ * table work to zero: a module with saved rows but nothing checked read
+ * "0 items" here while the meter showed those rows.
+ */
+function savedWork(m: ModuleProgress): number {
+  return m.completedTodos + m.tableRowCount;
+}
+
+export function aggregate(progress: ModuleProgress[]): Parent[] {
   const byKey = new Map<string, number>();
-  progress.forEach((m) => byKey.set(m.moduleKey, m.completedTodos));
+  progress.forEach((m) => byKey.set(m.moduleKey, savedWork(m)));
   return PARENT_ORDER.map((pk) => {
-    let completed = byKey.get(pk) ?? 0;
+    let count = byKey.get(pk) ?? 0;
     const sections: Section[] = [];
     progress.forEach((m) => {
       if (m.moduleKey !== pk && parentOf(m.moduleKey) === pk) {
-        sections.push({ key: m.moduleKey, name: m.displayName, completed: m.completedTodos });
-        completed += m.completedTodos;
+        sections.push({ key: m.moduleKey, name: m.displayName, count: savedWork(m) });
+        count += savedWork(m);
       }
     });
     return {
       key: pk,
       name: PARENT_NAMES[pk],
-      completed,
+      count,
       sections: sections.sort((a, b) => a.name.localeCompare(b.name)),
     };
   });
@@ -120,12 +132,13 @@ export default function WorkProgress() {
       <ul className="mt-3 space-y-0.5">
         {parents.map((p) => {
           // A progress list shows real work, not pages merely opened. Drill
-          // down only into child sections that have completed items AND a name
-          // distinct from the parent, so glanced-at 0-item modules and the
-          // single child that duplicates its parent name (knowing-community and
-          // bringing-people-together both display as "Knowing Your Community")
-          // never surface as noise. The parent count still rolls up all work.
-          const drilldown = p.sections.filter((s) => s.completed > 0 && s.name !== p.name);
+          // down only into child sections that have saved work (a checked item
+          // or a filled row) AND a name distinct from the parent, so glanced-at
+          // 0-work modules and the single child that duplicates its parent name
+          // (knowing-community and bringing-people-together both display as
+          // "Knowing Your Community") never surface as noise. The parent count
+          // still rolls up all work.
+          const drilldown = p.sections.filter((s) => s.count > 0 && s.name !== p.name);
           const isOpen = expanded.has(p.key);
           const hasSections = drilldown.length > 0;
           return (
@@ -151,7 +164,7 @@ export default function WorkProgress() {
                   <span className="text-sm text-foreground group-hover:text-primary transition-colors">
                     {p.name}
                   </span>
-                  <span className="text-sm text-muted-foreground tabular-nums">{items(p.completed)}</span>
+                  <span className="text-sm text-muted-foreground tabular-nums">{items(p.count)}</span>
                 </a>
               </div>
               {isOpen && hasSections && (
@@ -163,7 +176,7 @@ export default function WorkProgress() {
                         className="flex items-center justify-between py-1 text-sm text-muted-foreground hover:text-primary transition-colors no-underline"
                       >
                         <span>{s.name}</span>
-                        <span className="text-xs tabular-nums">{items(s.completed)}</span>
+                        <span className="text-xs tabular-nums">{items(s.count)}</span>
                       </a>
                     </li>
                   ))}

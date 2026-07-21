@@ -116,16 +116,18 @@ export default function RestoreBackupZone() {
   async function handleReplace(file: ParsedBackup) {
     setDialog({ kind: 'importing' });
     try {
-      const result = await importAllData(file.raw);
-      // Report the honest saved-row count, matching the meter: every row still
-      // imports (importAllData is untouched), but blank scaffold rows are not
-      // "saved rows" and must not inflate the "your work is back" receipt.
+      await importAllData(file.raw);
+      // Report the honest counts, matching the meter and "Your progress":
+      // every todo and row still imports (importAllData is untouched), but a
+      // blank scaffold row is not a "saved row" and an unchecked todo is not a
+      // "checked item", so neither inflates the "your work is back" receipt.
+      const checkedItems = file.todos.filter((t) => t.completed === true).length;
       const tablesWithWork = file.tables.filter((r) =>
         rowHasWork({ moduleKey: r.moduleKey ?? '', tableId: r.tableId ?? '', data: r.data ?? {} }),
       ).length;
       setDialog({
         kind: 'success',
-        todos: result.todosImported,
+        todos: checkedItems,
         tables: tablesWithWork,
         madeAt: file.exportedAt,
       });
