@@ -266,8 +266,7 @@ export default function BackupSafetyCard() {
     restoredCounts,
   });
 
-  const showFireDrill = card.state === 'fresh' || card.state === 'just-backed-up';
-  const showKeepACopy = card.state === 'fresh' || card.state === 'just-backed-up';
+  const showBackupHygiene = card.state === 'fresh' || card.state === 'just-backed-up';
   const { meter } = loaded;
   const hasMeter = meter.groups.length > 0;
 
@@ -368,15 +367,9 @@ export default function BackupSafetyCard() {
         </div>
       )}
 
-      {showKeepACopy && (
+      {showBackupHygiene && (
         <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
-          Keep a copy on another device you own too, and keep private lists like a phone tree out of
-          a shared inbox.
-        </p>
-      )}
-      {showFireDrill && (
-        <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-fire-drill">
-          Want to check the file works? Restore below previews it, nothing changes.
+          Keep a copy on another device you own too.
         </p>
       )}
       {card.quietLines.map((line) => (
