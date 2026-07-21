@@ -199,13 +199,18 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
   // always quiet lines and never take the headline.
   const quietLines: string[] = [];
   let overlayLeads = false;
-  if (overlays.loss || overlays.full) {
+  // The no-work-silence rule: with nothing saved, the storage-space nudges
+  // (full, at risk, offline) have nothing to protect, so they stay silent and
+  // the plain empty headline stands. Loss is the exception: it fires only when
+  // this device once held work that is now gone, which is always worth saying.
+  const spaceNudges = hasWork;
+  if (overlays.loss || (overlays.full && spaceNudges)) {
     overlayLeads = true;
     if (overlays.loss) {
       headline = OVERLAY_HEADLINES.loss;
       receipt.length = 0;
       receipt.push(OVERLAY_RECEIPTS.loss);
-      if (overlays.full) quietLines.push(QUIET_LINES.full);
+      if (overlays.full && spaceNudges) quietLines.push(QUIET_LINES.full);
     } else {
       headline = OVERLAY_HEADLINES.full;
       receipt.length = 0;
@@ -214,8 +219,8 @@ export function deriveSafetyCard(inputs: SafetyCardInputs): SafetyCard {
   }
   // Right after a backup, the at-risk "back up to keep a copy" nudge is
   // redundant against the receipt the person is reading, so it stays quiet.
-  if (overlays.atRisk && state !== 'just-backed-up') quietLines.push(QUIET_LINES.atRisk);
-  if (overlays.offline) quietLines.push(QUIET_LINES.offline);
+  if (spaceNudges && overlays.atRisk && state !== 'just-backed-up') quietLines.push(QUIET_LINES.atRisk);
+  if (spaceNudges && overlays.offline) quietLines.push(QUIET_LINES.offline);
 
   return {
     state,
@@ -328,7 +333,13 @@ export function computeWorkMeter(snapshot: WorkSnapshot): WorkMeter {
     return b;
   };
 
-  for (const todo of snapshot.todos as Array<{ id: string; moduleKey?: string }>) {
+  // A "checked item" is a todo that is actually checked (completed). An
+  // unchecked todo that was saved (a toggle-off, or a note added without
+  // checking) is data in the backup but not a checked item, so it never counts
+  // here. This keeps the meter equal to "Your progress" (which counts checked
+  // todos) and to the restore preview, so all three ledgers agree.
+  for (const todo of snapshot.todos as Array<{ id: string; moduleKey?: string; completed?: boolean }>) {
+    if (todo.completed !== true) continue;
     const b = bucket(todo.moduleKey ?? 'other');
     b.items += 1;
     b.bytes += utf8Length(todo);
@@ -404,7 +415,9 @@ export function computeWorkMeter(snapshot: WorkSnapshot): WorkMeter {
     });
   }
 
-  const totalItems = snapshot.todos.length;
+  const totalItems = (snapshot.todos as Array<{ completed?: boolean }>).filter(
+    (t) => t.completed === true,
+  ).length;
   const totalRows = snapshot.tables.length;
   const totalBytes = groups.reduce((sum, g) => sum + g.bytes, 0);
 

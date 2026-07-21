@@ -248,6 +248,19 @@ describe('overlay contract', () => {
     );
     expect(card.headline).not.toBe('Everything you have is backed up.');
   });
+
+  it('no-work silence: an empty device shows no storage-space nudges', () => {
+    // With nothing saved there is nothing to protect, so full / at risk /
+    // offline all stay silent and the plain empty headline stands (the app-wide
+    // acute banner still handles a genuinely failing storage subsystem).
+    const card = deriveSafetyCard(
+      base({ counts: noWork, overlays: { loss: false, full: true, atRisk: true, offline: true } }),
+    );
+    expect(card.state).toBe('empty');
+    expect(card.headline).toBe('No saved work on this device yet.');
+    expect(card.overlayLeads).toBe(false);
+    expect(card.quietLines).toEqual([]);
+  });
 });
 
 describe('register rules', () => {
@@ -342,10 +355,12 @@ describe('honest meter', () => {
 
     // A distinct child is listed under its parent with the parent carrying the
     // subtotal.
+    // Only the checked todo counts: mutual-aid-b is completed:false, so the
+    // emergency group reports one checked item (mutual-aid-c), not two.
     const emergency = meter.groups.find((g) => g.key === 'emergency-preparedness')!;
-    expect(emergency.detail).toBe('2 checked items');
+    expect(emergency.detail).toBe('1 checked item');
     expect(emergency.leaves.map((l) => l.name)).toEqual(['Mutual Aid']);
-    expect(emergency.leaves[0].detail).toBe('2 checked items');
+    expect(emergency.leaves[0].detail).toBe('1 checked item');
 
     // Order matches PARENT_ORDER, with the notes group last.
     expect(meter.groups.map((g) => g.key)).toEqual([
@@ -354,8 +369,25 @@ describe('honest meter', () => {
       'personal-notes',
     ]);
 
-    expect(meter.total.detail).toBe('3 checked items · 1 saved row');
+    expect(meter.total.detail).toBe('2 checked items · 1 saved row');
     expect(meter.total.bytes).toBeGreaterThan(0);
+  });
+
+  it('an unchecked (saved but not completed) todo is never a checked item', () => {
+    // The restore-journey ledger bug: a backup can hold todos that were saved
+    // without being checked. They import and live on the device, but they are
+    // not "checked items" and must not appear in the meter, so the meter equals
+    // "Your progress" (which counts checked todos only).
+    const meter = computeWorkMeter({
+      todos: [
+        { id: 'food-and-water-a', moduleKey: 'food-and-water', todoId: 'a', completed: false },
+        { id: 'power-supply-b', moduleKey: 'power-supply', todoId: 'b', completed: false },
+      ],
+      tables: [],
+      metadata: {},
+    } as any);
+    expect(meter.groups).toHaveLength(0);
+    expect(meter.total.detail).toBe('nothing saved yet');
   });
 
   it('includes personal notes as its own group when notes exist', () => {

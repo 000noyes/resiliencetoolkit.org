@@ -21,7 +21,7 @@ export interface ParsedBackupLineage {
 }
 
 export interface ParsedBackup {
-  todos: Array<{ id: string; moduleKey?: string }>;
+  todos: Array<{ id: string; moduleKey?: string; completed?: boolean }>;
   tables: Array<{ id: string; moduleKey?: string; tableId?: string; data?: Record<string, string> }>;
   metadata: Record<string, unknown>;
   /** The file's own timestamp, or null for legacy files (never a rejection). */
@@ -122,16 +122,26 @@ export function buildRestorePreview(
   device: DeviceStateForPreview,
 ): RestorePreview {
   // Count and describe only real work: a backup of blank scaffold rows should
-  // not read as modules-and-rows of saved work. The raw rows still import in
-  // full — this governs the count the preview shows, never what is restored.
+  // not read as modules-and-rows of saved work, and a "checked item" means a
+  // todo that is actually checked (completed), not merely a saved todo record
+  // (an unchecked-then-saved todo is data but not a checked item). The raw rows
+  // and every todo still import in full — this governs the count the preview
+  // shows, never what is restored. The count matches the dashboard meter and
+  // "Your progress" so all three ledgers agree.
   const workTables = workTablesOf(data);
+  const checkedTodos = data.todos.filter((t) => t.completed === true);
+  // Coverage set (every module the file carries any data for) drives the
+  // partial-replace safety gate below; the summary counts real work only.
   const fileModules = moduleKeysOf(data.todos, workTables);
+  const summaryModules = moduleKeysOf(checkedTodos, workTables);
   const parts = [
-    `${fileModules.size} ${fileModules.size === 1 ? 'module' : 'modules'}`,
-    data.todos.length > 0 ? countNoun(data.todos.length, 'checked item') : '',
+    checkedTodos.length > 0 || workTables.length > 0
+      ? `${summaryModules.size} ${summaryModules.size === 1 ? 'module' : 'modules'}`
+      : '',
+    checkedTodos.length > 0 ? countNoun(checkedTodos.length, 'checked item') : '',
     workTables.length > 0 ? countNoun(workTables.length, 'saved row') : '',
   ].filter(Boolean);
-  const summary = `This backup holds ${parts.join(', ')}.`;
+  const summary = parts.length > 0 ? `This backup holds ${parts.join(', ')}.` : 'This backup holds no saved work.';
 
   const deviceHasWork = device.ids.size > 0;
   const verdicts: string[] = [];

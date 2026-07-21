@@ -288,22 +288,28 @@ export default function BackupSafetyCard() {
         </p>
       )}
 
-      <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <BackupButton state={card.buttonState} onClick={handleBackup} />
-        {canShareFiles && card.state !== 'empty' && (
-          <button
-            type="button"
-            data-testid="rt-share-button"
-            onClick={handleShareRequest}
-            disabled={card.buttonState === 'working'}
-            className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
-            style={{ minHeight: 44 }}
-          >
-            <Share2 className="h-4 w-4" aria-hidden="true" />
-            Send a copy
-          </button>
-        )}
-      </div>
+      {/* An empty device has nothing to back up, so the action row is hidden:
+          the empty state points to the Start-a-module list and Restore below
+          instead. The pre-hydration shell above still pins the button, since it
+          cannot yet read whether any work exists. */}
+      {card.state !== 'empty' && (
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <BackupButton state={card.buttonState} onClick={handleBackup} />
+          {canShareFiles && (
+            <button
+              type="button"
+              data-testid="rt-share-button"
+              onClick={handleShareRequest}
+              disabled={card.buttonState === 'working'}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-60 transition-colors"
+              style={{ minHeight: 44 }}
+            >
+              <Share2 className="h-4 w-4" aria-hidden="true" />
+              Send a copy
+            </button>
+          )}
+        </div>
+      )}
 
       {card.state !== 'empty' && (
         <p className="mt-2 text-xs text-muted-foreground" data-testid="rt-device-name">
@@ -383,7 +389,7 @@ export default function BackupSafetyCard() {
           <h3 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             Work on this device
           </h3>
-          <p className="mt-1 text-xs text-muted-foreground">Everything here is saved in your backup.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Everything here goes into your backup.</p>
 
           {/* Desktop and tablet: the table form */}
           <div className="mt-3 hidden sm:block rounded-lg border border-border bg-card overflow-hidden">

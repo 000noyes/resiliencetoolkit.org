@@ -90,8 +90,11 @@ describe('buildRestorePreview: counts and date', () => {
     const parsed = parseBackupFile(JSON.stringify(fileRows));
     if (!parsed.ok) throw new Error('parse failed');
     const preview = buildRestorePreview(parsed.data, device());
+    // mod-a-t2 is completed:false, so it is a saved todo but not a checked
+    // item: the summary counts one checked item, matching the meter and
+    // "Your progress" after a restore.
     expect(preview.summary).toContain('2 modules');
-    expect(preview.summary).toContain('2 checked items');
+    expect(preview.summary).toContain('1 checked item');
     expect(preview.summary).toContain('1 saved row');
   });
 
