@@ -432,16 +432,23 @@ export default function BackupSafetyCard() {
                     ))}
                   </React.Fragment>
                 ))}
-                <tr className="border-t border-border">
-                  <td className="px-4 py-2.5 font-medium text-foreground">{meter.total.name}</td>
-                  <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
+              </tbody>
+              {/* The total is a summary band, not another module: its own
+                  section on a muted surface, so it never reads as a peer of
+                  the rows it adds up (most visible when there is only one). */}
+              <tfoot>
+                <tr className="border-t-2 border-border bg-muted/60">
+                  <th scope="row" className="px-4 py-3 text-left font-semibold text-foreground">
+                    {meter.total.name}
+                  </th>
+                  <td className="px-4 py-3 text-right font-semibold text-foreground tabular-nums">
                     {meter.total.detail}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-medium text-foreground tabular-nums">
+                  <td className="px-4 py-3 text-right font-semibold text-foreground tabular-nums">
                     {formatByteSize(meter.total.bytes)}
                   </td>
                 </tr>
-              </tbody>
+              </tfoot>
             </table>
           </div>
 
@@ -467,8 +474,8 @@ export default function BackupSafetyCard() {
                 )}
               </li>
             ))}
-            <li className="px-4 py-2.5">
-              <span className="block text-sm font-medium text-foreground">
+            <li className="px-4 py-3 border-t-2 border-border bg-muted/60">
+              <span className="block text-sm font-semibold text-foreground">
                 {meter.total.name}: {meter.total.detail} · {formatByteSize(meter.total.bytes)}
               </span>
             </li>
