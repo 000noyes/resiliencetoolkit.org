@@ -62,7 +62,9 @@ export const featuredDownloads: FeaturedDownload[] = [
   {
     title: 'Vermont Town Directory',
     description: 'Directory of Vermont towns with jurisdictions, RPCs, LTRGs, and resilience hub contacts',
-    downloadUrl: 'https://docs.google.com/spreadsheets/d/1pbM74OiX3DqO95rCZEF6oX80yuAJkSGz4E0ld6gqk7s/edit?gid=0#gid=0',
+    // Live Vermont Town Directory sheet, shared by the coalition 2026-06-29.
+    // Linked as /preview (read-only) since the sheet is shared anyone-can-edit.
+    downloadUrl: 'https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview',
     icon: 'spreadsheet',
     isExternal: true
   },
