@@ -394,3 +394,100 @@ describe('sw-register — applyUpdate', () => {
     expect(reg.active.postMessage).not.toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
   });
 });
+
+describe('sw-register — non-production hosts (E6)', () => {
+  it('workshop subdomain: unregisters leftovers and never registers', async () => {
+    const env = installEnv({ hostname: 'workshop.resiliencetoolkit.org' });
+    const unregister = vi.fn().mockResolvedValue(true);
+    env.container.getRegistrations.mockResolvedValueOnce([{ unregister }]);
+    const { registerServiceWorker } = await import('../../src/lib/sw-register');
+    registerServiceWorker();
+    await flushMicrotasks();
+    expect(unregister).toHaveBeenCalled();
+    expect(env.container.register).not.toHaveBeenCalled();
+  });
+
+  it('preview deployments (*.pages.dev) never register', async () => {
+    const env = installEnv({ hostname: 'deadbeef.resiliencetoolkit-org.pages.dev' });
+    const { registerServiceWorker } = await import('../../src/lib/sw-register');
+    registerServiceWorker();
+    await flushMicrotasks();
+    expect(env.container.register).not.toHaveBeenCalled();
+  });
+
+  it('rt.localhost still registers (the offline suite depends on it)', async () => {
+    const env = installEnv({ hostname: 'rt.localhost' });
+    const { registerServiceWorker } = await import('../../src/lib/sw-register');
+    registerServiceWorker();
+    await flushMicrotasks();
+    expect(env.container.register).toHaveBeenCalledWith('/sw.js', { updateViaCache: 'none' });
+  });
+
+  it('www subdomain registers like the apex', async () => {
+    const env = installEnv({ hostname: 'www.resiliencetoolkit.org' });
+    const { registerServiceWorker } = await import('../../src/lib/sw-register');
+    registerServiceWorker();
+    await flushMicrotasks();
+    expect(env.container.register).toHaveBeenCalled();
+  });
+});
+
+describe('sw-register — non-production cache cleanup + register funnel', () => {
+  afterEach(() => {
+    delete (globalThis as any).caches;
+  });
+
+  it('workshop host: deletes leftover resilience-hub-* caches (the orphaned-generation guard)', async () => {
+    const deleted: string[] = [];
+    (globalThis as any).caches = {
+      keys: async () => ['resilience-hub-v2-v-build-1', 'resilience-hub-v2-ramp', 'other-cache'],
+      delete: async (name: string) => {
+        deleted.push(name);
+        return true;
+      },
+    };
+    installEnv({ hostname: 'workshop.resiliencetoolkit.org' });
+    const { registerServiceWorker } = await import('../../src/lib/sw-register');
+    registerServiceWorker();
+    await flushMicrotasks();
+    expect(deleted.sort()).toEqual(['resilience-hub-v2-ramp', 'resilience-hub-v2-v-build-1']);
+  });
+
+  it('a rejecting CacheStorage never throws out of registration', async () => {
+    (globalThis as any).caches = {
+      keys: async () => {
+        throw new Error('storage unavailable');
+      },
+      delete: async () => true,
+    };
+    installEnv({ hostname: 'workshop.resiliencetoolkit.org' });
+    const { registerServiceWorker } = await import('../../src/lib/sw-register');
+    expect(() => registerServiceWorker()).not.toThrow();
+    await flushMicrotasks();
+  });
+
+  it('production host does not touch CacheStorage from the page side', async () => {
+    const deleted: string[] = [];
+    (globalThis as any).caches = {
+      keys: async () => ['resilience-hub-v2-v-build-1'],
+      delete: async (name: string) => {
+        deleted.push(name);
+        return true;
+      },
+    };
+    await boot();
+    expect(deleted).toHaveLength(0);
+  });
+
+  it('sw-register is the only registration call site (the host gate cannot be bypassed)', async () => {
+    const { execSync } = await import('node:child_process');
+    const hits = execSync(
+      "grep -rl \"register('/sw.js'\" src/ --include='*.ts' --include='*.tsx' --include='*.astro' || true",
+      { encoding: 'utf-8', cwd: process.cwd() }
+    )
+      .trim()
+      .split('\n')
+      .filter(Boolean);
+    expect(hits).toEqual(['src/lib/sw-register.ts']);
+  });
+});
