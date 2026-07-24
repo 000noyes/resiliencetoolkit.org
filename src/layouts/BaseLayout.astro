@@ -10,18 +10,26 @@ import BetaBanner from '../components/BetaBanner.tsx';
 import StorageHealthBanner from '../components/StorageHealthBanner.tsx';
 import UpdateBanner from '../components/UpdateBanner.tsx';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
-import FeedbackWidgetWrapper from '../components/FeedbackWidgetWrapper.tsx';
+import CornerPanelWrapper from '../components/CornerPanelWrapper.tsx';
+import CornerPanel from '../components/CornerPanel.tsx';
 
 interface Props {
   title?: string;
   description?: string;
   noPrint?: string[]; // Classes to hide when printing
+  /**
+   * 'interactive' (default) hydrates the corner panel; 'static-open' renders
+   * it open and inert with no client JS (the workshop round page's proposal
+   * under review); 'none' omits it.
+   */
+  panel?: 'interactive' | 'static-open' | 'none';
 }
 
 const {
   title = 'Resilience Hub Toolkit',
   description = 'Local-first tools to organize systems, stuff, and people before, during, and after disasters.',
   noPrint = [],
+  panel = 'interactive',
 } = Astro.props;
 
 // Preserve `noPrint` for upcoming print layout work.
@@ -29,6 +37,12 @@ void noPrint;
 
 const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
 const isPrintMode = Astro.url.searchParams.get('print') === '1';
+
+// Workshop-copy build (the workshop.* project sets WORKSHOP=1): every page
+// carries the strip naming what this copy is, plus meta robots noindex (the
+// matching X-Robots-Tag header is appended postbuild). Production builds
+// carry neither.
+const isWorkshop = process.env.WORKSHOP === '1';
 ---
 
 <!doctype html>
@@ -51,6 +65,7 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
     </script>
 
     <meta name="generator" content={Astro.generator} />
+    {isWorkshop && <meta name="robots" content="noindex" />}
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
@@ -81,6 +96,24 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
       Skip to main content
     </a>
 
+    {
+      isWorkshop && !isPrintMode && (
+        <div class="bg-muted border-y border-border" role="note">
+          <div class="container mx-auto px-4 py-2.5">
+            <p class="text-[13.5px] leading-snug text-foreground text-center" style="text-wrap: balance">
+              This is the workshop copy of the toolkit, where new pieces get shaped. The finished
+              site is{' '}
+              <a
+                href="https://resiliencetoolkit.org"
+                class="underline underline-offset-2 hover:opacity-80 transition-opacity"
+              >
+                resiliencetoolkit.org</a
+              >.
+            </p>
+          </div>
+        </div>
+      )
+    }
     {!isPrintMode && <BetaBanner client:idle />}
     {!isPrintMode && <StorageHealthBanner client:idle />}
     {!isPrintMode && <UpdateBanner client:idle />}
@@ -93,9 +126,10 @@ const isPrintMode = Astro.url.searchParams.get('print') === '1';
 
     {!isPrintMode && <Footer />}
 
-    <!-- Feedback widget -->
+    <!-- Corner panel (questions + fund doors) -->
     {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
-    {!isPrintMode && <FeedbackWidgetWrapper client:load />}
+    {!isPrintMode && panel === 'interactive' && <CornerPanelWrapper client:load />}
+    {!isPrintMode && panel === 'static-open' && <CornerPanel staticOpen />}
 
     <script>
       import '@/lib/asset-rev'; // re-hash this entry chunk past the 2026-06-07 Cloudflare asset-poisoning incident

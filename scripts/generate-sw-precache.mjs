@@ -34,6 +34,11 @@ const EXCLUDE_PREFIXES = [
   '/replicate/',
   '/access/',
   '/other/',
+  // Review rounds live behind unguessable direct links. Their routes must
+  // never be written into sw.js (the file is world-readable, so a precache
+  // entry would leak the round token), and no worker runs on the workshop
+  // origin anyway.
+  '/rounds/',
 ];
 
 // Static assets to always include (checked for existence in dist/)
