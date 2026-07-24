@@ -393,3 +393,17 @@ Net effect: ~8 specs across the 17-module set cannot use `structural_fidelity: {
 **Description:** With all third-party trackers removed, the "nothing leaves the device" promise is now true in code — but there is no user-facing statement that says so. For a privacy-first toolkit serving disaster-vulnerable communities, the trust promise is a differentiator and should be visible, not just implemented. Surface it as a short "no accounts, no tracking, your data never leaves your device" note — either a dedicated `/privacy` page or a homepage line.
 **Fix:** Add a concise on-device-privacy statement. Keep it plain-language and link it where new users land (homepage and/or footer). Likely pairs with any coalition-facing materials.
 **Depends on:** None (the technical claim is already true).
+
+## Infrastructure
+
+### Migrate the feedback email off gocros.org before 2026-11-14
+**Priority:** P1 (calendar-bound: act before late October 2026)
+**Description:** Every contact path on the site (the corner panel's Questions form, the contact banner) points at resiliencetoolkit@gocros.org. The gocros.org registration expires 2026-11-14 (registrar Bluehost; RDAP-checked 2026-07-21), and renewal is managed outside this project. If it lapses, feedback email bounces or is swallowed silently, and senders may never see an error.
+**Fix:** (a) Create an address on resiliencetoolkit.org (registration runs to 2035) via Cloudflare Email Routing on the existing zone, forwarding to the maintainers' inbox. (b) Update the mailto target in CornerPanel.tsx and the contact banner references. (c) Independently, confirm gocros.org auto-renew and billing with its owners so their other uses of the domain stay safe.
+**Depends on:** Nothing technical. The address swap is a small PR once routing is live.
+
+### Cloudflare Pages status watch
+**Priority:** P3 (watch item, no action now)
+**Description:** All deploy targets sit on Cloudflare Pages, which as of 2026 is in maintenance mode: fully supported, no forced migration, but new platform investment goes to Workers with static assets, and official migration guides exist. Nothing breaks on any near horizon.
+**Fix:** When the NEXT hosting target is created for any new surface, evaluate Workers with static assets first instead of defaulting to another Pages project. Migrate existing projects only when convenient.
+**Depends on:** None.
