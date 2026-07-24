@@ -1,0 +1,708 @@
+---
+import { Image } from 'astro:assets';
+import ActionButton from '@/components/ActionButton.astro';
+import Badge from '@/components/Badge.astro';
+import Card from '@/components/Card.astro';
+import PhaseSlider from '@/components/PhaseSlider.astro';
+import { modules } from '@/data/modules';
+import culvertRoad from '@/assets/culvert-road.png';
+import riverBendWashout from '@/assets/river-bend-washout.png';
+
+// The homepage body, extracted whole so the workshop round page can render
+// the REAL reviewed surface (build-time, no forked markup) while
+// src/pages/index.astro stays the production route. The data-annot
+// attributes are the annotation layer's landmark regions: inert everywhere,
+// resolved only by the round page's island.
+//
+// The two 2023 field photographs render as still, captioned figures in the
+// Origin Story section below (the rotating Field Snapshot gallery removed
+// 2026-03-28 stays retired). Sources live in src/assets/ so astro:assets
+// emits optimized /_astro derivatives, which the service worker precaches.
+---
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-b from-primary/10 to-background pt-16 pb-8" data-annot="hero">
+    <div class="container mx-auto px-4 text-center max-w-4xl">
+      <div class="flex justify-center mb-6">
+        <Badge variant="success">Born When the Water Rose</Badge>
+      </div>
+
+      <h1 class="text-hero font-semibold mb-5 text-foreground">
+        Build a Community Resilience Hub
+      </h1>
+
+      <!-- <p class="text-body text-muted-foreground mb-6 max-w-3xl mx-auto">
+        Made with first responders, volunteers, and neighbors who needed a simpler way to coordinate.
+      </p> -->
+
+      <p class="text-body-large text-muted-foreground mb-6 max-w-2xl mx-auto">
+        This toolkit brings the lessons learned from Vermont's 2023-2024 floods to communities everywhere. Start planning your hub today.
+      </p>
+
+      <div class="flex flex-wrap gap-4 justify-center">
+        <ActionButton href="/introduction" variant="primary" size="lg">
+          Open the Toolkit
+        </ActionButton>
+        <ActionButton href="/downloads" variant="outline" size="lg">
+          Download PDF
+        </ActionButton>
+      </div>
+
+      <p class="mt-5 mb-10 text-body text-muted-foreground font-medium">
+        Works even when the internet doesn't.<a href="#offline" class="text-primary no-underline hover:underline">*</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Find Your Path Section -->
+  <section class="py-12" id="find-your-path" data-annot="find-your-path">
+    <div class="container mx-auto px-4 max-w-4xl">
+
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h2 class="text-headline font-semibold text-foreground mb-3">
+          Find your path
+        </h2>
+        <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
+          Choose where you are relative to a flood. Everything works offline.
+        </p>
+      </div>
+
+      <!-- Phase cards on the orange-to-green rail, with descriptions folded in -->
+      <PhaseSlider showDescriptions />
+
+      <!-- Module links: quiet underlined text links, real list with hidden separators -->
+      <div class="text-center mt-10">
+        <p class="text-body-small text-muted-foreground mb-2">Or start from a module:</p>
+        <ul class="module-links" aria-label="Toolkit modules">
+          {modules.map((module, i) => (
+            <li class="module-links__item">
+              <a href={module.url} class="module-links__link text-body-small text-foreground">
+                {module.frontmatter.title}
+              </a>
+              {i < modules.length - 1 && (
+                <span class="module-links__sep" aria-hidden="true">&middot;</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+        <!-- Search Row: ships hidden; the Pagefind init script reveals it early,
+             so JS-off users never see a dead input -->
+        <div class="mt-10 mb-8" data-pagefind-search hidden>
+          <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center">
+            <label for="pagefind-search" class="text-body-small text-muted-foreground text-center sm:text-left">
+              Search by keyword:
+            </label>
+            <div class="relative w-full sm:w-80">
+              <div class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </div>
+              <input
+                type="search"
+                id="pagefind-search"
+                placeholder="Try 'mutual aid' or 'go bag'"
+                autocomplete="off"
+                class:list={[
+                  'w-full h-12 pl-12 pr-4',
+                  'bg-input border border-border rounded-lg',
+                  'text-body text-foreground placeholder:text-muted-foreground',
+                  'shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]',
+                  'transition-all duration-200',
+                  'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent focus:bg-background',
+                  'hover:bg-muted'
+                ]}
+              />
+            </div>
+          </div>
+
+          <!-- Search Results Container: internal scroll so queries never shift the page -->
+          <div
+            class="mt-4 rounded-xl border border-border bg-card max-h-96 overflow-y-auto hidden"
+            data-search-results
+          >
+            <div class="p-4 text-center text-body-small text-muted-foreground" data-search-status role="status">
+              Searching...
+            </div>
+            <div data-search-hits></div>
+          </div>
+        </div>
+
+        <!-- CTA Button: outline variant; filled orange on this page is reserved
+             for the hero CTA and the cards' rail -->
+        <div class="text-center mt-2">
+          <ActionButton href="/modules" variant="outline" size="lg">
+            Explore All Modules
+          </ActionButton>
+        </div>
+
+        <!-- No-JS Fallback: carries the module summaries -->
+        <noscript>
+          <div class="mt-10 max-w-2xl mx-auto text-left border-t border-border pt-8">
+            <h3 class="text-subtitle font-semibold text-foreground mb-4">All Modules</h3>
+            <ul class="space-y-4">
+              {modules.map((module) => (
+                <li>
+                  <a
+                    href={module.url}
+                    class="text-primary hover:underline font-medium"
+                  >
+                    {module.frontmatter.title}
+                  </a>
+                  <span class="block text-body-small text-muted-foreground">
+                    {module.frontmatter.summary}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </noscript>
+
+    </div>
+  </section>
+
+  <style>
+    /* Module links row: each list item is one nowrap unit (link + trailing
+       middot), so no wrapped line can ever start with a dangling separator.
+       Vertical padding on the inline links widens the touch target to ~44px
+       without changing the visual line box. */
+    .module-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .module-links__item {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .module-links__link {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: color-mix(in oklab, var(--foreground) 40%, transparent);
+      padding-block: 0.75rem;
+    }
+    .module-links__link:hover {
+      color: var(--primary);
+      text-decoration-color: var(--primary);
+    }
+    .module-links__sep {
+      color: var(--muted-foreground);
+      /* px, not rem: text zoom must not widen the nowrap units more than the
+         13px-per-link text itself grows */
+      margin: 0 8px 0 10px;
+    }
+  </style>
+
+  <!-- Origin Story Section -->
+  <section class="py-12 bg-card" data-annot="origin-story">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Problem -->
+        <div>
+          <Badge variant="warning" class="mb-4">The Challenge</Badge>
+          <h2 class="text-title font-semibold mb-3 text-foreground">
+            2023 and 2024 Floods Left Vermont Communities Scrambling
+          </h2>
+          <p class="text-body text-muted-foreground mb-4">
+            When the waters rose, government response was slow. Resources were scattered.
+            People needed to organize supplies, volunteers, and information, but had no
+            clear framework.
+          </p>
+          <p class="text-body text-muted-foreground">
+            Neighbors became first responders by necessity, not by choice.
+          </p>
+        </div>
+
+        <!-- Solution -->
+        <div>
+          <Badge variant="success" class="mb-4">What We Built</Badge>
+          <h2 class="text-title font-semibold mb-3 text-foreground">
+            Frontline Responders Created This Toolkit
+          </h2>
+          <p class="text-body text-muted-foreground mb-4">
+            Community organizers, mutual aid groups, and flood survivors documented
+            what actually worked. The result: a free, tested framework any community
+            can use to build resilience before disaster strikes.
+          </p>
+          <p class="text-body text-muted-foreground">
+            We made this because we needed it when the waters rose.
+          </p>
+        </div>
+      </div>
+
+      <!-- Field photographs: real 2023 flood documentation, still captioned figures -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+        <figure class="origin-photo">
+          <Image
+            src={culvertRoad}
+            alt="Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs."
+            widths={[480, 896, 1344]}
+            sizes="(min-width: 768px) 434px, calc(100vw - 2rem)"
+            loading="lazy"
+            decoding="async"
+            class="origin-photo__img"
+          />
+          <figcaption class="origin-photo__caption">Plainfield road closed for culvert repair, July 2023</figcaption>
+        </figure>
+        <figure class="origin-photo">
+          <Image
+            src={riverBendWashout}
+            alt="The Great Brook cutting off a meander, floodwater carving a new channel beside the gravel road."
+            widths={[480, 896, 1344]}
+            sizes="(min-width: 768px) 434px, calc(100vw - 2rem)"
+            loading="lazy"
+            decoding="async"
+            class="origin-photo__img"
+          />
+          <figcaption class="origin-photo__caption">The Great Brook reclaiming ground, Plainfield, July 2023</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .origin-photo {
+      margin: 0;
+    }
+    .origin-photo__img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .origin-photo__caption {
+      margin-top: 0.5rem;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted-foreground);
+    }
+  </style>
+
+  <!-- Partner Organizations -->
+  <section class="py-12" data-annot="partners">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <h2 class="text-headline font-semibold mb-3 text-center text-foreground">
+        Built With Grassroots Partners
+      </h2>
+      <p class="text-body text-muted-foreground mb-10 text-center max-w-xl mx-auto">
+        In collaboration with frontline responders, community organizers,
+        and mutual aid networks across Vermont:
+      </p>
+
+      <div class="text-center space-y-3">
+        <p class="text-body text-foreground"><a href="https://www.accessecologies.com/" class="text-primary hover:underline">Access Ecologies</a></p>
+        <p class="text-body text-foreground"><a href="https://gocros.org/" class="text-primary hover:underline">Community Resilience Organizations (CROs)</a></p>
+        <p class="text-body text-foreground"><a href="https://www.thecrewvt.org/" class="text-primary hover:underline">Community Resilience for the Waterbury Area (CReW)</a></p>
+        <p class="text-body text-foreground"><a href="https://www.cooperationvermont.org/" class="text-primary hover:underline">Cooperation Vermont</a></p>
+        <p class="text-body text-foreground"><a href="https://www.morristownvt.gov/administration/page/learn-lamoille-area-recovery-network" class="text-primary hover:underline">Lamoille Area Recovery Network (LeARN)</a></p>
+        <p class="text-body text-foreground"><a href="https://landaccessvt.org/" class="text-primary hover:underline">Land Access and Opportunity Board (LAOB)</a></p>
+        <p class="text-body text-foreground"><a href="https://kurrve.org/" class="text-primary hover:underline">Kingdom United Resilience and Recovery Effort (KURRVE)</a></p>
+        <p class="text-body text-foreground"><a href="https://nekorganizing.org/" class="text-primary hover:underline">Northeast Kingdom Organizing (NEKO)</a></p>
+        <p class="text-body text-foreground"><a href="https://www.rosecorecollective.org/" class="text-primary hover:underline">Rose Core Collective</a></p>
+        <p class="text-body text-foreground"><a href="https://www.ruralvermont.org/" class="text-primary hover:underline">Rural Vermont</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Offline Feature -->
+  <section id="offline" class="py-12 bg-card" data-annot="works-offline">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="text-center mb-10">
+        <Badge variant="primary" class="mb-4">Works Offline</Badge>
+        <h2 class="text-headline font-semibold text-foreground mb-3">
+          Works Without Internet After First Visit
+        </h2>
+        <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
+          When disaster strikes, internet often goes down first. This toolkit was built
+          to keep working when the connection doesn't.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+        <!-- Step 1 -->
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+            <span class="text-title font-bold text-blue-600 dark:text-blue-300">1</span>
+          </div>
+          <h3 class="text-subtitle font-semibold text-foreground mb-2">Visit With Internet</h3>
+          <p class="text-body-small text-muted-foreground">
+            Open the toolkit once online. Every page saves to your device.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+            <span class="text-title font-bold text-orange-600 dark:text-orange-300">2</span>
+          </div>
+          <h3 class="text-subtitle font-semibold text-foreground mb-2">Go Offline</h3>
+          <p class="text-body-small text-muted-foreground">
+            Disconnect from internet or enable airplane mode
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+            <span class="text-title font-bold text-green-600 dark:text-green-300">3</span>
+          </div>
+          <h3 class="text-subtitle font-semibold text-foreground mb-2">Everything Works</h3>
+          <p class="text-body-small text-muted-foreground">
+            All content, checklists, and tools work normally offline
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-muted border border-border rounded-lg p-6 mb-6">
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          <div>
+            <h4 class="text-subtitle font-semibold text-foreground mb-2">Complete Privacy</h4>
+            <p class="text-body text-muted-foreground">
+              Anything you enter stays on your device. It isn't sent to a server.
+              Prefer paper? Download the PDFs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <ActionButton href="/downloads" variant="primary" size="lg">
+          View Offline Guide & Downloads
+        </ActionButton>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Assistance -->
+  <section class="py-12" data-annot="technical-assistance">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="text-center mb-10">
+        <h2 class="text-headline font-semibold text-foreground mb-3">
+          Need Help Getting Started?
+        </h2>
+        <p class="text-body-large text-muted-foreground max-w-2xl mx-auto mb-6">
+          Community Resilience Organizations (CROs) offers free consultations to help you
+          assess your community's needs, train volunteers, and create a resilience plan
+          tailored to your area.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <!-- Free Consultation Card -->
+        <Card>
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-subtitle font-semibold mb-1.5 text-foreground">
+                Free Consultation
+              </h3>
+              <p class="text-body text-muted-foreground">
+                Get expert guidance on assessing vulnerabilities and building your hub
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <!-- Training Card -->
+        <Card>
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-subtitle font-semibold mb-1.5 text-foreground">
+                Volunteer Training
+              </h3>
+              <p class="text-body text-muted-foreground">
+                Workshops for community organizers and disaster response teams
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <!-- Technical Setup Card -->
+        <Card>
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-subtitle font-semibold mb-1.5 text-foreground">
+                Custom Setup
+              </h3>
+              <p class="text-body text-muted-foreground">
+                Help configuring the toolkit for your specific community needs
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <!-- Fiscal Sponsorship Card -->
+        <Card>
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-subtitle font-semibold mb-1.5 text-foreground">
+                Fiscal Sponsorship
+              </h3>
+              <p class="text-body text-muted-foreground">
+                Support for organizations seeking funding for resilience initiatives
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div class="flex flex-wrap gap-4 justify-center">
+        <ActionButton href="/about#contact" variant="primary" size="lg">
+          Request Free Consultation
+        </ActionButton>
+        <ActionButton href="https://gocros.org/" variant="outline" size="lg">
+          Learn About CROs
+        </ActionButton>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-16 bg-muted" data-annot="ready-to-build">
+    <div class="container mx-auto px-4 text-center max-w-4xl">
+      <h2 class="text-headline font-semibold text-foreground mb-3">
+        Ready to Build Resilience?
+      </h2>
+      <p class="text-body-large text-muted-foreground mb-6 max-w-2xl mx-auto">
+        Join Vermont communities who are using this toolkit to prepare for disasters
+        and strengthen their neighborhoods. Free, open-source, and works for communities
+        of any size.
+      </p>
+
+      <div class="flex flex-wrap gap-4 justify-center mb-8">
+        <ActionButton href="/modules" variant="primary" size="lg">
+          Explore All Modules
+        </ActionButton>
+        <ActionButton href="/about#contact" variant="outline" size="lg">
+          Get Technical Help
+        </ActionButton>
+      </div>
+
+      <div class="flex flex-wrap gap-6 justify-center text-body-small">
+        <a href="/downloads" class="text-muted-foreground hover:text-primary transition-colors">
+          Download PDFs
+        </a>
+        <a href="/about" class="text-muted-foreground hover:text-primary transition-colors">
+          Learn Our Story
+        </a>
+        <a href="https://gocros.org/" class="text-muted-foreground hover:text-primary transition-colors">
+          About CROs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pagefind Search -->
+  <script is:inline>
+    (() => {
+      const init = () => {
+        const input = document.getElementById('pagefind-search');
+        const resultsContainer = document.querySelector('[data-search-results]');
+        const statusEl = document.querySelector('[data-search-status]');
+        const hitsEl = document.querySelector('[data-search-hits]');
+        if (!input || !resultsContainer || !statusEl || !hitsEl) return;
+
+        // Reveal the search row EARLY, before the pagefind import: the row
+        // ships with `hidden` so JS-off users never see a dead input, and a
+        // slow index load must not keep the row hidden for JS users.
+        const searchRow = input.closest('[data-pagefind-search]');
+        if (searchRow) searchRow.removeAttribute('hidden');
+
+        let pagefind = null;
+        let debounceTimer = null;
+
+        const loadPagefind = async () => {
+          if (pagefind) return pagefind;
+          try {
+            pagefind = await import('/pagefind/pagefind.js');
+            await pagefind.init();
+            return pagefind;
+          } catch (err) {
+            console.warn('Pagefind not available:', err);
+            return null;
+          }
+        };
+
+        // Hide the search widget if pagefind isn't built into this deployment
+        loadPagefind().then((pf) => {
+          if (!pf) {
+            const searchSection = input.closest('[data-pagefind-search]');
+            if (searchSection) searchSection.style.display = 'none';
+          }
+        });
+
+        const clearHits = () => {
+          while (hitsEl.firstChild) hitsEl.removeChild(hitsEl.firstChild);
+        };
+
+        // Pagefind excerpts use <mark> for highlights. This is trusted
+        // build-time content from our own site. We parse safely via a
+        // template element and only allow <mark> tags and text nodes.
+        const safeExcerptNodes = (excerptHtml) => {
+          const tpl = document.createElement('template');
+          tpl.innerHTML = excerptHtml;
+          const fragment = tpl.content;
+          const safe = document.createDocumentFragment();
+          fragment.childNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              safe.appendChild(document.createTextNode(node.textContent));
+            } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'MARK') {
+              const mark = document.createElement('mark');
+              mark.textContent = node.textContent;
+              safe.appendChild(mark);
+            }
+          });
+          return safe;
+        };
+
+        const renderResults = async (results) => {
+          clearHits();
+
+          if (results.length === 0) {
+            statusEl.textContent = 'No results found.';
+            statusEl.classList.remove('hidden');
+            return;
+          }
+
+          statusEl.classList.add('hidden');
+          const toShow = results.slice(0, 5);
+
+          for (const result of toShow) {
+            const data = await result.data();
+
+            const item = document.createElement('a');
+            item.href = data.url;
+            item.className = 'block p-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-200';
+
+            const title = document.createElement('p');
+            title.className = 'text-subtitle font-semibold text-primary mb-1';
+            title.textContent = data.meta?.title || data.url;
+            item.appendChild(title);
+
+            if (data.excerpt) {
+              const excerpt = document.createElement('p');
+              excerpt.className = 'text-body-small text-muted-foreground';
+              excerpt.appendChild(safeExcerptNodes(data.excerpt));
+              item.appendChild(excerpt);
+            }
+
+            hitsEl.appendChild(item);
+          }
+
+          if (results.length > 5) {
+            const more = document.createElement('div');
+            more.className = 'p-3 text-center text-body-small text-muted-foreground border-t border-border';
+            more.textContent = (results.length - 5) + ' more results. Refine your search to narrow down.';
+            hitsEl.appendChild(more);
+          }
+        };
+
+        const doSearch = async (query) => {
+          if (!query || query.length < 2) {
+            resultsContainer.classList.add('hidden');
+            clearHits();
+            return;
+          }
+
+          resultsContainer.classList.remove('hidden');
+          statusEl.textContent = 'Searching\u2026';
+          statusEl.classList.remove('hidden');
+
+          const pf = await loadPagefind();
+          if (!pf) {
+            statusEl.textContent = 'Search is unavailable right now.';
+            return;
+          }
+
+          try {
+            const search = await pf.search(query);
+            await renderResults(search.results);
+          } catch (err) {
+            console.error('Search error:', err);
+            statusEl.textContent = 'Search unavailable. Please try again.';
+          }
+        };
+
+        input.addEventListener('input', () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => doSearch(input.value.trim()), 200);
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            input.value = '';
+            resultsContainer.classList.add('hidden');
+            clearHits();
+          }
+        });
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init, { once: true });
+      } else {
+        init();
+      }
+    })();
+  </script>
+
+  <!-- Pagefind highlight styling -->
+  <style is:inline>
+    [data-search-results] mark {
+      background-color: oklch(0.5756 0.1368 42.8 / 0.2);
+      color: inherit;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+  </style>
+
+  <!-- DISABLED 2026-03-28: Field snapshot data + JS removed (companion to disabled section above).
+       To re-enable: restore fieldSnapshots frontmatter data, the Field Snapshot HTML section,
+       and uncomment this script block. -->
+  <!--
+  <script
+    type="application/json"
+    id="fieldSnapshotData"
+    set:html={JSON.stringify(fieldSnapshots).replace(/</g, '\\u003c')}
+  ></script>
+  <script is:inline>
+    (() => {
+      const run = () => {
+        // ... field snapshot rotation and gallery logic
+        // Full source preserved in git history (commit before 2026-03-28 simplification)
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run, { once: true });
+      } else {
+        run();
+      }
+    })();
+  </script>
+  -->

@@ -1,0 +1,57 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeSurface from '@/components/HomeSurface.astro';
+import AnnotationIsland from '@/components/annotation/AnnotationIsland.tsx';
+
+// A review round: the reviewed surface rendered build-time from the real
+// components, inert, with the annotation island as the only hydrated JS.
+//
+// The route exists only on workshop builds: the round id (r1-<token>) comes
+// from the ROUND_ID build variable set on the workshop project, so the token
+// never lives in this repository and production builds emit nothing under
+// /rounds/. The URL is direct-link-only: never in navigation, never in the
+// search index (no data-pagefind-body here), never in sw.js (excluded from
+// the precache generator).
+export function getStaticPaths() {
+  const roundId = process.env.ROUND_ID;
+  if (!roundId) return [];
+  return [{ params: { round: roundId } }];
+}
+
+const { round } = Astro.params;
+const roundNumber = String(round).split('-')[0].replace(/^r/, '');
+---
+
+<BaseLayout title="Workshop round" panel="static-open">
+  <div class="border-b border-border bg-card">
+    <div class="container mx-auto px-4 py-4 text-center">
+      <h1 class="text-title font-semibold text-foreground">Round {roundNumber}</h1>
+      <p class="text-body-small text-muted-foreground mt-xxs">
+        Notes from this round go to the group's next meeting.
+      </p>
+    </div>
+  </div>
+  <div id="round-status-slot"></div>
+
+  <HomeSurface />
+
+  <AnnotationIsland roundId={String(round)} client:load />
+</BaseLayout>
+
+<style is:global>
+  /* T9: the round prints clean for the meeting. Interactive chrome and the
+     corner panel drop out; the pins stay as numbered dots in place and the
+     island's notes list carries every thread. */
+  @media print {
+    [data-annot-ui],
+    [data-annot='corner-panel'] {
+      display: none !important;
+    }
+    section[data-annot-ui] {
+      display: block !important;
+    }
+    #round-status-slot {
+      display: none;
+    }
+  }
+</style>
