@@ -148,7 +148,27 @@ export async function handleGetNotes(
     thread.notes.push(note);
   }
 
-  return json(200, { ok: true, status: round.status, threads, whole_page: wholePage });
+  // A closed round's banner offers "Go to the current round": the successor
+  // is resolved at read time as the newest open round (E3, clock-free, no
+  // successor column). Recovery note: after a leaked link, closing the round
+  // still reveals this pointer to link-holders; deleting the leaked round's
+  // row kills its reads entirely (the go-live checklist records both moves).
+  let currentRoundId: string | null = null;
+  if (round.status !== 'open') {
+    const current = await db
+      .prepare("SELECT id FROM rounds WHERE status = 'open' ORDER BY created_at DESC, id DESC LIMIT 1")
+      .bind()
+      .first<{ id: string }>();
+    currentRoundId = current?.id ?? null;
+  }
+
+  return json(200, {
+    ok: true,
+    status: round.status,
+    threads,
+    whole_page: wholePage,
+    ...(currentRoundId ? { current_round_id: currentRoundId } : {}),
+  });
 }
 
 interface PostBody {

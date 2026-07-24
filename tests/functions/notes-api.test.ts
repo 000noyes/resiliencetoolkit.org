@@ -271,6 +271,24 @@ describe('GET — the export path', () => {
     expect(body.status).toBe('closed');
   });
 
+  it('a closed round points at the newest open round for the banner link', async () => {
+    db.seedRound('r2-abcdefghijklmnopqrstuvwx', 'closed');
+    db.seedRound('r3-abcdefghijklmnopqrstuvwx', 'open');
+    const body = await json(await handleGetNotes(db, 'r2-abcdefghijklmnopqrstuvwx'));
+    expect(body.current_round_id).toBe('r3-abcdefghijklmnopqrstuvwx');
+  });
+
+  it('a closed round with no open successor carries no pointer, and open rounds never do', async () => {
+    db.rounds.clear();
+    db.seedRound('r2-abcdefghijklmnopqrstuvwx', 'closed');
+    const closedBody = await json(await handleGetNotes(db, 'r2-abcdefghijklmnopqrstuvwx'));
+    expect('current_round_id' in closedBody).toBe(false);
+
+    db.seedRound(ROUND, 'open');
+    const openBody = await json(await handleGetNotes(db, ROUND));
+    expect('current_round_id' in openBody).toBe(false);
+  });
+
   it('sends no-store + nosniff headers (function responses bypass _headers)', async () => {
     const res = await handleGetNotes(db, ROUND);
     expect(res.headers.get('cache-control')).toBe('no-store');

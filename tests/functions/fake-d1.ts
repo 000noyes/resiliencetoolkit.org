@@ -88,6 +88,14 @@ class FakeStatement implements D1PreparedStatement {
   private execute(): Record<string, unknown>[] {
     const { sql, args, db } = { sql: this.sql, args: this.args, db: this.db };
 
+    if (sql.includes("status = 'open'") && sql.includes('FROM rounds')) {
+      // Newest open round: the Map preserves insertion order, which stands in
+      // for created_at ordering.
+      const open = [...db.rounds.values()].filter((r) => r.status === 'open');
+      const newest = open[open.length - 1];
+      return newest ? [{ id: newest.id }] : [];
+    }
+
     if (sql.includes('FROM rounds')) {
       const round = db.rounds.get(String(args[0]));
       return round ? [{ id: round.id, status: round.status }] : [];
