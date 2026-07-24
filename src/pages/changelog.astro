@@ -13,24 +13,16 @@ const entries = getSortedEntries();
 
 <BaseLayout
   title="Changelog | Resilience Hub Toolkit"
-  description="Stay up to date with the latest updates, improvements, and new features in the Resilience Hub Toolkit."
+  description="What's new in the Resilience Hub Toolkit."
 >
   <article class="container mx-auto px-4 py-8 max-w-3xl">
     <!-- Page Header -->
     <header class="mb-8">
       <h1 class="text-hero font-semibold mb-4 text-foreground">Changelog</h1>
       <p class="text-body-large text-muted-foreground">
-        Stay up to date with the latest updates, improvements, and new features.
+        New in the toolkit.
       </p>
     </header>
-
-    <!-- Newsletter Subscription -->
-    <div class="mb-12">
-      <NewsletterSubscribe
-        title="Get updates in your inbox"
-        description="Subscribe to be notified when we release new features and improvements."
-      />
-    </div>
 
     <!-- Changelog Entries -->
     <div class="changelog-entries">
@@ -50,7 +42,7 @@ const entries = getSortedEntries();
     {entries.length === 0 && (
       <div class="text-center py-16">
         <p class="text-body-large text-muted-foreground">
-          No changelog entries yet. Check back soon!
+          No entries yet.
         </p>
       </div>
     )}
@@ -58,8 +50,8 @@ const entries = getSortedEntries();
     <!-- Bottom Subscribe CTA -->
     <div class="mt-12">
       <NewsletterSubscribe
-        title="Stay in the loop"
-        description="Enter your email to hear about new toolkit features and resources as they're added."
+        title="Get updates by email"
+        description="Get an email when new resources are added."
       />
     </div>
 

@@ -42,9 +42,8 @@ export function InfoCalloutBanner() {
         />
       </svg>
       <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.5, color: 'var(--foreground)' }}>
-        <strong>Your work saves on this device as you go.</strong> It stays private and works
-        offline, and nothing goes to the cloud or to Google Drive. Back it up to keep a copy you
-        can reload later.
+        <strong>Your work is saved on this device, not the cloud.</strong> Back it up to keep a
+        copy you can restore later.
       </p>
     </div>
   );

@@ -33,7 +33,7 @@ function formatHTMLExport(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Community Reflection — ${tableName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</title>
+<title>My Community Reflection: ${tableName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</title>
 <style>
 body { font-family: 'Outfit', system-ui, -apple-system, sans-serif; max-width: 640px; margin: 0 auto; padding: 40px 24px; color: #333; background: #fff; }
 h1 { font-size: 24px; font-weight: 600; margin-bottom: 32px; }
@@ -45,7 +45,7 @@ hr { border: none; border-top: 1px solid #e5e5e5; margin: 24px 0; }
 </style>
 </head>
 <body>
-<h1>My Community Reflection — ${tableName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h1>
+<h1>My Community Reflection: ${tableName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</h1>
 ${entries}
 <p class="footer">Exported from Resilience Hub Toolkit</p>
 </body>
@@ -104,7 +104,7 @@ describe('HTML export', () => {
     expect(html).toContain('<!DOCTYPE html>');
     expect(html).toContain('<meta charset="utf-8">');
     expect(html).toContain('<meta name="viewport"');
-    expect(html).toContain('<title>My Community Reflection — Place Characteristics</title>');
+    expect(html).toContain('<title>My Community Reflection: Place Characteristics</title>');
     expect(html).toContain('<h3>What are the biggest challenges?</h3>');
     expect(html).toContain('<p>Flooding and isolation</p>');
     expect(html).toContain('<p class="no-response">No response</p>');

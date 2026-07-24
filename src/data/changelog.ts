@@ -102,8 +102,8 @@ export const changelogEntries: ChangelogEntry[] = [
         heading: 'How it works under the hood',
         content: `
           <p>For the curious: the toolkit uses two built-in browser features to work offline.</p>
-          <p><strong>For saving your data:</strong> Every checklist item, note, and table entry is stored in a small database built into the browser itself, called IndexedDB. It works like a filing cabinet inside the browser—organized, private, and accessible only from this site on this device. Nothing is ever sent over the internet.</p>
-          <p><strong>For saving the site itself:</strong> The first time the site loads, a background helper called a Service Worker quietly downloads and stores every page, image, and tool the toolkit uses. After that, the entire site can load and run without any internet connection at all—just like an app installed on a phone.</p>
+          <p><strong>For saving your data:</strong> Every checklist item, note, and table entry is stored in a small database built into the browser itself, called IndexedDB. It works like a filing cabinet inside the browser: organized, private, and accessible only from this site on this device. Nothing is ever sent over the internet.</p>
+          <p><strong>For saving the site itself:</strong> The first time the site loads, a background helper called a Service Worker quietly downloads and stores every page, image, and tool the toolkit uses. After that, the entire site can load and run without any internet connection at all, just like an app installed on a phone.</p>
           <p>Both of these are standard features available in every modern browser. No plugins, extensions, or special software needed.</p>
         `,
       },
@@ -133,9 +133,9 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         heading: 'Personal Dashboard',
         content: `
-          <p>A new dashboard gives you a personal overview of your preparedness journey. As you work through the toolkit's checklists, the dashboard tracks your progress across all modules—showing items completed, modules started, and your most recent activity.</p>
+          <p>A new dashboard gives you a personal overview of your preparedness journey. As you work through the toolkit's checklists, the dashboard tracks your progress across all modules, showing items completed, modules started, and your most recent activity.</p>
           <p>Expand any module in "Progress by Module" to see a per-section breakdown (e.g., how many Emergency Kits items you've checked off vs. Food & Water). The sidebar on each module page also reflects your progress in real time, so you always know where you left off.</p>
-          <p>All data is stored locally on your device—nothing is sent to any server.</p>
+          <p>All data is stored locally on your device. Nothing is sent to any server.</p>
           <p><a href="/dashboard">Go to your Dashboard</a></p>
         `,
         image: {
@@ -149,7 +149,7 @@ export const changelogEntries: ChangelogEntry[] = [
         content: `
           <p>The homepage now features an "Explore the toolkit yourself" section with phase filters. Click Before, During, or After to see which modules apply to each stage of a disaster. General modules like the Introduction and Resource Library always stay visible so new visitors can find their way around.</p>
           <p>Each module appears as a button with its icon and colored phase dots. Hover or tap on any module to see a short description.</p>
-          <p>The explorer also includes a keyword search — just start typing to find content across the entire toolkit. Results appear as you type, with your search terms highlighted. This search works even without an internet connection.</p>
+          <p>The explorer also includes a keyword search: just start typing to find content across the entire toolkit. Results appear as you type, with your search terms highlighted. This search works even without an internet connection.</p>
           <p><a href="/">Try it on the homepage</a></p>
         `,
         image: {
@@ -175,7 +175,7 @@ export const changelogEntries: ChangelogEntry[] = [
         heading: 'Community Resilience Map',
         content: `
           <p>The Find Your Town page now features a map, showing regional service areas across Vermont.</p>
-          <p>Click the map to open it full-size in a new browser tab—especially helpful on mobile devices where you can pinch to zoom. Interactive features coming soon.</p>
+          <p>Click the map to open it full-size in a new browser tab, especially helpful on mobile devices where you can pinch to zoom. Interactive features coming soon.</p>
           <p><a href="/map">View the Community Resilience Map</a></p>
         `,
         image: {

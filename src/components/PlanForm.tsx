@@ -28,7 +28,7 @@ export interface PlanFormProps {
   page?: string;
 }
 
-const DEFAULT_SUBTITLE = 'Fill in what you know. You can always come back.';
+const DEFAULT_SUBTITLE = 'Fill in what you know.';
 
 /** Auto-resize a textarea to fit its content (JS fallback for browsers without field-sizing). */
 function autoResizeTextarea(el: HTMLTextAreaElement): void {

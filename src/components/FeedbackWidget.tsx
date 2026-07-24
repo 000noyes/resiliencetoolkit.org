@@ -89,7 +89,7 @@ export default function FeedbackWidget() {
                     id="feedback-modal-description"
                     className="text-body-small text-muted-foreground mt-xxs"
                   >
-                    This toolkit keeps growing through real use. Your feedback helps show where things flow well, where they get stuck, and what could be clearer next time.
+                    Tell us what's working and what isn't. That's how the toolkit improves.
                   </p>
                 </div>
                 <button
@@ -125,7 +125,7 @@ export default function FeedbackWidget() {
                       </svg>
                     </div>
                     <p className="text-body font-medium text-foreground">
-                      Your email client should be open.
+                      Check your email app to send it.
                     </p>
                     <p className="text-body-small text-muted-foreground mt-xs">
                       If it didn't open, email us directly at{' '}
