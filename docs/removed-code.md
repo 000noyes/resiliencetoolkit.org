@@ -97,3 +97,10 @@ the safety answer and crushed in the narrow rail. It is replaced by a single qui
 | File | Why removed |
 |------|-------------|
 | `src/components/UserProgressDashboard.tsx` | Retired from the dashboard rail. Its metric cards, activity feed, and off-system blue/amber chips were the inverted-hierarchy problem the redesign fixes; replaced by `WorkProgress.tsx` (a quiet, chroma-0, navigational progress list). It was the component's only mount point. Recover from git history. |
+
+## 2026-07-24 — corner panel replaces the feedback pill
+
+| File | Why removed |
+|------|-------------|
+| `src/components/FeedbackWidget.tsx` | The "Have Questions?" pill and its mailto modal are superseded by `CornerPanel.tsx`, whose Questions door carries the same modal and destination |
+| `src/components/FeedbackWidgetWrapper.tsx` | Renderer-probe shield for the removed pill; `CornerPanelWrapper.tsx` plays the same role for the panel |
