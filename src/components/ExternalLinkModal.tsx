@@ -161,7 +161,7 @@ export default function ExternalLinkModal({
 
         {/* Description */}
         <p id="modal-description" className="external-link-modal__description">
-          You are about to open an external link to {domain}. Click "Open Link" to continue or "Cancel" to stay here.
+          This link goes to {domain}, outside the toolkit.
         </p>
 
         {/* Remember Domain Checkbox */}
