@@ -89,7 +89,7 @@ export default function FeedbackWidget() {
                     id="feedback-modal-description"
                     className="text-body-small text-muted-foreground mt-xxs"
                   >
-                    Tell us what's working and what isn't — it's how the toolkit improves.
+                    Tell us what's working and what isn't. That's how the toolkit improves.
                   </p>
                 </div>
                 <button
