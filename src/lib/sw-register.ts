@@ -44,6 +44,23 @@ const isDev = () =>
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
+/**
+ * Hosts where the offline-first worker belongs. Everything else — the
+ * workshop subdomain, preview deployments — must never run a service worker:
+ * the workshop copy's frozen pages are served fresh from the network, and a
+ * leftover worker from an earlier visit is actively unregistered (its sw.js
+ * additionally self-destructs; see public/sw.js). rt.localhost is the
+ * Playwright origin the offline suite registers on.
+ */
+const SW_REGISTER_HOSTS = new Set([
+  'resiliencetoolkit.org',
+  'www.resiliencetoolkit.org',
+  'rt.localhost',
+]);
+
+const isNonProductionHost = () =>
+  typeof window !== 'undefined' && !SW_REGISTER_HOSTS.has(window.location.hostname);
+
 /** DOM id of the rotation notice; presence doubles as the injection guard. */
 const ROTATION_NOTICE_ID = 'rt-sw-rotation-notice';
 
@@ -94,10 +111,25 @@ function setReadyVersion(version: string | null): void {
 export function registerServiceWorker() {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
 
-  if (isDev()) {
+  if (isDev() || isNonProductionHost()) {
     navigator.serviceWorker.getRegistrations().then((regs) => {
       regs.forEach((reg) => reg.unregister());
     });
+    // Unregistering aborts the browser's pending update to the
+    // self-destructing sw.js, so ITS cache cleanup may never run. The page
+    // has the same CacheStorage access: delete the app caches here too, so
+    // an old offline-first generation can never sit orphaned against the
+    // storage quota (iOS eviction takes IndexedDB with it). Best-effort.
+    if (typeof caches !== 'undefined') {
+      caches
+        .keys()
+        .then((names) =>
+          Promise.allSettled(
+            names.filter((name) => name.startsWith('resilience-hub-')).map((name) => caches.delete(name))
+          )
+        )
+        .catch(() => {});
+    }
     return;
   }
 

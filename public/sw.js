@@ -73,6 +73,65 @@ const ESSENTIAL_ASSETS = [
 
 const OFFLINE_PAGE = '/offline/';
 
+// Hosts this worker is allowed to serve. On any other host (the workshop
+// subdomain, preview deployments) a served copy of this file SELF-DESTRUCTS:
+// it promotes immediately, deletes every resilience-hub-* cache, unregisters,
+// and claims, so the next navigation is network-fresh. Deleting sw.js from a
+// deploy is NOT enough (a 404 only unregisters after an update check
+// completes, days-stale on iOS), so the guard ships in the worker itself and
+// survives merges from main. Every other handler below is inert on such a
+// host. rt.localhost / localhost are the test origins.
+// NB: this list is deliberately WIDER than the register-side allowlist in
+// src/lib/sw-register.ts (which never registers on localhost/127.0.0.1, its
+// dev guard). Listing the dev hosts here keeps a manually registered dev
+// worker functional instead of self-destroying mid-development; net behavior
+// stays consistent because the page side unregisters there anyway.
+const SW_PRODUCTION_HOSTS = [
+  'resiliencetoolkit.org',
+  'www.resiliencetoolkit.org',
+  'rt.localhost',
+  'localhost',
+  '127.0.0.1',
+];
+const IS_NONPRODUCTION_HOST = SW_PRODUCTION_HOSTS.indexOf(location.hostname) === -1;
+
+if (IS_NONPRODUCTION_HOST) {
+  self.addEventListener('install', () => {
+    self.skipWaiting();
+  });
+  self.addEventListener('activate', (event) => {
+    // Every step is failure-tolerant and unregister runs FIRST: a single
+    // caches.delete rejection (storage pressure, post-eviction UnknownError)
+    // must never strand a registered-but-inert worker, because activate
+    // never re-fires for this worker and its fetch handler is inert (no
+    // retry hook). After claim, open tabs are reloaded so no stale page
+    // limps on an emptied cache with a fetch handler that stores nothing.
+    event.waitUntil(
+      (async () => {
+        await self.registration.unregister().catch(() => {});
+        let names = [];
+        try {
+          names = await caches.keys();
+        } catch {
+          /* storage unavailable; nothing to delete */
+        }
+        await Promise.allSettled(
+          names.filter((name) => name.startsWith('resilience-hub-')).map((name) => caches.delete(name))
+        );
+        await self.clients.claim().catch(() => {});
+        try {
+          const clientList = await self.clients.matchAll({ type: 'window' });
+          clientList.forEach((client) => {
+            if (client.navigate) client.navigate(client.url).catch(() => {});
+          });
+        } catch {
+          /* reload is best-effort */
+        }
+      })()
+    );
+  });
+}
+
 // Directory routes from the precache list, used to route navigations.
 const PRECACHE_ROUTES = new Set(PRECACHE_ASSETS.filter((p) => p.endsWith('/')));
 
@@ -295,6 +354,7 @@ async function topUpPrecache({ prune = true } = {}) {
 }
 
 self.addEventListener('install', (event) => {
+  if (IS_NONPRODUCTION_HOST) return;
   event.waitUntil(
     (async () => {
       // Read the ramp state BEFORE this install creates the v2 cache.
@@ -327,6 +387,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  if (IS_NONPRODUCTION_HOST) return;
   event.waitUntil(
     (async () => {
       // Heal marker BEFORE claim: claim dispatches controllerchange and pages
@@ -353,6 +414,7 @@ self.addEventListener('activate', (event) => {
 // dispatch on those. Unknown inbound shapes (REGISTER_SYNC and anything
 // legacy pages send) are silently ignored.
 self.addEventListener('message', (event) => {
+  if (IS_NONPRODUCTION_HOST) return;
   const data = event.data;
   if (data === 'PRECACHE_TOPUP') {
     event.waitUntil(topUpPrecache());
@@ -470,6 +532,7 @@ async function handleNavigation(event) {
 let startupTaskRan = false;
 
 self.addEventListener('fetch', (event) => {
+  if (IS_NONPRODUCTION_HOST) return;
   if (!startupTaskRan) {
     startupTaskRan = true;
     event.waitUntil(

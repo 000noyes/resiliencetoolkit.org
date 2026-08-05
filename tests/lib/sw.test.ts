@@ -147,6 +147,7 @@ interface SWSandbox {
   addPoisonsOnce: Set<string>;
   skipWaitingCalls: number;
   clientsClaimCalls: number;
+  unregisterCalls: number;
   windowClients: Array<{ visibilityState?: string }>;
   deletedCaches: string[];
   matchAllCalls: any[];
@@ -169,6 +170,11 @@ function createSandbox(opts?: {
    * healMarker: false to model a pre-heal device.
    */
   healMarker?: boolean;
+  /**
+   * Hostname the worker believes it is running on. Defaults to the
+   * production apex; the self-destruct tests set the workshop subdomain.
+   */
+  hostname?: string;
 }): { sandbox: SWSandbox; context: any } {
   const precache = opts?.precache ?? DEFAULT_PRECACHE;
   let swSrc = swSrcRaw.replace(
@@ -194,6 +200,7 @@ function createSandbox(opts?: {
     addPoisons: new Set(),
     addPoisonsOnce: new Set(),
     skipWaitingCalls: 0,
+    unregisterCalls: 0,
     clientsClaimCalls: 0,
     windowClients: [],
     deletedCaches: [],
@@ -240,7 +247,13 @@ function createSandbox(opts?: {
     skipWaiting: () => {
       sandbox.skipWaitingCalls += 1;
     },
-    registration: { active: {} },
+    registration: {
+      active: {},
+      unregister: () => {
+        sandbox.unregisterCalls += 1;
+        return Promise.resolve(true);
+      },
+    },
     clients: {
       claim: () => {
         sandbox.clientsClaimCalls += 1;
@@ -260,7 +273,7 @@ function createSandbox(opts?: {
     Response: FakeResponse,
     Request: FakeRequest,
     URL,
-    location: { origin: ORIGIN },
+    location: { origin: ORIGIN, hostname: opts?.hostname ?? 'resiliencetoolkit.org' },
     console: { warn: () => {}, log: () => {}, error: () => {} },
     setTimeout,
   };
@@ -1222,5 +1235,141 @@ describe('sw.js — CDN-poison defense (HTML must never be stored or served unde
     expect(sandbox.fetchMock).toHaveBeenCalledTimes(1);
     await new Promise((r) => setTimeout(r, 0));
     expect(sandbox.stores.get(CURRENT_CACHE)!.entries.has('/embedded-frame')).toBe(true);
+  });
+});
+
+// E6: on any host outside the production set (the workshop subdomain, preview
+// deployments), a served copy of this worker must refuse to act as an
+// offline-first worker and instead remove itself: skipWaiting at install,
+// then at activate delete every resilience-hub-* cache, unregister, and
+// claim so the next navigation is network-fresh. All normal handlers stay
+// inert there. Production hostnames (and the Playwright origins) keep the
+// entire existing lifecycle — the rest of this file is that proof.
+describe('self-destruct on non-production hosts', () => {
+  const WORKSHOP = 'workshop.resiliencetoolkit.org';
+
+  function dispatchAll(sandbox: SWSandbox, type: string, event: any) {
+    for (const handler of sandbox.listeners[type] ?? []) handler(event);
+    return event._waitPromise;
+  }
+
+  it('install: promotes immediately and fills no caches', async () => {
+    const { sandbox } = createSandbox({ hostname: WORKSHOP });
+    const event = makeExtendableEvent();
+    await dispatchAll(sandbox, 'install', event);
+    expect(sandbox.skipWaitingCalls).toBe(1);
+    const current = sandbox.stores.get(CURRENT_CACHE);
+    expect(current?.addCalls ?? []).toHaveLength(0);
+  });
+
+  it('activate: deletes every resilience-hub-* cache (markers included), unregisters, claims', async () => {
+    const { sandbox } = createSandbox({
+      hostname: WORKSHOP,
+      seedCaches: {
+        [CURRENT_CACHE]: ['/'],
+        'resilience-hub-v-build-20250301000000': ['/'],
+        [RAMP_MARKER]: [],
+        'unrelated-cache': ['/keep'],
+      },
+    });
+    const event = makeExtendableEvent();
+    await dispatchAll(sandbox, 'activate', event);
+    const remaining = [...sandbox.stores.keys()];
+    expect(remaining.filter((n) => n.startsWith('resilience-hub-'))).toHaveLength(0);
+    expect(remaining).toContain('unrelated-cache');
+    expect(sandbox.unregisterCalls).toBe(1);
+    expect(sandbox.clientsClaimCalls).toBe(1);
+  });
+
+  it('fetch: never intercepts — navigations and assets pass through to the network', async () => {
+    const { sandbox } = createSandbox({
+      hostname: WORKSHOP,
+      seedCaches: { [CURRENT_CACHE]: ['/', '/dashboard/'] },
+    });
+    const nav = makeFetchEvent({ url: ORIGIN + '/dashboard/', mode: 'navigate' });
+    for (const handler of sandbox.listeners.fetch ?? []) handler(nav);
+    expect(nav._responded).toBe(false);
+    const asset = makeFetchEvent({ url: ORIGIN + '/_astro/a.css', destination: 'style' });
+    for (const handler of sandbox.listeners.fetch ?? []) handler(asset);
+    expect(asset._responded).toBe(false);
+  });
+
+  it('message: the rotation protocol is ignored', async () => {
+    const { sandbox } = createSandbox({ hostname: WORKSHOP });
+    const event = makeMessageEvent({ type: 'SKIP_WAITING' });
+    for (const handler of sandbox.listeners.message ?? []) handler(event);
+    await event._waitPromise;
+    expect(sandbox.skipWaitingCalls).toBe(0);
+    const warm = makeMessageEvent({ type: 'PRECACHE_WARM' });
+    for (const handler of sandbox.listeners.message ?? []) handler(warm);
+    await warm._waitPromise;
+    expect(warm.source.postMessage).not.toHaveBeenCalled();
+  });
+
+  it('production hostname keeps the normal install path (no destruct listeners fire)', async () => {
+    const { sandbox } = createSandbox();
+    await runInstall(sandbox);
+    expect(sandbox.unregisterCalls).toBe(0);
+    const current = sandbox.stores.get(CURRENT_CACHE)!;
+    for (const essential of ESSENTIALS) {
+      expect(current.entries.has(essential)).toBe(true);
+    }
+  });
+
+  it('rt.localhost (the Playwright origin) is production-like: no self-destruct', async () => {
+    const { sandbox } = createSandbox({ hostname: 'rt.localhost' });
+    await runInstall(sandbox);
+    expect(sandbox.unregisterCalls).toBe(0);
+    expect(sandbox.stores.get(CURRENT_CACHE)!.entries.has('/offline/')).toBe(true);
+  });
+
+  it('a rejecting caches.delete never strands unregister or claim', async () => {
+    const { sandbox } = createSandbox({
+      hostname: WORKSHOP,
+      seedCaches: { [CURRENT_CACHE]: ['/'], [RAMP_MARKER]: [] },
+    });
+    const realDelete = sandbox.caches.delete;
+    sandbox.caches.delete = vi.fn(async (name: string) => {
+      if (name === RAMP_MARKER) throw new Error('UnknownError');
+      return realDelete(name);
+    });
+    const event = makeExtendableEvent();
+    for (const handler of sandbox.listeners.activate ?? []) handler(event);
+    await event._waitPromise;
+    expect(sandbox.unregisterCalls).toBe(1);
+    expect(sandbox.clientsClaimCalls).toBe(1);
+    expect(sandbox.stores.has(CURRENT_CACHE)).toBe(false);
+  });
+
+  it('reloads claimed window clients so no stale tab limps on an emptied cache', async () => {
+    const { sandbox } = createSandbox({ hostname: WORKSHOP });
+    const navigate = vi.fn().mockResolvedValue(undefined);
+    sandbox.windowClients = [{ visibilityState: 'visible', navigate, url: '/dashboard/' } as any];
+    const event = makeExtendableEvent();
+    for (const handler of sandbox.listeners.activate ?? []) handler(event);
+    await event._waitPromise;
+    expect(navigate).toHaveBeenCalledWith('/dashboard/');
+  });
+
+  it('unregister runs before cache deletion (a storage failure cannot strand a live registration)', async () => {
+    const order: string[] = [];
+    const { sandbox, context } = createSandbox({
+      hostname: WORKSHOP,
+      seedCaches: { [CURRENT_CACHE]: ['/'] },
+    });
+    const realUnregister = context.self.registration.unregister;
+    context.self.registration.unregister = () => {
+      order.push('unregister');
+      return realUnregister();
+    };
+    const realKeys = sandbox.caches.keys;
+    sandbox.caches.keys = vi.fn(async () => {
+      order.push('keys');
+      return realKeys();
+    });
+    const event = makeExtendableEvent();
+    for (const handler of sandbox.listeners.activate ?? []) handler(event);
+    await event._waitPromise;
+    expect(order.slice(0, 2)).toEqual(['unregister', 'keys']);
   });
 });
