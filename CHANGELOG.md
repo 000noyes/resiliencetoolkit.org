@@ -2,6 +2,26 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.0.15.0] - 2026-07-24
+
+### Added
+- The corner button now opens a small panel of doors. Questions holds the
+  same message form as before. Fund this work shows the two ways to support
+  the toolkit: donate online, or mail a check with Toolkit in the memo. The
+  "Have Questions?" pill became a plus icon in the same corner.
+- The site can build a workshop copy of itself for review sessions: every
+  page there carries a plain strip naming what it is, search engines are told
+  to skip it, and the offline features stay off there so the copy is always
+  served fresh. The finished site keeps every offline feature.
+- Review rounds: a page reached only by a direct link where a group can tap
+  a spot, leave a numbered note with or without a name, read each other's
+  notes, and pick the conversation up at their next meeting. Notes are kept
+  even when saving fails: the words stay on screen with a retry and a copy
+  button. The round page prints cleanly.
+
+### Changed
+- Nothing on the finished site changes except the corner button.
+
 ## [0.0.14.0] - 2026-07-18
 
 ### Added

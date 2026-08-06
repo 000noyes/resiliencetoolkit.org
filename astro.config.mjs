@@ -8,6 +8,12 @@ export default defineConfig({
 
   output: 'static',
 
+  // The floating dev toolbar sits exactly where phone-viewport tests tap;
+  // test dev servers (playwright.workshop.config.ts) disable it via env.
+  devToolbar: {
+    enabled: !process.env.PLAYWRIGHT_TEST,
+  },
+
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp'

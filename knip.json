@@ -5,7 +5,8 @@
     "scripts/**/*.{ts,mjs}",
     "tests/**/*.{ts,tsx}",
     "functions/api/**/*.ts",
-    "playwright.offline.config.ts"
+    "playwright.offline.config.ts",
+    "playwright.workshop.config.ts"
   ],
   "project": ["src/**/*.{astro,ts,tsx}", "scripts/**/*.{ts,mjs}", "functions/**/*.ts"],
   "ignore": ["src/components/PlanForm.tsx"],
