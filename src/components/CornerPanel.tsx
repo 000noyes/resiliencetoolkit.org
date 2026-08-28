@@ -22,7 +22,7 @@ function ModalShell(props: {
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50"
       onClick={props.onClose}
     >
       <div
@@ -103,13 +103,12 @@ export function QuestionsModal(props: { onClose: () => void }) {
                 htmlFor="questions-textarea"
                 className="block text-label font-medium text-foreground mb-xs"
               >
-                What are you noticing?
+                Your message
               </label>
               <textarea
                 id="questions-textarea"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="What's working? What's confusing? What's missing?"
                 rows={5}
                 className="w-full px-md py-md border border-border rounded-lg bg-input text-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-default ease-default shadow-ambient resize-none"
                 required
@@ -229,7 +228,7 @@ export default function CornerPanel({ staticOpen = false }: { staticOpen?: boole
     <>
       <div
         data-annot="corner-panel"
-        className={`fixed right-md md:right-lg z-40 flex flex-col items-end gap-sm ${
+        className={`fixed right-md md:right-lg z-[60] flex flex-col items-end gap-sm ${
           // On the frozen round page the open proposal sits above the
           // page's own bottom action bar (Leave a note), so on a phone
           // neither covers the other; in normal use the button keeps its
@@ -238,7 +237,7 @@ export default function CornerPanel({ staticOpen = false }: { staticOpen?: boole
         }`}
       >
         {isOpen && (
-          <div className="w-72 max-w-[calc(100vw-2rem)] p-sm flex flex-col gap-sm bg-card border border-border rounded-xl shadow-modal">
+          <div className="w-72 max-w-[calc(100vw-2rem)] max-h-[70vh] overflow-y-auto p-sm flex flex-col gap-sm bg-card border border-border rounded-xl shadow-modal">
             <DoorRow
               icon={
                 <svg

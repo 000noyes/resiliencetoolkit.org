@@ -101,8 +101,7 @@ const isWorkshop = process.env.WORKSHOP === '1';
         <div class="bg-muted border-y border-border" role="note">
           <div class="container mx-auto px-4 py-2.5">
             <p class="text-[13.5px] leading-snug text-foreground text-center" style="text-wrap: balance">
-              This is the workshop copy of the toolkit, where new pieces get shaped. The finished
-              site is{' '}
+              This is the workshop copy of the toolkit. The finished site is{' '}
               <a
                 href="https://resiliencetoolkit.org"
                 class="underline underline-offset-2 hover:opacity-80 transition-opacity"
@@ -117,7 +116,7 @@ const isWorkshop = process.env.WORKSHOP === '1';
     {!isPrintMode && <BetaBanner client:idle />}
     {!isPrintMode && <StorageHealthBanner client:idle />}
     {!isPrintMode && <UpdateBanner client:idle />}
-    {!isPrintMode && <StatusBanner />}
+    {!isPrintMode && !isWorkshop && <StatusBanner />}
     {!isPrintMode && <Header />}
 
     <main id="main-content" class="flex-1">

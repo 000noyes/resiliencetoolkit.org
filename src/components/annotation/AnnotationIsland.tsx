@@ -81,6 +81,18 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
 
   useEffect(() => setMounted(true), []);
 
+  // The round is one frozen page: a tapped content link would silently leave
+  // it, so links open in a new tab and the round stays put underneath.
+  useEffect(() => {
+    document
+      .querySelectorAll<HTMLAnchorElement>('main a[href]')
+      .forEach((a) => {
+        if (a.closest('[data-annot-ui]')) return;
+        a.target = '_blank';
+        a.rel = 'noopener';
+      });
+  }, []);
+
   // Load the round: status + threads. Failure leaves the frozen page fully
   // readable with the notes marked unavailable; no fake empty state.
   useEffect(() => {
@@ -355,7 +367,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
           <button
             type="button"
             onClick={() => openCompose({ kind: 'whole' })}
-            className="pointer-events-auto text-body-small text-foreground underline underline-offset-2 hover:opacity-80 bg-background/90 px-sm py-xxs rounded-lg"
+            className="pointer-events-auto text-body-small text-foreground underline underline-offset-2 hover:opacity-80 bg-background border border-border px-sm py-xxs rounded-lg shadow-ambient"
           >
             Note on the whole page.
           </button>
@@ -364,7 +376,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
       {isOpen && placing && (
         <div data-annot-ui className="fixed inset-x-0 bottom-6 z-30 flex justify-center">
           <div className="flex items-center gap-md bg-card border border-border rounded-xl shadow-modal px-lg py-md">
-            <p className="text-body text-foreground">Tap the spot you mean.</p>
+            <p className="text-body text-foreground">Tap where the note goes.</p>
             <button
               type="button"
               onClick={() => setPlacing(false)}
@@ -456,7 +468,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
                     htmlFor="annot-textarea"
                     className="block text-label font-medium text-foreground mb-xs"
                   >
-                    What are you noticing?
+                    Your note
                   </label>
                   <textarea
                     id="annot-textarea"

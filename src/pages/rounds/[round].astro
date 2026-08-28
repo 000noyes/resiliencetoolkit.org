@@ -24,11 +24,9 @@ const roundNumber = String(round).split('-')[0].replace(/^r/, '');
 
 <BaseLayout title="Workshop round" panel="static-open">
   <div class="border-b border-border bg-card">
-    <div class="container mx-auto px-4 py-4 text-center">
-      <h1 class="text-title font-semibold text-foreground">Round {roundNumber}</h1>
-      <p class="text-body-small text-muted-foreground mt-xxs">
-        Notes from this round go to the group's next meeting.
-      </p>
+    <div class="container mx-auto px-4 py-2 text-center">
+      <h1 class="inline text-body font-semibold text-foreground">Round {roundNumber}</h1><span
+        class="text-body-small text-muted-foreground"> &middot; read together at the next meeting</span>
     </div>
   </div>
   <div id="round-status-slot"></div>
