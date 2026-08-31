@@ -25,7 +25,7 @@ describe('CornerPanel — closed state (production default)', () => {
 
   it('keeps the panel and both modals closed', () => {
     expect(html).not.toContain('Fund this work');
-    expect(html).not.toContain('What are you noticing?');
+    expect(html).not.toContain('Your message');
   });
 
   it('meets the 44px target floor on the corner button (h-12 w-12)', () => {
@@ -55,7 +55,7 @@ describe('CornerPanel — static open (the round page proposal, inert)', () => {
   });
 
   it('renders no modal content on the frozen surface', () => {
-    expect(html).not.toContain('What are you noticing?');
+    expect(html).not.toContain('Your message');
     expect(html).not.toContain('Donate online');
   });
 });
@@ -65,7 +65,7 @@ describe('QuestionsModal — the mailto door destination', () => {
 
   it('keeps the compose form the pill always led to (mailto fires on submit)', () => {
     expect(html).toContain('Have Questions?');
-    expect(html).toContain('What are you noticing?');
+    expect(html).toContain('Your message');
     expect(html).toContain('>Send<');
   });
 });

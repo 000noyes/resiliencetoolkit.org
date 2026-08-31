@@ -138,7 +138,7 @@ async function mockApi(page: Page, overrides: Partial<MockState> = {}): Promise<
 
 async function placePinAndOpenSheet(page: Page) {
   await page.getByRole('button', { name: 'Leave a note' }).click();
-  await expect(page.getByText('Tap the spot you mean.')).toBeVisible();
+  await expect(page.getByText('Tap where the note goes.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Leave a note' })).toBeHidden();
   await page.locator('[data-annot="hero"]').click({ position: { x: 120, y: 80 } });
   await expect(page.getByRole('dialog', { name: 'New note' })).toBeVisible();
@@ -150,7 +150,7 @@ test('round chrome: strip, header, destination line, inert two-door panel, noind
 
   await expect(page.getByText('This is the workshop copy of the toolkit')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Round 1' })).toBeVisible();
-  await expect(page.getByText("Notes from this round go to the group's next meeting.")).toBeVisible();
+  await expect(page.getByText('read together at the next meeting')).toBeVisible();
 
   await expect(page.getByText('Write to the people who tend this toolkit.')).toBeVisible();
   await expect(page.getByText('Help keep the hubs and this toolkit going.')).toBeVisible();
