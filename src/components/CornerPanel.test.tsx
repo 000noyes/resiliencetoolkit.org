@@ -3,11 +3,11 @@
  * Corner panel render contract (the pill's successor).
  *
  * Static-render assertions: the closed state is the icon-only plus button
- * (the old text pill is gone), the open state holds exactly the two doors
- * that really open — Questions, then Fund this work with the sprout accent —
- * and each door's modal carries its working destination (the mailto path;
- * the donate link plus the mail-a-check line). The inert round-page mode
- * renders the open panel with no modals.
+ * (the old text pill is gone) with no doors and no modal content, and each
+ * door's modal carries its working destination (the mailto path; the donate
+ * link plus the mail-a-check line). One component, everywhere: round pages
+ * mount this same closed interactive panel, so these assertions cover the
+ * workshop surface too.
  */
 import React from 'react';
 import { describe, it, expect } from 'vitest';
@@ -31,32 +31,6 @@ describe('CornerPanel — closed state (production default)', () => {
   it('meets the 44px target floor on the corner button (h-12 w-12)', () => {
     expect(html).toMatch(/h-12/);
     expect(html).toMatch(/w-12/);
-  });
-});
-
-describe('CornerPanel — static open (the round page proposal, inert)', () => {
-  const html = renderToString(<CornerPanel staticOpen />);
-
-  it('renders exactly the two doors, fund last', () => {
-    const questionsAt = html.indexOf('Questions');
-    const fundAt = html.indexOf('Fund this work');
-    expect(questionsAt).toBeGreaterThan(-1);
-    expect(fundAt).toBeGreaterThan(questionsAt);
-    expect(html).not.toContain('Notes on this page');
-  });
-
-  it('carries each door sub-line', () => {
-    expect(html).toContain('Write to the people who tend this toolkit.');
-    expect(html).toContain('Help keep the hubs and this toolkit going.');
-  });
-
-  it('gives the fund door the green sprout accent', () => {
-    expect(html).toContain('text-table-accent');
-  });
-
-  it('renders no modal content on the frozen surface', () => {
-    expect(html).not.toContain('Your message');
-    expect(html).not.toContain('Donate online');
   });
 });
 

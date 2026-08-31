@@ -4,7 +4,9 @@ import HomeSurface from '@/components/HomeSurface.astro';
 import AnnotationIsland from '@/components/annotation/AnnotationIsland.tsx';
 
 // A review round: the reviewed surface rendered build-time from the real
-// components, inert, with the annotation island as the only hydrated JS.
+// components, inert, with two exceptions that hydrate: the annotation island
+// and the production corner panel (closed and interactive, exactly as it
+// ships, so the Questions door under review really works).
 //
 // The route exists only on workshop builds: the round id (r1-<token>) comes
 // from the ROUND_ID build variable set on the workshop project, so the token
@@ -22,7 +24,7 @@ const { round } = Astro.params;
 const roundNumber = String(round).split('-')[0].replace(/^r/, '');
 ---
 
-<BaseLayout title="Workshop round" panel="static-open">
+<BaseLayout title="Workshop round">
   <div class="border-b border-border bg-card">
     <div class="container mx-auto px-4 py-2 text-center">
       <h1 class="inline text-body font-semibold text-foreground">Round {roundNumber}</h1><span
@@ -37,6 +39,26 @@ const roundNumber = String(round).split('-')[0].replace(/^r/, '');
 </BaseLayout>
 
 <style is:global>
+  /* The island's docked bottom bar reserves its space: it publishes its
+     height as --annot-dock on the root, the page pads clear of it, and the
+     corner panel lifts by the same measure (the panel itself stays the
+     byte-identical production component; the variable is absent everywhere
+     else, so these rules change nothing off the round page). Screen-scoped
+     so print gains no trailing blank space. */
+  @media screen {
+    body {
+      padding-bottom: var(--annot-dock, 0px);
+    }
+    div[data-annot='corner-panel'] {
+      bottom: calc(var(--annot-dock, 0px) + var(--spacing-md));
+    }
+  }
+  @media screen and (min-width: 768px) {
+    div[data-annot='corner-panel'] {
+      bottom: calc(var(--annot-dock, 0px) + var(--spacing-lg));
+    }
+  }
+
   /* T9: the round prints clean for the meeting. Interactive chrome and the
      corner panel drop out; the pins stay as numbered dots in place and the
      island's notes list carries every thread. */
