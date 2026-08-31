@@ -8,8 +8,10 @@ import { Plus, X, Sprout } from 'lucide-react';
  * Questions (the mailto modal the pill always led to) and Fund this work
  * (the coalition's donate paths). Doors that do not open yet do not render.
  *
- * `staticOpen` is the workshop round-page mode: the panel renders open,
- * build-time, with no client JS. The proposal under review, inert.
+ * Workshop round pages mount this same component, hydrated, closed: the
+ * doors there behave exactly as they do here. The round page positions it
+ * clear of its own bottom bar via the --annot-dock custom property; this
+ * component carries no round-page awareness.
  */
 
 const CONTACT_EMAIL = 'resiliencetoolkit@gocros.org';
@@ -202,14 +204,13 @@ function DoorRow(props: DoorRowProps) {
   );
 }
 
-export default function CornerPanel({ staticOpen = false }: { staticOpen?: boolean }) {
-  const [isOpen, setIsOpen] = useState(staticOpen);
+export default function CornerPanel() {
+  const [isOpen, setIsOpen] = useState(false);
   const [door, setDoor] = useState<'questions' | 'fund' | null>(null);
 
   // Esc closes whatever is open, panel or modal (modals also close on scrim
   // tap and their own close buttons).
   useEffect(() => {
-    if (staticOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       setDoor(null);
@@ -217,7 +218,7 @@ export default function CornerPanel({ staticOpen = false }: { staticOpen?: boole
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [staticOpen]);
+  }, []);
 
   const openDoor = (which: 'questions' | 'fund') => {
     setIsOpen(false);
@@ -228,13 +229,7 @@ export default function CornerPanel({ staticOpen = false }: { staticOpen?: boole
     <>
       <div
         data-annot="corner-panel"
-        className={`fixed right-md md:right-lg z-[60] flex flex-col items-end gap-sm ${
-          // On the frozen round page the open proposal sits above the
-          // page's own bottom action bar (Leave a note), so on a phone
-          // neither covers the other; in normal use the button keeps its
-          // corner.
-          staticOpen ? 'bottom-28 md:bottom-32' : 'bottom-md md:bottom-lg'
-        }`}
+        className="fixed right-md md:right-lg bottom-md md:bottom-lg z-[60] flex flex-col items-end gap-sm"
       >
         {isOpen && (
           <div className="w-72 max-w-[calc(100vw-2rem)] max-h-[70vh] overflow-y-auto p-sm flex flex-col gap-sm bg-card border border-border rounded-xl shadow-modal">
@@ -257,20 +252,20 @@ export default function CornerPanel({ staticOpen = false }: { staticOpen?: boole
               }
               label="Questions"
               subline="Write to the people who tend this toolkit."
-              onOpen={staticOpen ? undefined : () => openDoor('questions')}
+              onOpen={() => openDoor('questions')}
             />
             <DoorRow
               icon={<Sprout className="w-5 h-5 text-table-accent" strokeWidth={2} />}
               label="Fund this work"
               subline="Help keep the hubs and this toolkit going."
-              onOpen={staticOpen ? undefined : () => openDoor('fund')}
+              onOpen={() => openDoor('fund')}
             />
           </div>
         )}
 
         <button
           type="button"
-          onClick={staticOpen ? undefined : () => setIsOpen((v) => !v)}
+          onClick={() => setIsOpen((v) => !v)}
           aria-haspopup="true"
           aria-expanded={isOpen}
           aria-label="Questions and support"

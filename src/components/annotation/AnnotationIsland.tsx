@@ -78,6 +78,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
   const draftUuid = useRef<string>('');
   const sheetRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -269,6 +270,30 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
   const unplacedThreads = threads.filter((t) => placement.unplaced.includes(t.pin_no));
   const isOpen = loadState === 'ready' && roundStatus === 'open';
   const statusSlot = mounted ? document.getElementById('round-status-slot') : null;
+  const roundNumber = roundId.split('-')[0].replace(/^r/, '');
+
+  // The docked bar reserves its space: publish its measured height as
+  // --annot-dock on the root so the page pads clear of it and the corner
+  // panel lifts above it (the round page's scoped CSS reads the variable;
+  // nothing else ever sets it). Removed whenever no bar is docked, so a
+  // closed round leaves the page and panel exactly as production lays them.
+  useEffect(() => {
+    const el = barRef.current;
+    const root = document.documentElement;
+    if (!el) {
+      root.style.removeProperty('--annot-dock');
+      return;
+    }
+    const update = () =>
+      root.style.setProperty('--annot-dock', `${Math.round(el.getBoundingClientRect().height)}px`);
+    update();
+    const observer = 'ResizeObserver' in window ? new ResizeObserver(update) : null;
+    observer?.observe(el);
+    return () => {
+      observer?.disconnect();
+      root.style.removeProperty('--annot-dock');
+    };
+  }, [isOpen, placing]);
 
   const threadFor = (pinNo: number) => threads.find((t) => t.pin_no === pinNo);
 
@@ -294,7 +319,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
           <div className="bg-muted border-b border-border">
             <div className="container mx-auto px-4 py-2.5">
               <p className="text-body-small text-foreground text-center">
-                Round 1 is closed. Reading is open; new notes go to the current round.
+                Round {roundNumber} is closed. Reading is open; new notes go to the current round.
                 {currentRoundId && (
                   <>
                     {' '}
@@ -351,36 +376,45 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
           );
         })}
 
-      {/* Bottom action area: Leave a note / the placing hint bar. */}
-      {isOpen && !sheet && !placing && (
+      {/* Docked bottom bar: a solid band that reserves its own space (the
+          page pads clear via --annot-dock), never floating over content.
+          The placing hint docks in the same band. */}
+      {isOpen && !placing && (
         <div
+          ref={barRef}
           data-annot-ui
-          className="fixed inset-x-0 bottom-6 z-30 flex flex-col items-center gap-sm pointer-events-none"
+          className="fixed inset-x-0 bottom-0 z-30 bg-card border-t border-border"
         >
-          <button
-            type="button"
-            onClick={() => setPlacing(true)}
-            className="pointer-events-auto h-12 px-lg rounded-xl bg-primary text-primary-foreground text-body font-medium shadow-raised hover:shadow-modal transition-all duration-default active:translate-y-px"
-          >
-            Leave a note
-          </button>
-          <button
-            type="button"
-            onClick={() => openCompose({ kind: 'whole' })}
-            className="pointer-events-auto text-body-small text-foreground underline underline-offset-2 hover:opacity-80 bg-background border border-border px-sm py-xxs rounded-lg shadow-ambient"
-          >
-            Note on the whole page.
-          </button>
+          <div className="container mx-auto px-4 py-sm flex flex-wrap items-center justify-center gap-x-md gap-y-xs">
+            <button
+              type="button"
+              onClick={() => setPlacing(true)}
+              className="h-12 px-lg rounded-xl bg-primary text-primary-foreground text-body font-medium shadow-raised hover:shadow-modal transition-all duration-default active:translate-y-px"
+            >
+              Leave a note
+            </button>
+            <button
+              type="button"
+              onClick={() => openCompose({ kind: 'whole' })}
+              className="min-h-[44px] text-body-small text-foreground underline underline-offset-2 hover:opacity-80 px-sm rounded-lg"
+            >
+              Note on the whole page.
+            </button>
+          </div>
         </div>
       )}
       {isOpen && placing && (
-        <div data-annot-ui className="fixed inset-x-0 bottom-6 z-30 flex justify-center">
-          <div className="flex items-center gap-md bg-card border border-border rounded-xl shadow-modal px-lg py-md">
+        <div
+          ref={barRef}
+          data-annot-ui
+          className="fixed inset-x-0 bottom-0 z-30 bg-card border-t border-border"
+        >
+          <div className="container mx-auto px-4 py-sm flex items-center justify-center gap-md">
             <p className="text-body text-foreground">Tap where the note goes.</p>
             <button
               type="button"
               onClick={() => setPlacing(false)}
-              className="h-10 px-md rounded-lg border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-colors duration-default"
+              className="h-11 px-md rounded-lg border border-border bg-background text-body font-medium text-foreground hover:bg-muted transition-colors duration-default"
             >
               Cancel
             </button>
@@ -393,7 +427,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
         <>
           <div
             data-annot-ui
-            className="fixed inset-0 z-40 bg-black/50"
+            className="fixed inset-0 z-[61] bg-black/50"
             onClick={closeSheet}
             aria-hidden="true"
           />
@@ -411,7 +445,7 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
                   : 'New note'
             }
             onKeyDown={onSheetKeyDown}
-            className="fixed inset-x-0 bottom-0 z-50 bg-card border-t border-border rounded-t-2xl shadow-modal max-h-[80vh] overflow-y-auto outline-none motion-safe:transition-transform"
+            className="fixed inset-x-0 bottom-0 z-[65] bg-card border-t border-border rounded-t-2xl shadow-modal max-h-[80vh] overflow-y-auto outline-none motion-safe:transition-transform"
           >
             <div className="mx-auto mt-sm mb-xs w-10 h-1 rounded-full bg-border" aria-hidden="true" />
             <div className="px-lg pb-lg max-w-2xl mx-auto">
@@ -447,6 +481,11 @@ export default function AnnotationIsland({ roundId }: { roundId: string }) {
                     </li>
                   ))}
                 </ul>
+              )}
+              {sheet.kind === 'whole' && wholePage.length === 0 && (
+                <p className="mb-md text-body text-muted-foreground">
+                  No notes yet this round. Notes from this round go to the group's next meeting.
+                </p>
               )}
               {sheet.kind === 'whole' && wholePage.length > 0 && (
                 <ul className="mb-md space-y-md">

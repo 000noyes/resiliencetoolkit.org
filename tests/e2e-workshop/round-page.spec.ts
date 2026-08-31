@@ -144,19 +144,88 @@ async function placePinAndOpenSheet(page: Page) {
   await expect(page.getByRole('dialog', { name: 'New note' })).toBeVisible();
 }
 
-test('round chrome: strip, header, destination line, inert two-door panel, noindex meta', async ({ page }) => {
+test('round chrome: one banner, header, closed working panel, noindex meta', async ({ page }) => {
   await mockApi(page);
   await page.goto(URL_PATH);
 
+  // DD17.1: the workshop strip is the single band; the contact banner never
+  // mounts on workshop pages.
   await expect(page.getByText('This is the workshop copy of the toolkit')).toBeVisible();
+  await expect(page.getByText('Contact us for support')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Round 1' })).toBeVisible();
   await expect(page.getByText('read together at the next meeting')).toBeVisible();
 
+  // DD17.3: the corner panel arrives closed, exactly as production behaves;
+  // its doors are one tap away and really work (the DD7 promise, kept).
+  const panelTrigger = page.getByRole('button', { name: 'Questions and support' });
+  await expect(panelTrigger).toBeVisible();
+  await expect(page.getByText('Write to the people who tend this toolkit.')).toHaveCount(0);
+  await panelTrigger.click();
   await expect(page.getByText('Write to the people who tend this toolkit.')).toBeVisible();
   await expect(page.getByText('Help keep the hubs and this toolkit going.')).toBeVisible();
   await expect(page.getByText('Notes on this page')).toHaveCount(0);
+  await page.getByRole('button', { name: /Write to the people who tend this toolkit/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Have Questions?' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+});
+
+test('docked bar reserves its space; the placing hint docks the same way', async ({ page }) => {
+  await mockApi(page);
+  await page.goto(URL_PATH);
+
+  // DD17.2: the bar is a solid docked band flush with the viewport bottom,
+  // and the page is padded clear of it by exactly the published height.
+  const leaveANote = page.getByRole('button', { name: 'Leave a note' });
+  await expect(leaveANote).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Note on the whole page.' })).toBeVisible();
+
+  const geometry = await page.evaluate(() => {
+    const dock = document.documentElement.style.getPropertyValue('--annot-dock');
+    const bar = document.evaluate(
+      "//button[normalize-space()='Leave a note']/ancestor::div[@data-annot-ui]",
+      document,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue as HTMLElement;
+    const rect = bar.getBoundingClientRect();
+    return {
+      dock,
+      barBottom: Math.round(rect.bottom),
+      barHeight: Math.round(rect.height),
+      viewport: window.innerHeight,
+      bodyPad: Math.round(parseFloat(getComputedStyle(document.body).paddingBottom)),
+    };
+  });
+  expect(geometry.barBottom).toBe(geometry.viewport);
+  expect(parseInt(geometry.dock, 10)).toBe(geometry.barHeight);
+  expect(geometry.bodyPad).toBe(geometry.barHeight);
+
+  // The corner panel trigger sits clear above the bar, never inside it.
+  const triggerBox = await page
+    .getByRole('button', { name: 'Questions and support' })
+    .boundingBox();
+  expect(triggerBox!.y + triggerBox!.height).toBeLessThanOrEqual(
+    geometry.viewport - geometry.barHeight
+  );
+
+  // The placing hint replaces the bar in the same docked band.
+  await leaveANote.click();
+  await expect(page.getByText('Tap where the note goes.')).toBeVisible();
+  const hintBottom = await page.evaluate(() => {
+    const hint = document.evaluate(
+      "//p[normalize-space()='Tap where the note goes.']/ancestor::div[@data-annot-ui]",
+      document,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue as HTMLElement;
+    return Math.round(hint.getBoundingClientRect().bottom);
+  });
+  expect(hintBottom).toBe(geometry.viewport);
 });
 
 test('place a pin, post, pin appears in place, reload persists', async ({ page }) => {
@@ -249,6 +318,13 @@ test('closed round: banner with successor link, no Leave a note, pins readable',
   await expect(page.getByRole('link', { name: 'Go to the current round' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Leave a note' })).toHaveCount(0);
 
+  // No bar docked on a closed round: the reserved space is released and the
+  // corner panel sits at its production corner.
+  const dock = await page.evaluate(() =>
+    document.documentElement.style.getPropertyValue('--annot-dock')
+  );
+  expect(dock).toBe('');
+
   await page.getByRole('button', { name: 'Note 1' }).click();
   await expect(page.getByRole('dialog').getByText('From the closed round.')).toBeVisible();
   await expect(page.locator('#annot-textarea')).toHaveCount(0);
@@ -287,6 +363,9 @@ test('whole-page note skips placement and lands in the notes list, no dot', asyn
 
   await page.getByRole('button', { name: 'Note on the whole page.' }).click();
   await expect(page.getByRole('dialog', { name: 'The whole page' })).toBeVisible();
+  await expect(
+    page.getByText("No notes yet this round. Notes from this round go to the group's next meeting.")
+  ).toBeVisible();
   await page.locator('#annot-textarea').fill('The page overall feels calm.');
   await page.getByRole('button', { name: 'Post', exact: true }).click();
 
@@ -310,7 +389,7 @@ test('sheet accessibility: focus lands inside, Esc closes, scrim closes', async 
   await expect(page.getByRole('dialog')).toHaveCount(0);
 
   await placePinAndOpenSheet(page);
-  await page.locator('.fixed.inset-0.z-40').click({ position: { x: 10, y: 10 } });
+  await page.locator('div[aria-hidden="true"].fixed.inset-0').click({ position: { x: 10, y: 10 } });
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 

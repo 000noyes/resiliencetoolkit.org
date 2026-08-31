@@ -11,18 +11,17 @@ import StorageHealthBanner from '../components/StorageHealthBanner.tsx';
 import UpdateBanner from '../components/UpdateBanner.tsx';
 // Wrapper prevents Astro's renderer probe from triggering hook warnings.
 import CornerPanelWrapper from '../components/CornerPanelWrapper.tsx';
-import CornerPanel from '../components/CornerPanel.tsx';
 
 interface Props {
   title?: string;
   description?: string;
   noPrint?: string[]; // Classes to hide when printing
   /**
-   * 'interactive' (default) hydrates the corner panel; 'static-open' renders
-   * it open and inert with no client JS (the workshop round page's proposal
-   * under review); 'none' omits it.
+   * 'interactive' (default) hydrates the corner panel; 'none' omits it.
+   * Workshop round pages use the default: the panel there is the production
+   * panel, closed and interactive, so its doors really work under review.
    */
-  panel?: 'interactive' | 'static-open' | 'none';
+  panel?: 'interactive' | 'none';
 }
 
 const {
@@ -113,7 +112,7 @@ const isWorkshop = process.env.WORKSHOP === '1';
         </div>
       )
     }
-    {!isPrintMode && <BetaBanner client:idle />}
+    {!isPrintMode && !isWorkshop && <BetaBanner client:idle />}
     {!isPrintMode && <StorageHealthBanner client:idle />}
     {!isPrintMode && <UpdateBanner client:idle />}
     {!isPrintMode && !isWorkshop && <StatusBanner />}
@@ -128,7 +127,6 @@ const isWorkshop = process.env.WORKSHOP === '1';
     <!-- Corner panel (questions + fund doors) -->
     {/* Use wrapper so Astro's renderer-only invocation never runs hooks directly */}
     {!isPrintMode && panel === 'interactive' && <CornerPanelWrapper client:load />}
-    {!isPrintMode && panel === 'static-open' && <CornerPanel staticOpen />}
 
     <script>
       import '@/lib/asset-rev'; // re-hash this entry chunk past the 2026-06-07 Cloudflare asset-poisoning incident
