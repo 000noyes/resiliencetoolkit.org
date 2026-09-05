@@ -2,20 +2,11 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "1.8",
-  title: "Populations with Specific Needs",
-  moduleTitle: "Emergency Preparedness and Response",
-  modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.7", title: "Sanitation and Hygiene", slug: "1-7" },
-  nextSection: { number: "1.9", title: "Community Emergency Response Plans", slug: "1-9" }
-};
 ---
 
 <!-- source: docs/source-specs/1-8-populations-with-specific-needs.md page: 54-59 -->
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="1.8">
       <h3 class="text-title font-semibold">Children, childcare, and youth engagement with disaster</h3>
       <p>Consider engaging older youth in recovery work—which can build a sense of belonging and connectedness with community in what can be an isolating time. See Section 1.10 on Volunteer Management for more.</p>
 

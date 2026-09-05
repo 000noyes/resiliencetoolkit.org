@@ -5,20 +5,11 @@ import Todo from '@/design-system/blocks/Todo';
 import SlotCollection from '@/design-system/blocks/SlotCollection';
 import ExternalLink from '@/components/ExternalLink.astro';
 import ActionButton from '@/components/ActionButton.astro';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "0.1",
-  title: "Knowing Your Community",
-  moduleTitle: "Knowing Your Community",
-  modulePath: "/modules",
-  prevSection: { number: "0.0", title: "Introduction", slug: "../introduction" },
-  nextSection: { number: "1.1", title: "Emergency preparedness kits", slug: "emergency-preparedness/1-1" }
-};
 ---
 
 <!-- source: docs/source-specs/0-1-knowing-your-community.md page: 10-23 -->
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="0.1">
       <section>
         <!-- Vermont Town Directory Callout — site-added editorial supplement, not in workbook -->
         <div class="bg-primary/5 border border-primary/20 rounded-lg p-6 my-8">

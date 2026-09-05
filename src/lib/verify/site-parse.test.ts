@@ -12,6 +12,27 @@ import {
 } from './site-parse';
 
 describe('site-parse: extractSectionNumber', () => {
+  it('extracts the number from the ModuleLayout sectionNumber prop', () => {
+    const src = `
+---
+import ModuleLayout from '@/layouts/ModuleLayout.astro';
+---
+
+<ModuleLayout sectionNumber="1.2">
+  <p>content</p>
+</ModuleLayout>`;
+    expect(extractSectionNumber(src)).toBe('1.2');
+  });
+
+  it('prefers the sectionNumber prop over a leftover sectionData block', () => {
+    const src = `
+const sectionData = { number: "9.9" };
+---
+<ModuleLayout sectionNumber="1.5">
+</ModuleLayout>`;
+    expect(extractSectionNumber(src)).toBe('1.5');
+  });
+
   it('extracts the number from a typed sectionData block', () => {
     const src = `
 const sectionData: SectionData = {

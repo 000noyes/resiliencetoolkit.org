@@ -2,20 +2,11 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "1.11",
-  title: "Flood Recovery Supplies and Work",
-  moduleTitle: "Emergency Preparedness and Response",
-  modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.10", title: "Volunteer Management", slug: "1-10" },
-  nextSection: { number: "1.12", title: "Mutual Aid/Neighbor to Neighbor (N2N)", slug: "1-12" }
-};
 ---
 
 <!-- source: docs/source-specs/1-11-flood-recovery-supplies-and-work.md page: 73-77 -->
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="1.11">
       <p>This section is focused on flood recovery for homes and other buildings, but can be useful for other disasters. These instructions were compiled by NEK Organizing, which has mucked and gutted hundreds of homes in the Kingdom.</p>
 
       <h3 class="text-title font-semibold">Managing flood site and survivor information</h3>
