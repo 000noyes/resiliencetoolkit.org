@@ -13,6 +13,12 @@
 
 export type Phase = 'Before' | 'During' | 'After';
 
+/**
+ * The one search surface. Every render's search jump (the tree foot, the
+ * phone sheet, the header box) targets this route through this constant.
+ */
+export const searchRoute = '/search';
+
 export interface Chapter {
   /** Printed toolkit section number, e.g. "1.2" */
   number: string;

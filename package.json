@@ -18,7 +18,8 @@
     "scaffold-spec": "tsx scripts/scaffold-spec.ts",
     "generate-icons": "node scripts/generate-icons.mjs",
     "knip": "knip",
-    "knip:files": "knip --include files"
+    "knip:files": "knip --include files",
+    "test:layout": "playwright test --config playwright.layout.config.ts"
   },
   "pnpm": {
     "overrides": {

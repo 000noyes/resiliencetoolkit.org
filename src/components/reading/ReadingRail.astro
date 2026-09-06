@@ -1,0 +1,85 @@
+---
+/**
+ * The right rail: the house for the reading page's right-hand tenants.
+ *
+ * On this page rests here (the re-housed contents scanner keeps its
+ * progress counters). One tenant is open at a time; closed tenants live
+ * as labeled edge buttons in a reserved 48px gutter that is part of the
+ * layout, never floating over content. Closing the last tenant returns
+ * the measure to the reader (DR3). Desktop panels are regions, never
+ * dialogs (ER7). Below 1200px the rail never translates down: On this
+ * page renders in flow at the top of the chapter instead, and the other
+ * doors live in the docked bar.
+ *
+ * Future tenants (Footnotes, Make Comments) mount beside the panel here;
+ * the swap rule and gutter grammar already hold them.
+ */
+import { TableOfContents } from '@/components/TableOfContents';
+
+interface Props {
+  moduleKey: string;
+}
+
+const { moduleKey } = Astro.props;
+---
+
+<aside class="reading-rail">
+  <div class="reading-rail__gutter" data-annot-ui>
+    <button
+      type="button"
+      class="reading-rail__edge-btn"
+      data-rail-open="on-this-page"
+      aria-expanded="true"
+      aria-controls="rail-panel-on-this-page"
+    >
+      On this page
+    </button>
+  </div>
+  <section
+    class="reading-rail__panel"
+    id="rail-panel-on-this-page"
+    data-rail-panel="on-this-page"
+    aria-label="On this page"
+    tabindex="-1"
+  >
+    <div class="reading-rail__panel-bar" data-annot-ui>
+      <button
+        type="button"
+        class="reading-rail__close"
+        data-rail-close="on-this-page"
+        aria-controls="rail-panel-on-this-page"
+      >
+        Close
+      </button>
+    </div>
+    <TableOfContents client:load moduleKey={moduleKey} />
+  </section>
+</aside>
+
+<script>
+  // One tenant open at a time. Open state lives on the grid as data-rail;
+  // the open panel replaces the gutter, the closed gutter returns the
+  // measure to the reader (DR3).
+  function setRail(open: boolean) {
+    const grid = document.querySelector('.reading-grid');
+    if (!grid) return;
+    grid.setAttribute('data-rail', open ? 'open' : 'closed');
+    grid
+      .querySelectorAll('[data-rail-open]')
+      .forEach((b) => b.setAttribute('aria-expanded', String(open)));
+    if (open) {
+      grid.querySelector<HTMLElement>('.reading-rail__panel')?.focus();
+    }
+  }
+  document.querySelectorAll('[data-rail-open]').forEach((btn) => {
+    btn.addEventListener('click', () => setRail(true));
+  });
+  document.querySelectorAll('[data-rail-close]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      setRail(false);
+      document
+        .querySelector<HTMLElement>('[data-rail-open="on-this-page"]')
+        ?.focus();
+    });
+  });
+</script>
