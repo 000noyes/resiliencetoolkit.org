@@ -262,9 +262,13 @@ export function useTableOfContents(containerSelector: string = 'article') {
     const timeoutId = setTimeout(scanDocument, 100);
     window.addEventListener('load', scanDocument);
 
-    // Re-scan when todos change
+    // Re-scan when todos change. The event fires from the toggle handler
+    // before React commits the checkbox to the DOM (checking hid this
+    // behind the streak writes; unchecking read a stale checked state and
+    // the counter never went down). Deferring one tick reads the DOM the
+    // reader actually sees.
     const handleTodoChange = () => {
-      scanDocument();
+      setTimeout(scanDocument, 0);
     };
 
     document.addEventListener('todo-changed', handleTodoChange);

@@ -6,7 +6,6 @@
  */
 
 export { TableOfContents } from './TableOfContents';
-export { TableOfContentsMobile } from './TableOfContentsMobile';
 export { TableOfContentsItem } from './TableOfContentsItem';
 export { useTableOfContents } from './useTableOfContents';
 export { useActiveSection, scrollToSection } from './useActiveSection';
@@ -15,5 +14,4 @@ export type {
   SectionProgress,
   TableOfContentsProps,
   TableOfContentsItemProps,
-  TableOfContentsMobileProps,
 } from './types';

@@ -1,0 +1,64 @@
+---
+/**
+ * Toolkit Contents — the reading-page render of the one contents model.
+ *
+ * One ordered tree: front matter, the three sections with their chapters,
+ * ending at Resource Library (site chrome never renders as rows). The
+ * current page's row carries the active state. The foot holds the search
+ * jump as a plain quiet link, never an input-shaped box.
+ *
+ * Renders twice: the left column on desktop reading pages (variant
+ * "rail") and inside the phone bar's bottom sheet (variant "sheet").
+ */
+import { treeRows, searchRoute } from '@/data/contents';
+import { Search } from 'lucide-react';
+
+interface Props {
+  /** Path of the page hosting the tree, for the active row */
+  currentPath: string;
+  variant?: 'rail' | 'sheet';
+}
+
+const { currentPath, variant = 'rail' } = Astro.props;
+const rows = treeRows();
+const normalize = (p: string) => p.replace(/\/$/, '') || '/';
+const current = normalize(currentPath);
+---
+
+<nav
+  class:list={['contents-tree', `contents-tree--${variant}`]}
+  aria-label="Toolkit Contents"
+>
+  <h2 class="contents-tree__title">Toolkit Contents</h2>
+  <ol class="contents-tree__list">
+    {rows.map((row) => {
+      const isActive = normalize(row.href) === current;
+      return (
+        <li
+          class:list={[
+            'contents-tree__row',
+            `contents-tree__row--${row.kind}`,
+            isActive && 'contents-tree__row--active',
+          ]}
+        >
+          <a
+            href={row.href}
+            aria-current={isActive ? 'page' : undefined}
+            class="contents-tree__link"
+          >
+            {row.number && (
+              <span class="contents-tree__number">{row.number}</span>
+            )}
+            <span class="contents-tree__label">{row.label}</span>
+          </a>
+        </li>
+      );
+    })}
+  </ol>
+  <div class="contents-tree__foot">
+    <a href={searchRoute} class="contents-tree__search">
+      <Search size={14} aria-hidden="true" />
+      <span>Search the toolkit</span>
+    </a>
+  </div>
+</nav>

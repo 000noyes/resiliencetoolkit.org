@@ -59,11 +59,12 @@ const roundNumber = String(round).split('-')[0].replace(/^r/, '');
     }
   }
 
-  /* T9: the round prints clean for the meeting. Interactive chrome and the
-     corner panel drop out; the pins stay as numbered dots in place and the
-     island's notes list carries every thread. */
+  /* T9: the round prints clean for the meeting. The [data-annot-ui] hide
+     is now the sitewide print rule in base.css (ER7); this block keeps
+     only the round page's own exceptions: the corner panel drops out, the
+     pins stay as numbered dots in place, and the island's notes list
+     (re-shown below) carries every thread. */
   @media print {
-    [data-annot-ui],
     [data-annot='corner-panel'] {
       display: none !important;
     }

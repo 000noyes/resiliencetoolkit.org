@@ -53,8 +53,3 @@ export interface TableOfContentsItemProps {
   /** Nesting depth for indentation */
   depth?: number;
 }
-
-export interface TableOfContentsMobileProps extends TableOfContentsProps {
-  /** Whether the drawer is currently open */
-  isOpen?: boolean;
-}
