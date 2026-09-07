@@ -71,7 +71,7 @@ export default function WorkLivesHere() {
             ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
             : status === 'error'
               ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
-              : 'bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50'
+              : 'bg-primary text-primary-foreground disabled:opacity-50'
         }`}
         style={{ minHeight: 44 }}
       >

@@ -26,18 +26,18 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   await expect(page.locator('.contents-tree').first()).toBeVisible();
 
   // (c) On this page rests open in the rail
-  const panel = page.locator('.reading-rail__panel');
+  const panel = page.locator('#rail-panel-on-this-page');
   await expect(panel).toBeVisible();
-  await expect(panel.getByText('On this page')).toBeVisible();
+  await expect(panel.locator('.toc-title')).toHaveText('On this page');
 
   // (d) Closing the tenant returns the measure: the panel leaves, the
   // labeled edge button appears in the reserved 48px gutter
   const contentBefore = await page.locator('.reading-content').boundingBox();
-  await page.click('[data-rail-close]');
+  await page.click('[data-rail-close="on-this-page"]');
   await expect(panel).toBeHidden();
-  const edgeBtn = page.locator('.reading-rail__edge-btn');
+  const edgeBtn = page.locator('[data-rail-btn="on-this-page"]');
   await expect(edgeBtn).toBeVisible();
-  await expect(edgeBtn).toHaveText('On this page');
+  await expect(edgeBtn.locator('.reading-rail__edge-open')).toBeVisible();
   const gutter = await page.locator('.reading-rail__gutter').boundingBox();
   expect(gutter!.width).toBeLessThanOrEqual(48);
   const contentAfter = await page.locator('.reading-content').boundingBox();
@@ -69,7 +69,7 @@ test('phone grammar: contents in flow at top, bar reserves height, sheet is moda
   expect(scrollWidth).toBeLessThanOrEqual(390);
 
   // On this page renders in flow at the top of the chapter, above the h1
-  const tocBox = await page.locator('.reading-rail__panel').boundingBox();
+  const tocBox = await page.locator('#rail-panel-on-this-page').boundingBox();
   const h1Box = await page.locator('article h1').boundingBox();
   expect(tocBox!.y).toBeLessThan(h1Box!.y);
 
@@ -93,11 +93,11 @@ test('phone grammar: contents in flow at top, bar reserves height, sheet is moda
   // The Toolkit Contents door opens a modal sheet with a drag handle;
   // outside tap dismisses it
   await page.click('[data-sheet-open="contents"]');
-  const sheet = page.locator('.reading-sheet__body');
+  const sheet = page.getByRole('dialog', { name: 'Toolkit Contents' });
   await expect(sheet).toBeVisible();
-  await expect(page.locator('.reading-sheet__handle')).toBeVisible();
+  await expect(sheet.locator('.reading-sheet__handle')).toBeVisible();
   await expect(sheet.getByRole('link', { name: /Food and water/ })).toBeVisible();
-  await page.locator('.reading-sheet__backdrop').click({ position: { x: 20, y: 20 } });
+  await page.locator('[data-sheet="contents"] .reading-sheet__backdrop').click({ position: { x: 20, y: 20 } });
   await expect(sheet).toBeHidden();
   await ctx.close();
 });
@@ -158,5 +158,47 @@ test('print drops the reading chrome and returns to one column (ER7)', async ({
     )
   );
   expect(annotHidden).toBe(true);
+  await ctx.close();
+});
+
+test('tenant swap: Footnotes swaps the panel, closing returns On this page (test-plan state machine)', async ({
+  browser,
+}) => {
+  const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(CHAPTER);
+
+  const onThisPage = page.locator('#rail-panel-on-this-page');
+  const footnotes = page.locator('#rail-panel-footnotes');
+  await expect(onThisPage).toBeVisible();
+  await expect(footnotes).toBeHidden();
+
+  // Opening Footnotes swaps, never stacks
+  await page.click('[data-rail-btn="footnotes"]');
+  await expect(footnotes).toBeVisible();
+  await expect(onThisPage).toBeHidden();
+
+  // Closing Footnotes returns On this page
+  await page.click('[data-rail-close="footnotes"]');
+  await expect(onThisPage).toBeVisible();
+  await expect(footnotes).toBeHidden();
+
+  // Closing On this page collapses everything to the gutter
+  await page.click('[data-rail-close="on-this-page"]');
+  await expect(onThisPage).toBeHidden();
+  await expect(footnotes).toBeHidden();
+  const gutter = await page.locator('.reading-rail__gutter').boundingBox();
+  expect(gutter!.width).toBeLessThanOrEqual(48);
+  await ctx.close();
+});
+
+test('the Footnotes tenant shows the honest empty state until citations confirm', async ({
+  browser,
+}) => {
+  const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(CHAPTER);
+  await page.click('[data-rail-btn="footnotes"]');
+  await expect(page.locator('#rail-panel-footnotes')).toContainText('No notes on this page.');
   await ctx.close();
 });

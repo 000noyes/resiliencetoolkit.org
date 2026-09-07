@@ -10,13 +10,15 @@
  * with the citations build, Make Comments with the door build.
  */
 import ToolkitContentsTree from './ToolkitContentsTree.astro';
-import { TableOfContents as ContentsIcon } from 'lucide-react';
+import FootnotesTenant from './FootnotesTenant.astro';
+import { TableOfContents as ContentsIcon, BookMarked } from 'lucide-react';
 
 interface Props {
   currentPath: string;
+  sectionNumber: string;
 }
 
-const { currentPath } = Astro.props;
+const { currentPath, sectionNumber } = Astro.props;
 ---
 
 <nav class="reading-bar" data-annot-ui aria-label="Reading tools">
@@ -29,6 +31,16 @@ const { currentPath } = Astro.props;
   >
     <ContentsIcon size={18} aria-hidden="true" />
     <span>Toolkit Contents</span>
+  </button>
+  <button
+    type="button"
+    class="reading-bar__door"
+    data-sheet-open="footnotes"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+  >
+    <BookMarked size={18} aria-hidden="true" />
+    <span>Footnotes</span>
   </button>
 </nav>
 
@@ -49,6 +61,28 @@ const { currentPath } = Astro.props;
     </div>
     <div class="reading-sheet__scroll">
       <ToolkitContentsTree currentPath={currentPath} variant="sheet" />
+    </div>
+  </div>
+</div>
+
+<div class="reading-sheet" data-annot-ui data-sheet="footnotes" hidden>
+  <div class="reading-sheet__backdrop" data-sheet-dismiss></div>
+  <div
+    class="reading-sheet__body"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Footnotes"
+    tabindex="-1"
+  >
+    <div class="reading-sheet__handle" aria-hidden="true"></div>
+    <div class="reading-sheet__bar">
+      <h2 class="reading-rail__panel-title">Footnotes</h2>
+      <button type="button" class="reading-sheet__close" data-sheet-dismiss>
+        Close
+      </button>
+    </div>
+    <div class="reading-sheet__scroll">
+      <FootnotesTenant sectionNumber={sectionNumber} />
     </div>
   </div>
 </div>

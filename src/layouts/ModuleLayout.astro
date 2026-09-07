@@ -23,7 +23,7 @@
  * - Table of Contents sidebar for section pages
  */
 import BaseLayout from './BaseLayout.astro';
-import { findChapter, chainFor } from '@/data/contents';
+import { findChapter, chainFor, chapterCitation } from '@/data/contents';
 import { getPdfUrlForSection } from '@/lib/pdfLookup';
 import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
@@ -83,16 +83,22 @@ const moduleKey = sectionData
 // Determine if we should show the TOC (only for section pages)
 const showTOC = !!sectionData;
 
+// The page-level citation (DR17): a static in-flow line so print and
+// no-JS readers keep their provenance (ER7); the Footnotes tenant
+// presents the same string from the same field. Null until the chapter's
+// printed range is operator-confirmed.
+const citation = sectionData ? chapterCitation(sectionData.number) : null;
+
 ---
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
   <!-- Wrapper: 3C reading grid for section pages, standard container otherwise -->
-  <div class={showTOC ? "reading-grid py-8" : ""} data-rail={showTOC ? "open" : undefined}>
+  <div class={showTOC ? "reading-grid py-8" : ""} data-rail={showTOC ? "on-this-page" : undefined}>
     {showTOC && (
       <ToolkitContentsTree currentPath={Astro.url.pathname} />
     )}
     {showTOC && (
-      <ReadingRail moduleKey={moduleKey} />
+      <ReadingRail moduleKey={moduleKey} sectionNumber={sectionData.number} />
     )}
 
     <article data-pagefind-body class={showTOC ? "reading-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
@@ -206,6 +212,10 @@ const showTOC = !!sectionData;
         <slot />
       </div>
 
+      {citation && (
+        <p class="module-citation">{citation}</p>
+      )}
+
       {sectionData && (
         <!-- Section navigation for section-based pages -->
         <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
@@ -248,6 +258,6 @@ const showTOC = !!sectionData;
   </div>
 
   {showTOC && (
-    <ReadingBar currentPath={Astro.url.pathname} />
+    <ReadingBar currentPath={Astro.url.pathname} sectionNumber={sectionData?.number ?? ""} />
   )}
 </BaseLayout>

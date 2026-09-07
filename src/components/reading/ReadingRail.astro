@@ -3,38 +3,39 @@
  * The right rail: the house for the reading page's right-hand tenants.
  *
  * On this page rests here (the re-housed contents scanner keeps its
- * progress counters). One tenant is open at a time; closed tenants live
- * as labeled edge buttons in a reserved 48px gutter that is part of the
- * layout, never floating over content. Closing the last tenant returns
- * the measure to the reader (DR3). Desktop panels are regions, never
- * dialogs (ER7). Below 1200px the rail never translates down: On this
- * page renders in flow at the top of the chapter instead, and the other
+ * progress counters); Footnotes lives beside it. One tenant is open at a
+ * time: opening another swaps the panel, never stacks. Closed tenants are
+ * labeled edge buttons in a reserved 48px gutter that is part of the
+ * layout, never floating over content. Closing a tenant returns to On
+ * this page; closing On this page itself collapses the rail to the
+ * gutter and returns the measure to the reader (DR3). Desktop panels are
+ * regions, never dialogs (ER7). Below 1200px the rail never translates
+ * down: On this page renders in flow at the top of the chapter and the
  * doors live in the docked bar.
  *
- * Future tenants (Footnotes, Make Comments) mount beside the panel here;
- * the swap rule and gutter grammar already hold them.
+ * The Make Comments tenant mounts beside these when the door builds; the
+ * swap rule and gutter grammar already hold it.
  */
 import { TableOfContents } from '@/components/TableOfContents';
+import FootnotesTenant from './FootnotesTenant.astro';
 
 interface Props {
   moduleKey: string;
+  sectionNumber: string;
+  /** Openers are index-shaped: they carry the doors but no page scanner */
+  showOnThisPage?: boolean;
 }
 
-const { moduleKey } = Astro.props;
+const { moduleKey, sectionNumber, showOnThisPage = true } = Astro.props;
+
+const tenants = [
+  ...(showOnThisPage ? [{ id: 'on-this-page', label: 'On this page' }] : []),
+  { id: 'footnotes', label: 'Footnotes' },
+];
 ---
 
 <aside class="reading-rail">
-  <div class="reading-rail__gutter" data-annot-ui>
-    <button
-      type="button"
-      class="reading-rail__edge-btn"
-      data-rail-open="on-this-page"
-      aria-expanded="true"
-      aria-controls="rail-panel-on-this-page"
-    >
-      On this page
-    </button>
-  </div>
+  {showOnThisPage && (
   <section
     class="reading-rail__panel"
     id="rail-panel-on-this-page"
@@ -53,32 +54,86 @@ const { moduleKey } = Astro.props;
       </button>
     </div>
     <TableOfContents client:load moduleKey={moduleKey} />
+    <slot name="on-this-page-extra" />
   </section>
+  )}
+
+  <section
+    class="reading-rail__panel"
+    id="rail-panel-footnotes"
+    data-rail-panel="footnotes"
+    aria-label="Footnotes"
+    tabindex="-1"
+  >
+    <div class="reading-rail__panel-bar" data-annot-ui>
+      <h2 class="reading-rail__panel-title">Footnotes</h2>
+      <button
+        type="button"
+        class="reading-rail__close"
+        data-rail-close="footnotes"
+        aria-controls="rail-panel-footnotes"
+      >
+        Close
+      </button>
+    </div>
+    <FootnotesTenant sectionNumber={sectionNumber} />
+  </section>
+
+  <div class="reading-rail__gutter" data-annot-ui>
+    {
+      tenants.map((t) => (
+        <button
+          type="button"
+          class="reading-rail__edge-btn"
+          data-rail-btn={t.id}
+          aria-expanded="false"
+          aria-controls={`rail-panel-${t.id}`}
+        >
+          <span class="reading-rail__edge-open">{t.label}</span>
+          <span class="reading-rail__edge-close">Close {t.label}</span>
+        </button>
+      ))
+    }
+  </div>
 </aside>
 
 <script>
-  // One tenant open at a time. Open state lives on the grid as data-rail;
-  // the open panel replaces the gutter, the closed gutter returns the
-  // measure to the reader (DR3).
-  function setRail(open: boolean) {
+  // One tenant open at a time; opening another swaps the panel, never
+  // stacks. Closing a tenant returns to On this page; closing On this
+  // page collapses to the gutter (the test-plan state machine).
+  const RESTING = document.querySelector('[data-rail-panel="on-this-page"]')
+    ? 'on-this-page'
+    : 'closed';
+
+  function setRail(state: string) {
     const grid = document.querySelector('.reading-grid');
     if (!grid) return;
-    grid.setAttribute('data-rail', open ? 'open' : 'closed');
-    grid
-      .querySelectorAll('[data-rail-open]')
-      .forEach((b) => b.setAttribute('aria-expanded', String(open)));
-    if (open) {
-      grid.querySelector<HTMLElement>('.reading-rail__panel')?.focus();
+    grid.setAttribute('data-rail', state);
+    grid.querySelectorAll<HTMLButtonElement>('[data-rail-btn]').forEach((b) => {
+      b.setAttribute('aria-expanded', String(b.getAttribute('data-rail-btn') === state));
+    });
+    if (state !== 'closed') {
+      grid
+        .querySelector<HTMLElement>(`[data-rail-panel="${state}"]`)
+        ?.focus();
     }
   }
-  document.querySelectorAll('[data-rail-open]').forEach((btn) => {
-    btn.addEventListener('click', () => setRail(true));
-  });
-  document.querySelectorAll('[data-rail-close]').forEach((btn) => {
+
+  document.querySelectorAll<HTMLButtonElement>('[data-rail-btn]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      setRail(false);
+      const id = btn.getAttribute('data-rail-btn')!;
+      const grid = document.querySelector('.reading-grid');
+      const open = grid?.getAttribute('data-rail');
+      setRail(open === id ? (id === RESTING ? 'closed' : RESTING) : id);
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-rail-close]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-rail-close')!;
+      setRail(id === RESTING ? 'closed' : RESTING);
       document
-        .querySelector<HTMLElement>('[data-rail-open="on-this-page"]')
+        .querySelector<HTMLElement>(`[data-rail-btn="${id}"]`)
         ?.focus();
     });
   });

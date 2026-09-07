@@ -1,0 +1,68 @@
+---
+/**
+ * The cover's inline contents: the one contents model rendered on the
+ * homepage as the full chapter list (D4; the five-link module row and the
+ * Explore All Modules button retire, DR9). Rows are title-only: the row
+ * IS the read action (DR8); PDF and resources live one hop away. Scan
+ * order equals tree order (DR6): the list flows down each column, Section
+ * 0 then 1 then 2. Plain HTML, so it is also the no-JS floor.
+ */
+import { contents, frontMatter, resourceLibrary } from '@/data/contents';
+
+// The signed newcomer lines (DR11 as amended 2026-09-06; DR22 places them
+// below the chapter list as contents-adjacent exits)
+const firstActivityLine =
+  '0.1 Knowing Your Community is the first activity. It works best with a few other people.';
+const crosHelpLine =
+  'Community Resilience Organizations offers free help getting started.';
+---
+
+<nav class="cover-contents" aria-label="Toolkit contents">
+  <ol class="cover-contents__flow">
+    <li class="cover-contents__group">
+      <a href={frontMatter.path} class="cover-contents__lead-row">
+        <span class="cover-contents__lead-title">{frontMatter.title}</span>
+        <span class="cover-contents__lead-sub">How to use this toolkit</span>
+      </a>
+    </li>
+    {
+      contents.map((section) => (
+        <li class="cover-contents__group">
+          {section.openerPath ? (
+            <a href={section.openerPath} class="cover-contents__section">
+              {section.title}
+            </a>
+          ) : (
+            <span class="cover-contents__section cover-contents__section--plain">
+              {section.title}
+            </span>
+          )}
+          <ol class="cover-contents__chapters">
+            {section.chapters.map((chapter) => (
+              <li>
+                <a
+                  href={`${section.basePath}/${chapter.slug}`}
+                  class="cover-contents__chapter"
+                >
+                  <span class="cover-contents__number">{chapter.number}</span>
+                  <span>{chapter.title}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))
+    }
+    <li class="cover-contents__group">
+      <a href={resourceLibrary.path} class="cover-contents__lead-row">
+        <span class="cover-contents__lead-title">{resourceLibrary.title}</span>
+        <span class="cover-contents__lead-sub">Print and download the toolkit</span>
+      </a>
+    </li>
+  </ol>
+
+  <div class="cover-contents__exits">
+    <p><a href="/modules/knowing-your-community">{firstActivityLine}</a></p>
+    <p><a href="#technical-assistance">{crosHelpLine}</a></p>
+  </div>
+</nav>

@@ -357,7 +357,7 @@ export default function BackupSafetyCard() {
               <button
                 type="button"
                 onClick={runShare}
-                className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground transition-colors"
               >
                 Send to a device I own
               </button>
@@ -437,7 +437,7 @@ export default function BackupSafetyCard() {
                   section on a muted surface, so it never reads as a peer of
                   the rows it adds up (most visible when there is only one). */}
               <tfoot>
-                <tr className="border-t-2 border-border bg-muted/60">
+                <tr className="border-t-2 border-border">
                   <th scope="row" className="px-4 py-3 text-left font-semibold text-foreground">
                     {meter.total.name}
                   </th>
@@ -474,7 +474,7 @@ export default function BackupSafetyCard() {
                 )}
               </li>
             ))}
-            <li className="px-4 py-3 border-t-2 border-border bg-muted/60">
+            <li className="px-4 py-3 border-t-2 border-border">
               <span className="block text-sm font-semibold text-foreground">
                 {meter.total.name}: {meter.total.detail} · {formatByteSize(meter.total.bytes)}
               </span>
@@ -534,7 +534,7 @@ function BackupButton({
       data-testid="rt-backup-button"
       onClick={onClick}
       disabled={state === 'working'}
-      className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors"
+      className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-medium bg-primary text-primary-foreground disabled:opacity-60 transition-colors"
       style={{ minHeight: 44 }}
     >
       {state === 'working' ? (
