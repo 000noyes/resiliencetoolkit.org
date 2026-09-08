@@ -19,7 +19,8 @@
     "generate-icons": "node scripts/generate-icons.mjs",
     "knip": "knip",
     "knip:files": "knip --include files",
-    "test:layout": "playwright test --config playwright.layout.config.ts"
+    "test:layout": "playwright test --config playwright.layout.config.ts",
+    "test:search": "playwright test --config playwright.search.config.ts"
   },
   "pnpm": {
     "overrides": {

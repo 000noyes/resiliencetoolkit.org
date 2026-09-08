@@ -6,27 +6,36 @@
  *
  * Contract (the search end-state addendum): panel opens at the 2nd
  * character with a 150ms debounce; a Searching line appears past 400ms;
- * failure and offline reuse the shipped unavailable line; results group
- * by chapter (derived from the one contents model), one hit per
- * destination anchor, max 6 rows across max 3 groups in the panel;
- * combobox keyboard per APG; Escape closes and keeps focus; outside
- * click and route change dismiss, scroll does not; Enter with no
- * highlighted option submits the native form to /search. Query recall is
- * sessionStorage restore-on-focus, URL beating storage on /search (ES5).
+ * failure and offline reuse the shipped unavailable line, triggered by
+ * an actual query failure and never by navigator.onLine (ES2); results
+ * group by chapter (derived from the one contents model), one hit per
+ * destination anchor (ES3), max 6 rows across max 3 groups in the panel;
+ * combobox keyboard per the APG combobox-listbox pattern; Escape closes
+ * and keeps focus; outside click and route change dismiss, scroll does
+ * not; Enter with no highlighted option submits the native form to
+ * /search (SR4). Query recall is sessionStorage restore-on-focus, the
+ * URL beating storage on /search (ES5). History: the panel claims no
+ * entry, same-page picks push one, other picks are plain navigations; a
+ * host such as the phone sheet may take a pick over to settle its own
+ * entry first (ES6).
  */
+import { searchRoute } from '@/data/contents';
 import { urlToChapter } from './urlToChapter';
 
-interface PagefindSubResult {
-  url: string;
-  title: string;
-  excerpt: string;
+interface PagefindAnchor {
+  element: string;
+  id: string;
+  text: string;
+  location: number;
 }
 
 interface PagefindDocument {
   url: string;
+  content: string;
   excerpt: string;
   meta: { title?: string };
-  sub_results?: PagefindSubResult[];
+  anchors?: PagefindAnchor[];
+  locations?: number[];
 }
 
 interface PagefindResult {
@@ -34,26 +43,39 @@ interface PagefindResult {
 }
 
 interface Pagefind {
+  init?: () => Promise<void>;
   search: (q: string) => Promise<{ results: PagefindResult[] }>;
 }
 
 const STORE_KEY = 'rt-search-query';
+const LANDING_KEY = 'rt-search-landing';
+const PAGEFIND_URL = '/pagefind/pagefind.js';
 const DEBOUNCE_MS = 150;
 const SEARCHING_AFTER_MS = 400;
 const PANEL_MAX_ROWS = 6;
 const PANEL_MAX_GROUPS = 3;
 const PAGE_MAX_ROWS = 40;
+const MAX_DOCS = 30;
 
 let pagefindPromise: Promise<Pagefind | null> | null = null;
 
-/** Prewarm/load Pagefind once per page (ES7). */
+/**
+ * Prewarm/load Pagefind once per page (ES7). Pagefind writes this module
+ * into dist at build, so the specifier stays out of the bundler's reach.
+ * A failed load is not sticky: the next query tries again.
+ */
 export function loadPagefind(): Promise<Pagefind | null> {
   if (!pagefindPromise) {
-    // @ts-expect-error runtime-only module: pagefind generates it into
-    // dist at build; it never exists at compile time
-    pagefindPromise = import(/* @vite-ignore */ '/pagefind/pagefind.js')
-      .then((pf: Pagefind) => pf)
-      .catch(() => null);
+    const spec = PAGEFIND_URL;
+    pagefindPromise = import(/* @vite-ignore */ spec)
+      .then(async (pf: Pagefind) => {
+        if (pf.init) await pf.init();
+        return pf;
+      })
+      .catch(() => {
+        pagefindPromise = null;
+        return null;
+      });
   }
   return pagefindPromise;
 }
@@ -66,7 +88,7 @@ export function readStoredQuery(): string {
   }
 }
 
-function storeQuery(q: string) {
+export function storeQuery(q: string) {
   try {
     sessionStorage.setItem(STORE_KEY, q);
   } catch {
@@ -74,67 +96,134 @@ function storeQuery(q: string) {
   }
 }
 
-/** Decode HTML entities through an inert document (never live innerHTML). */
-function decodeEntities(escaped: string): string {
-  return (
-    new DOMParser().parseFromString(escaped, 'text/html').documentElement
-      .textContent ?? ''
-  );
+/** The /search href carrying a query: the one route constant, everywhere */
+export function searchHref(q: string): string {
+  return `${searchRoute}?q=${encodeURIComponent(q)}`;
+}
+
+/** A snippet as text runs, marked or plain: rendered as text nodes only (SR10) */
+interface ExcerptPart {
+  text: string;
+  mark: boolean;
 }
 
 /**
- * Pagefind excerpts arrive as escaped text with <mark> around matched
- * words. Build the highlight from text nodes and mark elements: safe
- * text nodes only (SR10), no HTML injection path.
+ * Decode HTML entities through an inert textarea (its content is text,
+ * never parsed as markup), keeping every whitespace run intact.
  */
-function renderExcerpt(target: HTMLElement, excerpt: string) {
-  const parts = excerpt.split(/<\/?mark>/);
-  parts.forEach((part, i) => {
-    const text = decodeEntities(part);
-    if (text === '') return;
-    if (i % 2 === 1) {
+function decodeEntities(escaped: string): string {
+  const box = document.createElement('textarea');
+  box.innerHTML = escaped;
+  return box.value;
+}
+
+/** Pagefind's own excerpt: escaped text with <mark> around matched words */
+function partsFromExcerpt(excerpt: string): ExcerptPart[] {
+  return excerpt
+    .split(/<\/?mark>/)
+    .map((part, i) => ({ text: decodeEntities(part), mark: i % 2 === 1 }))
+    .filter((p) => p.text !== '');
+}
+
+const EXCERPT_BEFORE = 6;
+const EXCERPT_WORDS = 26;
+
+/** A snippet around a matched word, from the page's own word list */
+function partsAround(words: string[], center: number, matched: Set<number>): ExcerptPart[] {
+  const start = Math.max(0, Math.min(center - EXCERPT_BEFORE, words.length - EXCERPT_WORDS));
+  const end = Math.min(words.length, start + EXCERPT_WORDS);
+  const parts: ExcerptPart[] = [];
+  for (let i = start; i < end; i++) {
+    const mark = matched.has(i);
+    const text = (i > start ? ' ' : '') + words[i];
+    const last = parts[parts.length - 1];
+    if (last && last.mark === mark) last.text += text;
+    else if (mark && last) {
+      // keep the space outside the mark
+      last.text += ' ';
+      parts.push({ text: words[i], mark });
+    } else parts.push({ text, mark });
+  }
+  return parts;
+}
+
+function renderExcerpt(target: HTMLElement, parts: ExcerptPart[]) {
+  for (const part of parts) {
+    if (part.mark) {
       const mark = document.createElement('mark');
       mark.className = 'search-mark';
-      mark.textContent = text;
+      mark.textContent = part.text;
       target.appendChild(mark);
     } else {
-      target.appendChild(document.createTextNode(text));
+      target.appendChild(document.createTextNode(part.text));
     }
-  });
+  }
 }
 
 interface Hit {
   url: string;
   title: string;
-  excerpt: string;
+  excerpt: ExcerptPart[];
   group: { label: string; order: number; url: string };
+}
+
+/**
+ * The section headers a chapter reads by (ES3): h2, h3, and the table
+ * band labels, which carry static ids from the build. Pagefind records
+ * every id in the body as an anchor; these are the anchors results land
+ * on, so each match nests under the header above it.
+ */
+const ANCHOR_ELEMENTS = new Set(['h2', 'h3', 'strong']);
+
+/** One hit per header anchor a document matches under (ES3) */
+function hitsForDocument(doc: PagefindDocument, group: Hit['group']): Hit[] {
+  const anchors = (doc.anchors ?? [])
+    .filter((a) => ANCHOR_ELEMENTS.has(a.element) && a.id && a.text)
+    .sort((a, b) => a.location - b.location);
+  const locations = [...new Set(doc.locations ?? [])].sort((a, b) => a - b);
+  const pageTitle = doc.meta.title ?? group.label;
+  if (locations.length === 0 || !doc.content) {
+    return [{ url: doc.url, title: pageTitle, excerpt: partsFromExcerpt(doc.excerpt), group }];
+  }
+  const words = doc.content.split(/[\r\n\s]+/);
+  const matched = new Set(locations);
+  // First matched word under each anchor (index -1 = the text before any header)
+  const firstUnder = new Map<number, number>();
+  for (const loc of locations) {
+    let idx = -1;
+    for (let i = 0; i < anchors.length && anchors[i].location <= loc; i++) idx = i;
+    if (!firstUnder.has(idx)) firstUnder.set(idx, loc);
+  }
+  return [...firstUnder.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([idx, loc]) => {
+      const anchor = idx >= 0 ? anchors[idx] : null;
+      return {
+        url: anchor ? `${doc.url}#${anchor.id}` : doc.url,
+        title: anchor ? anchor.text : pageTitle,
+        excerpt: partsAround(words, loc, matched),
+        group,
+      };
+    });
 }
 
 function normalizeDest(url: string): string {
   return url.replace(/\/$/, '').replace(/\/(#|\?)/, '$1');
 }
 
-async function collectHits(
-  pagefind: Pagefind,
-  query: string,
-  maxDocs: number
-): Promise<Hit[]> {
+async function collectHits(pagefind: Pagefind, query: string): Promise<Hit[]> {
   const { results } = await pagefind.search(query);
-  const docs = await Promise.all(results.slice(0, maxDocs).map((r) => r.data()));
+  const docs = await Promise.all(results.slice(0, MAX_DOCS).map((r) => r.data()));
   const hits: Hit[] = [];
   const seen = new Set<string>();
   for (const doc of docs) {
     const group = urlToChapter(doc.url);
     if (!group) continue;
-    const subs =
-      doc.sub_results && doc.sub_results.length > 0
-        ? doc.sub_results
-        : [{ url: doc.url, title: doc.meta.title ?? group.label, excerpt: doc.excerpt }];
-    for (const sub of subs) {
-      const dest = normalizeDest(sub.url);
-      if (seen.has(dest)) continue; // one hit per destination (ES3)
+    for (const hit of hitsForDocument(doc, group)) {
+      const dest = normalizeDest(hit.url);
+      if (seen.has(dest)) continue; // one hit per destination anchor (ES3)
       seen.add(dest);
-      hits.push({ url: sub.url, title: sub.title, excerpt: sub.excerpt, group });
+      hits.push(hit);
     }
   }
   return hits;
@@ -171,6 +260,12 @@ function groupHits(
   return { groups: capped, shown: rows };
 }
 
+/** The count line pattern (S43), shared by /search and the live region */
+function countLine(hits: Hit[]): string {
+  const modules = new Set(hits.map((h) => h.group.url)).size;
+  return `${hits.length} results in ${modules} modules`;
+}
+
 export interface SearchMount {
   destroy: () => void;
   runQuery: (q: string) => void;
@@ -183,7 +278,12 @@ export interface MountOptions {
   /** page mode: elements owned by /search */
   countEl?: HTMLElement | null;
   contentsEl?: HTMLElement | null;
-  onNavigate?: () => void;
+}
+
+/** Detail of the cancelable rt-search-navigate event a host may take over */
+export interface SearchNavigateDetail {
+  url: string;
+  go: () => void;
 }
 
 export function mountSearch(opts: MountOptions): SearchMount {
@@ -193,6 +293,7 @@ export function mountSearch(opts: MountOptions): SearchMount {
   const panel = root.querySelector<HTMLElement>('[data-search-panel]')!;
   const listbox = panel.querySelector<HTMLElement>('[role="listbox"]')!;
   const statusEl = panel.querySelector<HTMLElement>('[data-search-status]')!;
+  const liveEl = root.querySelector<HTMLElement>('[data-search-live]');
   const footer = panel.querySelector<HTMLElement>('[data-search-footer]');
   const moreEl = panel.querySelector<HTMLElement>('[data-search-more]');
   const seeAll = panel.querySelector<HTMLAnchorElement>('[data-search-see-all]');
@@ -230,28 +331,36 @@ export function mountSearch(opts: MountOptions): SearchMount {
     }
   };
 
-  const navigateTo = (url: string) => {
-    storeQuery(input.value);
+  /** The navigation a pick performs (ES6): same-page picks push a history entry */
+  const goTo = (url: string) => () => {
     const dest = new URL(url, location.origin);
     if (dest.pathname === location.pathname && dest.hash) {
-      // Same-page pick: push a history entry, land focus on the anchor (ES6)
       history.pushState(null, '', dest.hash);
-      const target = document.getElementById(dest.hash.slice(1));
+      const target = document.getElementById(decodeURIComponent(dest.hash.slice(1)));
       if (target) {
         target.setAttribute('tabindex', '-1');
         target.scrollIntoView();
         target.focus({ preventScroll: true });
       }
       setExpanded(false);
-      opts.onNavigate?.();
     } else {
       try {
-        sessionStorage.setItem('rt-search-landing', '1');
+        sessionStorage.setItem(LANDING_KEY, '1');
       } catch {
         /* focus assist off */
       }
       location.href = url;
     }
+  };
+
+  const navigateTo = (url: string) => {
+    storeQuery(input.value);
+    const go = goTo(url);
+    // A host (the phone sheet) may take the pick over to settle its own
+    // history entry first; otherwise the pick is a plain navigation
+    const detail: SearchNavigateDetail = { url, go };
+    const event = new CustomEvent('rt-search-navigate', { bubbles: true, cancelable: true, detail });
+    if (root.dispatchEvent(event)) go();
   };
 
   const render = (query: string, hits: Hit[]) => {
@@ -265,8 +374,10 @@ export function mountSearch(opts: MountOptions): SearchMount {
       const groupEl = document.createElement('div');
       groupEl.className = 'search-results__group';
       groupEl.setAttribute('role', 'group');
+      groupEl.setAttribute('aria-label', g.group.label);
       const heading = document.createElement('div');
       heading.className = 'search-results__group-label';
+      heading.setAttribute('aria-hidden', 'true');
       heading.textContent = g.group.label;
       groupEl.appendChild(heading);
       for (const hit of g.hits) {
@@ -274,6 +385,7 @@ export function mountSearch(opts: MountOptions): SearchMount {
         opt.className = 'search-results__row';
         opt.setAttribute('role', 'option');
         opt.setAttribute('aria-selected', 'false');
+        opt.tabIndex = -1; // options are reached by arrow keys, never Tab (APG)
         opt.id = `${listbox.id}-opt-${idx}`;
         opt.href = hit.url;
         const title = document.createElement('span');
@@ -284,6 +396,8 @@ export function mountSearch(opts: MountOptions): SearchMount {
         renderExcerpt(excerpt, hit.excerpt);
         opt.append(title, excerpt);
         opt.addEventListener('click', (e) => {
+          // Modified clicks keep the browser's own open-in-new-tab
+          if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
           e.preventDefault();
           navigateTo(hit.url);
         });
@@ -305,27 +419,34 @@ export function mountSearch(opts: MountOptions): SearchMount {
         const more = hits.length - shown;
         moreEl.textContent = more > 0 ? `${more} more results` : '';
       }
-      if (seeAll) seeAll.href = `/search?q=${encodeURIComponent(query)}`;
+      if (seeAll) seeAll.href = searchHref(query);
       if (footer) footer.hidden = hits.length === 0;
-    } else if (opts.countEl) {
-      const moduleCount = new Set(hits.map((h) => h.group.url)).size;
-      opts.countEl.textContent = `${hits.length} results in ${moduleCount} modules`;
-      opts.countEl.hidden = false;
+      // The polite live count for assistive tech (SR11)
+      if (liveEl) liveEl.textContent = hits.length > 0 ? countLine(hits) : '';
+    } else {
+      if (footer) footer.hidden = true;
+      if (opts.countEl) {
+        opts.countEl.textContent = countLine(hits);
+        opts.countEl.hidden = false;
+      }
     }
-    if (opts.contentsEl) opts.contentsEl.hidden = hits.length > 0 || query.length > 0;
+    // On /search the results replace the contents list; the empty state
+    // leaves the contents in place, since it points the reader there
+    if (opts.contentsEl) opts.contentsEl.hidden = hits.length > 0;
 
-    // Live count for assistive tech (SR11)
-    listbox.setAttribute('aria-label', `${hits.length} results`);
     setExpanded(true);
   };
 
   const runQuery = async (query: string) => {
     const mySeq = ++seq;
     if (query.trim().length < 2) {
+      clearTimeout(searchingId);
       setExpanded(false);
       listbox.textContent = '';
+      options = [];
       status('');
       if (footer) footer.hidden = true;
+      if (liveEl) liveEl.textContent = '';
       if (opts.countEl) opts.countEl.hidden = true;
       if (opts.contentsEl) opts.contentsEl.hidden = false;
       return;
@@ -340,7 +461,7 @@ export function mountSearch(opts: MountOptions): SearchMount {
     try {
       const pagefind = await loadPagefind();
       if (!pagefind) throw new Error('unavailable');
-      const hits = await collectHits(pagefind, query, 30);
+      const hits = await collectHits(pagefind, query);
       if (seq !== mySeq) return;
       clearTimeout(searchingId);
       render(query, hits);
@@ -348,6 +469,8 @@ export function mountSearch(opts: MountOptions): SearchMount {
       if (seq !== mySeq) return;
       clearTimeout(searchingId);
       listbox.textContent = '';
+      options = [];
+      if (footer) footer.hidden = true;
       status('Search is unavailable right now.');
       setExpanded(true);
     }
@@ -398,19 +521,28 @@ export function mountSearch(opts: MountOptions): SearchMount {
   const onDocClick = (e: MouseEvent) => {
     if (!root.contains(e.target as Node)) setExpanded(false);
   };
+  const onPageHide = () => setExpanded(false);
 
   input.addEventListener('input', onInput);
   input.addEventListener('focus', onFocus);
   input.addEventListener('keydown', onKeydown);
   document.addEventListener('click', onDocClick);
-  window.addEventListener('pagehide', () => setExpanded(false));
+  window.addEventListener('pagehide', onPageHide);
+
+  // The module mounts on the reader's first focus or keystroke: honor
+  // whichever already happened before it arrived
+  if (document.activeElement === input) onFocus();
+  if (input.value.trim().length >= 2) runQuery(input.value);
 
   return {
     destroy: () => {
+      clearTimeout(debounceId);
+      clearTimeout(searchingId);
       input.removeEventListener('input', onInput);
       input.removeEventListener('focus', onFocus);
       input.removeEventListener('keydown', onKeydown);
       document.removeEventListener('click', onDocClick);
+      window.removeEventListener('pagehide', onPageHide);
     },
     runQuery,
   };

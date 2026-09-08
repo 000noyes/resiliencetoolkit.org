@@ -5,6 +5,7 @@ import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
 import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
 import ReadingRail from '@/components/reading/ReadingRail.astro';
 import ReadingBar from '@/components/reading/ReadingBar.astro';
+import ArticleBody from '@/components/reading/ArticleBody.astro';
 import { chainFor, frontMatter } from '@/data/contents';
 
 // DR2: the introduction reads in the same 3C grammar as the chapters,
@@ -34,6 +35,7 @@ const next = chainFor(frontMatter.number).next;
     </header>
 
     <!-- Content -->
+    <ArticleBody>
     <div class="space-y-8">
       <section>
         <h2 class="text-title font-semibold mb-4">Who and what is this toolkit for?</h2>
@@ -99,6 +101,8 @@ const next = chainFor(frontMatter.number).next;
         <p>Our hope as grassroots organizers and community leaders is that you will use this toolkit to build resilience, and then keep going. We believe that climate disruption, while devastating and dangerous, is also an opportunity to create new ways of being together and getting our needs met so that we don't just survive, but thrive. We hope that communities can become <ExternalLink href="https://commonslibrary.org/permanently-organized-communities/">permanently organized</ExternalLink> — meaning we are set up to look out for each other all the time, using systems we made to keep us safe.</p>
       </section>
     </div>
+
+    </ArticleBody>
 
     <!-- Navigation into the reading chain -->
     {next && (

@@ -1,0 +1,12 @@
+---
+/**
+ * The article body render: the page's own content with static heading
+ * ids, the one id system that search landings and On this page share
+ * (SR3/ES3). Wraps the body of every indexed page.
+ */
+import { withHeadingIds } from '@/lib/heading-ids';
+
+const body = withHeadingIds(await Astro.slots.render('default'));
+---
+
+<Fragment set:html={body} />

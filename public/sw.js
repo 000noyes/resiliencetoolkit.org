@@ -599,8 +599,14 @@ self.addEventListener('fetch', (event) => {
   // otherwise make caches.match(event.request) miss and 503 the module offline,
   // silently breaking every precached-but-unvisited route. The assets are
   // immutable + same-origin, so there is only ever one variant per URL. Safe.
+  // Pagefind cache-busts its entry and meta fetches with a ?ts= query. Its
+  // files are immutable per build and live in this generation's precache
+  // under their bare paths, so the query is ignored for that directory:
+  // offline search must find them (ES2), and a fresh generation is what
+  // makes them fresh, never the query.
+  const ignoreSearch = url.pathname.startsWith('/pagefind/');
   event.respondWith(
-    caches.match(event.request, { ignoreVary: true }).then((cached) => {
+    caches.match(event.request, { ignoreVary: true, ignoreSearch }).then((cached) => {
       // A worker (this one or an earlier generation) may have stored
       // fallback HTML under this asset URL. Purge it everywhere BEFORE the
       // refetch (a concurrent purge would race the clean re-cache) and

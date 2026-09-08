@@ -27,6 +27,9 @@ const navItems = [
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
+    /* Labels never wrap: a row that cannot fit them overflows measurably,
+       so the ES4 guard sees it and collapses the search box to the lens */
+    white-space: nowrap;
     /* transform: rotate(-30deg); */
     font-size: 1em;
   }
@@ -62,7 +65,7 @@ const navItems = [
       </a>
 
       <!-- Desktop Navigation (Centered) -->
-      <nav class="hidden md:flex items-center gap-lg lg:gap-xl flex-1 justify-center">
+      <nav class="hidden md:flex items-center gap-md lg:gap-lg xl:gap-xl flex-1 justify-center">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -96,7 +99,7 @@ const navItems = [
       <button
         type="button"
         id="header-search-lens"
-        class="header-search-lens hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-muted transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        class="header-search-lens hidden md:inline-flex shrink-0 items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-muted transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         aria-label="Search the toolkit"
         aria-expanded="false"
         aria-controls="header-search"
@@ -105,7 +108,7 @@ const navItems = [
       </button>
 
       <!-- Utilities (Right) -->
-      <div class="hidden md:flex items-center gap-sm">
+      <div class="hidden md:flex shrink-0 items-center gap-sm">
         <!-- Theme Toggle (Icon Button) -->
         <button
           id="theme-toggle"
@@ -124,25 +127,27 @@ const navItems = [
       <!-- Phone search lens: left of the burger, opens the search sheet;
            the lens and the burger close each other. Search never lives
            inside the burger menu (SR8). -->
-      <button
-        type="button"
-        id="mobile-search-lens"
-        class="md:hidden p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
-        aria-label="Search the toolkit"
-        aria-haspopup="dialog"
-        aria-expanded="false"
-      >
-        <Search className="w-6 h-6" strokeWidth={1.5} />
-      </button>
+      <div class="md:hidden flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          id="mobile-search-lens"
+          class="p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
+          aria-label="Search the toolkit"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+        >
+          <Search className="w-6 h-6" strokeWidth={1.5} />
+        </button>
 
-      <!-- Mobile Menu Button -->
-      <button
-        id="mobile-menu-button"
-        class="md:hidden p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
-        aria-label="Toggle menu"
-      >
-        <Menu className="w-6 h-6" strokeWidth={1.5} />
-      </button>
+        <!-- Mobile Menu Button -->
+        <button
+          id="mobile-menu-button"
+          class="p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-6 h-6" strokeWidth={1.5} />
+        </button>
+      </div>
     </div>
 
     <!-- Mobile Navigation -->
@@ -225,7 +230,7 @@ const navItems = [
   const mobileMenu = document.getElementById('mobile-menu');
 
   mobileMenuButton?.addEventListener('click', () => {
-    closeSearchSheet(false);
+    closeSearchSheet();
     mobileMenu?.classList.toggle('hidden');
   });
 
@@ -234,12 +239,25 @@ const navItems = [
   const mobileSearchLens = document.getElementById('mobile-search-lens');
   const headerSearchLens = document.getElementById('header-search-lens');
   const headerEl = document.querySelector('header');
+  const visualViewport = window.visualViewport;
   let sheetHasHistoryEntry = false;
+  let afterSheetPop: (() => void) | null = null;
+
+  // The sheet tracks the visual viewport, so its input pins at the top
+  // and results scroll between the input and the keyboard (SR11)
+  function sizeSearchSheet() {
+    if (!searchSheet || searchSheet.hidden || !visualViewport) return;
+    searchSheet.style.top = `${visualViewport.offsetTop}px`;
+    searchSheet.style.height = `${visualViewport.height}px`;
+  }
+  visualViewport?.addEventListener('resize', sizeSearchSheet);
+  visualViewport?.addEventListener('scroll', sizeSearchSheet);
 
   function openSearchSheet() {
     if (!searchSheet) return;
     mobileMenu?.classList.add('hidden');
     searchSheet.hidden = false;
+    sizeSearchSheet();
     mobileSearchLens?.setAttribute('aria-expanded', 'true');
     document.documentElement.style.setProperty('overflow', 'hidden');
     if (!sheetHasHistoryEntry) {
@@ -249,16 +267,18 @@ const navItems = [
     searchSheet.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
   }
 
+  // Every close settles the sheet's one history entry through back (ES6);
+  // the popstate arm closes without it, since the entry is already gone
   function closeSearchSheet(popHistory = true) {
     if (!searchSheet || searchSheet.hidden) return;
     searchSheet.hidden = true;
+    searchSheet.style.removeProperty('top');
+    searchSheet.style.removeProperty('height');
     mobileSearchLens?.setAttribute('aria-expanded', 'false');
     document.documentElement.style.removeProperty('overflow');
-    if (sheetHasHistoryEntry && popHistory) {
-      sheetHasHistoryEntry = false;
-      history.back();
-    }
+    const hadEntry = sheetHasHistoryEntry;
     sheetHasHistoryEntry = false;
+    if (hadEntry && popHistory) history.back();
   }
 
   mobileSearchLens?.addEventListener('click', () => {
@@ -267,20 +287,39 @@ const navItems = [
   });
   searchSheet?.querySelectorAll('[data-search-sheet-dismiss]').forEach((el) => {
     // Outside tap dismisses; the typed text stays in the input for reopen
-    el.addEventListener('click', () => closeSearchSheet());
+    el.addEventListener('click', () => {
+      closeSearchSheet();
+      mobileSearchLens?.focus();
+    });
   });
   searchSheet?.addEventListener('keydown', (e) => {
-    if ((e as KeyboardEvent).key === 'Escape') closeSearchSheet();
+    if ((e as KeyboardEvent).key === 'Escape') {
+      closeSearchSheet();
+      mobileSearchLens?.focus();
+    }
+  });
+  // A pick inside the sheet settles the sheet's entry first, then goes,
+  // so back from the result returns to the page and not to the sheet
+  searchSheet?.addEventListener('rt-search-navigate', (e) => {
+    if (!sheetHasHistoryEntry) return;
+    e.preventDefault();
+    afterSheetPop = (e as CustomEvent<{ go: () => void }>).detail.go;
+    closeSearchSheet();
   });
   window.addEventListener('popstate', () => {
     if (sheetHasHistoryEntry) {
       sheetHasHistoryEntry = false;
       closeSearchSheet(false);
     }
+    if (afterSheetPop) {
+      const go = afterSheetPop;
+      afterSheetPop = null;
+      go();
+    }
   });
 
-  // The 768 to 1024 expanding lens; also the ES4 overflow guard: if the
-  // row cannot fit the minimum input, collapse to the lens at any width
+  // The 768 to 1024 expanding lens; also the ES4 overflow fallback at
+  // any width: the lens opens the box in place of the centered nav
   function setSearchExpanded(open: boolean) {
     headerEl?.toggleAttribute('data-search-expanded', open);
     headerSearchLens?.setAttribute('aria-expanded', String(open));
@@ -304,17 +343,23 @@ const navItems = [
     }
   });
 
+  // ES4: if the row cannot fit the input at its minimum (zoom, font
+  // scaling), collapse to the lens at any width. Measured with the input
+  // shown, so a collapse never hides the overflow that caused it.
+  const headerRow = headerEl?.querySelector<HTMLElement>('.container > div') ?? null;
   function checkSearchOverflow() {
-    if (!headerEl) return;
-    const row = headerEl.querySelector('.container > div');
-    if (!row) return;
-    headerEl.toggleAttribute(
-      'data-search-overflow',
-      row.scrollWidth > row.clientWidth + 1
-    );
+    if (!headerEl || !headerRow) return;
+    headerEl.removeAttribute('data-search-overflow');
+    if (headerRow.scrollWidth > headerRow.clientWidth + 1) {
+      headerEl.setAttribute('data-search-overflow', '');
+    }
   }
   checkSearchOverflow();
   window.addEventListener('resize', checkSearchOverflow);
+  if (headerRow && 'ResizeObserver' in window) {
+    new ResizeObserver(checkSearchOverflow).observe(headerRow);
+  }
+  document.fonts?.ready.then(checkSearchOverflow).catch(() => {});
 
   // Dark mode toggle
   const themeToggle = document.getElementById('theme-toggle');

@@ -10,14 +10,12 @@ import { Search } from 'lucide-react';
 import { searchRoute } from '@/data/contents';
 
 interface Props {
-  /** Unique per mount; wires ids for label/combobox/listbox */
+  /** Unique per mount; wires ids for the combobox and its listbox */
   id: string;
   mode: 'panel' | 'page';
-  /** Autofocus the input (the phone sheet) */
-  autofocus?: boolean;
 }
 
-const { id, mode, autofocus = false } = Astro.props;
+const { id, mode } = Astro.props;
 const listboxId = `${id}-listbox`;
 ---
 
@@ -38,26 +36,31 @@ const listboxId = `${id}-listbox`;
       aria-expanded="false"
       aria-controls={listboxId}
       aria-autocomplete="list"
-      autofocus={autofocus || undefined}
     />
   </form>
+  <p class="sr-only" data-search-live aria-live="polite"></p>
+  {mode === 'page' && (
+    <p class="search-page__count" data-search-count aria-live="polite" hidden></p>
+  )}
   <div class="search-panel" data-search-panel hidden>
     <p class="search-panel__status" data-search-status role="status" hidden></p>
-    <div role="listbox" id={listboxId} class="search-results"></div>
-    <div class="search-panel__footer" data-search-footer hidden>
-      <span class="search-panel__more" data-search-more></span>
-      <a href={searchRoute} class="search-panel__see-all" data-search-see-all>
-        See all results
-      </a>
-    </div>
+    <div role="listbox" id={listboxId} class="search-results" aria-label="Search results"></div>
+    {mode === 'panel' && (
+      <div class="search-panel__footer" data-search-footer hidden>
+        <span class="search-panel__more" data-search-more></span>
+        <a href={searchRoute} class="search-panel__see-all" data-search-see-all>
+          See all results
+        </a>
+      </div>
+    )}
   </div>
 </div>
 
 <script>
   // Tiny always-on wiring: the search module itself loads on first focus
-  // (ES7: zero search JS at page load). Also lands focus on anchor
-  // targets so a result landing sits under the sticky header with focus
-  // where the reader expects it (SR3/SR11).
+  // or keystroke (ES7: zero search JS at page load). Also lands focus on
+  // the anchor a search pick arrived at, so the landing sits under the
+  // sticky header with focus where the reader expects it (SR3/SR11).
   function wireSearchBoxes() {
     document.querySelectorAll<HTMLElement>('[data-search-root]').forEach((root) => {
       if (root.dataset.searchWired) return;
@@ -66,16 +69,16 @@ const listboxId = `${id}-listbox`;
       const form = root.querySelector<HTMLFormElement>('form');
       if (!input || !form) return;
       const mode = (root.dataset.searchMode as 'panel' | 'page') ?? 'panel';
-      let mounted = false;
+      let mounting = false;
       const mount = async () => {
-        if (mounted) return;
-        mounted = true;
+        if (mounting) return;
+        mounting = true;
         const mod = await import('@/lib/search/search-client');
         const pageRegion = document.querySelector<HTMLElement>('[data-search-page]');
         const m = mod.mountSearch({
           form,
           mode,
-          countEl: pageRegion?.querySelector<HTMLElement>('[data-search-count]'),
+          countEl: root.querySelector<HTMLElement>('[data-search-count]'),
           contentsEl: pageRegion?.querySelector<HTMLElement>('[data-search-contents]'),
         });
         // /search restores from its URL; the URL beats storage (ES5)
@@ -83,19 +86,20 @@ const listboxId = `${id}-listbox`;
           const q = new URLSearchParams(location.search).get('q') ?? '';
           if (q) {
             input.value = q;
+            mod.storeQuery(q);
             m.runQuery(q);
           }
         }
       };
-      input.addEventListener('focus', mount, { once: false });
+      input.addEventListener('focus', mount);
       input.addEventListener('input', mount);
       if (mode === 'page') mount();
     });
   }
   wireSearchBoxes();
 
-  // A landing that came from a search pick gets focus on its anchor
-  // (SR3/SR11); ordinary hash navigation is untouched
+  // A landing that came from a search pick gets focus on its anchor;
+  // ordinary hash navigation is untouched
   try {
     if (location.hash && sessionStorage.getItem('rt-search-landing')) {
       sessionStorage.removeItem('rt-search-landing');
