@@ -2,11 +2,20 @@
 /**
  * The article body render: the page's own content with static heading
  * ids, the one id system that search landings and On this page share
- * (SR3/ES3). Wraps the body of every indexed page.
+ * (SR3/ES3), and, on the pages a reader can annotate, per-block ids in
+ * the kept API's shape (ER4/DR18). Wraps the body of every indexed page.
  */
 import { withHeadingIds } from '@/lib/heading-ids';
+import { withBlockIds } from '@/lib/block-ids';
 
-const body = withHeadingIds(await Astro.slots.render('default'));
+interface Props {
+  /** The page key for block ids (a chapter number as 1-2, or intro); omit for none */
+  blockKey?: string;
+}
+
+const { blockKey } = Astro.props;
+const withHeadings = withHeadingIds(await Astro.slots.render('default'));
+const body = blockKey ? withBlockIds(withHeadings, blockKey) : withHeadings;
 ---
 
 <Fragment set:html={body} />

@@ -20,7 +20,8 @@
     "knip": "knip",
     "knip:files": "knip --include files",
     "test:layout": "playwright test --config playwright.layout.config.ts",
-    "test:search": "playwright test --config playwright.search.config.ts"
+    "test:search": "playwright test --config playwright.search.config.ts",
+    "annot:registry": "node scripts/annot-registry.mjs"
   },
   "pnpm": {
     "overrides": {
