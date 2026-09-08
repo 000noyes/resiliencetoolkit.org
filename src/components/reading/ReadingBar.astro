@@ -7,18 +7,22 @@
  * renders in flow at the top of the chapter.
  *
  * Doors arrive with their phases: Toolkit Contents here (P2), Footnotes
- * with the citations build, Make Comments with the door build.
+ * with the citations build, Make Comments on a workshop round (its sheet
+ * is the phone home of the notes feed and compose, DR20). While a note
+ * is being placed the bar carries the placing hint in place of its doors.
  */
 import ToolkitContentsTree from './ToolkitContentsTree.astro';
 import FootnotesTenant from './FootnotesTenant.astro';
-import { TableOfContents as ContentsIcon, BookMarked } from 'lucide-react';
+import { TableOfContents as ContentsIcon, BookMarked, MessageSquare } from 'lucide-react';
 
 interface Props {
   currentPath: string;
   sectionNumber: string;
+  /** A workshop round: the Make Comments door and sheet join the bar */
+  comments?: boolean;
 }
 
-const { currentPath, sectionNumber } = Astro.props;
+const { currentPath, sectionNumber, comments = false } = Astro.props;
 ---
 
 <nav class="reading-bar" data-annot-ui aria-label="Reading tools">
@@ -42,6 +46,19 @@ const { currentPath, sectionNumber } = Astro.props;
     <BookMarked size={18} aria-hidden="true" />
     <span>Footnotes</span>
   </button>
+  {comments && (
+    <button
+      type="button"
+      class="reading-bar__door"
+      data-sheet-open="make-comments"
+      aria-haspopup="dialog"
+      aria-expanded="false"
+    >
+      <MessageSquare size={18} aria-hidden="true" />
+      <span>Make Comments</span>
+    </button>
+  )}
+  {comments && <div class="reading-bar__hint" data-comments-mount="bar-hint"></div>}
 </nav>
 
 <div class="reading-sheet" data-annot-ui data-sheet="contents" hidden>
@@ -86,6 +103,28 @@ const { currentPath, sectionNumber } = Astro.props;
     </div>
   </div>
 </div>
+
+{comments && (
+  <div class="reading-sheet" data-annot-ui data-sheet="make-comments" hidden>
+    <div class="reading-sheet__backdrop" data-sheet-dismiss></div>
+    <div
+      class="reading-sheet__body"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Make Comments"
+      tabindex="-1"
+    >
+      <div class="reading-sheet__handle" aria-hidden="true"></div>
+      <div class="reading-sheet__bar">
+        <h2 class="reading-rail__panel-title">Make Comments</h2>
+        <button type="button" class="reading-sheet__close" data-sheet-dismiss>
+          Close
+        </button>
+      </div>
+      <div class="reading-sheet__scroll comments-tenant" data-comments-mount="sheet"></div>
+    </div>
+  </div>
+)}
 
 <script>
   function wireSheets() {

@@ -13,8 +13,9 @@
  * down: On this page renders in flow at the top of the chapter and the
  * doors live in the docked bar.
  *
- * The Make Comments tenant mounts beside these when the door builds; the
- * swap rule and gutter grammar already hold it.
+ * The Make Comments tenant mounts beside these on a workshop round: the
+ * same panel grammar, its feed and compose foot rendered by the
+ * annotation island into the tenant's mount (DR19/DR20).
  */
 import { TableOfContents } from '@/components/TableOfContents';
 import FootnotesTenant from './FootnotesTenant.astro';
@@ -24,13 +25,24 @@ interface Props {
   sectionNumber: string;
   /** Openers are index-shaped: they carry the doors but no page scanner */
   showOnThisPage?: boolean;
+  /** A workshop round: the Make Comments tenant joins the rail */
+  comments?: boolean;
+  /** The tenant open at load (the grid's initial data-rail) */
+  resting?: string;
 }
 
-const { moduleKey, sectionNumber, showOnThisPage = true } = Astro.props;
+const {
+  moduleKey,
+  sectionNumber,
+  showOnThisPage = true,
+  comments = false,
+  resting = showOnThisPage ? 'on-this-page' : 'closed',
+} = Astro.props;
 
 const tenants = [
   ...(showOnThisPage ? [{ id: 'on-this-page', label: 'On this page' }] : []),
   { id: 'footnotes', label: 'Footnotes' },
+  ...(comments ? [{ id: 'make-comments', label: 'Make Comments' }] : []),
 ];
 ---
 
@@ -79,6 +91,29 @@ const tenants = [
     <FootnotesTenant sectionNumber={sectionNumber} />
   </section>
 
+  {comments && (
+    <section
+      class="reading-rail__panel reading-rail__panel--comments"
+      id="rail-panel-make-comments"
+      data-rail-panel="make-comments"
+      aria-label="Make Comments"
+      tabindex="-1"
+    >
+      <div class="reading-rail__panel-bar" data-annot-ui>
+        <h2 class="reading-rail__panel-title">Make Comments</h2>
+        <button
+          type="button"
+          class="reading-rail__close"
+          data-rail-close="make-comments"
+          aria-controls="rail-panel-make-comments"
+        >
+          Close
+        </button>
+      </div>
+      <div class="comments-tenant" data-comments-mount="rail" data-annot-ui></div>
+    </section>
+  )}
+
   <div class="reading-rail__gutter" data-annot-ui>
     {
       tenants.map((t) => (
@@ -86,7 +121,7 @@ const tenants = [
           type="button"
           class="reading-rail__edge-btn"
           data-rail-btn={t.id}
-          aria-expanded="false"
+          aria-expanded={t.id === resting ? 'true' : 'false'}
           aria-controls={`rail-panel-${t.id}`}
         >
           <span class="reading-rail__edge-open">{t.label}</span>
