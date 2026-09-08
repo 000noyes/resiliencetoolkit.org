@@ -412,7 +412,7 @@ export default function AnnotationIsland({
               if (roundStatus === 'open') startCompose({ kind: 'thread', pinNo: thread.pin_no });
               document
                 .querySelector<HTMLElement>(`[data-annot-pin="${thread.pin_no}"]`)
-                ?.scrollIntoView({ block: 'center' });
+                ?.scrollIntoView({ block: 'center', inline: 'nearest' });
             }}
           >
             <p className="comments-card__who">
