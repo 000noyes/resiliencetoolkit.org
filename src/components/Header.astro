@@ -8,7 +8,8 @@
 
 // Wrapper keeps Astro's React renderer from invoking hook logic during detection.
 import UserMenuWrapper from './UserMenuWrapper.tsx';
-import { Sun, Moon, Menu, Home, NotepadText, Download, MapPin, Info } from 'lucide-react';
+import SearchBox from './search/SearchBox.astro';
+import { Sun, Moon, Menu, Search, Home, NotepadText, Download, MapPin, Info } from 'lucide-react';
 
 const currentPath = Astro.url.pathname;
 
@@ -85,6 +86,24 @@ const navItems = [
         })}
       </nav>
 
+      <!-- The one search box: rightmost before the theme toggle, after
+           the nav in DOM and tab order (SR8). Visible input at 1024px+;
+           an expanding lens in the 768 to 1024 band; the lens next to the
+           burger opens the search sheet below 768. -->
+      <div class="header-search" id="header-search">
+        <SearchBox id="header-search-input" mode="panel" />
+      </div>
+      <button
+        type="button"
+        id="header-search-lens"
+        class="header-search-lens hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-muted transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        aria-label="Search the toolkit"
+        aria-expanded="false"
+        aria-controls="header-search"
+      >
+        <Search className="w-5 h-5" strokeWidth={1.5} />
+      </button>
+
       <!-- Utilities (Right) -->
       <div class="hidden md:flex items-center gap-sm">
         <!-- Theme Toggle (Icon Button) -->
@@ -101,6 +120,20 @@ const navItems = [
         <!-- User Menu (client-side auth state) -->
         <UserMenuWrapper client:load />
       </div>
+
+      <!-- Phone search lens: left of the burger, opens the search sheet;
+           the lens and the burger close each other. Search never lives
+           inside the burger menu (SR8). -->
+      <button
+        type="button"
+        id="mobile-search-lens"
+        class="md:hidden p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
+        aria-label="Search the toolkit"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+      >
+        <Search className="w-6 h-6" strokeWidth={1.5} />
+      </button>
 
       <!-- Mobile Menu Button -->
       <button
@@ -161,14 +194,127 @@ const navItems = [
   </div>
 </header>
 
+<!-- The phone search sheet: input pinned at the top, sized to the visual
+     viewport; opening claims exactly one history entry so back closes it
+     (ES6); outside tap dismisses but the typed text is preserved. -->
+<div class="search-sheet" id="search-sheet" hidden>
+  <div class="search-sheet__backdrop" data-search-sheet-dismiss></div>
+  <div
+    class="search-sheet__body"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search the toolkit"
+    tabindex="-1"
+  >
+    <div class="search-sheet__handle" aria-hidden="true"></div>
+    <div class="search-sheet__bar">
+      <h2 class="search-sheet__title">Search the toolkit</h2>
+      <button type="button" class="search-sheet__close" data-search-sheet-dismiss>
+        Close
+      </button>
+    </div>
+    <div class="search-sheet__input">
+      <SearchBox id="sheet-search-input" mode="panel" />
+    </div>
+  </div>
+</div>
+
 <script>
-  // Mobile menu toggle
+  // Mobile menu toggle; the burger and the search lens close each other
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
   mobileMenuButton?.addEventListener('click', () => {
+    closeSearchSheet(false);
     mobileMenu?.classList.toggle('hidden');
   });
+
+  // ---- Search chrome ----
+  const searchSheet = document.getElementById('search-sheet');
+  const mobileSearchLens = document.getElementById('mobile-search-lens');
+  const headerSearchLens = document.getElementById('header-search-lens');
+  const headerEl = document.querySelector('header');
+  let sheetHasHistoryEntry = false;
+
+  function openSearchSheet() {
+    if (!searchSheet) return;
+    mobileMenu?.classList.add('hidden');
+    searchSheet.hidden = false;
+    mobileSearchLens?.setAttribute('aria-expanded', 'true');
+    document.documentElement.style.setProperty('overflow', 'hidden');
+    if (!sheetHasHistoryEntry) {
+      history.pushState({ searchSheet: true }, '');
+      sheetHasHistoryEntry = true;
+    }
+    searchSheet.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+  }
+
+  function closeSearchSheet(popHistory = true) {
+    if (!searchSheet || searchSheet.hidden) return;
+    searchSheet.hidden = true;
+    mobileSearchLens?.setAttribute('aria-expanded', 'false');
+    document.documentElement.style.removeProperty('overflow');
+    if (sheetHasHistoryEntry && popHistory) {
+      sheetHasHistoryEntry = false;
+      history.back();
+    }
+    sheetHasHistoryEntry = false;
+  }
+
+  mobileSearchLens?.addEventListener('click', () => {
+    if (searchSheet?.hidden) openSearchSheet();
+    else closeSearchSheet();
+  });
+  searchSheet?.querySelectorAll('[data-search-sheet-dismiss]').forEach((el) => {
+    // Outside tap dismisses; the typed text stays in the input for reopen
+    el.addEventListener('click', () => closeSearchSheet());
+  });
+  searchSheet?.addEventListener('keydown', (e) => {
+    if ((e as KeyboardEvent).key === 'Escape') closeSearchSheet();
+  });
+  window.addEventListener('popstate', () => {
+    if (sheetHasHistoryEntry) {
+      sheetHasHistoryEntry = false;
+      closeSearchSheet(false);
+    }
+  });
+
+  // The 768 to 1024 expanding lens; also the ES4 overflow guard: if the
+  // row cannot fit the minimum input, collapse to the lens at any width
+  function setSearchExpanded(open: boolean) {
+    headerEl?.toggleAttribute('data-search-expanded', open);
+    headerSearchLens?.setAttribute('aria-expanded', String(open));
+    if (open) {
+      document
+        .querySelector<HTMLInputElement>('#header-search input[type="search"]')
+        ?.focus();
+    }
+  }
+  headerSearchLens?.addEventListener('click', () => {
+    setSearchExpanded(!headerEl?.hasAttribute('data-search-expanded'));
+  });
+  document.addEventListener('click', (e) => {
+    if (
+      headerEl?.hasAttribute('data-search-expanded') &&
+      !document.getElementById('header-search')?.contains(e.target as Node) &&
+      e.target !== headerSearchLens &&
+      !headerSearchLens?.contains(e.target as Node)
+    ) {
+      setSearchExpanded(false);
+    }
+  });
+
+  function checkSearchOverflow() {
+    if (!headerEl) return;
+    const row = headerEl.querySelector('.container > div');
+    if (!row) return;
+    headerEl.toggleAttribute(
+      'data-search-overflow',
+      row.scrollWidth > row.clientWidth + 1
+    );
+  }
+  checkSearchOverflow();
+  window.addEventListener('resize', checkSearchOverflow);
 
   // Dark mode toggle
   const themeToggle = document.getElementById('theme-toggle');

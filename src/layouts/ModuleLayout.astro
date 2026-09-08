@@ -104,7 +104,7 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
     <article data-pagefind-body class={showTOC ? "reading-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
       {sectionData && (
         <!-- Breadcrumb navigation for section pages -->
-        <nav class="mb-6 text-sm text-text-muted no-print">
+        <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
           <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
           <span class="mx-2">/</span>
           <a href={sectionData.modulePath || "/modules"} class="hover:text-text-primary transition-colors">
@@ -168,7 +168,7 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
       </header>
 
       <!-- Action Bar with View PDF and Export Buttons -->
-      <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print">
+      <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print" data-pagefind-ignore>
         {pdfUrl ? (
           <!-- DR21: the chapter action bar carries the quiet action grammar; same
                two actions, same position, the reading surface's quietest treatment -->
@@ -213,12 +213,12 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
       </div>
 
       {citation && (
-        <p class="module-citation">{citation}</p>
+        <p class="module-citation" data-pagefind-ignore>{citation}</p>
       )}
 
       {sectionData && (
         <!-- Section navigation for section-based pages -->
-        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
+        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
           {sectionData.prev ? (
             <a
               href={sectionData.prev.href}
