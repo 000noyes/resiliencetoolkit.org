@@ -30,8 +30,9 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   await expect(panel).toBeVisible();
   await expect(panel.locator('.toc-title')).toHaveText('On this page');
 
-  // (d) Closing the tenant returns the measure: the panel leaves, the
-  // labeled edge button appears in the reserved 48px gutter
+  // (d) Closing the tenant holds the measure: the panel leaves, the
+  // labeled edge button appears in the reserved 48px gutter, the
+  // article does not reflow
   const contentBefore = await page.locator('.reading-content').boundingBox();
   await page.click('[data-rail-close="on-this-page"]');
   await expect(panel).toBeHidden();
@@ -41,7 +42,7 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   const gutter = await page.locator('.reading-rail__gutter').boundingBox();
   expect(gutter!.width).toBeLessThanOrEqual(48);
   const contentAfter = await page.locator('.reading-content').boundingBox();
-  expect(contentAfter!.width).toBeGreaterThan(contentBefore!.width);
+  expect(contentAfter!.width).toBe(contentBefore!.width);
 
   // (e) Reopening restores the panel
   await edgeBtn.click();
