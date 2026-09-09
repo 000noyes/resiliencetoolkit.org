@@ -2533,6 +2533,13 @@ a.cover-contents__section:hover {
   border-radius: 2px;
 }
 
+/* The words a search pick landed on: the mark plus the ring (BR5) */
+.search-landing {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+
 .search-panel__footer {
   display: flex;
   justify-content: space-between;
