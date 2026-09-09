@@ -1549,23 +1549,6 @@ table tr td:only-child strong[id] {
   display: block;
 }
 
-/* The open tenant's edge button reads "Close X" (S5) */
-.reading-rail__edge-close {
-  display: none;
-}
-
-.reading-grid[data-rail='on-this-page'] [data-rail-btn='on-this-page'] .reading-rail__edge-open,
-.reading-grid[data-rail='footnotes'] [data-rail-btn='footnotes'] .reading-rail__edge-open,
-.reading-grid[data-rail='make-comments'] [data-rail-btn='make-comments'] .reading-rail__edge-open {
-  display: none;
-}
-
-.reading-grid[data-rail='on-this-page'] [data-rail-btn='on-this-page'] .reading-rail__edge-close,
-.reading-grid[data-rail='footnotes'] [data-rail-btn='footnotes'] .reading-rail__edge-close,
-.reading-grid[data-rail='make-comments'] [data-rail-btn='make-comments'] .reading-rail__edge-close {
-  display: inline;
-}
-
 .reading-rail__edge-btn {
   writing-mode: vertical-rl;
   padding: var(--spacing-sm) 6px;
@@ -1582,6 +1565,13 @@ table tr td:only-child strong[id] {
 .reading-rail__edge-btn:hover {
   background: var(--sidebar-accent);
   color: var(--foreground);
+}
+
+/* The open tenant's edge button reads the tenant name, pressed */
+.reading-rail__edge-btn[aria-expanded='true'] {
+  background: color-mix(in srgb, var(--sidebar-primary) 12%, transparent);
+  border-color: var(--sidebar-primary);
+  color: var(--sidebar-primary);
 }
 
 .reading-grid .reading-rail__panel {
