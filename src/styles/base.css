@@ -1171,18 +1171,6 @@ a.button-link:focus-visible {
   color: var(--sidebar-primary);
 }
 
-.toc-item--active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 16px;
-  background: var(--sidebar-primary);
-  border-radius: 0 2px 2px 0;
-}
-
 .toc-item--nested {
   font-size: 12px;
   color: var(--text-secondary);
