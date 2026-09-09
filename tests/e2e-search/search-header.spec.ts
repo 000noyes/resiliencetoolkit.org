@@ -108,12 +108,23 @@ test.describe('desktop 1360', () => {
     });
     const hash = new URL(href, 'http://x').hash;
     if (hash) {
-      // The landing anchor takes focus under the sticky header (SR3/SR11)
+      // The landing (BR5): the searched words under the named header sit
+      // in the ring mark, focused, in view under the sticky header, and
+      // the URL settled to the header anchor
+      const mark = page.locator('mark.search-landing');
+      await expect(mark).toHaveText(/mutual|aid/i, { timeout: 15_000 });
       await expect
-        .poll(() => page.evaluate(() => document.activeElement?.id))
-        .toBe(decodeURIComponent(hash.slice(1)));
-      const y = await page.evaluate((id) => document.getElementById(id)!.getBoundingClientRect().top, decodeURIComponent(hash.slice(1)));
-      expect(y).toBeGreaterThanOrEqual(56);
+        .poll(() => page.evaluate(() => document.activeElement?.classList.contains('search-landing')))
+        .toBe(true);
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const r = document.querySelector('mark.search-landing')!.getBoundingClientRect();
+            return r.top >= 56 && r.bottom <= window.innerHeight;
+          })
+        )
+        .toBe(true);
+      expect(new URL(page.url()).hash).toBe(hash);
     }
   });
 

@@ -21,6 +21,7 @@
  */
 import { searchRoute } from '@/data/contents';
 import { urlToChapter } from './urlToChapter';
+import { landOnSearch } from './landing';
 
 interface PagefindAnchor {
   element: string;
@@ -331,24 +332,30 @@ export function mountSearch(opts: MountOptions): SearchMount {
     }
   };
 
-  /** The navigation a pick performs (ES6): same-page picks push a history entry */
+  /**
+   * The navigation a pick performs (ES6): same-page picks push a history
+   * entry and land directly; other picks are plain navigations. A pick
+   * naming a header lands on the searched words under it (BR5): the
+   * landing rides sessionStorage so the page opens at its top and
+   * travels down, and the landing settles the URL to the anchor. If the
+   * hand-off is unavailable, the hash link itself is the landing.
+   */
   const goTo = (url: string) => () => {
     const dest = new URL(url, location.origin);
-    if (dest.pathname === location.pathname && dest.hash) {
+    const id = dest.hash ? decodeURIComponent(dest.hash.slice(1)) : '';
+    const q = input.value;
+    if (dest.pathname === location.pathname && id) {
       history.pushState(null, '', dest.hash);
-      const target = document.getElementById(decodeURIComponent(dest.hash.slice(1)));
-      if (target) {
-        target.setAttribute('tabindex', '-1');
-        target.scrollIntoView();
-        target.focus({ preventScroll: true });
-      }
       setExpanded(false);
-    } else {
+      landOnSearch({ id, q }, { fromTop: false });
+    } else if (id) {
       try {
-        sessionStorage.setItem(LANDING_KEY, '1');
+        sessionStorage.setItem(LANDING_KEY, JSON.stringify({ id, q }));
+        location.href = dest.pathname + dest.search;
       } catch {
-        /* focus assist off */
+        location.href = url;
       }
+    } else {
       location.href = url;
     }
   };

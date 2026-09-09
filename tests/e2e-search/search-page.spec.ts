@@ -45,6 +45,31 @@ test('three states: empty query shows the contents, a query replaces them with c
   await expect(page.locator('[data-search-contents]')).toBeVisible();
 });
 
+test('a pick from /search opens the page at its top and travels to the searched words (BR5)', async ({ page }) => {
+  await page.goto('/search?q=mutual%20aid');
+  const rows = page.locator('[data-search-page] [role="option"]');
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  const withHash = page.locator('[data-search-page] [role="option"][href*="#"]').first();
+  const href = (await withHash.getAttribute('href'))!;
+  const dest = new URL(href, 'http://x');
+  await withHash.click();
+  await page.waitForURL((url) => url.pathname === dest.pathname, { timeout: 15_000 });
+  const mark = page.locator('mark.search-landing');
+  await expect(mark).toHaveText(/mutual|aid/i, { timeout: 15_000 });
+  await expect
+    .poll(() => page.evaluate(() => document.activeElement?.classList.contains('search-landing')))
+    .toBe(true);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const r = document.querySelector('mark.search-landing')!.getBoundingClientRect();
+        return r.top >= 56 && r.bottom <= window.innerHeight;
+      })
+    )
+    .toBe(true);
+  await expect.poll(() => new URL(page.url()).hash).toBe(dest.hash);
+});
+
 test('/search is unlisted chrome: no nav item, no tree row; reached by the box and the contents-render links', async ({
   page,
 }) => {
