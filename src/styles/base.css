@@ -1021,10 +1021,6 @@ a.button-link:focus-visible {
   max-width: 1600px;
 }
 
-.reading-grid[data-rail='closed'] {
-  grid-template-columns: var(--reading-tree-w) minmax(0, 1fr) var(--reading-gutter-w);
-}
-
 .reading-grid .reading-content {
   grid-column: 2;
   grid-row: 1;
@@ -2266,10 +2262,6 @@ a.cover-contents__section:hover {
 .reading-grid--no-tree {
   grid-template-columns: minmax(0, 1fr) calc(var(--reading-rail-w) + var(--reading-gutter-w));
   max-width: 1200px;
-}
-
-.reading-grid--no-tree[data-rail='closed'] {
-  grid-template-columns: minmax(0, 1fr) var(--reading-gutter-w);
 }
 
 .reading-grid--no-tree .reading-content {
