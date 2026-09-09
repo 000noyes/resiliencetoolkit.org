@@ -58,3 +58,34 @@ test('/search is unlisted chrome: no nav item, no tree row; reached by the box a
   await expect(page.locator('.contents-tree--rail .contents-tree__search')).toHaveAttribute('href', '/search');
   await expect(page.locator('.contents-tree--rail .contents-tree__search')).toHaveText(/Search the toolkit/);
 });
+
+test('back to /search restores the results (ES6): a pick, then back, then a back-forward cache restore', async ({
+  page,
+}) => {
+  await page.goto('/search?q=mutual%20aid');
+  const rows = page.locator('[data-search-page] [role="option"]');
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  const href = (await rows.first().getAttribute('href'))!;
+  await rows.first().click();
+  await page.waitForURL(
+    (url) => url.pathname + url.hash === href.replace(/\/(#|$)/, '$1') || url.pathname + url.hash === href,
+    { timeout: 15_000 }
+  );
+
+  // Back lands the same /search: query in the box, results under the count
+  await page.goBack();
+  await expect(page.locator('#page-search-input')).toHaveValue('mutual aid');
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('[data-search-count]')).toBeVisible();
+  await expect(page.locator('[data-search-contents]')).toBeHidden();
+
+  // A back-forward cache restore replays pagehide then pageshow with the
+  // page intact: on /search the result surface must survive it
+  await page.evaluate(() => {
+    window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  });
+  await expect(rows.first()).toBeVisible();
+  await expect(page.locator('[data-search-count]')).toBeVisible();
+  await expect(page.locator('[data-search-contents]')).toBeHidden();
+});

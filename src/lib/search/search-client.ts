@@ -521,13 +521,24 @@ export function mountSearch(opts: MountOptions): SearchMount {
   const onDocClick = (e: MouseEvent) => {
     if (!root.contains(e.target as Node)) setExpanded(false);
   };
-  const onPageHide = () => setExpanded(false);
+  // The header panel collapses when the page leaves. On /search the
+  // panel is the result surface itself, so it stays for a back-forward
+  // cache restore; pageshow re-runs the query if the list came back empty
+  const onPageHide = () => {
+    if (mode === 'panel') setExpanded(false);
+  };
+  const onPageShow = (e: PageTransitionEvent) => {
+    if (e.persisted && mode === 'page' && options.length === 0 && input.value.trim().length >= 2) {
+      runQuery(input.value);
+    }
+  };
 
   input.addEventListener('input', onInput);
   input.addEventListener('focus', onFocus);
   input.addEventListener('keydown', onKeydown);
   document.addEventListener('click', onDocClick);
   window.addEventListener('pagehide', onPageHide);
+  window.addEventListener('pageshow', onPageShow);
 
   // The module mounts on the reader's first focus or keystroke: honor
   // whichever already happened before it arrived
@@ -543,6 +554,7 @@ export function mountSearch(opts: MountOptions): SearchMount {
       input.removeEventListener('keydown', onKeydown);
       document.removeEventListener('click', onDocClick);
       window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('pageshow', onPageShow);
     },
     runQuery,
   };
