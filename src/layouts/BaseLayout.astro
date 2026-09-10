@@ -86,7 +86,7 @@ const isWorkshop = process.env.WORKSHOP === '1';
 
     <title>{title}</title>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class:list={['min-h-screen flex flex-col', !isPrintMode && 'has-site-header']}>
     <!-- Skip to content link for keyboard/screen reader users -->
     <a
       href="#main-content"

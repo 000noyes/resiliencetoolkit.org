@@ -4,7 +4,7 @@
 
 :root {
   /* Layout dimensions */
-  --header-height: 56px;
+  --header-height: 49px; /* the fixed header's real height: 40px mark + 8px padding + 1px border */
   scroll-padding-top: calc(var(--header-height) + var(--spacing-md));
   scroll-padding-bottom: var(--spacing-lg);
 
@@ -1316,6 +1316,29 @@ table tr td:only-child strong[id] {
   .reading-grid {
     display: block;
     padding: 0;
+  }
+}
+
+/* The header is fixed, never sticky (BR7). A text input inside a sticky
+   header makes browsers scroll the page toward the input's in-flow
+   position on every edit (WebKit: one header height per keystroke). Out
+   of the flow there is nothing to scroll toward. The body reserves the
+   header's height; banners and the workshop strip stay in flow below it. */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: var(--header-height);
+}
+
+body.has-site-header {
+  padding-top: var(--header-height);
+}
+
+@media print {
+  body.has-site-header {
+    padding-top: 0;
   }
 }
 
