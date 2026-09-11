@@ -1523,6 +1523,11 @@ body.has-site-header {
   color: var(--foreground);
 }
 
+.contents-tree__row--activity .contents-tree__link {
+  padding-left: calc(var(--spacing-sm) + 2.4em);
+  font-size: 13px;
+}
+
 .contents-tree__row--chapter .contents-tree__link {
   padding-left: var(--spacing-md);
 }
