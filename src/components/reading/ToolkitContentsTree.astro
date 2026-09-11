@@ -9,6 +9,12 @@
  *
  * Renders twice: the left column on desktop reading pages (variant
  * "rail") and inside the phone bar's bottom sheet (variant "sheet").
+ *
+ * The rail render closes to a labeled edge button in a left gutter, the
+ * same grammar as the right rail (BR8): open by default, the choice kept
+ * per device, the column keeping its width either way so the measure
+ * holds (BR3). Below 1200px the sheet carries the tree and no gutter
+ * renders.
  */
 import { treeRows, searchRoute } from '@/data/contents';
 import { Search } from 'lucide-react';
@@ -25,10 +31,45 @@ const normalize = (p: string) => p.replace(/\/$/, '') || '/';
 const current = normalize(currentPath);
 ---
 
+{
+  variant === 'rail' && (
+    <>
+      <script is:inline>
+        try {
+          if (localStorage.getItem('rt-tree') === 'closed') {
+            document.currentScript.closest('.reading-grid')?.setAttribute('data-tree', 'closed');
+          }
+        } catch {}
+      </script>
+      <div class="reading-tree__gutter" data-annot-ui>
+        <button
+          type="button"
+          class="reading-rail__edge-btn"
+          data-tree-btn
+          aria-expanded="true"
+          aria-controls="toolkit-contents-tree"
+        >
+          <span class="reading-rail__edge-open">Toolkit Contents</span>
+        </button>
+      </div>
+    </>
+  )
+}
 <nav
+  id={variant === 'rail' ? 'toolkit-contents-tree' : undefined}
   class:list={['contents-tree', `contents-tree--${variant}`]}
   aria-label="Toolkit Contents"
+  tabindex={variant === 'rail' ? '-1' : undefined}
 >
+  {
+    variant === 'rail' && (
+      <div class="reading-rail__panel-bar" data-annot-ui>
+        <button type="button" class="reading-rail__close" data-tree-close aria-controls="toolkit-contents-tree">
+          Close
+        </button>
+      </div>
+    )
+  }
   <h2 class="contents-tree__title">Toolkit Contents</h2>
   <ol class="contents-tree__list">
     {rows.map((row) => {
@@ -62,3 +103,33 @@ const current = normalize(currentPath);
     </a>
   </div>
 </nav>
+
+<script>
+  // The tree closes to its edge button and reopens from it; the choice
+  // is kept per device (BR8). Focus follows the move, as the rail does.
+  const KEY = 'rt-tree';
+  document.querySelectorAll<HTMLElement>('.reading-grid').forEach((grid) => {
+    const tree = grid.querySelector<HTMLElement>('#toolkit-contents-tree');
+    const edge = grid.querySelector<HTMLButtonElement>('[data-tree-btn]');
+    const close = grid.querySelector<HTMLButtonElement>('[data-tree-close]');
+    if (!tree || !edge || !close) return;
+    const setTree = (state: 'open' | 'closed') => {
+      grid.setAttribute('data-tree', state);
+      edge.setAttribute('aria-expanded', String(state === 'open'));
+      try {
+        localStorage.setItem(KEY, state);
+      } catch {
+        /* the choice lasts the page */
+      }
+    };
+    edge.setAttribute('aria-expanded', String(grid.getAttribute('data-tree') !== 'closed'));
+    close.addEventListener('click', () => {
+      setTree('closed');
+      edge.focus();
+    });
+    edge.addEventListener('click', () => {
+      setTree('open');
+      tree.focus();
+    });
+  });
+</script>
