@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { contents } from '@/data/contents';
 
 const moduleData = {
   title: "Emergency Preparedness and Response",
@@ -8,21 +9,9 @@ const moduleData = {
   tags: ["emergency", "preparedness", "response"]
 };
 
-const sections = [
-  { number: "1.1", title: "Emergency preparedness kits", slug: "1-1" },
-  { number: "1.2", title: "Food and water", slug: "1-2" },
-  { number: "1.3", title: "First aid and medical", slug: "1-3" },
-  { number: "1.4", title: "Power supply", slug: "1-4" },
-  { number: "1.5", title: "Warming / Cooling / Emergency Shelter", slug: "1-5" },
-  { number: "1.6", title: "Vehicles and Equipment", slug: "1-6" },
-  { number: "1.7", title: "Sanitation and Hygiene", slug: "1-7" },
-  { number: "1.8", title: "Populations with Specific Needs", slug: "1-8" },
-  { number: "1.9", title: "Community Emergency Response Plans", slug: "1-9" },
-  { number: "1.10", title: "Volunteer Management", slug: "1-10" },
-  { number: "1.11", title: "Flood Recovery Supplies and Work", slug: "1-11" },
-  { number: "1.12", title: "Mutual Aid / Neighbor to Neighbor (N2N)", slug: "1-12" },
-  { number: "1.13", title: "Financial Resources", slug: "1-13" },
-];
+const sections = contents.find((s) => s.slug === 'emergency-preparedness')!.chapters.map(
+  (c) => ({ number: c.number, title: c.listTitle ?? c.title, slug: c.slug })
+);
 ---
 
 <BaseLayout title={moduleData.title}>

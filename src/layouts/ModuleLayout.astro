@@ -12,34 +12,24 @@
  * ## Dual-Mode Rendering:
  * Supports two content modes:
  * 1. **Frontmatter mode**: For MDX files with frontmatter metadata
- * 2. **SectionData mode**: For .astro files with programmatic section data
- *
- * This allows both legacy MDX content and new structured .astro sections.
+ * 2. **Section mode**: For .astro section pages, which pass ONLY their
+ *    printed section number; title, breadcrumb, prev/next, PDF, and
+ *    resources all resolve from the one contents model (src/data/contents.ts)
  *
  * ## Navigation:
  * - Breadcrumb: Home → Modules → Module → Section
  * - Prev/Next buttons between sections within a module
  * - "Back to Modules" link to module index
  * - Table of Contents sidebar for section pages
- *
- * @see src/types/section-navigation.ts for SectionData type definition
  */
 import BaseLayout from './BaseLayout.astro';
+import { findChapter, chainFor } from '@/data/contents';
 import { getPdfUrlForSection } from '@/lib/pdfLookup';
 import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { FolderOpen } from 'lucide-react';
 import { TableOfContents, TableOfContentsMobile } from '@/components/TableOfContents';
 import WorkLivesHere from '@/components/WorkLivesHere.tsx';
-
-interface SectionData {
-  number: string;
-  title: string;
-  moduleTitle: string;
-  modulePath?: string;
-  prevSection?: { number: string; title: string; slug: string } | null;
-  nextSection?: { number: string; title: string; slug: string } | null;
-}
 
 interface Props {
   frontmatter?: {
@@ -52,11 +42,27 @@ interface Props {
     time_to_complete?: string;
     difficulty?: 'Easy' | 'Medium' | 'Hard';
   };
-  sectionData?: SectionData;
+  /** Printed section number, e.g. "1.2"; everything else resolves from the model */
+  sectionNumber?: string;
   title?: string;
 }
 
-const { frontmatter, sectionData, title } = Astro.props;
+const { frontmatter, sectionNumber, title } = Astro.props;
+
+const found = sectionNumber ? findChapter(sectionNumber) : null;
+if (sectionNumber && !found) {
+  throw new Error(`ModuleLayout: section ${sectionNumber} is not in the contents model`);
+}
+const sectionData = found
+  ? {
+      number: found.chapter.number,
+      title: found.chapter.title,
+      // Section 0 has no opener: its single chapter is its own module title
+      moduleTitle: found.section.openerPath === null ? found.chapter.title : found.section.title,
+      modulePath: found.section.basePath,
+      ...chainFor(found.chapter.number),
+    }
+  : null;
 
 // Look up PDF URL if we have section data
 const pdfUrl = sectionData ? getPdfUrlForSection(sectionData.number) : null;
@@ -196,15 +202,15 @@ const showTOC = !!sectionData;
       {sectionData && (
         <!-- Section navigation for section-based pages -->
         <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
-          {sectionData.prevSection ? (
+          {sectionData.prev ? (
             <a
-              href={`${sectionData.modulePath || '/modules'}/${sectionData.prevSection.slug}`}
+              href={sectionData.prev.href}
               class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
-              <span>Previous: {sectionData.prevSection.number} {sectionData.prevSection.title}</span>
+              <span>Previous: {sectionData.prev.label}</span>
             </a>
           ) : (
             <a
@@ -218,12 +224,12 @@ const showTOC = !!sectionData;
             </a>
           )}
 
-          {sectionData.nextSection && (
+          {sectionData.next && (
             <a
-              href={`${sectionData.modulePath || '/modules'}/${sectionData.nextSection.slug}`}
+              href={sectionData.next.href}
               class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors ml-auto"
             >
-              <span class="mr-2">Next: {sectionData.nextSection.number} {sectionData.nextSection.title}</span>
+              <span class="mr-2">Next: {sectionData.next.label}</span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>

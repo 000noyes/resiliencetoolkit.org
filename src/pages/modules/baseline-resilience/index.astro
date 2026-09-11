@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { contents } from '@/data/contents';
 
 const moduleData = {
   title: "Baseline Resilience",
@@ -8,11 +9,9 @@ const moduleData = {
   tags: ["baseline-resilience", "community"]
 };
 
-const sections = [
-  { number: "2.1", title: "Basic Needs", slug: "2-1" },
-  { number: "2.2", title: "Shared Tools", slug: "2-2" },
-  { number: "2.3", title: "Community Building", slug: "2-3" }
-];
+const sections = contents.find((s) => s.slug === 'baseline-resilience')!.chapters.map(
+  (c) => ({ number: c.number, title: c.listTitle ?? c.title, slug: c.slug })
+);
 ---
 
 <BaseLayout title={moduleData.title} description={moduleData.summary}>
