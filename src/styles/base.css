@@ -1449,6 +1449,34 @@ body.has-site-header {
   scrollbar-color: var(--sidebar-border) transparent;
 }
 
+/* The tree closes to its edge button in a left gutter (BR8). The column
+   keeps its width, so the measure holds (BR3) and the freed space is
+   margin. Below 1200px the sheet carries the tree and no gutter renders. */
+.reading-tree__gutter {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  width: var(--reading-gutter-w);
+  padding-top: 2px;
+}
+
+.reading-grid[data-tree='closed'] .contents-tree--rail {
+  display: none;
+}
+
+.reading-grid[data-tree='closed'] .reading-tree__gutter {
+  display: flex;
+}
+
+.contents-tree--rail:focus {
+  outline: none;
+}
+
 .contents-tree__title {
   font-size: 13px;
   font-weight: 600;
@@ -1949,7 +1977,9 @@ body.has-site-header {
     padding-bottom: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px) + var(--spacing-lg));
   }
 
-  .reading-grid .contents-tree {
+  .reading-grid .contents-tree,
+  .reading-tree__gutter,
+  .reading-grid[data-tree='closed'] .reading-tree__gutter {
     display: none;
   }
 
