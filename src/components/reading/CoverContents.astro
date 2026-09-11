@@ -8,6 +8,7 @@
  * 0 then 1 then 2. Plain HTML, so it is also the no-JS floor.
  */
 import { contents, frontMatter, resourceLibrary } from '@/data/contents';
+import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
 
 interface Props {
   /** The cover shows the newcomer exit lines; /search omits them */
@@ -53,6 +54,21 @@ const crosHelpLine =
                 >
                   <span class="cover-contents__number">{chapter.number}</span>
                   <span>{chapter.title}</span>
+                </a>
+              </li>
+            ))}
+            {(section.activities ?? []).map((activity) => (
+              <li>
+                <a
+                  href={activity.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="cover-contents__chapter cover-contents__chapter--activity"
+                >
+                  <span>{activity.title}</span>
+                  <span class="external-link__icon" aria-hidden="true">
+                    <ExternalLinkIcon size={12} strokeWidth={2} />
+                  </span>
                 </a>
               </li>
             ))}

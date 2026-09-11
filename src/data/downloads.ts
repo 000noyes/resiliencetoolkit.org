@@ -7,7 +7,9 @@
  */
 
 import { getFormattedFileSize } from '@/lib/fileSize';
-import { allChapters } from './contents';
+import { allChapters, knowingYourCommunityActivities } from './contents';
+
+const [needsAssessment, toolkitActivity] = knowingYourCommunityActivities;
 
 export interface FeaturedDownload {
   title: string;
@@ -78,16 +80,16 @@ export const featuredDownloads: FeaturedDownload[] = [
     isExternal: true
   },
   {
-    title: 'Community Needs Assessment',
+    title: needsAssessment.title,
     description: 'Interactive community needs assessment tool',
-    downloadUrl: 'https://drive.google.com/file/d/18Agz8LA23sPxxqChrdKujppBaqLgwk69/view',
+    downloadUrl: needsAssessment.href,
     icon: 'document',
     isExternal: true
   },
   {
-    title: 'Interactive Toolkit Activity',
+    title: toolkitActivity.title,
     description: 'Interactive toolkit activity guide',
-    downloadUrl: 'https://drive.google.com/file/d/10PfAqefQWzjC_BwJvK1PySATl3W4t843/view',
+    downloadUrl: toolkitActivity.href,
     icon: 'document',
     isExternal: true
   }

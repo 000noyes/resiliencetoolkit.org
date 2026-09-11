@@ -17,6 +17,7 @@ import {
   findChapter,
   frontMatter,
   readingChain,
+  knowingYourCommunityActivities,
   resourceLibrary,
   treeRows,
 } from './contents';
@@ -127,6 +128,33 @@ describe('tree render', () => {
       label: resourceLibrary.title,
       href: resourceLibrary.path,
     });
+  });
+
+  it('renders the two Knowing Your Community activities as external rows right after 0.1 (BR10)', () => {
+    const rows = treeRows();
+    const km = rows.findIndex((r) => r.href === '/modules/knowing-your-community');
+    expect(km).toBeGreaterThan(0);
+    expect(rows[km + 1]).toMatchObject({
+      kind: 'activity',
+      label: 'Community Needs Assessment',
+      href: knowingYourCommunityActivities[0].href,
+      external: true,
+    });
+    expect(rows[km + 2]).toMatchObject({
+      kind: 'activity',
+      label: 'Interactive Toolkit Activity',
+      href: knowingYourCommunityActivities[1].href,
+      external: true,
+    });
+    expect(rows[km + 3].kind).toBe('section');
+    expect(rows.filter((r) => r.kind === 'activity')).toHaveLength(2);
+  });
+
+  it('keeps the activities out of the reading chain, the downloads table, and the module cards', () => {
+    const drive = knowingYourCommunityActivities.map((a) => a.href);
+    for (const stop of readingChain()) expect(drive).not.toContain(stop.href);
+    expect(moduleDownloads).toHaveLength(17);
+    expect(modules.map((m) => m.url)).not.toEqual(expect.arrayContaining(drive));
   });
 
   it('never renders site chrome (Map, About, Changes) as rows', () => {

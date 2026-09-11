@@ -17,7 +17,7 @@
  * renders.
  */
 import { treeRows, searchRoute } from '@/data/contents';
-import { Search } from 'lucide-react';
+import { Search, ExternalLink as ExternalLinkIcon } from 'lucide-react';
 
 interface Props {
   /** Path of the page hosting the tree, for the active row */
@@ -82,16 +82,30 @@ const current = normalize(currentPath);
             isActive && 'contents-tree__row--active',
           ]}
         >
-          <a
-            href={row.href}
-            aria-current={isActive ? 'page' : undefined}
-            class="contents-tree__link"
-          >
-            {row.number && (
-              <span class="contents-tree__number">{row.number}</span>
-            )}
-            <span class="contents-tree__label">{row.label}</span>
-          </a>
+          {row.external ? (
+            <a
+              href={row.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="contents-tree__link contents-tree__link--external"
+            >
+              <span class="contents-tree__label">{row.label}</span>
+              <span class="external-link__icon" aria-hidden="true">
+                <ExternalLinkIcon size={12} strokeWidth={2} />
+              </span>
+            </a>
+          ) : (
+            <a
+              href={row.href}
+              aria-current={isActive ? 'page' : undefined}
+              class="contents-tree__link"
+            >
+              {row.number && (
+                <span class="contents-tree__number">{row.number}</span>
+              )}
+              <span class="contents-tree__label">{row.label}</span>
+            </a>
+          )}
         </li>
       );
     })}
