@@ -59,7 +59,7 @@ const crosHelpLine =
             ))}
             {(section.activities ?? []).map((activity) => (
               <li>
-                <ExternalLink href={activity.href} class="cover-contents__chapter cover-contents__chapter--activity">
+                <ExternalLink href={activity.href} class="cover-contents__chapter cover-contents__chapter--activity" hydrate="visible">
                   <span>{activity.title}</span>
                 </ExternalLink>
               </li>

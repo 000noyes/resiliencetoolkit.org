@@ -88,7 +88,7 @@ const current = normalize(currentPath);
               <span class="contents-tree__label">{row.label}</span>
             </span>
           ) : row.external ? (
-            <ExternalLink href={row.href} class="contents-tree__link contents-tree__link--external">
+            <ExternalLink href={row.href} class="contents-tree__link contents-tree__link--external" hydrate="visible">
               <span class="contents-tree__label">{row.label}</span>
             </ExternalLink>
           ) : (
