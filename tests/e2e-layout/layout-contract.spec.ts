@@ -35,6 +35,7 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   // labeled edge button appears in the reserved 48px gutter, the
   // article does not reflow
   const contentBefore = await page.locator('.reading-content').boundingBox();
+  const gutterBefore = await page.locator('.reading-rail__gutter').boundingBox();
   await page.click('[data-rail-close="on-this-page"]');
   await expect(panel).toBeHidden();
   const edgeBtn = page.locator('[data-rail-btn="on-this-page"]');
@@ -42,6 +43,8 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   await expect(edgeBtn.locator('.reading-rail__edge-open')).toBeVisible();
   const gutter = await page.locator('.reading-rail__gutter').boundingBox();
   expect(gutter!.width).toBeLessThanOrEqual(48);
+  // The edge buttons keep their place at the right edge; only the panel leaves
+  expect(gutter!.x).toBe(gutterBefore!.x);
   const contentAfter = await page.locator('.reading-content').boundingBox();
   expect(contentAfter!.width).toBe(contentBefore!.width);
 
