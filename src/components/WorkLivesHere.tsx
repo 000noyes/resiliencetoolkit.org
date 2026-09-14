@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Download, Check, AlertCircle, HardDrive } from 'lucide-react';
 import { downloadFullBackup } from '@/lib/backup';
-import { getCueState } from '@/lib/backup-cue';
+import { buildWorkSnapshot, getCueState } from '@/lib/backup-cue';
+import { exportAllData } from '@/lib/storage';
 import { moduleCardBackupLine } from '@/lib/safety-card-state';
 
 /**
@@ -14,19 +15,41 @@ import { moduleCardBackupLine } from '@/lib/safety-card-state';
  * full-toolkit backup as the dashboard, and the backup line renders from the
  * same work-based cue as the dashboard card (moduleCardBackupLine), so the
  * two surfaces can never disagree. Time alone never triggers a prompt here.
+ *
+ * The card appears only once the device holds work (todos, tables, or
+ * notes, counted the way the dashboard card counts them). A reader who has
+ * done nothing yet meets the chapter, not a backup prompt; the server
+ * shell renders nothing, so no state is claimed before the device is read.
  */
+
+/** True when the device holds any saved work, by the dashboard card's own count */
+export function deviceHoldsWork(snapshot: ReturnType<typeof buildWorkSnapshot>): boolean {
+  const notes = snapshot.metadata['personalNotes'];
+  return (
+    snapshot.todos.length > 0 ||
+    snapshot.tables.length > 0 ||
+    (typeof notes === 'string' && notes.length > 0)
+  );
+}
+
 export default function WorkLivesHere() {
+  const [hasWork, setHasWork] = useState<boolean>(false);
   const [status, setStatus] = useState<'idle' | 'exporting' | 'success' | 'error'>('idle');
   const [backupLine, setBackupLine] = useState<string>('');
 
   useEffect(() => {
     let mounted = true;
-    getCueState()
-      .then((cue) => {
-        if (mounted) setBackupLine(moduleCardBackupLine(cue));
+    exportAllData()
+      .then((data) => {
+        if (!mounted) return;
+        if (!deviceHoldsWork(buildWorkSnapshot(data))) return;
+        setHasWork(true);
+        return getCueState().then((cue) => {
+          if (mounted) setBackupLine(moduleCardBackupLine(cue));
+        });
       })
       .catch(() => {
-        // storage unreadable: keep the empty line; the headline stays true
+        // storage unreadable: no card, no claim
       });
     return () => {
       mounted = false;
@@ -52,6 +75,23 @@ export default function WorkLivesHere() {
     }
   }
 
+  if (!hasWork) return null;
+
+  return (
+    <WorkLivesHereCard backupLine={backupLine} status={status} onBackup={handleBackup} />
+  );
+}
+
+/** The card itself, rendered once the device is known to hold work */
+export function WorkLivesHereCard({
+  backupLine,
+  status,
+  onBackup,
+}: {
+  backupLine: string;
+  status: 'idle' | 'exporting' | 'success' | 'error';
+  onBackup: () => void;
+}) {
   return (
     <div className="w-full rounded-md border border-border bg-card p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
       <HardDrive className="h-5 w-5 flex-shrink-0 text-muted-foreground" strokeWidth={1.75} aria-hidden="true" />
@@ -64,7 +104,7 @@ export default function WorkLivesHere() {
       </div>
       <button
         type="button"
-        onClick={handleBackup}
+        onClick={onBackup}
         disabled={status === 'exporting'}
         className={`inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
           status === 'success'
