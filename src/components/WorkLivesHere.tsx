@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Download, Check, AlertCircle, HardDrive } from 'lucide-react';
 import { downloadFullBackup } from '@/lib/backup';
-import { buildWorkSnapshot, getCueState } from '@/lib/backup-cue';
-import { exportAllData } from '@/lib/storage';
+import { getCueState, readCanary, type WorkCanary } from '@/lib/backup-cue';
 import { moduleCardBackupLine } from '@/lib/safety-card-state';
 
 /**
@@ -16,20 +15,17 @@ import { moduleCardBackupLine } from '@/lib/safety-card-state';
  * same work-based cue as the dashboard card (moduleCardBackupLine), so the
  * two surfaces can never disagree. Time alone never triggers a prompt here.
  *
- * The card appears only once the device holds work (todos, tables, or
- * notes, counted the way the dashboard card counts them). A reader who has
- * done nothing yet meets the chapter, not a backup prompt; the server
- * shell renders nothing, so no state is claimed before the device is read.
+ * The card appears only once the device holds work, read from the same
+ * canary the storage-health strip reads (the modules that have ever held
+ * user work on this device): one synchronous localStorage read, never a
+ * database export on page load. A reader who has done nothing yet meets
+ * the chapter, not a backup prompt; the server shell renders nothing, so
+ * no state is claimed before the device is read.
  */
 
-/** True when the device holds any saved work, by the dashboard card's own count */
-export function deviceHoldsWork(snapshot: ReturnType<typeof buildWorkSnapshot>): boolean {
-  const notes = snapshot.metadata['personalNotes'];
-  return (
-    snapshot.todos.length > 0 ||
-    snapshot.tables.length > 0 ||
-    (typeof notes === 'string' && notes.length > 0)
-  );
+/** True when the device has held any user work, by the storage strip's own rule */
+export function deviceHoldsWork(canary: WorkCanary | null): boolean {
+  return canary !== null && Object.keys(canary.modules).length > 0;
 }
 
 export default function WorkLivesHere() {
@@ -39,17 +35,14 @@ export default function WorkLivesHere() {
 
   useEffect(() => {
     let mounted = true;
-    exportAllData()
-      .then((data) => {
-        if (!mounted) return;
-        if (!deviceHoldsWork(buildWorkSnapshot(data))) return;
-        setHasWork(true);
-        return getCueState().then((cue) => {
-          if (mounted) setBackupLine(moduleCardBackupLine(cue));
-        });
+    if (!deviceHoldsWork(readCanary())) return;
+    setHasWork(true);
+    getCueState()
+      .then((cue) => {
+        if (mounted) setBackupLine(moduleCardBackupLine(cue));
       })
       .catch(() => {
-        // storage unreadable: no card, no claim
+        // storage unreadable: keep the empty line; the headline stays true
       });
     return () => {
       mounted = false;

@@ -20,13 +20,10 @@ describe('WorkLivesHere', () => {
     expect(renderToStaticMarkup(createElement(WorkLivesHere))).toBe('');
   });
 
-  it('counts work the way the dashboard card does: todos, tables, or notes', () => {
-    const empty = { todos: [], tables: [], metadata: {} } as unknown as Parameters<typeof deviceHoldsWork>[0];
-    expect(deviceHoldsWork(empty)).toBe(false);
-    expect(deviceHoldsWork({ ...empty, todos: [{ id: 't' }] } as never)).toBe(true);
-    expect(deviceHoldsWork({ ...empty, tables: [{ id: 'x' }] } as never)).toBe(true);
-    expect(deviceHoldsWork({ ...empty, metadata: { personalNotes: 'a note' } } as never)).toBe(true);
-    expect(deviceHoldsWork({ ...empty, metadata: { personalNotes: '' } } as never)).toBe(false);
+  it('reads work the way the storage strip does: the canary of modules that have held work', () => {
+    expect(deviceHoldsWork(null)).toBe(false);
+    expect(deviceHoldsWork({ modules: {}, updatedAt: '2026-09-14T00:00:00Z' })).toBe(false);
+    expect(deviceHoldsWork({ modules: { 'knowing-community': true }, updatedAt: '2026-09-14T00:00:00Z' })).toBe(true);
   });
 
   it('states the work lives on this device and keeps the privacy promise', () => {
