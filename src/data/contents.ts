@@ -28,18 +28,21 @@ export interface Chapter {
   slug: string;
   /** The /downloads table's shipped label, only where it differs from title */
   downloadName?: string;
-  /**
-   * The section opener list's shipped label, only where it differs from
-   * title (1.5 and 1.12 ship spaced slashes there and compact ones in the
-   * page h1). Recorded variance, pending the operator's naming call.
-   */
-  listTitle?: string;
   /** Per-section PDF filename under /toolkit/sections/ */
   pdfFilename: string;
   /** Google Drive resources folder (optional) */
   resourcesUrl?: string;
-  /** Printed 2025 edition page range, e.g. "35-36" (provenance data) */
+  /** Source-spec page reference (PDF page indices of the with-templates
+   * file, as the per-page source records carry them) */
   sourcePages: string;
+  /**
+   * The printed toolkit's own page range for the reader-facing citation,
+   * e.g. "35-36" (the workbook's footer numbering). Renders ONLY once
+   * printedPagesConfirmed is true: the extracted values await the
+   * operator's confirmation against the physical copy.
+   */
+  printedPages?: string;
+  printedPagesConfirmed?: boolean;
 }
 
 export interface ContentsSection {
@@ -97,6 +100,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 0_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/161QG8b0iAJ4yv6O3uGmVyzWMaGrkqkI8',
         sourcePages: '10-23',
+        printedPages: '10-18',
+        printedPagesConfirmed: true,
       },
     ],
   },
@@ -115,6 +120,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.1_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/13eSjal-yx4cU18VV8aK78w6oqy5GKz8F?usp=drive_link',
         sourcePages: '30',
+        printedPages: '19',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.2',
@@ -123,6 +130,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.2_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1HZSXmTaX1jc3IlZps-4PayHkrrwDEIRu?usp=drive_link',
         sourcePages: '35-36',
+        printedPages: '20-21',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.3',
@@ -131,6 +140,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.3_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1HI-sf3QQdYHHr7g3w4OCi1zFTQ6HBMkH?usp=drive_link',
         sourcePages: '42',
+        printedPages: '22',
+        printedPagesConfirmed: false,
       },
       {
         number: '1.4',
@@ -139,16 +150,18 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.4_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1Bl9xBYaeC8ysbQZDP0C01eI_CFwQUlPU?usp=drive_link',
         sourcePages: '45',
+        printedPages: '23',
+        printedPagesConfirmed: false,
       },
       {
         number: '1.5',
-        title: 'Warming/Cooling/Emergency Shelter',
+        title: 'Warming / Cooling / Emergency Shelter',
         slug: '1-5',
-        listTitle: 'Warming / Cooling / Emergency Shelter',
-        downloadName: 'Warming/cooling/emergency shelter',
         pdfFilename: 'Section 1.5_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1GAq4V6yx2Pn83y-l6rbauGbzQlv46CCF?usp=drive_link',
         sourcePages: '45',
+        printedPages: '23',
+        printedPagesConfirmed: false,
       },
       {
         number: '1.6',
@@ -158,6 +171,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.6_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1KYOLws3XyfnWG622Zv5UpgeEKAqb2mJ5?usp=drive_link',
         sourcePages: '49',
+        printedPages: '24',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.7',
@@ -167,6 +182,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.7_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1b1h7aUHjcx3LudPM6kFB7-ypshucSGOL?usp=drive_link',
         sourcePages: '52',
+        printedPages: '25',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.8',
@@ -176,6 +193,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.8_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1pVuxTqRsFs2ZprmP6qJKCekvJubQ_YKi',
         sourcePages: '54-59',
+        printedPages: '26-31',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.9',
@@ -185,6 +204,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.9_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1ZP8p1LZ9F5tOJ3Yo-sLllSWd22ydXzNQ?usp=drive_link',
         sourcePages: '62-66',
+        printedPages: '32-33',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.10',
@@ -193,6 +214,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.10_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1QGrMJ_mv5LSGZ4ECDOuuOs9OJtcOfZY3?usp=drive_link',
         sourcePages: '69-70',
+        printedPages: '34-35',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.11',
@@ -202,16 +225,18 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.11_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1vszckjW-VEMEx1Qec-LgLVXt-bBFYj7r?usp=drive_link',
         sourcePages: '73-77',
+        printedPages: '36-38',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.12',
-        title: 'Mutual Aid/Neighbor to Neighbor (N2N)',
+        title: 'Mutual Aid / Neighbor to Neighbor (N2N)',
         slug: '1-12',
-        listTitle: 'Mutual Aid / Neighbor to Neighbor (N2N)',
-        downloadName: 'Mutual Aid',
         pdfFilename: 'Section 1.12_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1lgAo_M6Jq3i4AR9xbtpxDpFLv5MAAVyg?usp=drive_link',
         sourcePages: '78',
+        printedPages: '39',
+        printedPagesConfirmed: true,
       },
       {
         number: '1.13',
@@ -221,6 +246,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 1.13_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1fAFOW-sh7Rls6bckXHub4gN9PX_1je9N?usp=drive_link',
         sourcePages: '78',
+        printedPages: '39',
+        printedPagesConfirmed: true,
       },
     ],
   },
@@ -240,6 +267,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 2.1_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1ANzQP2YD_PgkS69TxgaUwnUYX-AOsy8I?usp=drive_link',
         sourcePages: '80',
+        printedPages: '40-41',
+        printedPagesConfirmed: true,
       },
       {
         number: '2.2',
@@ -249,6 +278,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 2.2_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/1vd2qaanne9Wq_zeYnVMbqWXNONe2vG0C?usp=drive_link',
         sourcePages: '86',
+        printedPages: '42',
+        printedPagesConfirmed: true,
       },
       {
         number: '2.3',
@@ -258,6 +289,8 @@ export const contents: ContentsSection[] = [
         pdfFilename: 'Section 2.3_2025 Resilience Hub Toolkit.pdf',
         resourcesUrl: 'https://drive.google.com/drive/folders/106ukXkOgMqpIDDVS_mAim3n0QWYJx4_4?usp=drive_link',
         sourcePages: '88',
+        printedPages: '43',
+        printedPagesConfirmed: false,
       },
     ],
   },
@@ -300,7 +333,7 @@ export function chapterUrl(number: string): string | null {
  * Flipping this constant is the whole DR4 chain fix.
  */
 export type ChainMode = 'shipped' | 'dr4';
-export const chainMode: ChainMode = 'shipped';
+export const chainMode: ChainMode = 'dr4';
 
 export interface ChainStop {
   /** Chain id: a chapter number, "0.0" for the introduction, or "opener-N" */
@@ -417,4 +450,21 @@ export function treeRows(): TreeRow[] {
   }
   rows.push({ kind: 'back-matter', label: resourceLibrary.title, href: resourceLibrary.path });
   return rows;
+}
+
+/**
+ * The reader-facing page-level citation (DR17), one string per chapter,
+ * from the one model field. Format operator-signed: single pages read
+ * "page N.", ranges "pages N to N." Returns null until the chapter's
+ * printed range is confirmed; the render stays dark rather than shipping
+ * an unconfirmed number.
+ */
+export function chapterCitation(number: string): string | null {
+  const found = findChapter(number);
+  if (!found) return null;
+  const { printedPages, printedPagesConfirmed } = found.chapter;
+  if (!printedPages || !printedPagesConfirmed) return null;
+  const [from, to] = printedPages.split('-');
+  const span = to && to !== from ? `pages ${from} to ${to}` : `page ${from}`;
+  return `Printed toolkit, 2025 edition, ${span}.`;
 }

@@ -38,7 +38,12 @@ async function waitForServiceWorker(page: import('@playwright/test').Page) {
     .toBe(true);
 }
 
-test('homepage search returns real results while offline', async ({ page, context }) => {
+// PARKED while the search surface moves: the cover lands row-less and the
+// one search box arrives in the site header with the search end-state
+// build, whose test plan replaces this spec with header-box offline specs
+// (offline search stays a requirement; the pagefind-precache unit tests
+// still guard the cached core set underneath).
+test.skip('homepage search returns real results while offline', async ({ page, context }) => {
   // 1) Bootstrap the SW online; a controlled reload guarantees SW-served
   //    navigations from here on.
   await page.goto('/', { waitUntil: 'load' });

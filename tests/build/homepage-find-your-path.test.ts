@@ -52,57 +52,44 @@ describe('homepage find-your-path section', () => {
     expect(html).not.toContain('Before, During, and After');
   });
 
-  it.skipIf(!HOMEPAGE_PRESENT)('module links row lists all five module titles', () => {
-    expect(html).toContain('Or start from a module:');
-    for (const title of [
-      'Introduction',
-      'Knowing Your Community',
-      'Emergency Preparedness and Response',
-      'Baseline Resilience',
-      'Resource Library',
-    ]) {
-      expect(html).toContain(title);
-    }
+  it.skipIf(!HOMEPAGE_PRESENT)('the cover carries the full chapter list in tree order (DR6/DR8)', () => {
+    expect(html).toMatch(/<nav[^>]*class="cover-contents"[^>]*aria-label="Toolkit contents"/);
+    // Every chapter row, in reading order, title-only
+    const numbers = [...html.matchAll(/cover-contents__number">([\d.]+)</g)].map((m) => m[1]);
+    expect(numbers).toEqual([
+      '0.1',
+      '1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '1.11', '1.12', '1.13',
+      '2.1', '2.2', '2.3',
+    ]);
+    // Front and back matter close the list with their signed subtitles
+    expect(html).toContain('How to use this toolkit');
+    expect(html).toContain('Print and download the toolkit');
   });
 
-  it.skipIf(!HOMEPAGE_PRESENT)('search input has a real associated label', () => {
-    expect(html).toMatch(/<label[^>]*for="pagefind-search"/);
-    expect(html).toContain('Search by keyword:');
+  it.skipIf(!HOMEPAGE_PRESENT)('the signed newcomer lines sit below the chapter list (DR11/DR22)', () => {
+    expect(html).toContain(
+      '0.1 Knowing Your Community is the first activity. It works best with a few other people.'
+    );
+    expect(html).toContain(
+      'Community Resilience Organizations offers free help getting started.'
+    );
+    expect(html).toMatch(/<section id="technical-assistance"/);
   });
 
-  it.skipIf(!HOMEPAGE_PRESENT)('search row ships hidden (JS-off users never see a dead input)', () => {
-    const searchRow = html.match(/<div[^>]*data-pagefind-search[^>]*>/);
-    expect(searchRow).not.toBeNull();
-    expect(searchRow![0]).toContain('hidden');
-  });
-
-  it.skipIf(!HOMEPAGE_PRESENT)('search status element carries role="status" (never the hits list)', () => {
-    const statusEl = html.match(/<div[^>]*data-search-status[^>]*>/);
-    expect(statusEl).not.toBeNull();
-    expect(statusEl![0]).toContain('role="status"');
-    const hitsEl = html.match(/<div[^>]*data-search-hits[^>]*>/);
-    expect(hitsEl).not.toBeNull();
-    expect(hitsEl![0]).not.toContain('role="status"');
-  });
-
-  it.skipIf(!HOMEPAGE_PRESENT)('Explore All Modules CTA in the section is the outline variant', () => {
+  it.skipIf(!HOMEPAGE_PRESENT)('the cover lands row-less: no search input, no retired strings (SE3/DR9)', () => {
+    expect(html).not.toContain('data-pagefind-search');
+    expect(html).not.toContain('Search by keyword:');
+    expect(html).not.toContain('Or start from a module:');
+    // The find-your-path section carries no Explore All Modules CTA; the
+    // final ready-to-build CTA keeps its own
     const sectionStart = html.indexOf('Find your path');
     const sectionEnd = html.indexOf('The Challenge');
-    expect(sectionStart).toBeGreaterThan(-1);
-    expect(sectionEnd).toBeGreaterThan(sectionStart);
     const section = html.slice(sectionStart, sectionEnd);
-    const cta = section.match(/<a[^>]*href="\/modules"[^>]*>/);
-    expect(cta).not.toBeNull();
-    expect(cta![0]).toContain('border-primary');
-    expect(cta![0]).not.toContain('action-button-primary');
+    expect(section).not.toContain('Explore All Modules');
   });
 
-  it.skipIf(!HOMEPAGE_PRESENT)('noscript module list is present and dash-free', () => {
-    const noscript = html.match(/<noscript>[\s\S]*?<\/noscript>/g) ?? [];
-    const moduleList = noscript.find((block) => block.includes('All Modules'));
-    expect(moduleList).toBeDefined();
-    expect(moduleList).not.toContain('—');
-    expect(moduleList).not.toContain('–');
+  it.skipIf(!HOMEPAGE_PRESENT)('the After lead renders in the After green, never --secondary (DR12/ER5)', () => {
+    expect(html).toMatch(/phase-cards__lead--after[^>]*>\s*Still being shaped/);
   });
 
   it.skipIf(!HOMEPAGE_PRESENT)('origin-story photos ship as /_astro derivatives with dimensions', () => {
