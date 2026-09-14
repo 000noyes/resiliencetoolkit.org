@@ -16,11 +16,12 @@ test('checking a todo updates the re-housed On this page counters', async ({
   await page.goto(CHAPTER);
 
   const overall = page.locator('.reading-rail__panel .toc-overall-progress .toc-progress-text');
-  await expect(overall).toBeVisible();
-  // The scan fills the total progressively: read the baseline only once it
-  // counts every todo on the page
+  // The counters appear once the contents island hydrates and re-scans after
+  // the todo islands render; allow the same window the other suites give
+  // hydration, then read the baseline only once every todo is counted
+  await expect(overall).toBeVisible({ timeout: 15_000 });
   const todoCount = await page.locator('input.todo-checkbox').count();
-  await expect(overall).toHaveText(new RegExp(`/${todoCount}$`));
+  await expect(overall).toHaveText(new RegExp(`/${todoCount}$`), { timeout: 15_000 });
   const before = await overall.textContent();
   const [beforeDone, total] = before!.split('/').map((n) => parseInt(n, 10));
 
