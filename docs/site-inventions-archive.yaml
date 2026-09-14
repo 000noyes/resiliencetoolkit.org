@@ -1617,6 +1617,27 @@ categories:
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
+    - id: archive-0-1-vermont-town-directory-callout
+      module: 0-1
+      location: knowing-your-community.astro, the boxed callout above the first h2 (site-added, never in the workbook)
+      type: invented_prose
+      content: |
+        Vermont Town Directory
+        Looking for specific town contacts and resources? Learn about jurisdictions and service areas for your town - what county you're in, which Regional Planning Commission (RPC) to ask for technical assistance, and which Long Term Recovery Group (LTRG) can help you if individuals are impacted by flooding.
+        View Town Directory -> https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview
+      inferred_source: 'Live Vermont Town Directory sheet shared by the coalition 2026-06-29 (the link itself stays on the site)'
+      date_removed: '2026-09-14'
+      removed_in_commit: 'The Vermont Town Directory leaves the top of 0.1; it lives in the contents as an activity'
+      rationale: |
+        The directory now renders as an activity row under Knowing Your
+        Community in the Toolkit Contents tree and on the cover, and the
+        downloads room keeps its card with the same description. The box was
+        one of three site-added blocks a reader met on 0.1 before the first
+        sentence of the toolkit; the entry-experience review (2026-09-14)
+        removed it from the arrival stack. Candidate future home for the
+        prose: a Footnotes addition on 0.1 under the governed path.
+      proposed_canonical_field: null
+
   invented_items:
     - id: archive-kyc-agenda-invented-bullet-discuss-sections
       module: knowing-your-community
