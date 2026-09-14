@@ -1556,10 +1556,6 @@ body.has-site-header {
   font-size: 13px;
 }
 
-.cover-contents__chapter--activity {
-  padding-left: calc(2.4em + 10px);
-}
-
 .contents-tree__row--chapter .contents-tree__link {
   padding-left: var(--spacing-md);
 }
@@ -2258,6 +2254,11 @@ a.cover-contents__section:hover {
   line-height: 1.45;
   color: var(--foreground);
   text-decoration: none;
+}
+
+/* Activity rows align under the chapter titles (after the row rule, whose padding shorthand would reset this) */
+.cover-contents__chapter--activity {
+  padding-left: calc(2.4em + 10px);
 }
 
 .cover-contents__chapter:hover span:last-child {

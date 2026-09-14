@@ -140,7 +140,7 @@ function StorageHealthBannerInner() {
       <div className="container mx-auto px-4 py-3">
         <div className="relative flex items-start justify-center">
           <p
-            className={`max-w-3xl text-sm text-foreground text-center max-[400px]:text-left ${
+            className={`max-w-5xl text-sm text-foreground text-center max-[400px]:text-left ${
               dismissible ? 'pe-11' : ''
             }`}
             style={{ textWrap: 'balance' }}
