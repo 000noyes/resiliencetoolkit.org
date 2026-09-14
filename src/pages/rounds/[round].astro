@@ -1,78 +1,34 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import HomeSurface from '@/components/HomeSurface.astro';
-import AnnotationIsland from '@/components/annotation/AnnotationIsland.tsx';
+/**
+ * A review round: the reviewed chapter rendered exactly as it ships, with
+ * Make Comments turned on. The page is the chapter's own component; the
+ * layout sees the /rounds/ URL and mounts the round strip, the Make
+ * Comments tenant, and the annotation island (the P6 seam: identical
+ * rail, identical page, only permissions widened).
+ *
+ * The route exists only on workshop builds: the round id (r1-<token>)
+ * comes from the ROUND_ID build variable set on the workshop project, so
+ * the token never lives in this repository and production builds emit
+ * nothing under /rounds/. ROUND_PAGE names the reviewed chapter as a
+ * path under src/pages/modules (default: the 1.2 chapter the boards
+ * drew). The URL is direct-link-only: never in navigation, never in the
+ * search index, never in sw.js (excluded from the precache generator).
+ */
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 
-// A review round: the reviewed surface rendered build-time from the real
-// components, inert, with two exceptions that hydrate: the annotation island
-// and the production corner panel (closed and interactive, exactly as it
-// ships, so the Questions door under review really works).
-//
-// The route exists only on workshop builds: the round id (r1-<token>) comes
-// from the ROUND_ID build variable set on the workshop project, so the token
-// never lives in this repository and production builds emit nothing under
-// /rounds/. The URL is direct-link-only: never in navigation, never in the
-// search index (no data-pagefind-body here), never in sw.js (excluded from
-// the precache generator).
 export function getStaticPaths() {
   const roundId = process.env.ROUND_ID;
   if (!roundId) return [];
   return [{ params: { round: roundId } }];
 }
 
-const { round } = Astro.params;
-const roundNumber = String(round).split('-')[0].replace(/^r/, '');
+const reviewed = process.env.ROUND_PAGE || 'emergency-preparedness/1-2';
+const chapters = import.meta.glob<{ default: AstroComponentFactory }>('/src/pages/modules/**/*.astro');
+const load = chapters[`/src/pages/modules/${reviewed}.astro`];
+if (!load) {
+  throw new Error(`ROUND_PAGE ${reviewed} is not a chapter under src/pages/modules`);
+}
+const Chapter = (await load()).default;
 ---
 
-<BaseLayout title="Workshop round">
-  <div class="border-b border-border bg-card">
-    <div class="container mx-auto px-4 py-2 text-center">
-      <h1 class="inline text-body font-semibold text-foreground">Round {roundNumber}</h1><span
-        class="text-body-small text-muted-foreground"> &middot; read together at the next meeting</span>
-    </div>
-  </div>
-  <div id="round-status-slot"></div>
-
-  <HomeSurface />
-
-  <AnnotationIsland roundId={String(round)} client:load />
-</BaseLayout>
-
-<style is:global>
-  /* The island's docked bottom bar reserves its space: it publishes its
-     height as --annot-dock on the root, the page pads clear of it, and the
-     corner panel lifts by the same measure (the panel itself stays the
-     byte-identical production component; the variable is absent everywhere
-     else, so these rules change nothing off the round page). Screen-scoped
-     so print gains no trailing blank space. */
-  @media screen {
-    body {
-      padding-bottom: var(--annot-dock, 0px);
-    }
-    div[data-annot='corner-panel'] {
-      bottom: calc(var(--annot-dock, 0px) + var(--spacing-md));
-    }
-  }
-  @media screen and (min-width: 768px) {
-    div[data-annot='corner-panel'] {
-      bottom: calc(var(--annot-dock, 0px) + var(--spacing-lg));
-    }
-  }
-
-  /* T9: the round prints clean for the meeting. The [data-annot-ui] hide
-     is now the sitewide print rule in base.css (ER7); this block keeps
-     only the round page's own exceptions: the corner panel drops out, the
-     pins stay as numbered dots in place, and the island's notes list
-     (re-shown below) carries every thread. */
-  @media print {
-    [data-annot='corner-panel'] {
-      display: none !important;
-    }
-    section[data-annot-ui] {
-      display: block !important;
-    }
-    #round-status-slot {
-      display: none;
-    }
-  }
-</style>
+<Chapter />

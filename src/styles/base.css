@@ -1626,6 +1626,263 @@ table tr td:only-child strong[id] {
   justify-content: flex-end;
 }
 
+/* The Make Comments tenant (workshop rounds): the feed scrolls, the foot
+   owns compose (DR20). The panel becomes a column so the foot rests at
+   its bottom; in the phone sheet the same mount fills the scroll area. */
+.reading-rail__panel--comments {
+  display: none;
+  flex-direction: column;
+}
+
+.reading-grid[data-rail='make-comments'] [data-rail-panel='make-comments'] {
+  display: flex;
+}
+
+.comments-tenant {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.comments-feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-sm) 0;
+}
+
+.comments-feed__line {
+  font-size: 13px;
+  color: var(--sidebar-foreground);
+  margin: var(--spacing-sm) 0;
+}
+
+.comments-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: 0 0 var(--spacing-sm);
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.comments-card[aria-current='true'] {
+  border-color: var(--primary);
+}
+
+.comments-card__who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--sidebar-foreground);
+  margin-bottom: 4px;
+}
+
+.comments-card__pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.comments-card__text {
+  font-size: 13px;
+  color: var(--foreground);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.comments-card__text + .comments-card__who {
+  margin-top: var(--spacing-sm);
+}
+
+.comments-foot {
+  flex: none;
+  border-top: 1px solid var(--border);
+  padding: var(--spacing-sm) 0 var(--spacing-xs);
+  font-size: 13px;
+}
+
+.comments-foot__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.comments-foot__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: var(--spacing-sm) 0 4px;
+}
+
+.comments-foot__target {
+  font-size: 12px;
+  color: var(--sidebar-foreground);
+  margin: 0;
+}
+
+.comments-foot__quote {
+  display: block;
+  font-size: 12px;
+  color: var(--sidebar-foreground);
+  border-left: 2px solid var(--border);
+  padding-left: var(--spacing-sm);
+  margin: 4px 0 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.comments-foot textarea,
+.comments-foot input[type='text'] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--input);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+}
+
+.comments-foot textarea {
+  resize: none;
+  min-height: 84px;
+}
+
+.comments-foot__btn {
+  min-height: 40px;
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.comments-foot__btn--primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+.comments-foot__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comments-foot__link {
+  background: none;
+  border: none;
+  padding: 0;
+  min-height: 44px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.comments-foot__failed {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+
+/* The placing hint on phones: the bar carries it in place of its doors */
+.reading-bar__hint {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex: 1;
+  font-size: 14px;
+}
+
+.reading-bar[data-placing] .reading-bar__door {
+  display: none;
+}
+
+.reading-bar[data-placing] .reading-bar__hint {
+  display: flex;
+}
+
+/* Pins at the block's edge (DR18), portaled into the block's pin host */
+.annot-pin {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.annot-pin__dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-card);
+}
+
+.annot-pin--closed .annot-pin__dot {
+  background: var(--muted-foreground);
+  color: var(--background);
+}
+
+.annot-pin--current .annot-pin__dot {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+[data-annot-pin-host] {
+  position: relative;
+}
+
+@media print {
+  /* The round prints whole for the meeting: the notes list stays */
+  .annot-notes-print {
+    display: block !important;
+  }
+}
+
 /* Footnotes tenant */
 .footnotes-tenant__label {
   font-size: 12px;
