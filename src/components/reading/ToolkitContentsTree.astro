@@ -83,9 +83,7 @@ const current = normalize(currentPath);
             isActive && 'contents-tree__row--active',
           ]}
         >
-          {row.kind === 'activities-label' ? (
-            <span class="contents-tree__activities-label">{row.label}</span>
-          ) : row.href === undefined ? (
+          {row.href === undefined ? (
             <span class="contents-tree__link contents-tree__link--plain">
               <span class="contents-tree__label">{row.label}</span>
             </span>

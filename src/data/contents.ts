@@ -72,9 +72,6 @@ export interface ContentsSection {
   activities?: Activity[];
 }
 
-/** The label over a section's activity rows (approved-strings manifest S49) */
-export const activitiesLabel = 'Activities';
-
 /**
  * Knowing Your Community's activity artifacts: the two coalition activities
  * the downloads room leads with, and the live Vermont Town Directory sheet
@@ -455,9 +452,9 @@ export function chainFor(
 }
 
 export interface TreeRow {
-  kind: 'front-matter' | 'section' | 'chapter' | 'activities-label' | 'activity' | 'back-matter';
+  kind: 'front-matter' | 'section' | 'chapter' | 'activity' | 'back-matter';
   label: string;
-  /** Absent on a plain label row: a section with no opener page, or the activities label */
+  /** Absent on a section with no opener page (its row is a plain label) */
   href?: string;
   number?: string;
   /** An activity artifact: an external document, opened as such */
@@ -490,12 +487,10 @@ export function treeRows(): TreeRow[] {
         number: chapter.number,
       });
     }
-    // The section's activity artifacts follow its chapters under one label (BR10)
-    if (section.activities?.length) {
-      rows.push({ kind: 'activities-label', label: activitiesLabel });
-      for (const activity of section.activities) {
-        rows.push({ kind: 'activity', label: activity.title, href: activity.href, external: true });
-      }
+    // The section's activity artifacts follow its chapters: unnumbered rows
+    // that lead with the outside-link glyph in the number column (BR17)
+    for (const activity of section.activities ?? []) {
+      rows.push({ kind: 'activity', label: activity.title, href: activity.href, external: true });
     }
   }
   rows.push({ kind: 'back-matter', label: resourceLibrary.title, href: resourceLibrary.path });

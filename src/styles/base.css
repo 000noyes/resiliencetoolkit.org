@@ -1531,29 +1531,21 @@ body.has-site-header {
   color: var(--foreground);
 }
 
-/* A section's activities: one small label, rows aligned under the chapter titles (S49) */
-.contents-tree__activities-label,
-.cover-contents__activities-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 6px 0 2px;
-}
-
-.contents-tree__activities-label {
-  padding-left: calc(var(--spacing-sm) + 2.4em);
-}
-
-.cover-contents__activities-label {
-  padding-left: calc(2.4em + 10px);
-}
-
+/* A section's activities: unnumbered rows in the secondary color that lead
+   with the outside-link glyph where a chapter number would sit, so the eye
+   reads "not a chapter" before the words (BR17). The glyph is drawn by the
+   outside-link notice component after its text; order moves it first. */
 .contents-tree__row--activity .contents-tree__link {
-  padding-left: calc(var(--spacing-sm) + 2.4em);
+  color: var(--text-secondary);
   font-size: 13px;
+}
+
+.contents-tree__row--activity .external-link__icon {
+  order: -1;
+  display: inline-flex;
+  flex: none;
+  width: 2.4em;
+  color: var(--text-secondary);
 }
 
 .contents-tree__row--chapter .contents-tree__link {
@@ -2256,9 +2248,17 @@ a.cover-contents__section:hover {
   text-decoration: none;
 }
 
-/* Activity rows align under the chapter titles (after the row rule, whose padding shorthand would reset this) */
+/* Activity rows: the glyph leads in the number column, the text in the secondary color (BR17) */
 .cover-contents__chapter--activity {
-  padding-left: calc(2.4em + 10px);
+  color: var(--text-secondary);
+}
+
+.cover-contents__chapter--activity .external-link__icon {
+  order: -1;
+  display: inline-flex;
+  flex: none;
+  width: 2.4em;
+  color: var(--text-secondary);
 }
 
 .cover-contents__chapter:hover span:last-child {

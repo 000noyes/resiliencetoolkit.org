@@ -7,7 +7,7 @@
  * order equals tree order (DR6): the list flows down each column, Section
  * 0 then 1 then 2. Plain HTML, so it is also the no-JS floor.
  */
-import { contents, frontMatter, resourceLibrary, activitiesLabel } from '@/data/contents';
+import { contents, frontMatter, resourceLibrary } from '@/data/contents';
 import ExternalLink from '@/components/ExternalLink.astro';
 
 interface Props {
@@ -57,9 +57,6 @@ const crosHelpLine =
                 </a>
               </li>
             ))}
-            {section.activities?.length ? (
-              <li class="cover-contents__activities-label" aria-hidden="true">{activitiesLabel}</li>
-            ) : null}
             {(section.activities ?? []).map((activity) => (
               <li>
                 <ExternalLink href={activity.href} class="cover-contents__chapter cover-contents__chapter--activity">
