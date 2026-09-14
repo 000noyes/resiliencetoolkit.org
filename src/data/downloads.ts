@@ -9,7 +9,7 @@
 import { getFormattedFileSize } from '@/lib/fileSize';
 import { allChapters, knowingYourCommunityActivities } from './contents';
 
-const [needsAssessment, toolkitActivity] = knowingYourCommunityActivities;
+const [needsAssessment, toolkitActivity, townDirectory] = knowingYourCommunityActivities;
 
 export interface FeaturedDownload {
   title: string;
@@ -64,11 +64,9 @@ export const featuredDownloads: FeaturedDownload[] = [
     isExternal: true
   },
   {
-    title: 'Vermont Town Directory',
+    title: townDirectory.title,
     description: 'Directory of Vermont towns with jurisdictions, RPCs, LTRGs, and resilience hub contacts',
-    // Live Vermont Town Directory sheet, shared by the coalition 2026-06-29.
-    // Linked as /preview (read-only) since the sheet is shared anyone-can-edit.
-    downloadUrl: 'https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview',
+    downloadUrl: townDirectory.href,
     icon: 'spreadsheet',
     isExternal: true
   },

@@ -72,7 +72,15 @@ export interface ContentsSection {
   activities?: Activity[];
 }
 
-/** Knowing Your Community's two activity artifacts: the same links the downloads room leads with */
+/** The label over a section's activity rows (approved-strings manifest S49) */
+export const activitiesLabel = 'Activities';
+
+/**
+ * Knowing Your Community's activity artifacts: the two coalition activities
+ * the downloads room leads with, and the live Vermont Town Directory sheet
+ * (shared by the coalition 2026-06-29; linked as /preview since the sheet is
+ * shared anyone-can-edit). One list, read by every index and the downloads room.
+ */
 export const knowingYourCommunityActivities: Activity[] = [
   {
     title: 'Community Needs Assessment',
@@ -81,6 +89,10 @@ export const knowingYourCommunityActivities: Activity[] = [
   {
     title: 'Interactive Toolkit Activity',
     href: 'https://drive.google.com/file/d/10PfAqefQWzjC_BwJvK1PySATl3W4t843/view',
+  },
+  {
+    title: 'Vermont Town Directory',
+    href: 'https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview',
   },
 ];
 
@@ -478,9 +490,12 @@ export function treeRows(): TreeRow[] {
         number: chapter.number,
       });
     }
-    // The section's activity artifacts follow its chapters (BR10)
-    for (const activity of section.activities ?? []) {
-      rows.push({ kind: 'activity', label: activity.title, href: activity.href, external: true });
+    // The section's activity artifacts follow its chapters under one label (BR10)
+    if (section.activities?.length) {
+      rows.push({ kind: 'activities-label', label: activitiesLabel });
+      for (const activity of section.activities) {
+        rows.push({ kind: 'activity', label: activity.title, href: activity.href, external: true });
+      }
     }
   }
   rows.push({ kind: 'back-matter', label: resourceLibrary.title, href: resourceLibrary.path });

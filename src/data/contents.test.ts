@@ -140,24 +140,32 @@ describe('tree render', () => {
     expect(rows.find((r) => r.kind === 'section' && r.label === 'Emergency Preparedness and Response')?.href).toBe('/modules/emergency-preparedness');
   });
 
-  it('renders the two Knowing Your Community activities as external rows right after 0.1 (BR10)', () => {
+  it('renders the Knowing Your Community activities as labeled external rows right after 0.1', () => {
     const rows = treeRows();
     const km = rows.findIndex((r) => r.href === '/modules/knowing-your-community');
     expect(km).toBeGreaterThan(0);
-    expect(rows[km + 1]).toMatchObject({
+    expect(rows[km + 1]).toMatchObject({ kind: 'activities-label', label: 'Activities' });
+    expect(rows[km + 2]).toMatchObject({
       kind: 'activity',
       label: 'Community Needs Assessment',
       href: knowingYourCommunityActivities[0].href,
       external: true,
     });
-    expect(rows[km + 2]).toMatchObject({
+    expect(rows[km + 3]).toMatchObject({
       kind: 'activity',
       label: 'Interactive Toolkit Activity',
       href: knowingYourCommunityActivities[1].href,
       external: true,
     });
-    expect(rows[km + 3].kind).toBe('section');
-    expect(rows.filter((r) => r.kind === 'activity')).toHaveLength(2);
+    expect(rows[km + 4]).toMatchObject({
+      kind: 'activity',
+      label: 'Vermont Town Directory',
+      href: knowingYourCommunityActivities[2].href,
+      external: true,
+    });
+    expect(rows[km + 5].kind).toBe('section');
+    expect(rows.filter((r) => r.kind === 'activity')).toHaveLength(3);
+    expect(rows.filter((r) => r.kind === 'activities-label')).toHaveLength(1);
   });
 
   it('keeps the activities out of the reading chain, the downloads table, and the module cards', () => {

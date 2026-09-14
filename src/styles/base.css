@@ -1531,9 +1531,33 @@ body.has-site-header {
   color: var(--foreground);
 }
 
+/* A section's activities: one small label, rows aligned under the chapter titles (S49) */
+.contents-tree__activities-label,
+.cover-contents__activities-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 6px 0 2px;
+}
+
+.contents-tree__activities-label {
+  padding-left: calc(var(--spacing-sm) + 2.4em);
+}
+
+.cover-contents__activities-label {
+  padding-left: calc(2.4em + 10px);
+}
+
 .contents-tree__row--activity .contents-tree__link {
   padding-left: calc(var(--spacing-sm) + 2.4em);
   font-size: 13px;
+}
+
+.cover-contents__chapter--activity {
+  padding-left: calc(2.4em + 10px);
 }
 
 .contents-tree__row--chapter .contents-tree__link {
