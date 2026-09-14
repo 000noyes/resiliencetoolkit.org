@@ -17,6 +17,10 @@ test('checking a todo updates the re-housed On this page counters', async ({
 
   const overall = page.locator('.reading-rail__panel .toc-overall-progress .toc-progress-text');
   await expect(overall).toBeVisible();
+  // The scan fills the total progressively: read the baseline only once it
+  // counts every todo on the page
+  const todoCount = await page.locator('input.todo-checkbox').count();
+  await expect(overall).toHaveText(new RegExp(`/${todoCount}$`));
   const before = await overall.textContent();
   const [beforeDone, total] = before!.split('/').map((n) => parseInt(n, 10));
 
