@@ -45,6 +45,18 @@ export interface Chapter {
   printedPagesConfirmed?: boolean;
 }
 
+/**
+ * A coalition activity artifact that belongs with a section: an external
+ * document (Google Drive), never a page. Renders as an unnumbered row in
+ * the Toolkit Contents tree and on the cover, right after the section's
+ * chapters (BR10). Outside the reading chain, the PDF table, the module
+ * cards, the citations, and search grouping.
+ */
+export interface Activity {
+  title: string;
+  href: string;
+}
+
 export interface ContentsSection {
   /** Toolkit section number: 0, 1, or 2 */
   number: 0 | 1 | 2;
@@ -56,7 +68,30 @@ export interface ContentsSection {
   openerPath: string | null;
   phases: Phase[];
   chapters: Chapter[];
+  /** The section's activity artifacts, if any (BR10) */
+  activities?: Activity[];
 }
+
+/**
+ * Knowing Your Community's activity artifacts: the two coalition activities
+ * the downloads room leads with, and the live Vermont Town Directory sheet
+ * (shared by the coalition 2026-06-29; linked as /preview since the sheet is
+ * shared anyone-can-edit). One list, read by every index and the downloads room.
+ */
+export const knowingYourCommunityActivities: Activity[] = [
+  {
+    title: 'Community Needs Assessment',
+    href: 'https://drive.google.com/file/d/18Agz8LA23sPxxqChrdKujppBaqLgwk69/view',
+  },
+  {
+    title: 'Interactive Toolkit Activity',
+    href: 'https://drive.google.com/file/d/10PfAqefQWzjC_BwJvK1PySATl3W4t843/view',
+  },
+  {
+    title: 'Vermont Town Directory',
+    href: 'https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview',
+  },
+];
 
 /**
  * Front matter. The "0.0" number is the shipped label quirk on 0.1's
@@ -104,6 +139,7 @@ export const contents: ContentsSection[] = [
         printedPagesConfirmed: true,
       },
     ],
+    activities: knowingYourCommunityActivities,
   },
   {
     number: 1,
@@ -416,10 +452,13 @@ export function chainFor(
 }
 
 export interface TreeRow {
-  kind: 'front-matter' | 'section' | 'chapter' | 'back-matter';
+  kind: 'front-matter' | 'section' | 'chapter' | 'activity' | 'back-matter';
   label: string;
-  href: string;
+  /** Absent on a section with no opener page (its row is a plain label) */
+  href?: string;
   number?: string;
+  /** An activity artifact: an external document, opened as such */
+  external?: true;
 }
 
 /**
@@ -432,20 +471,26 @@ export function treeRows(): TreeRow[] {
     { kind: 'front-matter', label: frontMatter.title, href: frontMatter.path },
   ];
   for (const section of contents) {
+    // A section with an opener links to it; without one (Knowing Your
+    // Community) the section row is a plain label and 0.1 is its own row,
+    // the same shape the cover renders
     rows.push({
       kind: 'section',
       label: section.title,
-      href: section.openerPath ?? chapterUrl(section.chapters[0].number)!,
+      ...(section.openerPath ? { href: section.openerPath } : {}),
     });
     for (const chapter of section.chapters) {
-      // Section 0's single chapter is its own section row; no child row repeats it
-      if (section.chapters.length === 1 && chapter.title === section.title) continue;
       rows.push({
         kind: 'chapter',
         label: chapter.title,
         href: `${section.basePath}/${chapter.slug}`,
         number: chapter.number,
       });
+    }
+    // The section's activity artifacts follow its chapters: unnumbered rows
+    // that lead with the outside-link glyph in the number column (BR17)
+    for (const activity of section.activities ?? []) {
+      rows.push({ kind: 'activity', label: activity.title, href: activity.href, external: true });
     }
   }
   rows.push({ kind: 'back-matter', label: resourceLibrary.title, href: resourceLibrary.path });

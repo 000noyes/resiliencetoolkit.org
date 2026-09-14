@@ -17,6 +17,7 @@ import {
   findChapter,
   frontMatter,
   readingChain,
+  knowingYourCommunityActivities,
   resourceLibrary,
   treeRows,
 } from './contents';
@@ -127,6 +128,49 @@ describe('tree render', () => {
       label: resourceLibrary.title,
       href: resourceLibrary.path,
     });
+  });
+
+  it('renders Knowing Your Community as a plain section label with 0.1 as its own row, like the cover', () => {
+    const rows = treeRows();
+    const km = rows.findIndex((r) => r.href === '/modules/knowing-your-community');
+    expect(rows[km]).toMatchObject({ kind: 'chapter', number: '0.1', label: 'Knowing Your Community' });
+    expect(rows[km - 1]).toMatchObject({ kind: 'section', label: 'Knowing Your Community' });
+    expect(rows[km - 1].href).toBeUndefined();
+    // Sections with an opener keep linking to it
+    expect(rows.find((r) => r.kind === 'section' && r.label === 'Emergency Preparedness and Response')?.href).toBe('/modules/emergency-preparedness');
+  });
+
+  it('renders the Knowing Your Community activities as unnumbered external rows right after 0.1', () => {
+    const rows = treeRows();
+    const km = rows.findIndex((r) => r.href === '/modules/knowing-your-community');
+    expect(km).toBeGreaterThan(0);
+    expect(rows[km + 1]).toMatchObject({
+      kind: 'activity',
+      label: 'Community Needs Assessment',
+      href: knowingYourCommunityActivities[0].href,
+      external: true,
+    });
+    expect(rows[km + 2]).toMatchObject({
+      kind: 'activity',
+      label: 'Interactive Toolkit Activity',
+      href: knowingYourCommunityActivities[1].href,
+      external: true,
+    });
+    expect(rows[km + 3]).toMatchObject({
+      kind: 'activity',
+      label: 'Vermont Town Directory',
+      href: knowingYourCommunityActivities[2].href,
+      external: true,
+    });
+    expect(rows[km + 4].kind).toBe('section');
+    expect(rows.filter((r) => r.kind === 'activity')).toHaveLength(3);
+  });
+
+  it('keeps the activities out of the reading chain, the downloads table, and the module cards', () => {
+    const drive = knowingYourCommunityActivities.map((a) => a.href);
+    for (const stop of readingChain()) expect(drive).not.toContain(stop.href);
+    expect(moduleDownloads).toHaveLength(17);
+    expect(modules.map((m) => m.url)).not.toEqual(expect.arrayContaining(drive));
   });
 
   it('never renders site chrome (Map, About, Changes) as rows', () => {

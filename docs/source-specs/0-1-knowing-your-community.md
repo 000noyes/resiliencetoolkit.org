@@ -13,7 +13,7 @@ matching:
   require_cluster: false
 prose_scope:
   start_line: 1
-  end_line: 452
+  end_line: 434
 subheadings:
   - text: Mapping your community
   - text: Who is in your community/place?
@@ -112,7 +112,7 @@ notes: |
   URL, so the folder remains reachable via three independent surfaces
   (layout button + two inline anchors).
 
-  prose_scope is set file-wide (start_line: 1, end_line: 452 after the
+  prose_scope is set file-wide (start_line: 1, end_line: 434 after the
   v0.0.11.1 Pods-appendix removal) per decision j symmetric-scoping
   retrofit on day 18. The day-18 commit
   added 6 sibling DataTable specs (place-characteristics,

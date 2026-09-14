@@ -45,6 +45,31 @@ test('three states: empty query shows the contents, a query replaces them with c
   await expect(page.locator('[data-search-contents]')).toBeVisible();
 });
 
+test('a pick from /search opens the page at its top and travels to the searched words (BR5)', async ({ page }) => {
+  await page.goto('/search?q=mutual%20aid');
+  const rows = page.locator('[data-search-page] [role="option"]');
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  const withHash = page.locator('[data-search-page] [role="option"][href*="#"]').first();
+  const href = (await withHash.getAttribute('href'))!;
+  const dest = new URL(href, 'http://x');
+  await withHash.click();
+  await page.waitForURL((url) => url.pathname === dest.pathname, { timeout: 15_000 });
+  const mark = page.locator('mark.search-landing');
+  await expect(mark).toHaveText(/mutual|aid/i, { timeout: 15_000 });
+  await expect
+    .poll(() => page.evaluate(() => document.activeElement?.classList.contains('search-landing')))
+    .toBe(true);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const r = document.querySelector('mark.search-landing')!.getBoundingClientRect();
+        return r.top >= 56 && r.bottom <= window.innerHeight;
+      })
+    )
+    .toBe(true);
+  await expect.poll(() => new URL(page.url()).hash).toBe(dest.hash);
+});
+
 test('/search is unlisted chrome: no nav item, no tree row; reached by the box and the contents-render links', async ({
   page,
 }) => {
@@ -57,4 +82,35 @@ test('/search is unlisted chrome: no nav item, no tree row; reached by the box a
   expect(treeHrefs).not.toContain('/search');
   await expect(page.locator('.contents-tree--rail .contents-tree__search')).toHaveAttribute('href', '/search');
   await expect(page.locator('.contents-tree--rail .contents-tree__search')).toHaveText(/Search the toolkit/);
+});
+
+test('back to /search restores the results (ES6): a pick, then back, then a back-forward cache restore', async ({
+  page,
+}) => {
+  await page.goto('/search?q=mutual%20aid');
+  const rows = page.locator('[data-search-page] [role="option"]');
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  const href = (await rows.first().getAttribute('href'))!;
+  await rows.first().click();
+  await page.waitForURL(
+    (url) => url.pathname + url.hash === href.replace(/\/(#|$)/, '$1') || url.pathname + url.hash === href,
+    { timeout: 15_000 }
+  );
+
+  // Back lands the same /search: query in the box, results under the count
+  await page.goBack();
+  await expect(page.locator('#page-search-input')).toHaveValue('mutual aid');
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('[data-search-count]')).toBeVisible();
+  await expect(page.locator('[data-search-contents]')).toBeHidden();
+
+  // A back-forward cache restore replays pagehide then pageshow with the
+  // page intact: on /search the result surface must survive it
+  await page.evaluate(() => {
+    window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  });
+  await expect(rows.first()).toBeVisible();
+  await expect(page.locator('[data-search-count]')).toBeVisible();
+  await expect(page.locator('[data-search-contents]')).toBeHidden();
 });

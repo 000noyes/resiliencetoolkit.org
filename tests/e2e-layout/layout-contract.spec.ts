@@ -4,7 +4,8 @@ import { test, expect } from '@playwright/test';
  * The 3C layout contract (DR3, DR5, ER7, ER8).
  *
  * The reading surface holds its grammar at the 1200px floor and on
- * phones: no horizontal page scroll, the tree fixed at or above 1200,
+ * phones: no horizontal page scroll, the tree open by default at or above
+ * 1200 and closing to its edge button,
  * closed tenants in the reserved gutter, the docked bar reserving height,
  * and print dropping every piece of reading chrome.
  */
@@ -30,9 +31,11 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   await expect(panel).toBeVisible();
   await expect(panel.locator('.toc-title')).toHaveText('On this page');
 
-  // (d) Closing the tenant returns the measure: the panel leaves, the
-  // labeled edge button appears in the reserved 48px gutter
+  // (d) Closing the tenant holds the measure: the panel leaves, the
+  // labeled edge button appears in the reserved 48px gutter, the
+  // article does not reflow
   const contentBefore = await page.locator('.reading-content').boundingBox();
+  const gutterBefore = await page.locator('.reading-rail__gutter').boundingBox();
   await page.click('[data-rail-close="on-this-page"]');
   await expect(panel).toBeHidden();
   const edgeBtn = page.locator('[data-rail-btn="on-this-page"]');
@@ -40,8 +43,10 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   await expect(edgeBtn.locator('.reading-rail__edge-open')).toBeVisible();
   const gutter = await page.locator('.reading-rail__gutter').boundingBox();
   expect(gutter!.width).toBeLessThanOrEqual(48);
+  // The edge buttons keep their place at the right edge; only the panel leaves
+  expect(gutter!.x).toBe(gutterBefore!.x);
   const contentAfter = await page.locator('.reading-content').boundingBox();
-  expect(contentAfter!.width).toBeGreaterThan(contentBefore!.width);
+  expect(contentAfter!.width).toBe(contentBefore!.width);
 
   // (e) Reopening restores the panel
   await edgeBtn.click();
@@ -206,5 +211,40 @@ test('the Footnotes tenant shows the honest empty state until citations confirm'
   await page.click('[data-rail-btn="footnotes"]');
   await expect(page.locator('#rail-panel-footnotes')).toContainText('Printed toolkit, 2025 edition, pages 20 to 21.');
   await expect(page.locator('#rail-panel-footnotes')).not.toContainText('No notes on this page.');
+  await ctx.close();
+});
+
+test('the tree closes to its edge button, the measure holds, and the choice persists across reload (BR8)', async ({
+  browser,
+}) => {
+  const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(CHAPTER);
+  const tree = page.locator('.contents-tree--rail');
+  await expect(tree).toBeVisible();
+  const before = await page.locator('.reading-content').boundingBox();
+
+  // Close: the tree leaves, the labeled edge button sits in a 48px gutter,
+  // the article neither widens nor moves
+  await page.click('[data-tree-close]');
+  await expect(tree).toBeHidden();
+  const edge = page.locator('[data-tree-btn]');
+  await expect(edge).toBeVisible();
+  await expect(edge).toHaveText('Toolkit Contents');
+  await expect(edge).toHaveAttribute('aria-expanded', 'false');
+  const gutter = await page.locator('.reading-tree__gutter').boundingBox();
+  expect(gutter!.width).toBeLessThanOrEqual(48);
+  const after = await page.locator('.reading-content').boundingBox();
+  expect(after!.width).toBe(before!.width);
+  expect(after!.x).toBe(before!.x);
+
+  // The choice persists, and reopening persists too
+  await page.reload();
+  await expect(page.locator('.contents-tree--rail')).toBeHidden();
+  await expect(page.locator('[data-tree-btn]')).toBeVisible();
+  await page.click('[data-tree-btn]');
+  await expect(page.locator('.contents-tree--rail')).toBeVisible();
+  await page.reload();
+  await expect(page.locator('.contents-tree--rail')).toBeVisible();
   await ctx.close();
 });

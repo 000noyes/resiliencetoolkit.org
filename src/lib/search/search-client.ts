@@ -21,6 +21,7 @@
  */
 import { searchRoute } from '@/data/contents';
 import { urlToChapter } from './urlToChapter';
+import { landOnSearch } from './landing';
 
 interface PagefindAnchor {
   element: string;
@@ -331,24 +332,30 @@ export function mountSearch(opts: MountOptions): SearchMount {
     }
   };
 
-  /** The navigation a pick performs (ES6): same-page picks push a history entry */
+  /**
+   * The navigation a pick performs (ES6): same-page picks push a history
+   * entry and land directly; other picks are plain navigations. A pick
+   * naming a header lands on the searched words under it (BR5): the
+   * landing rides sessionStorage so the page opens at its top and
+   * travels down, and the landing settles the URL to the anchor. If the
+   * hand-off is unavailable, the hash link itself is the landing.
+   */
   const goTo = (url: string) => () => {
     const dest = new URL(url, location.origin);
-    if (dest.pathname === location.pathname && dest.hash) {
+    const id = dest.hash ? decodeURIComponent(dest.hash.slice(1)) : '';
+    const q = input.value;
+    if (dest.pathname === location.pathname && id) {
       history.pushState(null, '', dest.hash);
-      const target = document.getElementById(decodeURIComponent(dest.hash.slice(1)));
-      if (target) {
-        target.setAttribute('tabindex', '-1');
-        target.scrollIntoView();
-        target.focus({ preventScroll: true });
-      }
       setExpanded(false);
-    } else {
+      landOnSearch({ id, q }, { fromTop: false });
+    } else if (id) {
       try {
-        sessionStorage.setItem(LANDING_KEY, '1');
+        sessionStorage.setItem(LANDING_KEY, JSON.stringify({ id, q }));
+        location.href = dest.pathname + dest.search;
       } catch {
-        /* focus assist off */
+        location.href = url;
       }
+    } else {
       location.href = url;
     }
   };
@@ -521,13 +528,24 @@ export function mountSearch(opts: MountOptions): SearchMount {
   const onDocClick = (e: MouseEvent) => {
     if (!root.contains(e.target as Node)) setExpanded(false);
   };
-  const onPageHide = () => setExpanded(false);
+  // The header panel collapses when the page leaves. On /search the
+  // panel is the result surface itself, so it stays for a back-forward
+  // cache restore; pageshow re-runs the query if the list came back empty
+  const onPageHide = () => {
+    if (mode === 'panel') setExpanded(false);
+  };
+  const onPageShow = (e: PageTransitionEvent) => {
+    if (e.persisted && mode === 'page' && options.length === 0 && input.value.trim().length >= 2) {
+      runQuery(input.value);
+    }
+  };
 
   input.addEventListener('input', onInput);
   input.addEventListener('focus', onFocus);
   input.addEventListener('keydown', onKeydown);
   document.addEventListener('click', onDocClick);
   window.addEventListener('pagehide', onPageHide);
+  window.addEventListener('pageshow', onPageShow);
 
   // The module mounts on the reader's first focus or keystroke: honor
   // whichever already happened before it arrived
@@ -543,6 +561,7 @@ export function mountSearch(opts: MountOptions): SearchMount {
       input.removeEventListener('keydown', onKeydown);
       document.removeEventListener('click', onDocClick);
       window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('pageshow', onPageShow);
     },
     runQuery,
   };

@@ -7,7 +7,9 @@
  */
 
 import { getFormattedFileSize } from '@/lib/fileSize';
-import { allChapters } from './contents';
+import { allChapters, knowingYourCommunityActivities } from './contents';
+
+const [needsAssessment, toolkitActivity, townDirectory] = knowingYourCommunityActivities;
 
 export interface FeaturedDownload {
   title: string;
@@ -62,11 +64,9 @@ export const featuredDownloads: FeaturedDownload[] = [
     isExternal: true
   },
   {
-    title: 'Vermont Town Directory',
+    title: townDirectory.title,
     description: 'Directory of Vermont towns with jurisdictions, RPCs, LTRGs, and resilience hub contacts',
-    // Live Vermont Town Directory sheet, shared by the coalition 2026-06-29.
-    // Linked as /preview (read-only) since the sheet is shared anyone-can-edit.
-    downloadUrl: 'https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview',
+    downloadUrl: townDirectory.href,
     icon: 'spreadsheet',
     isExternal: true
   },
@@ -78,16 +78,16 @@ export const featuredDownloads: FeaturedDownload[] = [
     isExternal: true
   },
   {
-    title: 'Community Needs Assessment',
+    title: needsAssessment.title,
     description: 'Interactive community needs assessment tool',
-    downloadUrl: 'https://drive.google.com/file/d/18Agz8LA23sPxxqChrdKujppBaqLgwk69/view',
+    downloadUrl: needsAssessment.href,
     icon: 'document',
     isExternal: true
   },
   {
-    title: 'Interactive Toolkit Activity',
+    title: toolkitActivity.title,
     description: 'Interactive toolkit activity guide',
-    downloadUrl: 'https://drive.google.com/file/d/10PfAqefQWzjC_BwJvK1PySATl3W4t843/view',
+    downloadUrl: toolkitActivity.href,
     icon: 'document',
     isExternal: true
   }

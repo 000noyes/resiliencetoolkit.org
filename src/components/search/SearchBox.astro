@@ -58,9 +58,9 @@ const listboxId = `${id}-listbox`;
 
 <script>
   // Tiny always-on wiring: the search module itself loads on first focus
-  // or keystroke (ES7: zero search JS at page load). Also lands focus on
-  // the anchor a search pick arrived at, so the landing sits under the
-  // sticky header with focus where the reader expects it (SR3/SR11).
+  // or keystroke (ES7: zero search JS at page load). Also completes the
+  // landing a search pick handed over (BR5): the searched words under the
+  // named header, marked and focused after the travel down from the top.
   function wireSearchBoxes() {
     document.querySelectorAll<HTMLElement>('[data-search-root]').forEach((root) => {
       if (root.dataset.searchWired) return;
@@ -98,18 +98,25 @@ const listboxId = `${id}-listbox`;
   }
   wireSearchBoxes();
 
-  // A landing that came from a search pick gets focus on its anchor;
-  // ordinary hash navigation is untouched
+  // A landing handed over by a search pick (BR5): the page opened at its
+  // top; travel down to the searched words under the named header, mark
+  // them, focus them, settle the URL. Ordinary hash navigation is untouched
   try {
-    if (location.hash && sessionStorage.getItem('rt-search-landing')) {
+    const raw = sessionStorage.getItem('rt-search-landing');
+    if (raw) {
       sessionStorage.removeItem('rt-search-landing');
-      const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-      if (target) {
-        target.setAttribute('tabindex', '-1');
-        requestAnimationFrame(() => target.focus({ preventScroll: true }));
+      const landing = JSON.parse(raw) as { id?: unknown; q?: unknown };
+      if (
+        landing &&
+        typeof landing.id === 'string' &&
+        typeof landing.q === 'string' &&
+        document.getElementById(landing.id)
+      ) {
+        const settled = { id: landing.id, q: landing.q };
+        import('@/lib/search/landing').then((m) => m.landOnSearch(settled, { fromTop: true }));
       }
     }
   } catch {
-    /* focus assist off */
+    /* landing hand-off off (private mode): the hash link itself landed */
   }
 </script>

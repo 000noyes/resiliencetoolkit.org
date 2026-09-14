@@ -4,7 +4,7 @@
 
 :root {
   /* Layout dimensions */
-  --header-height: 56px;
+  --header-height: 49px; /* the fixed header's real height: 40px mark + 8px padding + 1px border */
   scroll-padding-top: calc(var(--header-height) + var(--spacing-md));
   scroll-padding-bottom: var(--spacing-lg);
 
@@ -1021,10 +1021,6 @@ a.button-link:focus-visible {
   max-width: 1600px;
 }
 
-.reading-grid[data-rail='closed'] {
-  grid-template-columns: var(--reading-tree-w) minmax(0, 1fr) var(--reading-gutter-w);
-}
-
 .reading-grid .reading-content {
   grid-column: 2;
   grid-row: 1;
@@ -1169,18 +1165,6 @@ a.button-link:focus-visible {
 .toc-item--active {
   background: color-mix(in srgb, var(--sidebar-primary) 12%, transparent);
   color: var(--sidebar-primary);
-}
-
-.toc-item--active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 16px;
-  background: var(--sidebar-primary);
-  border-radius: 0 2px 2px 0;
 }
 
 .toc-item--nested {
@@ -1335,6 +1319,29 @@ table tr td:only-child strong[id] {
   }
 }
 
+/* The header is fixed, never sticky (BR7). A text input inside a sticky
+   header makes browsers scroll the page toward the input's in-flow
+   position on every edit (WebKit: one header height per keystroke). Out
+   of the flow there is nothing to scroll toward. The body reserves the
+   header's height; banners and the workshop strip stay in flow below it. */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: var(--header-height);
+}
+
+body.has-site-header {
+  padding-top: var(--header-height);
+}
+
+@media print {
+  body.has-site-header {
+    padding-top: 0;
+  }
+}
+
 /* Accessibility */
 *:focus-visible {
   outline: 2px solid var(--color-ring);
@@ -1442,6 +1449,34 @@ table tr td:only-child strong[id] {
   scrollbar-color: var(--sidebar-border) transparent;
 }
 
+/* The tree closes to its edge button in a left gutter (BR8). The column
+   keeps its width, so the measure holds (BR3) and the freed space is
+   margin. Below 1200px the sheet carries the tree and no gutter renders. */
+.reading-tree__gutter {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  width: var(--reading-gutter-w);
+  padding-top: 2px;
+}
+
+.reading-grid[data-tree='closed'] .contents-tree--rail {
+  display: none;
+}
+
+.reading-grid[data-tree='closed'] .reading-tree__gutter {
+  display: flex;
+}
+
+.contents-tree--rail:focus {
+  outline: none;
+}
+
 .contents-tree__title {
   font-size: 13px;
   font-weight: 600;
@@ -1483,9 +1518,34 @@ table tr td:only-child strong[id] {
   margin-top: var(--spacing-sm);
 }
 
+.contents-tree__link--plain {
+  cursor: default;
+}
+
+.contents-tree__link--plain:hover {
+  background: transparent;
+}
+
 .contents-tree__row--section .contents-tree__link {
   font-weight: 600;
   color: var(--foreground);
+}
+
+/* A section's activities: unnumbered rows in the secondary color that lead
+   with the outside-link glyph where a chapter number would sit, so the eye
+   reads "not a chapter" before the words (BR17). The glyph is drawn by the
+   outside-link notice component after its text; order moves it first. */
+.contents-tree__row--activity .contents-tree__link {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.contents-tree__row--activity .external-link__icon {
+  order: -1;
+  display: inline-flex;
+  flex: none;
+  width: 2.4em;
+  color: var(--text-secondary);
 }
 
 .contents-tree__row--chapter .contents-tree__link {
@@ -1539,6 +1599,7 @@ table tr td:only-child strong[id] {
   top: calc(var(--header-height) + var(--spacing-lg));
   max-height: calc(100vh - var(--header-height) - var(--spacing-2xl));
   display: flex;
+  justify-content: flex-end; /* the edge buttons stay at the right edge when the panel leaves (BR16) */
 }
 
 .reading-rail__gutter {
@@ -1561,23 +1622,6 @@ table tr td:only-child strong[id] {
   display: block;
 }
 
-/* The open tenant's edge button reads "Close X" (S5) */
-.reading-rail__edge-close {
-  display: none;
-}
-
-.reading-grid[data-rail='on-this-page'] [data-rail-btn='on-this-page'] .reading-rail__edge-open,
-.reading-grid[data-rail='footnotes'] [data-rail-btn='footnotes'] .reading-rail__edge-open,
-.reading-grid[data-rail='make-comments'] [data-rail-btn='make-comments'] .reading-rail__edge-open {
-  display: none;
-}
-
-.reading-grid[data-rail='on-this-page'] [data-rail-btn='on-this-page'] .reading-rail__edge-close,
-.reading-grid[data-rail='footnotes'] [data-rail-btn='footnotes'] .reading-rail__edge-close,
-.reading-grid[data-rail='make-comments'] [data-rail-btn='make-comments'] .reading-rail__edge-close {
-  display: inline;
-}
-
 .reading-rail__edge-btn {
   writing-mode: vertical-rl;
   padding: var(--spacing-sm) 6px;
@@ -1594,6 +1638,13 @@ table tr td:only-child strong[id] {
 .reading-rail__edge-btn:hover {
   background: var(--sidebar-accent);
   color: var(--foreground);
+}
+
+/* The open tenant's edge button reads the tenant name, pressed */
+.reading-rail__edge-btn[aria-expanded='true'] {
+  background: color-mix(in srgb, var(--sidebar-primary) 12%, transparent);
+  border-color: var(--sidebar-primary);
+  color: var(--sidebar-primary);
 }
 
 .reading-grid .reading-rail__panel {
@@ -1952,7 +2003,9 @@ table tr td:only-child strong[id] {
     padding-bottom: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px) + var(--spacing-lg));
   }
 
-  .reading-grid .contents-tree {
+  .reading-grid .contents-tree,
+  .reading-tree__gutter,
+  .reading-grid[data-tree='closed'] .reading-tree__gutter {
     display: none;
   }
 
@@ -2184,6 +2237,12 @@ a.cover-contents__section:hover {
   padding: 0;
 }
 
+/* A row never fragments across the column break: its number and title
+   stay together even inside the one group that is allowed to continue */
+.cover-contents__chapters > li {
+  break-inside: avoid-column;
+}
+
 .cover-contents__chapter {
   display: flex;
   gap: 10px;
@@ -2193,6 +2252,19 @@ a.cover-contents__section:hover {
   line-height: 1.45;
   color: var(--foreground);
   text-decoration: none;
+}
+
+/* Activity rows: the glyph leads in the number column, the text in the secondary color (BR17) */
+.cover-contents__chapter--activity {
+  color: var(--text-secondary);
+}
+
+.cover-contents__chapter--activity .external-link__icon {
+  order: -1;
+  display: inline-flex;
+  flex: none;
+  width: 2.4em;
+  color: var(--text-secondary);
 }
 
 .cover-contents__chapter:hover span:last-child {
@@ -2288,10 +2360,6 @@ a.cover-contents__section:hover {
 .reading-grid--no-tree {
   grid-template-columns: minmax(0, 1fr) calc(var(--reading-rail-w) + var(--reading-gutter-w));
   max-width: 1200px;
-}
-
-.reading-grid--no-tree[data-rail='closed'] {
-  grid-template-columns: minmax(0, 1fr) var(--reading-gutter-w);
 }
 
 .reading-grid--no-tree .reading-content {
@@ -2561,6 +2629,13 @@ a.cover-contents__section:hover {
   background: color-mix(in oklab, var(--primary) 22%, transparent);
   color: inherit;
   border-radius: 2px;
+}
+
+/* The words a search pick landed on: the mark plus the ring (BR5) */
+.search-landing {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  scroll-margin-top: calc(var(--header-height) + 16px);
 }
 
 .search-panel__footer {

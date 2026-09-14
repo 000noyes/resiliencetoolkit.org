@@ -184,6 +184,10 @@ test('round chrome: one strip, the round line, three bar doors, no index body, n
   // DD17.3: the corner panel arrives closed, exactly as production behaves
   const panelTrigger = page.getByRole('button', { name: 'Questions and support' });
   await expect(panelTrigger).toBeVisible();
+  // The door is a hydrated island: wait for hydration before the click lands
+  await page.waitForFunction(
+    () => !document.querySelector('astro-island[component-url*="CornerPanelWrapper"]')?.hasAttribute('ssr')
+  );
   await panelTrigger.click();
   await expect(page.getByText('Write to the people who tend this toolkit.')).toBeVisible();
   await page.keyboard.press('Escape');
