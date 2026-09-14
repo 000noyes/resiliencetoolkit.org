@@ -1,35 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { TOCEntry } from './types';
-
-/**
- * Generates a URL-safe slug from text
- */
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-}
-
-/**
- * Ensures unique IDs by appending numeric suffix if needed
- */
-function ensureUniqueId(id: string, existingIds: Set<string>): string {
-  if (!existingIds.has(id)) {
-    existingIds.add(id);
-    return id;
-  }
-
-  let counter = 2;
-  while (existingIds.has(`${id}-${counter}`)) {
-    counter++;
-  }
-  const uniqueId = `${id}-${counter}`;
-  existingIds.add(uniqueId);
-  return uniqueId;
-}
+import { slugify, ensureUniqueId } from '@/lib/heading-ids';
 
 /**
  * Determines if a heading element should be excluded because it belongs to UI chrome
@@ -98,7 +69,11 @@ export function useTableOfContents(containerSelector: string = 'article') {
       return;
     }
 
-    const existingIds = new Set<string>();
+    // Every id already on the page is reserved (the build's static heading
+    // ids, block ids), so an id derived here never collides with one
+    const existingIds = new Set<string>(
+      Array.from(container.querySelectorAll('[id]')).map((el) => el.id)
+    );
     const tocEntries: TOCEntry[] = [];
 
     // Find all potential section headers
@@ -141,15 +116,12 @@ export function useTableOfContents(containerSelector: string = 'article') {
         level = 'table';
       }
 
-      // Generate or use existing ID
+      // A static id (the build's heading ids, or an authored one on the
+      // header or its parent) IS the id; only a header without one derives
+      // an id here, with the same slugify (one id system, SR3)
       let id = header.id || (header.parentElement as HTMLElement)?.id;
       if (!id) {
-        id = slugify(text);
-      }
-      id = ensureUniqueId(id, existingIds);
-
-      // Apply ID to the element for navigation
-      if (!header.id) {
+        id = ensureUniqueId(slugify(text), existingIds);
         header.id = id;
       }
 

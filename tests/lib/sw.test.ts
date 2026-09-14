@@ -212,13 +212,21 @@ function createSandbox(opts?: {
     return stores.get(name)!;
   };
 
-  const realGlobalMatch = async (req: any, _opts?: any) => {
-    const path = typeof req === 'string'
-      ? req
-      : (req.url.startsWith('http') ? new URL(req.url).pathname : req.url);
+  // Like the real Cache.match: URL-keyed including the search string, and
+  // the search ignored only when the caller asks for it
+  const realGlobalMatch = async (req: any, opts?: { ignoreSearch?: boolean }) => {
+    const url = typeof req === 'string' ? req : req.url;
+    const full = url.startsWith('http') ? new URL(url).pathname + new URL(url).search : url;
+    const bare = full.replace(/\?.*$/, '');
     for (const store of stores.values()) {
-      const hit = store.entries.get(path);
-      if (hit) return hit;
+      if (opts?.ignoreSearch) {
+        for (const [key, value] of store.entries) {
+          if (key.replace(/\?.*$/, '') === bare) return value;
+        }
+      } else {
+        const hit = store.entries.get(full);
+        if (hit) return hit;
+      }
     }
     return undefined;
   };
@@ -899,6 +907,31 @@ describe('sw.js — first-fetch startup task', () => {
   });
 });
 
+describe('sw.js — asset handler: Pagefind cache-busting queries (offline search)', () => {
+  it('serves a /pagefind/ request from the precache with its ?ts= query ignored', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox, [...DEFAULT_PRECACHE, '/pagefind/pagefind-entry.json']);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    const event = makeFetchEvent({ url: `${ORIGIN}/pagefind/pagefind-entry.json?ts=1725000000000` });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('cached:/pagefind/pagefind-entry.json');
+    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('keeps exact matching outside /pagefind/: a query-carrying asset is not served from the bare entry', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('from-network'));
+    const event = makeFetchEvent({ url: `${ORIGIN}/_astro/a.css?v=2`, destination: 'style' });
+    sandbox.listeners.fetch[0](event);
+    const response = await event._response;
+    expect(response.body).toBe('from-network');
+    expect(sandbox.fetchMock).toHaveBeenCalled();
+  });
+});
+
 describe('sw.js — navigation handler (cache-first precache, offline fallback)', () => {
   it('does not call respondWith for non-GET requests', () => {
     const { sandbox } = createSandbox();
@@ -1081,7 +1114,7 @@ describe('sw.js — D7 asset handler (strategies unchanged)', () => {
     const response = await event._response;
     expect(response.body).toBe('body{}');
     expect(sandbox.fetchMock).not.toHaveBeenCalled();
-    expect(sandbox.caches.match).toHaveBeenCalledWith(expect.anything(), { ignoreVary: true });
+    expect(sandbox.caches.match).toHaveBeenCalledWith(expect.anything(), { ignoreVary: true, ignoreSearch: false });
   });
 
   it('does not cache redirected responses', async () => {

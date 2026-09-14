@@ -34,7 +34,7 @@ const { prev, next } = chainFor(`opener-${section.number}`);
   <ReadingRail moduleKey={`${section.slug}-opener`} sectionNumber="" showOnThisPage={false} />
 
   <article data-pagefind-body class="reading-content">
-    <nav class="mb-6 text-sm text-text-muted no-print">
+    <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
       <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
       <span class="mx-2">/</span>
       <span class="text-text-primary">{section.title}</span>
@@ -62,7 +62,7 @@ const { prev, next } = chainFor(`opener-${section.number}`);
             <span class="opener-row__number">{chapter.number}</span>
             <span class="opener-row__title">{chapter.title}</span>
           </a>
-          <span class="opener-row__actions no-print">
+          <span class="opener-row__actions no-print" data-pagefind-ignore>
             <a
               href={getPdfUrlForSection(chapter.number)}
               target="_blank"
@@ -84,7 +84,7 @@ const { prev, next } = chainFor(`opener-${section.number}`);
       ))}
     </ol>
 
-    <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
+    <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
       {prev && (
         <a href={prev.href} class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

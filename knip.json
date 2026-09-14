@@ -6,9 +6,20 @@
     "tests/**/*.{ts,tsx}",
     "functions/api/**/*.ts",
     "playwright.offline.config.ts",
-    "playwright.workshop.config.ts"
+    "playwright.workshop.config.ts",
+    "playwright.layout.config.ts",
+    "playwright.search.config.ts"
   ],
-  "project": ["src/**/*.{astro,ts,tsx}", "scripts/**/*.{ts,mjs}", "functions/**/*.ts"],
-  "ignore": ["src/components/PlanForm.tsx"],
-  "ignoreUnresolved": ["/pagefind/pagefind.js"]
+  "project": [
+    "src/**/*.{astro,ts,tsx}",
+    "scripts/**/*.{ts,mjs}",
+    "functions/**/*.ts"
+  ],
+  "ignore": [
+    "src/components/PlanForm.tsx",
+    "src/components/reading/ColophonLine.astro"
+  ],
+  "ignoreUnresolved": [
+    "/pagefind/pagefind.js"
+  ]
 }

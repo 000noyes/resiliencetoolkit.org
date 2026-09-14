@@ -2122,3 +2122,344 @@ a.cover-contents__section:hover {
     flex-wrap: wrap;
   }
 }
+
+/* ========================================
+   Search: the one box, its panel, the sheet, and /search (P3s)
+   ======================================== */
+.search-box {
+  position: relative;
+}
+
+.search-box__form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box__lens {
+  position: absolute;
+  left: 10px;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  display: inline-flex;
+}
+
+.search-box__input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px 0 32px;
+  font-size: 13px;
+  color: var(--foreground);
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.search-box__input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.search-box__input:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus-ring);
+  background: var(--background);
+}
+
+/* Header bands (SR8): visible input at 1024px+, 230px wide, narrowing to
+   180px through the tight desktop band; the lens carries 768 to 1024 and
+   any width where the row cannot fit the input (ES4) */
+.header-search {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  header:not([data-search-overflow]) .header-search {
+    display: block;
+    flex: 0 0 auto; /* never shrinks below the minimum: the row overflows instead, and ES4 sees it */
+    width: 180px;
+  }
+
+  header:not([data-search-overflow]) .header-search-lens {
+    display: none;
+  }
+}
+
+@media (min-width: 1340px) {
+  header:not([data-search-overflow]) .header-search {
+    width: 230px;
+  }
+}
+
+/* The 768 to 1024 expanding lens, and the ES4 overflow fallback: the
+   lens opens the box in place of the centered nav */
+@media (min-width: 768px) {
+  header[data-search-expanded] .header-search {
+    display: block;
+    flex: 1;
+    max-width: 480px;
+  }
+
+  header[data-search-expanded] nav.hidden.md\:flex,
+  header[data-search-expanded] .header-search-lens {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-search,
+  .header-search-lens {
+    display: none;
+  }
+}
+
+/* The anchored suggestion panel: shipped modal shadow, no entrance
+   animation (SR10) */
+.search-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 280px;
+  z-index: 70;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  max-height: min(60vh, 480px);
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+}
+
+/* In the header the panel hangs from the box's right edge and grows
+   leftward, wider than the box, never past the viewport */
+.header-search .search-panel {
+  left: auto;
+  right: 0;
+  width: min(380px, calc(100vw - 32px));
+}
+
+/* /search owns its panel in flow, not anchored */
+[data-search-page] .search-panel {
+  position: static;
+  box-shadow: none;
+  border: 0;
+  max-height: none;
+  padding: 0;
+  margin-top: var(--spacing-md);
+  background: transparent;
+}
+
+.search-panel__status {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: var(--spacing-xs);
+}
+
+.search-results__group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  padding: var(--spacing-xs) var(--spacing-xs) 2px;
+}
+
+.search-results__row {
+  display: block;
+  padding: 6px var(--spacing-xs);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.search-results__row:hover,
+.search-results__row[aria-selected='true'] {
+  background: var(--sidebar-accent);
+}
+
+.search-results__row-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.search-results__row-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* /search: two-line snippets (SR9) */
+[data-search-page] .search-results__row-excerpt {
+  -webkit-line-clamp: 2;
+}
+
+/* The site's first highlight token: primary at low alpha, both themes */
+.search-mark {
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  color: inherit;
+  border-radius: 2px;
+}
+
+.search-panel__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--border);
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs);
+}
+
+.search-panel__more {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.search-panel__see-all {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.search-panel__see-all:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.search-page__count {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: var(--spacing-sm) 0 0;
+}
+
+.search-page__nojs {
+  font-size: 14px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* The phone search sheet (same grammar as the reading sheets). The
+   container tracks the visual viewport (top and height set by the header
+   script while open), so the sheet's bottom sits above the keyboard */
+.search-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  z-index: 75;
+}
+
+@media (min-width: 768px) {
+  .search-sheet {
+    display: none;
+  }
+}
+
+.search-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.search-sheet__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 85%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.search-sheet__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--sidebar-border);
+  margin: 8px auto 0;
+}
+
+.search-sheet__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px var(--spacing-md) 0;
+}
+
+.search-sheet__title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  margin: 0;
+}
+
+.search-sheet__close {
+  min-height: 44px;
+  min-width: 44px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* 44px targets in the sheet (SR11) */
+.search-sheet .search-results__row,
+.search-sheet .search-panel__see-all {
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Input pinned at the sheet top; the panel scrolls beneath it */
+.search-sheet__input {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  overflow-y: auto;
+}
+
+.search-sheet__input .search-box__form {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: var(--spacing-sm);
+  background: var(--surface);
+}
+
+.search-sheet__input .search-box__input {
+  height: 44px;
+  font-size: 15px;
+}
+
+.search-sheet__input .search-panel {
+  position: static;
+  box-shadow: none;
+  max-height: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* deliberately no entrance animation on the panel (SR10) */
+}

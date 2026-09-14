@@ -197,8 +197,14 @@ test('the Footnotes tenant shows the honest empty state until citations confirm'
 }) => {
   const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto(CHAPTER);
+  // 1.3's printed range is held until it is confirmed against the printed copy
+  await page.goto('/modules/emergency-preparedness/1-3');
   await page.click('[data-rail-btn="footnotes"]');
   await expect(page.locator('#rail-panel-footnotes')).toContainText('No notes on this page.');
+  // A confirmed chapter presents its citation in the tenant (DR17/ER7)
+  await page.goto(CHAPTER);
+  await page.click('[data-rail-btn="footnotes"]');
+  await expect(page.locator('#rail-panel-footnotes')).toContainText('Printed toolkit, 2025 edition, pages 20 to 21.');
+  await expect(page.locator('#rail-panel-footnotes')).not.toContainText('No notes on this page.');
   await ctx.close();
 });

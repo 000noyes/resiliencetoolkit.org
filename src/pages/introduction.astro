@@ -5,6 +5,7 @@ import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
 import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
 import ReadingRail from '@/components/reading/ReadingRail.astro';
 import ReadingBar from '@/components/reading/ReadingBar.astro';
+import ArticleBody from '@/components/reading/ArticleBody.astro';
 import { chainFor, frontMatter } from '@/data/contents';
 
 // DR2: the introduction reads in the same 3C grammar as the chapters,
@@ -34,6 +35,7 @@ const next = chainFor(frontMatter.number).next;
     </header>
 
     <!-- Content -->
+    <ArticleBody blockKey="intro">
     <div class="space-y-8">
       <section>
         <h2 class="text-title font-semibold mb-4">Who and what is this toolkit for?</h2>
@@ -100,9 +102,11 @@ const next = chainFor(frontMatter.number).next;
       </section>
     </div>
 
+    </ArticleBody>
+
     <!-- Navigation into the reading chain -->
     {next && (
-      <nav class="mt-12 pt-8 border-t border-border flex justify-end no-print">
+      <nav class="mt-12 pt-8 border-t border-border flex justify-end no-print" data-pagefind-ignore>
         <a
           href={next.href}
           class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"

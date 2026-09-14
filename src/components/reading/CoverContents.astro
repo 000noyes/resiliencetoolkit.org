@@ -9,6 +9,13 @@
  */
 import { contents, frontMatter, resourceLibrary } from '@/data/contents';
 
+interface Props {
+  /** The cover shows the newcomer exit lines; /search omits them */
+  showExits?: boolean;
+}
+
+const { showExits = true } = Astro.props;
+
 // The signed newcomer lines (DR11 as amended 2026-09-06; DR22 places them
 // below the chapter list as contents-adjacent exits)
 const firstActivityLine =
@@ -61,8 +68,10 @@ const crosHelpLine =
     </li>
   </ol>
 
-  <div class="cover-contents__exits">
-    <p><a href="/modules/knowing-your-community">{firstActivityLine}</a></p>
-    <p><a href="#technical-assistance">{crosHelpLine}</a></p>
-  </div>
+  {showExits && (
+    <div class="cover-contents__exits">
+      <p><a href="/modules/knowing-your-community">{firstActivityLine}</a></p>
+      <p><a href="#technical-assistance">{crosHelpLine}</a></p>
+    </div>
+  )}
 </nav>
