@@ -1,5 +1,23 @@
 # TODOS
 
+## Entry experience: parked after the 0.0.16.0 release (2026-09-14)
+
+- Printed page ranges for chapters 1.3, 1.4, 1.5, and 2.3 are held until checked
+  against a printed copy; Footnotes shows the empty state there (src/data/contents.ts,
+  printedPagesConfirmed).
+- The colophon is built but not mounted (ColophonLine.astro) pending the conversation
+  about the source document and how content changes are made.
+- Raise a hand (the email door) is built out of this release; it waits on the email
+  service account and a named list custodian.
+- Search curation: a synonym list and pinned results, fed by searches that return nothing.
+- The review-round page: navigation off the round page drops the round id, so the
+  comments tenant is one page only; the round line above the page and the panel's
+  spacing and wordings are parked with the review front.
+- Cloudflare Pages preview builds of the workshop project do not receive ROUND_ID; the
+  production branch does. Branch previews therefore never build the round page.
+- An activities page: the three activities as a guided path, later.
+
+
 ## Source Fidelity (1-9 QA findings — Step 1a scope)
 
 Discovered during live preview review of https://feat-phase2-planform.resiliencetoolkit-org.pages.dev on 2026-04-21. PlanForm wiring was reverted on this branch; the underlying fidelity gaps below need to be fixed before Phase 2 re-wires 1-9.
