@@ -1518,6 +1518,14 @@ body.has-site-header {
   margin-top: var(--spacing-sm);
 }
 
+.contents-tree__link--plain {
+  cursor: default;
+}
+
+.contents-tree__link--plain:hover {
+  background: transparent;
+}
+
 .contents-tree__row--section .contents-tree__link {
   font-weight: 600;
   color: var(--foreground);

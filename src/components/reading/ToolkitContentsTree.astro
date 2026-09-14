@@ -73,7 +73,7 @@ const current = normalize(currentPath);
   <h2 class="contents-tree__title">Toolkit Contents</h2>
   <ol class="contents-tree__list">
     {rows.map((row) => {
-      const isActive = normalize(row.href) === current;
+      const isActive = row.href !== undefined && normalize(row.href) === current;
       return (
         <li
           class:list={[
@@ -82,7 +82,11 @@ const current = normalize(currentPath);
             isActive && 'contents-tree__row--active',
           ]}
         >
-          {row.external ? (
+          {row.href === undefined ? (
+            <span class="contents-tree__link contents-tree__link--plain">
+              <span class="contents-tree__label">{row.label}</span>
+            </span>
+          ) : row.external ? (
             <a
               href={row.href}
               target="_blank"

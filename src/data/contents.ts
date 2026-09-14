@@ -443,9 +443,10 @@ export function chainFor(
 }
 
 export interface TreeRow {
-  kind: 'front-matter' | 'section' | 'chapter' | 'activity' | 'back-matter';
+  kind: 'front-matter' | 'section' | 'chapter' | 'activities-label' | 'activity' | 'back-matter';
   label: string;
-  href: string;
+  /** Absent on a plain label row: a section with no opener page, or the activities label */
+  href?: string;
   number?: string;
   /** An activity artifact: an external document, opened as such */
   external?: true;
@@ -461,14 +462,15 @@ export function treeRows(): TreeRow[] {
     { kind: 'front-matter', label: frontMatter.title, href: frontMatter.path },
   ];
   for (const section of contents) {
+    // A section with an opener links to it; without one (Knowing Your
+    // Community) the section row is a plain label and 0.1 is its own row,
+    // the same shape the cover renders
     rows.push({
       kind: 'section',
       label: section.title,
-      href: section.openerPath ?? chapterUrl(section.chapters[0].number)!,
+      ...(section.openerPath ? { href: section.openerPath } : {}),
     });
     for (const chapter of section.chapters) {
-      // Section 0's single chapter is its own section row; no child row repeats it
-      if (section.chapters.length === 1 && chapter.title === section.title) continue;
       rows.push({
         kind: 'chapter',
         label: chapter.title,

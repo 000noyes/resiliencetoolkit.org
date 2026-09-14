@@ -130,6 +130,16 @@ describe('tree render', () => {
     });
   });
 
+  it('renders Knowing Your Community as a plain section label with 0.1 as its own row, like the cover', () => {
+    const rows = treeRows();
+    const km = rows.findIndex((r) => r.href === '/modules/knowing-your-community');
+    expect(rows[km]).toMatchObject({ kind: 'chapter', number: '0.1', label: 'Knowing Your Community' });
+    expect(rows[km - 1]).toMatchObject({ kind: 'section', label: 'Knowing Your Community' });
+    expect(rows[km - 1].href).toBeUndefined();
+    // Sections with an opener keep linking to it
+    expect(rows.find((r) => r.kind === 'section' && r.label === 'Emergency Preparedness and Response')?.href).toBe('/modules/emergency-preparedness');
+  });
+
   it('renders the two Knowing Your Community activities as external rows right after 0.1 (BR10)', () => {
     const rows = treeRows();
     const km = rows.findIndex((r) => r.href === '/modules/knowing-your-community');
