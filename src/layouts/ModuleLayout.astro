@@ -28,7 +28,9 @@ import { getPdfUrlForSection } from '@/lib/pdfLookup';
 import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { FolderOpen } from 'lucide-react';
-import { TableOfContents, TableOfContentsMobile } from '@/components/TableOfContents';
+import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
+import ReadingRail from '@/components/reading/ReadingRail.astro';
+import ReadingBar from '@/components/reading/ReadingBar.astro';
 import WorkLivesHere from '@/components/WorkLivesHere.tsx';
 
 interface Props {
@@ -84,13 +86,16 @@ const showTOC = !!sectionData;
 ---
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
-  <!-- Wrapper: Grid layout for section pages, standard container otherwise -->
-  <div class={showTOC ? "module-layout py-8" : ""}>
+  <!-- Wrapper: 3C reading grid for section pages, standard container otherwise -->
+  <div class={showTOC ? "reading-grid py-8" : ""} data-rail={showTOC ? "open" : undefined}>
     {showTOC && (
-      <TableOfContents client:load moduleKey={moduleKey} />
+      <ToolkitContentsTree currentPath={Astro.url.pathname} />
+    )}
+    {showTOC && (
+      <ReadingRail moduleKey={moduleKey} />
     )}
 
-    <article data-pagefind-body class={showTOC ? "module-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
+    <article data-pagefind-body class={showTOC ? "reading-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
       {sectionData && (
         <!-- Breadcrumb navigation for section pages -->
         <nav class="mb-6 text-sm text-text-muted no-print">
@@ -159,11 +164,13 @@ const showTOC = !!sectionData;
       <!-- Action Bar with View PDF and Export Buttons -->
       <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print">
         {pdfUrl ? (
+          <!-- DR21: the chapter action bar carries the quiet action grammar; same
+               two actions, same position, the reading surface's quietest treatment -->
           <a
             href={pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+            class="px-4 py-2 rounded-md border border-border text-text-secondary no-underline hover:text-text-primary hover:border-table-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -183,7 +190,7 @@ const showTOC = !!sectionData;
         {resourcesUrl ? (
           <ExternalLink href={resourcesUrl} class="inline-block">
             <button
-              class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+              class="px-4 py-2 rounded-md border border-border text-text-secondary hover:text-text-primary hover:border-table-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
             >
               <FolderOpen size={18} />
               <span>See Additional Resources</span>
@@ -241,6 +248,6 @@ const showTOC = !!sectionData;
   </div>
 
   {showTOC && (
-    <TableOfContentsMobile client:visible moduleKey={moduleKey} />
+    <ReadingBar currentPath={Astro.url.pathname} />
   )}
 </BaseLayout>

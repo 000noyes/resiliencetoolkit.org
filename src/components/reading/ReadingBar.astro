@@ -1,0 +1,93 @@
+---
+/**
+ * The phone docked bar: the persistent home of the reading doors below
+ * 1200px. The bar reserves its height in the layout (never overlay), sits
+ * in the safe area, and each door opens a modal bottom sheet with a drag
+ * handle and outside-tap dismissal. On this page is never in the bar; it
+ * renders in flow at the top of the chapter.
+ *
+ * Doors arrive with their phases: Toolkit Contents here (P2), Footnotes
+ * with the citations build, Make Comments with the door build.
+ */
+import ToolkitContentsTree from './ToolkitContentsTree.astro';
+import { TableOfContents as ContentsIcon } from 'lucide-react';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+---
+
+<nav class="reading-bar" data-annot-ui aria-label="Reading tools">
+  <button
+    type="button"
+    class="reading-bar__door"
+    data-sheet-open="contents"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+  >
+    <ContentsIcon size={18} aria-hidden="true" />
+    <span>Toolkit Contents</span>
+  </button>
+</nav>
+
+<div class="reading-sheet" data-annot-ui data-sheet="contents" hidden>
+  <div class="reading-sheet__backdrop" data-sheet-dismiss></div>
+  <div
+    class="reading-sheet__body"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Toolkit Contents"
+    tabindex="-1"
+  >
+    <div class="reading-sheet__handle" aria-hidden="true"></div>
+    <div class="reading-sheet__bar">
+      <button type="button" class="reading-sheet__close" data-sheet-dismiss>
+        Close
+      </button>
+    </div>
+    <div class="reading-sheet__scroll">
+      <ToolkitContentsTree currentPath={currentPath} variant="sheet" />
+    </div>
+  </div>
+</div>
+
+<script>
+  function wireSheets() {
+    document.querySelectorAll<HTMLElement>('[data-sheet]').forEach((sheet) => {
+      const name = sheet.getAttribute('data-sheet');
+      const opener = document.querySelector<HTMLButtonElement>(
+        `[data-sheet-open="${name}"]`
+      );
+      const body = sheet.querySelector<HTMLElement>('.reading-sheet__body');
+      if (!opener || !body) return;
+
+      const close = () => {
+        sheet.hidden = true;
+        opener.setAttribute('aria-expanded', 'false');
+        document.documentElement.style.removeProperty('overflow');
+        opener.focus();
+      };
+      const open = () => {
+        sheet.hidden = false;
+        opener.setAttribute('aria-expanded', 'true');
+        document.documentElement.style.setProperty('overflow', 'hidden');
+        body.focus();
+      };
+
+      opener.addEventListener('click', open);
+      sheet.querySelectorAll('[data-sheet-dismiss]').forEach((el) => {
+        el.addEventListener('click', close);
+      });
+      sheet.addEventListener('keydown', (e) => {
+        if ((e as KeyboardEvent).key === 'Escape') close();
+      });
+      // Navigating from a sheet link closes it (same-page anchors included)
+      sheet.querySelectorAll('a').forEach((a) => {
+        a.addEventListener('click', () => close());
+      });
+    });
+  }
+  wireSheets();
+</script>
