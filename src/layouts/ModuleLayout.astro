@@ -102,6 +102,7 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
   <!-- Wrapper: 3C reading grid for section pages, standard container otherwise -->
+  {roundId && <div id="round-status-slot" data-annot-ui></div>}
   <div
     class={showTOC ? "reading-grid py-8" : ""}
     data-rail={showTOC ? (roundId ? "make-comments" : "on-this-page") : undefined}
