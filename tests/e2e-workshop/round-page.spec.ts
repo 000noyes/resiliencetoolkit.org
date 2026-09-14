@@ -168,8 +168,9 @@ test('round chrome: one strip, the round line, three bar doors, no index body, n
   // mounts on workshop pages.
   await expect(page.getByText('This is the workshop copy of the toolkit')).toBeVisible();
   await expect(page.getByText('Contact us for support')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Round 1' })).toBeVisible();
-  await expect(page.getByText('read together at the next meeting')).toBeVisible();
+  // The round line above the page is retired: the page starts at its breadcrumb
+  await expect(page.getByRole('heading', { name: 'Round 1' })).toHaveCount(0);
+  await expect(page.getByText('read together at the next meeting')).toHaveCount(0);
   // The reviewed chapter is the page itself
   await expect(page.getByRole('heading', { name: '1.2 Food and water' })).toBeVisible();
   await expect(page.locator('article[data-pagefind-body]')).toHaveCount(0);

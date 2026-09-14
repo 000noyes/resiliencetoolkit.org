@@ -11,8 +11,8 @@
   service account and a named list custodian.
 - Search curation: a synonym list and pinned results, fed by searches that return nothing.
 - The review-round page: navigation off the round page drops the round id, so the
-  comments tenant is one page only; the round line above the page and the panel's
-  spacing and wordings are parked with the review front.
+  comments tenant is one page only; the round line above the page is retired; the
+  panel's spacing and wordings are parked with the review front.
 - Cloudflare Pages preview builds of the workshop project do not receive ROUND_ID; the
   production branch does. Branch previews therefore never build the round page.
 - An activities page: the three activities as a guided path, later.

@@ -33,7 +33,6 @@ import ReadingRail from '@/components/reading/ReadingRail.astro';
 import ReadingBar from '@/components/reading/ReadingBar.astro';
 import WorkLivesHere from '@/components/WorkLivesHere.tsx';
 import ArticleBody from '@/components/reading/ArticleBody.astro';
-import RoundBanner from '@/components/reading/RoundBanner.astro';
 import AnnotationIsland from '@/components/annotation/AnnotationIsland.tsx';
 
 interface Props {
@@ -102,7 +101,6 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
 ---
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
-  {roundId && <RoundBanner roundId={roundId} />}
   <!-- Wrapper: 3C reading grid for section pages, standard container otherwise -->
   <div
     class={showTOC ? "reading-grid py-8" : ""}
