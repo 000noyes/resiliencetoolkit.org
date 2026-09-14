@@ -2237,6 +2237,12 @@ a.cover-contents__section:hover {
   padding: 0;
 }
 
+/* A row never fragments across the column break: its number and title
+   stay together even inside the one group that is allowed to continue */
+.cover-contents__chapters > li {
+  break-inside: avoid-column;
+}
+
 .cover-contents__chapter {
   display: flex;
   gap: 10px;
