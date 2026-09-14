@@ -8,7 +8,7 @@
  * 0 then 1 then 2. Plain HTML, so it is also the no-JS floor.
  */
 import { contents, frontMatter, resourceLibrary, activitiesLabel } from '@/data/contents';
-import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import ExternalLink from '@/components/ExternalLink.astro';
 
 interface Props {
   /** The cover shows the newcomer exit lines; /search omits them */
@@ -62,17 +62,9 @@ const crosHelpLine =
             ) : null}
             {(section.activities ?? []).map((activity) => (
               <li>
-                <a
-                  href={activity.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="cover-contents__chapter cover-contents__chapter--activity"
-                >
+                <ExternalLink href={activity.href} class="cover-contents__chapter cover-contents__chapter--activity">
                   <span>{activity.title}</span>
-                  <span class="external-link__icon" aria-hidden="true">
-                    <ExternalLinkIcon size={12} strokeWidth={2} />
-                  </span>
-                </a>
+                </ExternalLink>
               </li>
             ))}
           </ol>

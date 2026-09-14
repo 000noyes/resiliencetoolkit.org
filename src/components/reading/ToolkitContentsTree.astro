@@ -17,7 +17,8 @@
  * renders.
  */
 import { treeRows, searchRoute } from '@/data/contents';
-import { Search, ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import { Search } from 'lucide-react';
+import ExternalLink from '@/components/ExternalLink.astro';
 
 interface Props {
   /** Path of the page hosting the tree, for the active row */
@@ -89,17 +90,9 @@ const current = normalize(currentPath);
               <span class="contents-tree__label">{row.label}</span>
             </span>
           ) : row.external ? (
-            <a
-              href={row.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="contents-tree__link contents-tree__link--external"
-            >
+            <ExternalLink href={row.href} class="contents-tree__link contents-tree__link--external">
               <span class="contents-tree__label">{row.label}</span>
-              <span class="external-link__icon" aria-hidden="true">
-                <ExternalLinkIcon size={12} strokeWidth={2} />
-              </span>
-            </a>
+            </ExternalLink>
           ) : (
             <a
               href={row.href}
