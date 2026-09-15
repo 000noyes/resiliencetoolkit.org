@@ -93,7 +93,7 @@ export function WorkLivesHereCard({
           <strong>Your work is saved on this device, and only here.</strong> It is private and works
           offline. Nothing goes to the cloud. Back it up to keep a copy.
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">{backupLine}</p>
+        <p className="mt-1 text-chrome text-muted-foreground">{backupLine}</p>
       </div>
       <button
         type="button"

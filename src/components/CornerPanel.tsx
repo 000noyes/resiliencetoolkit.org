@@ -103,7 +103,7 @@ export function QuestionsModal(props: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="questions-textarea"
-                className="block text-label font-medium text-foreground mb-xs"
+                className="block text-body-small font-medium text-foreground mb-xs"
               >
                 Your message
               </label>

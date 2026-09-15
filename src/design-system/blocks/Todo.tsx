@@ -158,7 +158,7 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 12px;
+            font-size: var(--text-chrome);
             font-weight: bold;
             color: #000;
           }

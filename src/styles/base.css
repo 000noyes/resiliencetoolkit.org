@@ -656,7 +656,8 @@ a.button-link:focus-visible {
 
 .guide-table th {
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   background-color: var(--table-surface-subtle);
@@ -721,7 +722,8 @@ a.button-link:focus-visible {
     content: attr(data-label);
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: var(--text-label);
+    line-height: var(--leading-label);
     letter-spacing: var(--tracking-wide);
     color: var(--table-text-muted);
     display: block;
@@ -761,7 +763,8 @@ a.button-link:focus-visible {
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-raised);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   pointer-events: none;
   transform: translateX(-50%);
   white-space: nowrap;
@@ -870,18 +873,19 @@ a.button-link:focus-visible {
 }
 
 .external-link-modal__title {
-  font-size: 20px;
+  font-size: var(--text-subtitle);
+  line-height: var(--leading-subtitle);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
 
 .external-link-modal__domain {
-  font-size: 24px;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--primary);
   word-break: break-all;
-  line-height: 1.3;
+  line-height: var(--leading-title);
 }
 
 .external-link-modal__url-container {
@@ -897,7 +901,8 @@ a.button-link:focus-visible {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--text-muted);
   word-break: break-all;
   text-align: left;
@@ -907,8 +912,8 @@ a.button-link:focus-visible {
   font-family: var(--font-mono);
   background: none;
   padding: 0;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
 }
 
 .external-link-modal__https-indicator {
@@ -920,10 +925,10 @@ a.button-link:focus-visible {
 }
 
 .external-link-modal__description {
-  font-size: 14px;
+  font-size: var(--text-body-small);
   color: var(--text-secondary);
   margin: 0;
-  line-height: 1.5;
+  line-height: var(--leading-body-small);
 }
 
 .external-link-modal__checkbox-label {
@@ -931,7 +936,8 @@ a.button-link:focus-visible {
   align-items: center;
   gap: var(--spacing-xs);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--text-secondary);
   user-select: none;
   margin-top: var(--spacing-xs);
@@ -969,7 +975,8 @@ a.button-link:focus-visible {
 .external-link-modal__button {
   flex: 1;
   padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: 16px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
   font-weight: 500;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -1120,7 +1127,8 @@ a.button-link:focus-visible {
 }
 
 .toc-title {
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1153,7 +1161,8 @@ a.button-link:focus-visible {
 }
 
 .toc-progress-text {
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   color: var(--sidebar-foreground);
   font-variant-numeric: tabular-nums;
 }
@@ -1186,8 +1195,8 @@ a.button-link:focus-visible {
   border-radius: var(--radius-md);
   color: var(--sidebar-foreground);
   text-decoration: none;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   transition: all 0.15s ease;
   position: relative;
   cursor: pointer;
@@ -1195,7 +1204,7 @@ a.button-link:focus-visible {
 
 .toc-item:hover {
   background: var(--sidebar-accent);
-  color: var(--sidebar-accent-foreground);
+  color: var(--foreground);
 }
 
 .toc-item--active {
@@ -1204,7 +1213,8 @@ a.button-link:focus-visible {
 }
 
 .toc-item--nested {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
@@ -1223,7 +1233,8 @@ a.button-link:focus-visible {
 /* H3 - Subsection headers */
 .toc-item--h3 {
   font-weight: 500;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   padding-left: calc(var(--spacing-sm) + 8px);
 }
@@ -1235,7 +1246,8 @@ a.button-link:focus-visible {
 /* Table section headers - with small square indicator */
 .toc-item--table {
   font-weight: 500;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   padding-left: calc(var(--spacing-sm) + 8px);
 }
@@ -1290,9 +1302,10 @@ a.button-link:focus-visible {
 
 /* Section progress indicator */
 .toc-progress {
-  font-size: 10px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 500;
-  color: var(--sidebar-foreground);
+  color: var(--text-secondary);
   background: var(--sidebar-accent);
   padding: 1px 5px;
   border-radius: 8px;
@@ -1311,7 +1324,8 @@ a.button-link:focus-visible {
 }
 
 .toc-loading-text {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
 }
 
@@ -1514,7 +1528,8 @@ body.has-site-header {
 }
 
 .contents-tree__title {
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1534,8 +1549,8 @@ body.has-site-header {
   align-items: baseline;
   padding: 5px var(--spacing-sm);
   border-radius: var(--radius-md);
-  font-size: 13px;
-  line-height: 1.35;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   text-decoration: none;
 }
@@ -1573,7 +1588,8 @@ body.has-site-header {
    outside-link notice component after its text; order moves it first. */
 .contents-tree__row--activity .contents-tree__link {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
 }
 
 .contents-tree__row--activity .external-link__icon {
@@ -1590,10 +1606,20 @@ body.has-site-header {
 
 .contents-tree__number {
   flex: none;
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--table-accent);
   min-width: 26px;
+}
+
+/* In the dark theme the table accent falls under 4.5:1 on the background
+   at 12px; the numbers take the sidebar primary there (8A) */
+.dark .contents-tree__number,
+.dark .cover-contents__number,
+.dark .opener-row__number {
+  color: var(--sidebar-primary);
 }
 
 .contents-tree__row--active > .contents-tree__link {
@@ -1612,7 +1638,8 @@ body.has-site-header {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary, var(--sidebar-foreground));
   text-decoration: none;
   padding: 4px var(--spacing-sm);
@@ -1661,7 +1688,8 @@ body.has-site-header {
 .reading-rail__edge-btn {
   writing-mode: vertical-rl;
   padding: var(--spacing-sm) 6px;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--sidebar-foreground);
@@ -1694,7 +1722,8 @@ body.has-site-header {
 }
 
 .reading-rail__panel-title {
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1740,7 +1769,8 @@ body.has-site-header {
 }
 
 .comments-feed__line {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin: var(--spacing-sm) 0;
 }
@@ -1766,7 +1796,8 @@ body.has-site-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin-bottom: 4px;
 }
@@ -1780,14 +1811,16 @@ body.has-site-header {
   border-radius: 9999px;
   border: 2px solid var(--primary);
   color: var(--primary);
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   flex: none;
 }
 
 .comments-card__text {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--foreground);
   white-space: pre-wrap;
   margin: 0;
@@ -1801,7 +1834,8 @@ body.has-site-header {
   flex: none;
   border-top: 1px solid var(--border);
   padding: var(--spacing-sm) 0 var(--spacing-xs);
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
 }
 
 .comments-foot__row {
@@ -1813,21 +1847,24 @@ body.has-site-header {
 
 .comments-foot__label {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--foreground);
   margin: var(--spacing-sm) 0 4px;
 }
 
 .comments-foot__target {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin: 0;
 }
 
 .comments-foot__quote {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   border-left: 2px solid var(--border);
   padding-left: var(--spacing-sm);
@@ -1846,7 +1883,8 @@ body.has-site-header {
   background: var(--input);
   color: var(--foreground);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   padding: 8px 10px;
 }
 
@@ -1859,7 +1897,8 @@ body.has-site-header {
   min-height: 40px;
   padding: 0 var(--spacing-md);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   font-weight: 500;
   cursor: pointer;
   border: 1px solid var(--border);
@@ -1884,7 +1923,8 @@ body.has-site-header {
   padding: 0;
   min-height: 44px;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--foreground);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -1906,7 +1946,8 @@ body.has-site-header {
   justify-content: center;
   gap: var(--spacing-md);
   flex: 1;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
 }
 
 .reading-bar[data-placing] .reading-bar__door {
@@ -1942,8 +1983,10 @@ body.has-site-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   background: var(--primary);
   color: var(--primary-foreground);
   box-shadow: var(--shadow-card);
@@ -1972,7 +2015,8 @@ body.has-site-header {
 
 /* Footnotes tenant */
 .footnotes-tenant__label {
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1987,21 +2031,23 @@ body.has-site-header {
 }
 
 .footnotes-tenant__note {
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   padding: var(--spacing-xs) 0;
 }
 
 .footnotes-tenant__empty {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin: var(--spacing-sm) 0;
 }
 
 .reading-rail__close,
 .reading-sheet__close {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--text-secondary, var(--sidebar-foreground));
   background: transparent;
@@ -2075,6 +2121,15 @@ body.has-site-header {
     overflow: visible;
   }
 
+  /* Text a reader navigates by is 14 or more on the phone (7A): the
+     in-flow On this page rows and the Footnotes sheet's notes */
+  .reading-grid [data-rail-panel='on-this-page'] .toc-item,
+  .reading-sheet .footnotes-tenant__note,
+  .reading-sheet .footnotes-tenant__empty {
+    font-size: var(--text-body-small);
+    line-height: var(--leading-body-small);
+  }
+
   /* ER8: on bar-carrying pages the corner door anchors above the
      reserved bar; layout, never overlay */
   body:has(.reading-bar) div[data-annot='corner-panel'] {
@@ -2109,7 +2164,8 @@ body.has-site-header {
   gap: 8px;
   min-height: 44px;
   padding: 0 var(--spacing-md);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   font-weight: 600;
   color: var(--sidebar-foreground);
   background: transparent;
@@ -2181,7 +2237,8 @@ body.has-site-header {
 .reading-sheet .contents-tree__link {
   min-height: 44px;
   align-items: center;
-  font-size: 15px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 /* Desktop: the bar and its sheets do not exist; declared after their base
@@ -2197,7 +2254,8 @@ body.has-site-header {
    prints and survives no-JS; the Footnotes tenant presents the same string */
 .module-citation {
   margin-top: var(--spacing-xl);
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
@@ -2251,13 +2309,14 @@ body.has-site-header {
   font-weight: 600;
   color: var(--foreground);
   text-decoration: none;
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 .cover-contents__lead-sub {
   display: block;
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
@@ -2287,8 +2346,8 @@ a.cover-contents__section:hover {
   gap: 10px;
   align-items: baseline;
   padding: 3px 0;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--foreground);
   text-decoration: none;
 }
@@ -2314,8 +2373,10 @@ a.cover-contents__section:hover {
 .cover-contents__number {
   flex: none;
   min-width: 30px;
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--table-accent);
 }
 
@@ -2330,7 +2391,8 @@ a.cover-contents__section:hover {
 
 .cover-contents__exits p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
 }
 
 .cover-contents__exits a {
@@ -2351,7 +2413,8 @@ a.cover-contents__section:hover {
 }
 
 .start-here__label {
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2361,8 +2424,8 @@ a.cover-contents__section:hover {
 
 .start-here__row {
   display: block;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--foreground);
   text-decoration: none;
   padding: 4px 0;
@@ -2382,7 +2445,8 @@ a.cover-contents__section:hover {
 }
 
 .dl-jump-row a {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   text-decoration: none;
   min-height: 44px;
@@ -2437,13 +2501,16 @@ a.cover-contents__section:hover {
 .opener-row__number {
   flex: none;
   min-width: 34px;
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--table-accent);
 }
 
 .opener-row__title {
-  font-size: 15px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
   font-weight: 500;
 }
 
@@ -2462,7 +2529,8 @@ a.cover-contents__section:hover {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12.5px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   text-decoration: none;
 }
@@ -2512,7 +2580,8 @@ a.cover-contents__section:hover {
   width: 100%;
   height: 36px;
   padding: 0 10px 0 32px;
-  font-size: 13px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--foreground);
   background: var(--input);
   border: 1px solid var(--border);
@@ -2614,13 +2683,15 @@ a.cover-contents__section:hover {
 }
 
 .search-panel__status {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   margin: var(--spacing-xs);
 }
 
 .search-results__group-label {
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2643,9 +2714,9 @@ a.cover-contents__section:hover {
 
 .search-results__row-title {
   display: block;
-  font-size: 13px;
+  font-size: var(--text-chrome);
   font-weight: 600;
-  line-height: 1.35;
+  line-height: var(--leading-chrome);
 }
 
 .search-results__row-excerpt {
@@ -2653,12 +2724,25 @@ a.cover-contents__section:hover {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 12.5px;
-  line-height: 1.4;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
-/* /search: two-line snippets (SR9) */
+/* /search: two-line snippets (SR9) at reading sizes; the sheet's rows
+   read at the same sizes, since on a phone the sheet is the page (7A) */
+[data-search-page] .search-results__row-title,
+.search-sheet .search-results__row-title {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+[data-search-page] .search-results__row-excerpt,
+.search-sheet .search-results__row-excerpt {
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
+}
+
 [data-search-page] .search-results__row-excerpt {
   -webkit-line-clamp: 2;
 }
@@ -2688,12 +2772,14 @@ a.cover-contents__section:hover {
 }
 
 .search-panel__more {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
 .search-panel__see-all {
-  font-size: 12.5px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--foreground);
   text-decoration: none;
@@ -2705,13 +2791,15 @@ a.cover-contents__section:hover {
 }
 
 .search-page__count {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   margin: var(--spacing-sm) 0 0;
 }
 
 .search-page__nojs {
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--text-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -2774,7 +2862,8 @@ a.cover-contents__section:hover {
 }
 
 .search-sheet__title {
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2785,7 +2874,8 @@ a.cover-contents__section:hover {
 .search-sheet__close {
   min-height: 44px;
   min-width: 44px;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--text-secondary);
   background: transparent;
@@ -2823,7 +2913,8 @@ a.cover-contents__section:hover {
 .search-sheet__input .search-box__input {
   height: 44px;
   /* 16px is the floor below which iOS zooms the page on focus */
-  font-size: 16px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 .search-sheet__input .search-panel {

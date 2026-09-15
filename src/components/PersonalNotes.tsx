@@ -148,11 +148,11 @@ export default function PersonalNotes({ className = '' }: PersonalNotesProps) {
             Notes
           </span>
           {hasNotes && !isExpanded && (
-            <span className="text-xs text-muted-foreground">{notes.length} chars</span>
+            <span className="text-chrome text-muted-foreground">{notes.length} chars</span>
           )}
         </span>
         <span className="flex items-center gap-2">
-          {isSaving && <span className="text-xs text-muted-foreground">Saving...</span>}
+          {isSaving && <span className="text-chrome text-muted-foreground">Saving...</span>}
           {isExpanded ? (
             <ChevronUp className="w-4 h-4 text-muted-foreground" />
           ) : (
@@ -172,8 +172,8 @@ export default function PersonalNotes({ className = '' }: PersonalNotesProps) {
             style={{ minHeight: '120px' }}
           />
           <div className="flex items-center justify-between mt-2">
-            <p className="text-xs text-muted-foreground">Saved automatically</p>
-            <p className="text-xs text-muted-foreground">{notes.length}/5000</p>
+            <p className="text-chrome text-muted-foreground">Saved automatically</p>
+            <p className="text-chrome text-muted-foreground tabular-nums">{notes.length}/5000</p>
           </div>
         </div>
       )}

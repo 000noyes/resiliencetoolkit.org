@@ -125,8 +125,8 @@ const phases = recoveryPhases.filter((p) => !p.pivot);
   }
   .continuum__col-name {
     font-weight: 600;
-    font-size: 1.15rem;
-    line-height: 1.3;
+    font-size: var(--text-body-large);
+    line-height: var(--leading-body-large);
     color: var(--foreground);
   }
   .continuum__col-link:hover .continuum__col-name {
@@ -156,8 +156,8 @@ const phases = recoveryPhases.filter((p) => !p.pivot);
   }
   .continuum__act {
     color: var(--muted-foreground);
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     padding: 0.25rem 0;
   }
   .continuum__act-link {
@@ -191,7 +191,8 @@ const phases = recoveryPhases.filter((p) => !p.pivot);
       max-width: none;
     }
     .continuum__act {
-      font-size: 0.9rem;
+      font-size: var(--text-body-small);
+      line-height: var(--leading-body-small);
     }
   }
 </style>

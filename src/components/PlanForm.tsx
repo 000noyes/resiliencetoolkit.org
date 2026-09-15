@@ -288,20 +288,20 @@ export default function PlanForm({
           padding-bottom: var(--spacing-sm);
           border-bottom: 1px solid transparent;
         }
-        .rt-planform-title { margin: 0; font-size: 20px; font-weight: 600; color: var(--foreground); }
-        .rt-planform-subtitle { margin: var(--spacing-xs) 0 0; font-size: 14px; color: var(--muted-foreground); }
-        .rt-planform-counter { margin: 6px 0 var(--spacing-lg); font-size: 14px; color: var(--muted-foreground); }
+        .rt-planform-title { margin: 0; font-size: var(--text-subtitle); line-height: var(--leading-subtitle); font-weight: 600; color: var(--foreground); }
+        .rt-planform-subtitle { margin: var(--spacing-xs) 0 0; font-size: var(--text-body-small); line-height: var(--leading-body-small); color: var(--muted-foreground); }
+        .rt-planform-counter { margin: 6px 0 var(--spacing-lg); font-size: var(--text-body-small); line-height: var(--leading-body-small); color: var(--muted-foreground); }
         .rt-planform-legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
         .rt-planform-fields { display: flex; flex-direction: column; gap: var(--spacing-md); border: 0; padding: 0; margin: 0; }
         .rt-planform-field { display: flex; flex-direction: column; }
         .rt-planform-label {
           font-family: var(--font-sans, Outfit), sans-serif;
-          font-weight: 500; font-size: 14px; color: var(--muted-foreground);
+          font-weight: 500; font-size: var(--text-body-small); line-height: var(--leading-body-small); color: var(--muted-foreground);
           margin-bottom: var(--spacing-xs);
         }
         .rt-planform-input, .rt-planform-textarea {
           font-family: var(--font-sans, Outfit), sans-serif;
-          font-weight: 400; font-size: 16px; color: var(--foreground);
+          font-weight: 400; font-size: var(--text-body); line-height: var(--leading-body); color: var(--foreground);
           border: 1px solid var(--border); border-radius: var(--radius-sm);
           background: var(--background);
           width: 100%;
@@ -322,7 +322,7 @@ export default function PlanForm({
           background: none; border: 1px solid var(--border);
           color: var(--foreground);
           border-radius: var(--radius-sm);
-          padding: 8px 16px; font-size: 14px; font-family: var(--font-sans, Outfit), sans-serif;
+          padding: 8px 16px; font-size: var(--text-body-small); line-height: var(--leading-body-small); font-family: var(--font-sans, Outfit), sans-serif;
           cursor: pointer; min-height: 44px;
         }
         .rt-planform-export:hover { background: var(--muted); }

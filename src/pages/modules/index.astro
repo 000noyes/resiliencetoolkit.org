@@ -40,7 +40,7 @@ const sortedModules = getSortedModules();
             {module.frontmatter.phases && module.frontmatter.phases.length > 0 && (
               <div class="flex gap-1.5">
                 {module.frontmatter.phases.map((phase) => (
-                  <span class="meta-chip px-2 py-1 text-xs font-medium">
+                  <span class="meta-chip px-2 py-1 text-chrome font-medium">
                     <span class={`meta-chip__dot meta-chip__dot--${phase.toLowerCase()}`} aria-hidden="true"></span>
                     {phase}
                   </span>
@@ -62,12 +62,12 @@ const sortedModules = getSortedModules();
           {module.frontmatter.tags && module.frontmatter.tags.length > 0 && (
             <div class="flex flex-wrap gap-1.5">
               {module.frontmatter.tags.slice(0, 3).map((tag) => (
-                <span class="px-2 py-0.5 text-xs rounded bg-accent text-accent-foreground">
+                <span class="px-2 py-0.5 text-chrome rounded bg-accent text-accent-foreground">
                   #{tag}
                 </span>
               ))}
               {module.frontmatter.tags.length > 3 && (
-                <span class="px-2 py-0.5 text-xs rounded bg-accent text-accent-foreground">
+                <span class="px-2 py-0.5 text-chrome rounded bg-accent text-accent-foreground">
                   +{module.frontmatter.tags.length - 3}
                 </span>
               )}
