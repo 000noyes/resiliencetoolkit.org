@@ -346,7 +346,7 @@ main {
   padding-bottom: var(--spacing-2xl);
 }
 
-@media (min-width: 768px) {
+@screen md {
   main {
     padding-top: var(--spacing-lg);
   }
@@ -684,8 +684,8 @@ a.button-link:focus-visible {
   margin-right: 0.5rem;
 }
 
-/* Responsive table - stack on small screens */
-@media (max-width: 768px) {
+/* Responsive table - stack below md */
+@media not all and (min-width: theme(screens.md)) {
   .guide-table {
     border: none;
   }
@@ -1014,27 +1014,6 @@ a.button-link:focus-visible {
 .external-link-modal__button:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 400px) {
-  .external-link-modal {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 0;
-  }
-
-  .external-link-modal__content {
-    padding: var(--spacing-lg);
-  }
-
-  .external-link-modal__actions {
-    flex-direction: column;
-  }
-
-  .external-link-modal__button {
-    width: 100%;
-  }
 }
 
 /* ========================================
@@ -2075,10 +2054,10 @@ body.has-site-header {
 }
 
 /* ========================================
-   Phone grammar (below 1200px): tree hidden (the bar's sheet carries
-   it), On this page in flow at chapter top, docked bar reserves height
+   Phone grammar (below reading): tree hidden (the bar's sheet carries
+   it), On this page in flow, docked bar reserves height
    ======================================== */
-@media (max-width: 1199px) {
+@media not all and (min-width: theme(screens.reading)) {
   .reading-grid,
   .reading-grid[data-rail='closed'] {
     grid-template-columns: 1fr;
@@ -2243,7 +2222,7 @@ body.has-site-header {
 
 /* Desktop: the bar and its sheets do not exist; declared after their base
    styles so the hide wins */
-@media (min-width: 1200px) {
+@screen reading {
   .reading-bar,
   .reading-sheet {
     display: none;
@@ -2280,7 +2259,7 @@ body.has-site-header {
   max-width: 760px;
 }
 
-@media (min-width: 640px) {
+@screen sm {
   .cover-contents__flow {
     columns: 2;
     column-gap: var(--spacing-2xl);
@@ -2540,7 +2519,7 @@ a.cover-contents__section:hover {
   text-decoration: underline;
 }
 
-@media (max-width: 1199px) {
+@media not all and (min-width: theme(screens.reading)) {
   .reading-grid--no-tree,
   .reading-grid--no-tree[data-rail='closed'] {
     grid-template-columns: 1fr;
@@ -2605,7 +2584,7 @@ a.cover-contents__section:hover {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@screen lg {
   header:not([data-search-overflow]) .header-search {
     display: block;
     flex: 0 0 auto; /* never shrinks below the minimum: the row overflows instead, and ES4 sees it */
@@ -2617,7 +2596,7 @@ a.cover-contents__section:hover {
   }
 }
 
-@media (min-width: 1340px) {
+@screen wide {
   header:not([data-search-overflow]) .header-search {
     width: 230px;
   }
@@ -2625,7 +2604,7 @@ a.cover-contents__section:hover {
 
 /* The 768 to 1024 expanding lens, and the ES4 overflow fallback: the
    lens opens the box in place of the centered nav */
-@media (min-width: 768px) {
+@screen md {
   header[data-search-expanded] .header-search {
     display: block;
     flex: 1;
@@ -2638,7 +2617,7 @@ a.cover-contents__section:hover {
   }
 }
 
-@media (max-width: 767px) {
+@media not all and (min-width: theme(screens.md)) {
   .header-search,
   .header-search-lens {
     display: none;
@@ -2819,7 +2798,7 @@ a.cover-contents__section:hover {
   z-index: 75;
 }
 
-@media (min-width: 768px) {
+@screen md {
   .search-sheet {
     display: none;
   }

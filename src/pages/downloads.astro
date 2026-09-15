@@ -615,7 +615,7 @@ const onlineDownloads = featuredDownloads.filter(
      Responsive Design - Mobile
      ======================================== */
 
-  @media (max-width: 768px) {
+  @media not all and (min-width: theme(screens.md)) {
     /* Hide table header on mobile */
     .downloads-table thead {
       display: none;
@@ -690,7 +690,7 @@ const onlineDownloads = featuredDownloads.filter(
      ======================================== */
 
   /* Desktop: Show table, hide mobile view */
-  @media (min-width: 768px) {
+  @screen md {
     .downloads-table-desktop {
       display: block;
     }
@@ -701,7 +701,7 @@ const onlineDownloads = featuredDownloads.filter(
   }
 
   /* Mobile: Hide table, show collapsible view */
-  @media (max-width: 767px) {
+  @media not all and (min-width: theme(screens.md)) {
     .downloads-table-desktop {
       display: none;
     }
@@ -874,12 +874,14 @@ const onlineDownloads = featuredDownloads.filter(
      Tablet Adjustments
      ======================================== */
 
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .downloads-table th,
-    .downloads-table td {
-      padding: 10px 12px;
-      font-size: var(--text-body-small);
-      line-height: var(--leading-body-small);
+  @screen md {
+    @media not all and (min-width: theme(screens.lg)) {
+      .downloads-table th,
+      .downloads-table td {
+        padding: 10px 12px;
+        font-size: var(--text-body-small);
+        line-height: var(--leading-body-small);
+      }
     }
 
     .downloads-table .action-cell {

@@ -171,7 +171,7 @@ const phases = recoveryPhases.filter((p) => !p.pivot);
      Track widths follow the measured phase regions of the 800px image:
      Preparedness 0-21%, Short-term 21-43%, Intermediate 43-68%, Long-term 68-100%
      (the Disaster bar at ~18% sits inside the Preparedness track, no column). */
-  @media (min-width: 768px) {
+  @screen md {
     .continuum__columns {
       display: grid;
       grid-template-columns: 21% 22% 25% 32%;

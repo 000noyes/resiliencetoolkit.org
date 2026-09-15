@@ -3,6 +3,7 @@ import { getFormData, saveFormField } from '@/lib/storage';
 import { journalRowEdit, clearJournalRow, SAVE_DEBOUNCE_MS } from '@/lib/edit-journal';
 import { useFlushOnHide } from '@/lib/useFlushOnHide';
 import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
+import { below } from '@/lib/breakpoints.mjs';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 
 export interface PlanFormField {
@@ -326,7 +327,7 @@ export default function PlanForm({
           cursor: pointer; min-height: 44px;
         }
         .rt-planform-export:hover { background: var(--muted); }
-        @media (max-width: 640px) {
+        @media ${below('sm')} {
           .rt-planform { padding: var(--spacing-md); }
         }
       `}</style>

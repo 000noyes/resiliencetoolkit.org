@@ -27,6 +27,7 @@ import { reportStorageQuotaExceeded } from '@/lib/storageHealth';
 import { FLUSH_WRITES_EVENT, dirtyRows, type FlushWritesDetail } from '@/lib/flush-writes';
 import { SaveIndicator, type SaveState } from './SaveIndicator';
 import { InfoCalloutBanner } from './InfoCalloutBanner';
+import { below } from '@/lib/breakpoints.mjs';
 import '@/lib/asset-rev'; // re-hash chunk past the 2026-06-07 Cloudflare asset-poisoning incident
 
 // ---------------------------------------------------------------------------
@@ -409,7 +410,7 @@ const DT_STYLE_ID = 'dt-responsive-styles';
 const DT_CSS = `
 .dt-desktop-table { display: block; }
 .dt-mobile-cards { display: none; }
-@media (max-width: 767px) {
+@media ${below('md')} {
   .dt-desktop-table { display: none !important; }
   .dt-mobile-cards { display: block !important; }
 }
@@ -445,7 +446,7 @@ function DataTableStyles() {
 
 const DT_JOURNAL_PRINT_ID = 'dt-journal-print-styles';
 const DT_JOURNAL_PRINT_CSS = `
-@media (max-width: 640px) {
+@media ${below('sm')} {
   .dt-journal { padding: var(--spacing-md) !important; }
 }
 @media print {
