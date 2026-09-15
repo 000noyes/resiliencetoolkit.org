@@ -341,6 +341,19 @@ h1,
   text-wrap: balance;
 }
 
+/* Width discipline (DESIGN.md, Layout): nothing exceeds its column. A
+   link's address may be one unbreakable word, so links in content may
+   break anywhere; code blocks scroll inside their own box. */
+article a,
+main .container a {
+  overflow-wrap: anywhere;
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 main {
   padding-top: var(--spacing-md);
   padding-bottom: var(--spacing-2xl);
@@ -793,8 +806,7 @@ a.button-link:focus-visible {
   border: none;
   background: transparent;
   padding: 0;
-  max-width: 480px;
-  width: calc(100% - 2rem);
+  width: min(480px, 100% - 32px);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
   animation: modal-fade-in var(--motion-duration-base) var(--motion-easing-emphasized);
@@ -1031,7 +1043,8 @@ a.button-link:focus-visible {
   --reading-tree-w: 264px;
   --reading-rail-w: 296px;
   --reading-gutter-w: 48px;
-  --reading-bar-h: 56px;
+  --reading-bar-floor: 56px; /* the bar's minimum; a wrapped label makes it taller */
+  --reading-bar-h: var(--reading-bar-floor); /* the bar's actual height, kept current by its script */
 }
 
 .reading-grid {
@@ -1564,19 +1577,33 @@ body.has-site-header {
 /* A section's activities: unnumbered rows in the secondary color that lead
    with the outside-link glyph where a chapter number would sit, so the eye
    reads "not a chapter" before the words (BR17). The glyph is drawn by the
-   outside-link notice component after its text; order moves it first. */
+   outside-link notice component after its text; order moves it first. The
+   rows share the chapter indent, and the glyph column is the number
+   column's 26px, so the labels align. */
 .contents-tree__row--activity .contents-tree__link {
   color: var(--text-secondary);
   font-size: var(--text-chrome);
   line-height: var(--leading-chrome);
+  padding-left: var(--spacing-md);
 }
 
 .contents-tree__row--activity .external-link__icon {
   order: -1;
   display: inline-flex;
   flex: none;
-  width: 2.4em;
+  width: 26px;
   color: var(--text-secondary);
+}
+
+/* Text inside a flex row shrinks to its column instead of pushing it */
+.contents-tree__link,
+.contents-tree__label,
+.cover-contents__chapter > span:last-child,
+.reading-bar__door > span,
+.opener-row__title,
+.search-results__row-title,
+.search-results__row-excerpt {
+  min-width: 0;
 }
 
 .contents-tree__row--chapter .contents-tree__link {
@@ -2125,7 +2152,7 @@ body.has-site-header {
   right: 0;
   bottom: 0;
   z-index: 55;
-  height: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px));
+  min-height: calc(var(--reading-bar-floor) + env(safe-area-inset-bottom, 0px));
   padding: 0 var(--spacing-md) env(safe-area-inset-bottom, 0px);
   display: flex;
   align-items: center;
@@ -2142,7 +2169,7 @@ body.has-site-header {
   flex: 1 1 0;
   gap: 8px;
   min-height: 44px;
-  padding: 0 var(--spacing-md);
+  padding: 6px var(--spacing-xs);
   font-size: var(--text-body-small);
   line-height: var(--leading-body-small);
   font-weight: 600;
@@ -2340,7 +2367,7 @@ a.cover-contents__section:hover {
   order: -1;
   display: inline-flex;
   flex: none;
-  width: 2.4em;
+  width: 30px;
   color: var(--text-secondary);
 }
 

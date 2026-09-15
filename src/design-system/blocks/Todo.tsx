@@ -254,7 +254,7 @@ export default function Todo({ id, moduleKey, children }: TodoProps) {
             </svg>
           </div>
           <span
-            className={`todo-text flex-1 text-body transition-colors duration-base ${
+            className={`todo-text flex-1 min-w-0 text-body transition-colors duration-base ${
               completed ? 'completed text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'
             }`}
           >

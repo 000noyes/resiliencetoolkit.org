@@ -169,6 +169,22 @@ const { currentPath, sectionNumber, comments = false } = Astro.props;
   }
   wireSheets();
 
+  // The page reserves the bar's actual height (a label that wraps at a
+  // large text size makes the bar taller than its floor). The safe-area
+  // inset is the bar's own bottom padding, so it is measured out.
+  const bar = document.querySelector<HTMLElement>('.reading-bar');
+  if (bar && 'ResizeObserver' in window) {
+    const reserve = () => {
+      const inset = parseFloat(getComputedStyle(bar).paddingBottom) || 0;
+      document.documentElement.style.setProperty(
+        '--reading-bar-h',
+        `${Math.max(56, Math.round(bar.offsetHeight - inset))}px`
+      );
+    };
+    new ResizeObserver(reserve).observe(bar);
+    reserve();
+  }
+
   // The sheets' lifecycle ends at reading: crossing the line with one open
   // closes it (the lock releases with it) and focus goes to what replaces
   // it: the contents tree, or the tenant's edge button in the rail
