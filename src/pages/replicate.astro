@@ -1,118 +1,99 @@
 ---
+/**
+ * /replicate: the toolkit's yes to "could we have this where we live?"
+ * (BR22). The reader who matters is someone organizing in another place:
+ * the page gives the yes, the picture of their own copy, and one ask. The
+ * developer steps come last. The corner door, the footer, and the cover's
+ * exits point here.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const CONTACT_EMAIL = 'resiliencetoolkit@gocros.org';
+const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Bringing the toolkit to [your town]')}`;
+const issueUrl =
+  'https://github.com/000noyes/resiliencetoolkit.org/issues/new?template=bring-it-to-your-town.md&title=' +
+  encodeURIComponent('Bring it to your town: ');
 ---
 
 <BaseLayout
-  title="Replicate | Fork the Resilience Hub Toolkit for Your Community"
-  description="Step-by-step guide to fork, customize, and deploy the Resilience Hub Toolkit for your own community."
+  title="Bring it to your town | Resilience Hub Toolkit"
+  description="Most of the Resilience Hub Toolkit works anywhere. What a copy keeps, what would change for your place, and how to ask for one."
 >
-  <section class="py-16">
-    <div class="container mx-auto px-4 max-w-3xl text-center">
-      <h1 class="text-hero font-semibold mb-4 text-foreground">
-        Replicate This Toolkit
-      </h1>
-      <p class="text-body-large text-muted-foreground max-w-2xl mx-auto">
-        The Resilience Hub Toolkit is open source and designed to be adapted by other communities.
-        Here's how to make it yours.
+  <article class="container mx-auto px-4 py-8 max-w-3xl">
+    <header class="mb-8">
+      <h1 class="text-hero font-semibold mb-4 text-foreground">Yes, you can bring it to your town.</h1>
+      <p class="text-body-large text-text-secondary">
+        This toolkit was written in Vermont after the floods of 2023 and 2024. Most of it works
+        anywhere people organize to look after each other.
       </p>
-    </div>
-  </section>
+    </header>
 
-  <section class="py-12">
-    <div class="container mx-auto px-4 max-w-3xl">
-      <div class="space-y-12">
+    <div class="space-y-10">
+      <section>
+        <h2 class="text-title font-semibold mb-3 text-foreground">What would change</h2>
+        <p class="text-body text-foreground mb-3">
+          A copy for your place keeps everything that makes the toolkit work. It reads offline once
+          opened. Notes and checklists stay on the reader's device. It prints as the workbook. Four
+          things are Vermont's, and a new community swaps them:
+        </p>
+        <ul class="list-disc pl-6 space-y-2 text-body text-foreground">
+          <li>The Vermont Town Directory, a card in the Downloads room and a row under Knowing Your Community in every contents list.</li>
+          <li>The state map links in 0.1 and on the Map page.</li>
+          <li>The flood story on the cover and on About.</li>
+          <li>Local contacts inside chapters 1.8, 1.9, 1.11, 2.1, 2.2, and 2.3.</li>
+        </ul>
+      </section>
 
-        <!-- Step 1 -->
-        <div>
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">1</span>
-            <h2 class="text-title font-semibold text-foreground">Fork the repository</h2>
-          </div>
-          <div class="ml-11 space-y-3">
-            <p class="text-muted-foreground">
-              Visit <a href="https://github.com/000noyes/resiliencetoolkit.org" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">github.com/000noyes/resiliencetoolkit.org</a> and click "Fork" to create your own copy.
-            </p>
-            <pre class="bg-muted rounded-lg p-4 text-sm overflow-x-auto"><code>git clone https://github.com/YOUR-ORG/resiliencetoolkit.org.git
-cd resiliencetoolkit.org/resiliencetoolkit.org
+      <section>
+        <h2 class="text-title font-semibold mb-3 text-foreground">Ask us</h2>
+        <p class="text-body text-foreground mb-3">
+          <a href={mailto}>Write to {CONTACT_EMAIL}</a>. Say where you are and what your group does.
+        </p>
+        <p class="text-body text-foreground">
+          If you can set up a website, the steps are below, and you can
+          <a href={issueUrl} target="_blank" rel="noopener noreferrer">open a request on GitHub</a> instead.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-title font-semibold mb-3 text-foreground">For developers</h2>
+        <ol class="list-decimal pl-6 space-y-3 text-body text-foreground">
+          <li>
+            Fork <a href="https://github.com/000noyes/resiliencetoolkit.org" target="_blank" rel="noopener noreferrer">github.com/000noyes/resiliencetoolkit.org</a>, then:
+            <pre class="bg-muted rounded-lg p-4 mt-2 text-body-small overflow-x-auto"><code>git clone https://github.com/YOUR-ORG/resiliencetoolkit.org.git
+cd resiliencetoolkit.org
 pnpm install
 pnpm dev</code></pre>
-          </div>
-        </div>
+          </li>
+          <li>
+            Where things live: chapters under <code class="bg-muted px-1 py-0.5 rounded text-chrome">src/pages/modules/</code>,
+            titles and order in <code class="bg-muted px-1 py-0.5 rounded text-chrome">src/data/contents.ts</code>,
+            the workbook in <code class="bg-muted px-1 py-0.5 rounded text-chrome">public/toolkit/</code>,
+            page ranges in <code class="bg-muted px-1 py-0.5 rounded text-chrome">docs/source-specs/</code>.
+          </li>
+          <li>
+            The build checks chapter text against the workbook
+            (<code class="bg-muted px-1 py-0.5 rounded text-chrome">pnpm verify</code>). It reads a committed
+            extraction cache, so the host needs no PDF tools. A localized copy replaces the workbook and its
+            page ranges and refreshes the cache locally with pdftotext, or sets its build command to
+            <code class="bg-muted px-1 py-0.5 rounded text-chrome">pnpm astro build</code>.
+          </li>
+          <li>
+            Deploy on Cloudflare Pages, the tested path: build command
+            <code class="bg-muted px-1 py-0.5 rounded text-chrome">pnpm build</code>, output
+            <code class="bg-muted px-1 py-0.5 rounded text-chrome">dist</code>. The review-round API under
+            <code class="bg-muted px-1 py-0.5 rounded text-chrome">functions/</code> is optional and needs a D1
+            binding only if the copy runs review rounds. Other static hosts should work but are untested.
+          </li>
+          <li>
+            The code is under the MIT License. The content license is the coalition's to set; ask when you write.
+          </li>
+        </ol>
+      </section>
 
-        <!-- Step 2 -->
-        <div>
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">2</span>
-            <h2 class="text-title font-semibold text-foreground">Edit the content directly</h2>
-          </div>
-          <div class="ml-11 space-y-3">
-            <p class="text-muted-foreground">
-              Content lives in <code class="bg-muted px-1 py-0.5 rounded text-chrome">.astro</code> files. No CMS required. Open any page in <code class="bg-muted px-1 py-0.5 rounded text-chrome">src/pages/</code> and edit it directly:
-            </p>
-            <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Replace Vermont-specific references with your region's resources</li>
-              <li>Update external links to local emergency management agencies and mutual aid networks</li>
-              <li>Edit module titles, phases, and section copy as needed</li>
-            </ul>
-            <p class="text-muted-foreground">
-              Run <code class="bg-muted px-1.5 py-0.5 rounded text-sm">pnpm dev</code> to preview changes at <code class="bg-muted px-1.5 py-0.5 rounded text-sm">localhost:4321</code>.
-            </p>
-          </div>
-        </div>
-
-        <!-- Step 3 -->
-        <div>
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">3</span>
-            <h2 class="text-title font-semibold text-foreground">Localize for your region</h2>
-          </div>
-          <div class="ml-11 space-y-3">
-            <p class="text-muted-foreground">
-              The toolkit was built for Vermont, but most content applies anywhere. Key places to localize:
-            </p>
-            <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li><strong>Knowing Your Community</strong>: Replace the Vermont Town Directory link with your own regional directory</li>
-              <li><strong>External links</strong>: Update links to local emergency management agencies, mutual aid networks, and government resources</li>
-              <li><strong>Map page</strong>: Point to your region's GIS data or resource map</li>
-              <li><strong>Hero copy</strong>: Update the origin story to reference your community's experience</li>
-              <li><strong>About page</strong>: Update organization name, contact info, and acknowledgements</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div>
-          <div class="flex items-center gap-3 mb-3">
-            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">4</span>
-            <h2 class="text-title font-semibold text-foreground">Deploy</h2>
-          </div>
-          <div class="ml-11 space-y-3">
-            <p class="text-muted-foreground">
-              The toolkit builds to a static site. No server required. Deploy anywhere:
-            </p>
-            <ul class="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li><strong><a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Cloudflare Pages</a></strong>: Recommended. Connect your GitHub fork, set build command to <code class="bg-muted px-1 py-0.5 rounded text-chrome">pnpm build</code>, output to <code class="bg-muted px-1 py-0.5 rounded text-chrome">dist</code>. Free tier is generous.</li>
-              <li><strong><a href="https://netlify.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Netlify</a></strong>: Git-based deployment, also free</li>
-              <li><strong><a href="https://vercel.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Vercel</a></strong>: Zero-config deployment</li>
-            </ul>
-            <p class="text-muted-foreground">
-              Build command: <code class="bg-muted px-1.5 py-0.5 rounded text-sm">pnpm build</code> &middot;
-              Publish directory: <code class="bg-muted px-1.5 py-0.5 rounded text-sm">dist</code>
-            </p>
-          </div>
-        </div>
-
-        <!-- Help -->
-        <div class="p-6 rounded-lg border">
-          <h3 class="text-lg font-semibold text-foreground mb-2">Need help?</h3>
-          <p class="text-muted-foreground">
-            We help communities adapt this toolkit. Reach out to
-            <a href="mailto:resiliencetoolkit@gocros.org" class="text-primary hover:underline">resiliencetoolkit@gocros.org</a>
-            for consultation or technical support.
-          </p>
-        </div>
-
-      </div>
+      <p class="text-body-small text-text-secondary border-t border-border pt-4">
+        Built from the <a href="https://resiliencetoolkit.org">Resilience Hub Toolkit</a> by Community Resilience Organizations (CROs), Vermont.
+      </p>
     </div>
-  </section>
+  </article>
 </BaseLayout>

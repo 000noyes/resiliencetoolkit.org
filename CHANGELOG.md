@@ -11,6 +11,9 @@ capability: the reading grammar, the cover, and search.
 
 
 ### Added
+- The toolkit is built to be run elsewhere. A door in the corner, Bring it to
+  your town, leads to a page that says what a copy keeps, what would change for
+  another place, and how to ask for one.
 - The home page is now the cover of the toolkit: the full contents are on it,
   section by section, and the introduction reads as the toolkit's front
   matter, with Start here pointing at the first activity.

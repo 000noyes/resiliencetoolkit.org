@@ -25,6 +25,7 @@ describe('CornerPanel — closed state (production default)', () => {
 
   it('keeps the panel and both modals closed', () => {
     expect(html).not.toContain('Fund this work');
+    expect(html).not.toContain('Bring it to your town');
     expect(html).not.toContain('Your message');
   });
 

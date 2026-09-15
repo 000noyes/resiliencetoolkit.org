@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, X, Sprout } from 'lucide-react';
+import { Plus, X, Sprout, MapPin } from 'lucide-react';
 
 /**
  * The corner panel, successor to the "Have Questions?" pill. Closed, it is
  * an icon-only plus button (the phone speed-dial convention: a small set of
  * actions lives here). Open, it holds one row per door that really opens:
- * Questions (the mailto modal the pill always led to) and Fund this work
- * (the coalition's donate paths). Doors that do not open yet do not render.
+ * Questions (the mailto modal the pill always led to), Bring it to your
+ * town (a link to /replicate, the page that says yes to a copy for another
+ * place), and Fund this work (the coalition's donate paths). Doors that do not open yet do
+ * not render.
  *
  * Workshop round pages mount this same component, hydrated, closed: the
  * doors there behave exactly as they do here. The round page positions it
@@ -183,16 +185,18 @@ interface DoorRowProps {
   icon: React.ReactNode;
   label: string;
   subline: string;
+  /** A door that opens a modal */
   onOpen?: () => void;
+  /** A door that is a link to a page */
+  href?: string;
 }
 
+const DOOR_CLASS =
+  'w-full min-h-[44px] flex items-center gap-md p-md border border-border rounded-xl bg-background text-left hover:bg-muted transition-colors duration-default no-underline';
+
 function DoorRow(props: DoorRowProps) {
-  return (
-    <button
-      type="button"
-      onClick={props.onOpen}
-      className="w-full min-h-[44px] flex items-center gap-md p-md border border-border rounded-xl bg-background text-left hover:bg-muted transition-colors duration-default"
-    >
+  const inner = (
+    <>
       <span aria-hidden="true" className="shrink-0 flex items-center justify-center">
         {props.icon}
       </span>
@@ -200,6 +204,18 @@ function DoorRow(props: DoorRowProps) {
         <span className="block text-body font-medium text-foreground">{props.label}</span>
         <span className="block text-body-small text-muted-foreground">{props.subline}</span>
       </span>
+    </>
+  );
+  if (props.href) {
+    return (
+      <a href={props.href} className={DOOR_CLASS}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <button type="button" onClick={props.onOpen} className={DOOR_CLASS}>
+      {inner}
     </button>
   );
 }
@@ -253,6 +269,12 @@ export default function CornerPanel() {
               label="Questions"
               subline="Write to the people who tend this toolkit."
               onOpen={() => openDoor('questions')}
+            />
+            <DoorRow
+              icon={<MapPin className="w-5 h-5 text-muted-foreground" strokeWidth={2} />}
+              label="Bring it to your town"
+              subline="Most of this toolkit works anywhere. Ask us about a copy for your place."
+              href="/replicate"
             />
             <DoorRow
               icon={<Sprout className="w-5 h-5 text-table-accent" strokeWidth={2} />}

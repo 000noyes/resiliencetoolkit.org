@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 /**
  * Corner panel open-state contract, exercised through the real interaction
- * path (the closed panel opens on a trigger tap): exactly the two doors that
- * really open, Questions first and Fund this work last with the sprout
- * accent, and the Questions door really opens its modal. Round pages mount
+ * path (the closed panel opens on a trigger tap): exactly the three doors
+ * that really open, Questions first, Bring it to your town between as a link
+ * to /replicate, and Fund this work last with the sprout accent, and the
+ * Questions door really opens its modal. Round pages mount
  * this same hydrated panel, so this suite is also the unit proof behind
  * "The Questions door in the corner always works."
  */
@@ -45,14 +46,20 @@ describe('CornerPanel — open state through the real trigger', () => {
     });
   };
 
-  it('opens on tap: exactly the two doors, fund last with the sprout accent', () => {
+  it('opens on tap: exactly the three doors, questions first, fund last with the sprout accent', () => {
     expect(document.body.textContent).not.toContain('Fund this work');
     openPanel();
     const html = container.innerHTML;
     const questionsAt = html.indexOf('Questions');
+    const startAt = html.indexOf('Bring it to your town');
     const fundAt = html.indexOf('Fund this work');
     expect(questionsAt).toBeGreaterThan(-1);
-    expect(fundAt).toBeGreaterThan(questionsAt);
+    expect(startAt).toBeGreaterThan(questionsAt);
+    expect(fundAt).toBeGreaterThan(startAt);
+    expect(container.querySelectorAll('.rounded-xl.border.border-border.bg-background')).toHaveLength(3);
+    const start = container.querySelector<HTMLAnchorElement>('a[href="/replicate"]')!;
+    expect(start).not.toBeNull();
+    expect(start.textContent).toContain('Most of this toolkit works anywhere. Ask us about a copy for your place.');
     expect(html).toContain('Write to the people who tend this toolkit.');
     expect(html).toContain('Help keep the hubs and this toolkit going.');
     expect(html).toContain('text-table-accent');
