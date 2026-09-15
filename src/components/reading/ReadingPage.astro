@@ -1,0 +1,88 @@
+---
+/**
+ * A reading page in the three-column grammar: the contents tree, the page
+ * header, the right rail, and the article, in that source order at every
+ * width (one contents instance, one h1). The page body renders ONCE here,
+ * in frontmatter: the heading-id and block-id passes run over it, On this
+ * page is read from the result and handed to the rail as data, and the
+ * finished HTML goes to the article. Below the reading width the order
+ * is header, On this page in flow, article; the bar and its sheets carry
+ * the tree and Footnotes.
+ *
+ * Slots: header (breadcrumb, h1, the quiet action row), default (the body),
+ * after (citation, previous and next), on-this-page-extra (the rail's
+ * resting panel foot, the introduction's Start here).
+ */
+import ToolkitContentsTree from './ToolkitContentsTree.astro';
+import ReadingRail from './ReadingRail.astro';
+import ReadingBar from './ReadingBar.astro';
+import ArticleBody from './ArticleBody.astro';
+import { withHeadingIds, extractHeadings } from '@/lib/heading-ids';
+import { withBlockIds } from '@/lib/block-ids';
+
+interface Props {
+  currentPath: string;
+  moduleKey: string;
+  sectionNumber: string;
+  /** The page key for block ids (a chapter number as 1-2, or intro); omit for none */
+  blockKey?: string;
+  /** A workshop round: the Make Comments tenant and door join the page */
+  comments?: boolean;
+  /** The tenant open at load */
+  resting?: string;
+  /** Whether search indexes this page (a round page leaves the index) */
+  indexed?: boolean;
+}
+
+const {
+  currentPath,
+  moduleKey,
+  sectionNumber,
+  blockKey,
+  comments = false,
+  resting = comments ? 'make-comments' : 'on-this-page',
+  indexed = true,
+} = Astro.props;
+
+const withHeadings = withHeadingIds(await Astro.slots.render('default'));
+const html = blockKey ? withBlockIds(withHeadings, blockKey) : withHeadings;
+const found = extractHeadings(html);
+// A page without section headers keeps one entry at its top, so the
+// desktop rail keeps its panel; the in-flow block hides itself under two
+const headings = found.length
+  ? found
+  : [{ id: 'toc-top', text: 'Top of page', level: 'h2' as const, interactiveCount: 0 }];
+// The list's top level: below md only that level shows (h2 rows when the
+// page has them; a chapter that reads by table band labels alone shows
+// those), so a phone never meets an empty list
+const tocTop = headings.some((h) => h.level === 'h2') ? 'h2' : headings[0].level;
+---
+
+<div class="reading-grid py-8" data-rail={resting}>
+  <ToolkitContentsTree currentPath={currentPath} />
+  <header class="reading-header" data-pagefind-body={indexed ? true : undefined}>
+    <slot name="header" />
+  </header>
+  <ReadingRail
+    moduleKey={moduleKey}
+    sectionNumber={sectionNumber}
+    headings={headings}
+    tocTop={tocTop}
+    comments={comments}
+    resting={resting}
+  >
+    <slot name="on-this-page-extra" slot="on-this-page-extra" />
+  </ReadingRail>
+  <article
+    data-pagefind-body={indexed ? true : undefined}
+    class="reading-content"
+    id={found.length ? undefined : 'toc-top'}
+  >
+    <div class="space-y-8">
+      <ArticleBody html={html} />
+    </div>
+    <slot name="after" />
+  </article>
+</div>
+
+<ReadingBar currentPath={currentPath} sectionNumber={sectionNumber} comments={comments} />

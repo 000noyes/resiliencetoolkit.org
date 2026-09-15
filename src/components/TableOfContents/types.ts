@@ -1,26 +1,20 @@
 /**
  * Table of Contents - Type Definitions
  *
- * Types for the Wikipedia-style table of contents sidebar.
+ * Types for the On this page island. The list is seeded from the build
+ * (the same headers the heading-id pass ids); the island adds counts and
+ * the active item.
  */
 
-export interface TOCEntry {
-  /** Unique ID for the section (auto-generated or from element) */
-  id: string;
-  /** Section title text */
-  text: string;
-  /** Header level: h2, h3, or table section header */
-  level: 'h2' | 'h3' | 'table';
-  /** Reference to the DOM element */
-  element: HTMLElement;
-  /** Whether this section contains interactive elements (Todo items) */
-  hasInteractive: boolean;
-  /** Count of interactive elements in this section */
-  interactiveCount: number;
-  /** Count of completed interactive elements */
+import type { SeededHeading } from '@/lib/heading-ids';
+
+export type { SeededHeading };
+
+export interface TOCEntry extends SeededHeading {
+  /** The header element, resolved on the client */
+  element?: HTMLElement;
+  /** Count of completed interactive elements in this section */
   completedCount: number;
-  /** Nested child entries (h3s under h2) */
-  children: TOCEntry[];
 }
 
 export interface SectionProgress {
@@ -35,6 +29,8 @@ export interface SectionProgress {
 export interface TableOfContentsProps {
   /** Module key for progress tracking (e.g., "emergency-preparedness-kits") */
   moduleKey: string;
+  /** The headers the build read from the body, in document order */
+  headings: SeededHeading[];
   /** CSS selector for the content container (default: "article") */
   containerSelector?: string;
   /** Optional className for styling */
@@ -48,8 +44,8 @@ export interface TableOfContentsItemProps {
   isActive: boolean;
   /** Progress data for this section */
   progress?: SectionProgress;
+  /** For an h2 row: its own progress plus its h3 and band children until the next h2 */
+  rollup?: SectionProgress;
   /** Click handler */
   onClick: (id: string) => void;
-  /** Nesting depth for indentation */
-  depth?: number;
 }

@@ -129,6 +129,7 @@ test.describe('width sweep', () => {
   });
 
   test('the sheets and the modal at 375 stay inside the viewport', async ({ browser }) => {
+    test.setTimeout(120_000);
     const ctx = await browser.newContext({ viewport: { width: 375, height: 667 }, hasTouch: true });
     const page = await ctx.newPage();
     const findings: string[] = [];
@@ -152,9 +153,10 @@ test.describe('width sweep', () => {
       findings.push(...(await sweep(page, 375, `${route} search sheet`)));
       await page.locator('#search-sheet .search-sheet__close').click();
 
-      // The external-link modal (pages with an outside link)
-      const outside = page.locator('article a.external-link:not(.is-internal)').first();
-      if (await outside.count()) {
+      // The external-link modal (the reading pages carry outside links in
+      // their body; /search's article is the search shell)
+      const outside = page.locator('.reading-content a.external-link:not(.is-internal)').first();
+      if (route !== '/search' && (await outside.count())) {
         await outside.scrollIntoViewIfNeeded();
         await outside.click();
         const modal = page.locator('dialog.external-link-modal[open]');

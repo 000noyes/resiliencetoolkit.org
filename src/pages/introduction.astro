@@ -2,42 +2,37 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
-import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
-import ReadingRail from '@/components/reading/ReadingRail.astro';
-import ReadingBar from '@/components/reading/ReadingBar.astro';
-import ArticleBody from '@/components/reading/ArticleBody.astro';
+import ReadingPage from '@/components/reading/ReadingPage.astro';
 import { chainFor, frontMatter, knowingYourCommunityActivities } from '@/data/contents';
 
 // DR2: the introduction reads in the same 3C grammar as the chapters,
 // the tree left with its row active and the page's own sections resting
-// right as On this page, holding the Then begin exits.
+// right as On this page, holding the Then begin exits. ReadingPage renders
+// the body once and seeds On this page from it.
 const next = chainFor(frontMatter.number).next;
 ---
 
 <BaseLayout title="Introduction | Resilience Hub Toolkit" description="Understanding what this toolkit is for, how to use it, and what resilience means for your community.">
-  <div class="reading-grid py-8" data-rail="on-this-page">
-    <ToolkitContentsTree currentPath="/introduction" />
-    <ReadingRail moduleKey="introduction" sectionNumber="">
-      <div slot="on-this-page-extra" class="start-here">
-        <h3 class="start-here__label">Start here</h3>
-        <a href="/modules/knowing-your-community" class="start-here__row">0.1 Knowing Your Community</a>
-        {knowingYourCommunityActivities.map((activity) => (
-          <ExternalLink href={activity.href} class="start-here__row">
-            {activity.title}
-          </ExternalLink>
-        ))}
+  <ReadingPage currentPath="/introduction" moduleKey="introduction" sectionNumber="" blockKey="intro">
+    <div slot="on-this-page-extra" class="start-here">
+      <h3 class="start-here__label">Start here</h3>
+      <a href="/modules/knowing-your-community" class="start-here__row">0.1 Knowing Your Community</a>
+      {knowingYourCommunityActivities.map((activity) => (
+        <ExternalLink href={activity.href} class="start-here__row">
+          {activity.title}
+        </ExternalLink>
+      ))}
+    </div>
+
+    <Fragment slot="header">
+      <div class="mb-8">
+        <h1 class="text-hero font-semibold mb-2" data-pagefind-meta="title">
+          Introduction
+        </h1>
       </div>
-    </ReadingRail>
-    <article data-pagefind-body class="reading-content">
-    <!-- Page header -->
-    <header class="mb-8">
-      <h1 class="text-hero font-semibold mb-2">
-        Introduction
-      </h1>
-    </header>
+    </Fragment>
 
     <!-- Content -->
-    <ArticleBody blockKey="intro">
     <div class="space-y-8">
       <section>
         <h2 class="text-title font-semibold mb-4">Who and what is this toolkit for?</h2>
@@ -104,9 +99,8 @@ const next = chainFor(frontMatter.number).next;
       </section>
     </div>
 
-    </ArticleBody>
-
     <!-- Navigation into the reading chain -->
+    <Fragment slot="after">
     {next && (
       <nav class="mt-12 pt-8 border-t border-border flex justify-end no-print" data-pagefind-ignore>
         <a
@@ -120,7 +114,6 @@ const next = chainFor(frontMatter.number).next;
         </a>
       </nav>
     )}
-    </article>
-  </div>
-  <ReadingBar currentPath="/introduction" sectionNumber="" />
+    </Fragment>
+  </ReadingPage>
 </BaseLayout>

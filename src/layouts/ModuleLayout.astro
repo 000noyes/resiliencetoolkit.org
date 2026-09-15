@@ -17,10 +17,13 @@
  *    resources all resolve from the one contents model (src/data/contents.ts)
  *
  * ## Navigation:
- * - Breadcrumb: Home → Modules → Module → Section
- * - Prev/Next buttons between sections within a module
- * - "Back to Modules" link to module index
- * - Table of Contents sidebar for section pages
+ * - Breadcrumb: Modules, Module, Section
+ * - Prev/Next links between sections within a module
+ * - "Back to Overview" link to the module opener
+ * - The reading grammar (contents tree, On this page, Footnotes) through
+ *   ReadingPage for section pages: the page header (breadcrumb, h1, the
+ *   quiet action row) is its own grid child before the rail, so the
+ *   phone reads title, On this page, body
  */
 import BaseLayout from './BaseLayout.astro';
 import { findChapter, chainFor, chapterCitation } from '@/data/contents';
@@ -28,9 +31,7 @@ import { getPdfUrlForSection } from '@/lib/pdfLookup';
 import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { FolderOpen } from 'lucide-react';
-import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
-import ReadingRail from '@/components/reading/ReadingRail.astro';
-import ReadingBar from '@/components/reading/ReadingBar.astro';
+import ReadingPage from '@/components/reading/ReadingPage.astro';
 import WorkLivesHere from '@/components/WorkLivesHere.tsx';
 import ArticleBody from '@/components/reading/ArticleBody.astro';
 import AnnotationIsland from '@/components/annotation/AnnotationIsland.tsx';
@@ -82,9 +83,6 @@ const moduleKey = sectionData
   ? `${sectionData.modulePath?.split('/').pop() || 'module'}-${sectionData.number.replace('.', '-')}`
   : 'module';
 
-// Determine if we should show the TOC (only for section pages)
-const showTOC = !!sectionData;
-
 // A workshop round renders this chapter at /rounds/<id>/ (the round page
 // imports the chapter component): the strip, the Make Comments tenant,
 // and the annotation island mount here, and the page leaves the search
@@ -98,29 +96,25 @@ const roundId = roundMatch ? roundMatch[1] : null;
 // printed range is operator-confirmed.
 const citation = sectionData ? chapterCitation(sectionData.number) : null;
 
+// A section page renders its body once inside ReadingPage (the heading
+// and block id passes, On this page seeded from the result). The
+// frontmatter mode has no reading grammar and renders the body here.
+const looseHtml = sectionData ? '' : await Astro.slots.render('default');
 ---
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
-  <!-- Wrapper: 3C reading grid for section pages, standard container otherwise -->
   {roundId && <div id="round-status-slot" data-annot-ui></div>}
-  <div
-    class={showTOC ? "reading-grid py-8" : ""}
-    data-rail={showTOC ? (roundId ? "make-comments" : "on-this-page") : undefined}
-  >
-    {showTOC && (
-      <ToolkitContentsTree currentPath={Astro.url.pathname} />
-    )}
-    {showTOC && (
-      <ReadingRail
-        moduleKey={moduleKey}
-        sectionNumber={sectionData.number}
-        comments={!!roundId}
-        resting={roundId ? "make-comments" : "on-this-page"}
-      />
-    )}
-
-    <article data-pagefind-body={roundId ? undefined : true} class={showTOC ? "reading-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
-      {sectionData && (
+  {sectionData ? (
+    <ReadingPage
+      currentPath={Astro.url.pathname}
+      moduleKey={moduleKey}
+      sectionNumber={sectionData.number}
+      blockKey={sectionData.number.replace('.', '-')}
+      comments={!!roundId}
+      resting={roundId ? "make-comments" : "on-this-page"}
+      indexed={!roundId}
+    >
+      <Fragment slot="header">
         <!-- Breadcrumb navigation for section pages -->
         <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
           <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
@@ -131,110 +125,47 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
           <span class="mx-2">/</span>
           <span class="text-text-primary">{sectionData.number}</span>
         </nav>
-      )}
 
-      <!-- Module Header -->
-      <header class="mb-8">
-        {sectionData ? (
-          <!-- Section-based header -->
-          <h1 class="text-hero font-semibold mb-2">
+        <div class="mb-8">
+          <h1 class="text-hero font-semibold mb-2" data-pagefind-meta="title">
             {sectionData.number} {sectionData.title}
           </h1>
-        ) : frontmatter && (
-          <!-- Frontmatter-based header -->
-          <>
-            <div class="flex flex-wrap items-center gap-2 mb-3">
-              {frontmatter.phase && (
-                <span class="meta-chip px-3 py-1 text-sm font-medium">
-                  <span class={`meta-chip__dot meta-chip__dot--${frontmatter.phase.toLowerCase()}`} aria-hidden="true"></span>
-                  {frontmatter.phase}
-                </span>
-              )}
-              {frontmatter.difficulty && (
-                <span class="meta-chip px-3 py-1 text-sm font-medium">
-                  {frontmatter.difficulty}
-                </span>
-              )}
-              {frontmatter.time_to_complete && (
-                <span class="meta-chip px-3 py-1 text-sm font-medium">
-                  {frontmatter.time_to_complete}
-                </span>
-              )}
-            </div>
+        </div>
 
-            <h1 class="text-4xl font-bold text-foreground mb-3">
-              {frontmatter.title}
-            </h1>
+        <!-- The chapter actions in the quiet grammar (DR21, 4A): one inline
+             row of two text links, icon and label, left-aligned -->
+        <div class="reading-actions no-print" data-pagefind-ignore>
+          {pdfUrl ? (
+            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" class="reading-action">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span>View PDF</span>
+            </a>
+          ) : (
+            <span class="reading-action reading-action--off" title="PDF not available for this section">
+              View PDF (Not Available)
+            </span>
+          )}
 
-            {frontmatter.summary && (
-              <p class="text-lg text-muted-foreground">
-                {frontmatter.summary}
-              </p>
-            )}
-
-            {frontmatter.tags && frontmatter.tags.length > 0 && (
-              <div class="flex flex-wrap gap-2 mt-4">
-                {frontmatter.tags.map((tag) => (
-                  <span class="px-2 py-1 text-chrome rounded bg-accent text-accent-foreground">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </header>
-
-      <!-- Action Bar with View PDF and Export Buttons -->
-      <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print" data-pagefind-ignore>
-        {pdfUrl ? (
-          <!-- DR21: the chapter action bar carries the quiet action grammar; same
-               two actions, same position, the reading surface's quietest treatment -->
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="px-4 py-2 rounded-md border border-border text-text-secondary no-underline hover:text-text-primary hover:border-table-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            View PDF
-          </a>
-        ) : (
-          <button
-            disabled
-            class="px-4 py-2 rounded-md bg-secondary text-secondary-foreground opacity-50 cursor-not-allowed text-sm font-medium"
-            title="PDF not available for this section"
-          >
-            View PDF (Not Available)
-          </button>
-        )}
-
-        {resourcesUrl ? (
-          <ExternalLink href={resourcesUrl} class="inline-block">
-            <button
-              class="px-4 py-2 rounded-md border border-border text-text-secondary hover:text-text-primary hover:border-table-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
-            >
-              <FolderOpen size={18} />
+          {resourcesUrl ? (
+            <ExternalLink href={resourcesUrl} class="reading-action">
+              <FolderOpen size={16} aria-hidden="true" />
               <span>See Additional Resources</span>
-            </button>
-          </ExternalLink>
-        ) : null}
+            </ExternalLink>
+          ) : null}
 
-        <WorkLivesHere client:visible />
-      </div>
+          <WorkLivesHere client:visible />
+        </div>
+      </Fragment>
 
-      <!-- Module Content -->
-      <div class={sectionData ? "space-y-8" : "prose prose-lg max-w-none prose-headings:text-foreground prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-4 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mb-3 prose-h2:mt-8 prose-h3:text-xl prose-h3:font-semibold prose-h3:mb-2 prose-h3:mt-6 prose-p:text-foreground prose-p:mb-4 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-strong:font-semibold prose-ul:my-4 prose-ul:list-disc prose-ul:pl-6 prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-6 prose-li:text-foreground prose-li:mb-1 prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic"}>
-        <ArticleBody blockKey={sectionData ? sectionData.number.replace('.', '-') : undefined}><slot /></ArticleBody>
-      </div>
+      <slot />
 
-      {citation && (
-        <p class="module-citation" data-pagefind-ignore>{citation}</p>
-      )}
+      <Fragment slot="after">
+        {citation && (
+          <p class="module-citation" data-pagefind-ignore>{citation}</p>
+        )}
 
-      {sectionData && (
         <!-- Section navigation for section-based pages -->
         <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
           {sectionData.prev ? (
@@ -271,14 +202,62 @@ const citation = sectionData ? chapterCitation(sectionData.number) : null;
             </a>
           )}
         </nav>
-      )}
-    </article>
-  </div>
+      </Fragment>
+    </ReadingPage>
+  ) : (
+    <article class="container mx-auto px-4 py-8 max-w-4xl">
+      <!-- Frontmatter-based header -->
+      <header class="mb-8">
+        {frontmatter && (
+          <>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              {frontmatter.phase && (
+                <span class="meta-chip px-3 py-1 text-sm font-medium">
+                  <span class={`meta-chip__dot meta-chip__dot--${frontmatter.phase.toLowerCase()}`} aria-hidden="true"></span>
+                  {frontmatter.phase}
+                </span>
+              )}
+              {frontmatter.difficulty && (
+                <span class="meta-chip px-3 py-1 text-sm font-medium">
+                  {frontmatter.difficulty}
+                </span>
+              )}
+              {frontmatter.time_to_complete && (
+                <span class="meta-chip px-3 py-1 text-sm font-medium">
+                  {frontmatter.time_to_complete}
+                </span>
+              )}
+            </div>
 
-  {showTOC && (
-    <>
-      <ReadingBar currentPath={Astro.url.pathname} sectionNumber={sectionData?.number ?? ""} comments={!!roundId} />
-      {roundId && <AnnotationIsland roundId={roundId} client:load />}
-    </>
+            <h1 class="text-hero font-bold text-foreground mb-3">
+              {frontmatter.title}
+            </h1>
+
+            {frontmatter.summary && (
+              <p class="text-lg text-muted-foreground">
+                {frontmatter.summary}
+              </p>
+            )}
+
+            {frontmatter.tags && frontmatter.tags.length > 0 && (
+              <div class="flex flex-wrap gap-2 mt-4">
+                {frontmatter.tags.map((tag) => (
+                  <span class="px-2 py-1 text-chrome rounded bg-accent text-accent-foreground">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </header>
+
+      <!-- Module Content -->
+      <div class="prose prose-lg max-w-none">
+        <ArticleBody html={looseHtml} />
+      </div>
+    </article>
   )}
+
+  {roundId && <AnnotationIsland roundId={roundId} client:load />}
 </BaseLayout>

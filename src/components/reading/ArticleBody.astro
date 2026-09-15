@@ -3,19 +3,15 @@
  * The article body render: the page's own content with static heading
  * ids, the one id system that search landings and On this page share
  * (SR3/ES3), and, on the pages a reader can annotate, per-block ids in
- * the kept API's shape (ER4/DR18). Wraps the body of every indexed page.
+ * the kept API's shape (ER4/DR18). The layout renders the page body once
+ * in its frontmatter, runs the id passes, reads the headings for On this
+ * page, and hands the finished HTML here (the slot form has retired).
  */
-import { withHeadingIds } from '@/lib/heading-ids';
-import { withBlockIds } from '@/lib/block-ids';
-
 interface Props {
-  /** The page key for block ids (a chapter number as 1-2, or intro); omit for none */
-  blockKey?: string;
+  html: string;
 }
 
-const { blockKey } = Astro.props;
-const withHeadings = withHeadingIds(await Astro.slots.render('default'));
-const body = blockKey ? withBlockIds(withHeadings, blockKey) : withHeadings;
+const { html } = Astro.props;
 ---
 
-<Fragment set:html={body} />
+<Fragment set:html={html} />

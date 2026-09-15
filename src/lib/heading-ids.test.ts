@@ -4,7 +4,7 @@
  * page ids reserved so nothing collides.
  */
 import { describe, expect, it } from 'vitest';
-import { ensureUniqueId, slugify, withHeadingIds } from './heading-ids';
+import { ensureUniqueId, extractHeadings, slugify, withHeadingIds } from './heading-ids';
 
 describe('slugify', () => {
   it('lowercases, drops punctuation, joins words with single hyphens', () => {
@@ -73,5 +73,39 @@ describe('withHeadingIds', () => {
   it('handles multi-line tags', () => {
     const out = withHeadingIds('<h2\n  class="a b"\n>Two\nlines</h2>');
     expect(out).toContain('id="two-lines"');
+  });
+});
+
+describe('extractHeadings', () => {
+  const island = (id: string) =>
+    `<astro-island uid="x" component-url="/_astro/Todo.abc.js" component-export="default" props="{&quot;id&quot;:[0,&quot;${id}&quot;]}" ssr client="load" opts="{&quot;name&quot;:&quot;Todo&quot;,&quot;value&quot;:true}"></astro-island>`;
+
+  it('lists h2, h3, and table band labels in document order with their ids', () => {
+    const html = withHeadingIds(
+      '<h2>Notes</h2><p>a</p><h3>Go bag</h3><table><tr><td colspan="2"><strong>Backup food supply</strong></td></tr>' +
+        '<tr><td colspan="2"><strong><a href="https://x.example">Link only</a></strong></td></tr></table><h2>Other</h2>'
+    );
+    expect(extractHeadings(html)).toEqual([
+      { id: 'notes', text: 'Notes', level: 'h2', interactiveCount: 0 },
+      { id: 'go-bag', text: 'Go bag', level: 'h3', interactiveCount: 0 },
+      { id: 'backup-food-supply', text: 'Backup food supply', level: 'table', interactiveCount: 0 },
+      { id: 'other', text: 'Other', level: 'h2', interactiveCount: 0 },
+    ]);
+  });
+
+  it('counts the todo islands between a header and the next one', () => {
+    const html = withHeadingIds(
+      `<h2>Notes</h2>${island('a')}${island('b')}<h3>Go bag</h3>${island('c')}<h2>Other</h2>`
+    );
+    expect(extractHeadings(html).map((h) => h.interactiveCount)).toEqual([2, 1, 0]);
+  });
+
+  it('reads the text through inline markup and entities', () => {
+    const html = withHeadingIds('<h2>Mutual Aid <em>&amp;</em> Neighbor&nbsp;to Neighbor</h2>');
+    expect(extractHeadings(html)[0].text).toBe('Mutual Aid & Neighbor to Neighbor');
+  });
+
+  it('returns nothing for a body without section headers', () => {
+    expect(extractHeadings('<p>Only prose.</p>')).toEqual([]);
   });
 });

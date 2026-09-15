@@ -61,10 +61,12 @@ export function useActiveSection(entries: TOCEntry[]): string | null {
       }
     );
 
-    // Observe all section elements
+    // Observe all section elements (resolved by id for a seeded entry the
+    // scan has not reached yet)
     entries.forEach((entry) => {
-      if (entry.element) {
-        observerRef.current?.observe(entry.element);
+      const element = entry.element ?? document.getElementById(entry.id);
+      if (element) {
+        observerRef.current?.observe(element);
       }
     });
 

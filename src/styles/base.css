@@ -495,8 +495,8 @@ a.button-link:focus-visible {
     margin-bottom: 0.3em;
   }
 
-  /* Article header */
-  article > header {
+  /* The page header */
+  .reading-header {
     page-break-after: avoid;
     margin-bottom: 0.5em;
   }
@@ -1034,10 +1034,12 @@ a.button-link:focus-visible {
 
 /* ========================================
    3C reading grid (the reading surface)
-   Tree left, content center, right rail; the rail's open panel is 296px
-   plus hairline, the closed state a reserved 48px gutter (DR3). Below
-   1200px the phone grammar takes over: single column, tree hidden (it
-   lives in the docked bar's sheet), On this page in flow at chapter top.
+   Tree left, the page header and the article center (the header is its
+   own grid child before the rail in source, at every width), right rail;
+   the rail's open panel is 296px plus hairline, the closed state a
+   reserved 48px gutter (DR3). Below the reading width the phone grammar
+   takes over: single column, tree hidden (it lives in the docked bar's
+   sheet), then header, On this page in flow, article.
    ======================================== */
 :root {
   --reading-tree-w: 264px;
@@ -1050,18 +1052,64 @@ a.button-link:focus-visible {
 .reading-grid {
   display: grid;
   grid-template-columns: var(--reading-tree-w) minmax(0, 1fr) calc(var(--reading-rail-w) + var(--reading-gutter-w));
-  gap: var(--spacing-lg);
+  column-gap: var(--spacing-lg);
+  row-gap: 0; /* the header carries its own rhythm below */
   margin: 0 auto;
   padding: 0 var(--spacing-md);
   max-width: 1600px;
 }
 
-.reading-grid .reading-content {
+.reading-grid .reading-header {
   grid-column: 2;
   grid-row: 1;
+  min-width: 0;
+}
+
+.reading-grid .reading-content {
+  grid-column: 2;
+  grid-row: 2;
   min-width: 0; /* Prevent grid blowout */
   container-type: inline-size;
   container-name: reading;
+}
+
+/* The chapter actions (DR21, 4A): one inline row of text links, icon and
+   label, 44px tap height from padding, left-aligned; the quietest place
+   these actions appear */
+.reading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.reading-actions .reading-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.reading-actions a.reading-action:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.reading-actions .reading-action--off {
+  opacity: 0.6;
+}
+
+.reading-actions .work-lives-here,
+.reading-actions > astro-island {
+  flex: 1 0 100%;
 }
 
 /* Tables scroll inside their own container below the 680px content
@@ -1309,16 +1357,27 @@ a.button-link:focus-visible {
   color: var(--sidebar-primary);
 }
 
-/* Loading state */
-.toc-loading {
-  padding: var(--spacing-md);
-  text-align: center;
+/* Below md the list shows its top level only: on a page with h2 rows,
+   those, each carrying its children's counts rolled up (2A, D2 A); a
+   chapter that reads by table band labels alone keeps those rows. At md
+   and above every level shows and an h2 row carries its own count */
+.toc-item-meta--rollup {
+  display: none;
 }
 
-.toc-loading-text {
-  font-size: var(--text-chrome);
-  line-height: var(--leading-chrome);
-  color: var(--sidebar-foreground);
+@media not all and (min-width: theme(screens.md)) {
+  [data-toc-top='h2'] .toc-item-wrapper[data-level='h3'],
+  [data-toc-top='h2'] .toc-item-wrapper[data-level='table'] {
+    display: none;
+  }
+
+  [data-toc-top='h2'] .toc-item-meta--own {
+    display: none;
+  }
+
+  [data-toc-top='h2'] .toc-item-meta--rollup {
+    display: flex;
+  }
 }
 
 /* Scroll offset for sticky header when navigating to TOC sections */
@@ -1477,7 +1536,7 @@ body.has-site-header {
    ======================================== */
 .contents-tree {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 1 / 3;
   align-self: start;
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-lg));
@@ -1496,7 +1555,7 @@ body.has-site-header {
    margin. Below 1200px the sheet carries the tree and no gutter renders. */
 .reading-tree__gutter {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 1 / 3;
   align-self: start;
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-lg));
@@ -1662,7 +1721,7 @@ body.has-site-header {
    ======================================== */
 .reading-rail {
   grid-column: 3;
-  grid-row: 1;
+  grid-row: 1 / 3;
   align-self: start;
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-lg));
@@ -2097,9 +2156,14 @@ body.has-site-header {
     display: none;
   }
 
-  .reading-rail {
+  .reading-grid .reading-header {
     grid-column: 1;
     grid-row: 1;
+  }
+
+  .reading-rail {
+    grid-column: 1;
+    grid-row: 2;
     position: static;
     max-height: none;
     display: block;
@@ -2107,7 +2171,7 @@ body.has-site-header {
 
   .reading-grid .reading-content {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
   }
 
   .reading-rail__gutter,
@@ -2125,6 +2189,14 @@ body.has-site-header {
     border-left: 0;
     padding-left: 0;
     overflow: visible;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* A page with fewer than two headings goes straight from its title to
+     its body (3A); the desktop rail keeps its panel regardless */
+  .reading-grid [data-rail-panel='on-this-page'][data-toc-count='0'],
+  .reading-grid [data-rail-panel='on-this-page'][data-toc-count='1'] {
+    display: none;
   }
 
   /* Text a reader navigates by is 14 or more on the phone (7A): the
@@ -2471,6 +2543,7 @@ a.cover-contents__section:hover {
   max-width: 1200px;
 }
 
+.reading-grid--no-tree .reading-header,
 .reading-grid--no-tree .reading-content {
   grid-column: 1;
 }
@@ -2553,7 +2626,7 @@ a.cover-contents__section:hover {
   }
 
   .reading-grid--no-tree .reading-content {
-    grid-row: 2;
+    grid-row: 3;
   }
 
   .opener-row {

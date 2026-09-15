@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { TOCEntry } from './types';
-import { slugify, ensureUniqueId } from '@/lib/heading-ids';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { SeededHeading, TOCEntry } from './types';
 
 /**
  * Determines if a heading element should be excluded because it belongs to UI chrome
@@ -54,27 +53,29 @@ function isExternalLinkHeader(element: Element): boolean {
   return false;
 }
 
+interface Counted {
+  element: HTMLElement;
+  total: number;
+  completed: number;
+}
+
 /**
- * Custom hook to detect and build table of contents from page headers
+ * The On this page list, seeded from the build and kept current by the
+ * scanner. The list itself never changes on the client: the scan finds
+ * the same headers by their static ids and adds the todo counts and the
+ * elements the active-section observer watches. A header the build did
+ * not list is ignored, so the list a reader saw before any script ran is
+ * the list they keep.
  */
-export function useTableOfContents(containerSelector: string = 'article') {
-  const [entries, setEntries] = useState<TOCEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function useTableOfContents(
+  seeded: SeededHeading[],
+  containerSelector: string = 'article'
+) {
+  const [counts, setCounts] = useState<Map<string, Counted>>(() => new Map());
 
   const scanDocument = useCallback(() => {
     const container = document.querySelector(containerSelector);
-    if (!container) {
-      setEntries([]);
-      setIsLoading(false);
-      return;
-    }
-
-    // Every id already on the page is reserved (the build's static heading
-    // ids, block ids), so an id derived here never collides with one
-    const existingIds = new Set<string>(
-      Array.from(container.querySelectorAll('[id]')).map((el) => el.id)
-    );
-    const tocEntries: TOCEntry[] = [];
+    if (!container) return;
 
     // Find all potential section headers
     const semanticHeaders = container.querySelectorAll('h2, h3');
@@ -101,29 +102,16 @@ export function useTableOfContents(containerSelector: string = 'article') {
       return 0;
     });
 
-    // Build entries
+    const next = new Map<string, Counted>();
+
     allHeaders.forEach((header, index) => {
-      const text = header.textContent?.trim() || '';
-      if (!text) return;
+      const level: 'h2' | 'h3' | 'table' =
+        header.tagName === 'H2' ? 'h2' : header.tagName === 'H3' ? 'h3' : 'table';
 
-      // Determine level
-      let level: 'h2' | 'h3' | 'table';
-      if (header.tagName === 'H2') {
-        level = 'h2';
-      } else if (header.tagName === 'H3') {
-        level = 'h3';
-      } else {
-        level = 'table';
-      }
-
-      // A static id (the build's heading ids, or an authored one on the
-      // header or its parent) IS the id; only a header without one derives
-      // an id here, with the same slugify (one id system, SR3)
-      let id = header.id || (header.parentElement as HTMLElement)?.id;
-      if (!id) {
-        id = ensureUniqueId(slugify(text), existingIds);
-        header.id = id;
-      }
+      // The static id (the build's heading ids, or an authored one on the
+      // header or its parent) IS the id (one id system, SR3)
+      const id = header.id || (header.parentElement as HTMLElement)?.id;
+      if (!id) return;
 
       // Find next section to scope Todo counting
       const nextHeader = allHeaders[index + 1] || null;
@@ -191,41 +179,10 @@ export function useTableOfContents(containerSelector: string = 'article') {
         }
       }
 
-      tocEntries.push({
-        id,
-        text,
-        level,
-        element: header as HTMLElement,
-        hasInteractive: todoCount.total > 0,
-        interactiveCount: todoCount.total,
-        completedCount: todoCount.completed,
-        children: [],
-      });
+      next.set(id, { element: header as HTMLElement, ...todoCount });
     });
 
-    // Fallback: pages with no semantic headers and no table section headers
-    // (e.g. 1-3, 1-5, 1-12, 1-13) would otherwise render no sidebar at all.
-    // Synthesize a single "Top of page" entry pointing at the container so
-    // the sidebar still surfaces and the layout column stays consistent.
-    if (tocEntries.length === 0) {
-      const containerEl = container as HTMLElement;
-      if (!containerEl.id) {
-        containerEl.id = 'toc-top';
-      }
-      tocEntries.push({
-        id: containerEl.id,
-        text: 'Top of page',
-        level: 'h2',
-        element: containerEl,
-        hasInteractive: false,
-        interactiveCount: 0,
-        completedCount: 0,
-        children: [],
-      });
-    }
-
-    setEntries(tocEntries);
-    setIsLoading(false);
+    setCounts(next);
   }, [containerSelector]);
 
   // Initial scan after mount and React hydration
@@ -277,12 +234,27 @@ export function useTableOfContents(containerSelector: string = 'article') {
     };
   }, [containerSelector, scanDocument]);
 
+  // The seeded list, with whatever the scan has added so far
+  const entries = useMemo<TOCEntry[]>(
+    () =>
+      seeded.map((h) => {
+        const counted = counts.get(h.id);
+        return {
+          ...h,
+          element: counted?.element,
+          interactiveCount: counted ? counted.total : h.interactiveCount,
+          completedCount: counted ? counted.completed : 0,
+        };
+      }),
+    [seeded, counts]
+  );
+
   // Provide a manual rescan function
   const rescan = useCallback(() => {
     scanDocument();
   }, [scanDocument]);
 
-  return { entries, isLoading, rescan };
+  return { entries, rescan };
 }
 
 export default useTableOfContents;

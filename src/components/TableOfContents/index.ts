@@ -11,6 +11,7 @@ export { useTableOfContents } from './useTableOfContents';
 export { useActiveSection, scrollToSection } from './useActiveSection';
 export type {
   TOCEntry,
+  SeededHeading,
   SectionProgress,
   TableOfContentsProps,
   TableOfContentsItemProps,
