@@ -2,20 +2,11 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "1.2",
-  title: "Food and water",
-  moduleTitle: "Emergency Preparedness and Response",
-  modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.1", title: "Emergency preparedness kits", slug: "1-1" },
-  nextSection: { number: "1.3", title: "First aid and medical", slug: "1-3" }
-};
 ---
 
 <!-- source: docs/source-specs/1-2-food-and-water.md page: 35-36 -->
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="1.2">
       <table class="guide-table">
         <thead>
           <tr>

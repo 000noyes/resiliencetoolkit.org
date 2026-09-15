@@ -1,0 +1,108 @@
+---
+/**
+ * A section opener: the section-zoom render of the one contents model.
+ *
+ * Orient (title, the page's own summary, the section's real phase chips),
+ * then the chapters as action-grammar rows (read, PDF, resources: the
+ * same quiet actions every render carries), then linear prev/next walking
+ * the one reading chain (DR4: openers sit IN the chain). No tree: the
+ * opener IS the section-zoom render and never carries a second copy of
+ * itself; the gutter doors and the phone bar stay (DR5).
+ */
+import { contents, chainFor } from '@/data/contents';
+import { getPdfUrlForSection } from '@/lib/pdfLookup';
+import ExternalLink from '@/components/ExternalLink.astro';
+import ReadingRail from './ReadingRail.astro';
+import ReadingBar from './ReadingBar.astro';
+import { Download, FolderOpen } from 'lucide-react';
+
+interface Props {
+  sectionSlug: string;
+  /** The opener page's own prose summary (page content, not model data) */
+  summary: string;
+}
+
+const { sectionSlug, summary } = Astro.props;
+const section = contents.find((s) => s.slug === sectionSlug);
+if (!section) {
+  throw new Error(`OpenerSurface: unknown section ${sectionSlug}`);
+}
+const { prev, next } = chainFor(`opener-${section.number}`);
+---
+
+<div class="reading-grid reading-grid--no-tree py-8" data-rail="closed">
+  <ReadingRail moduleKey={`${section.slug}-opener`} sectionNumber="" showOnThisPage={false} />
+
+  <article data-pagefind-body class="reading-content">
+    <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
+      <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
+      <span class="mx-2">/</span>
+      <span class="text-text-primary">{section.title}</span>
+    </nav>
+
+    <header class="mb-8">
+      <h1 class="text-display font-semibold mb-4">{section.title}</h1>
+      <p class="text-body-large text-text-secondary leading-relaxed">
+        {summary}
+      </p>
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        {section.phases.map((phase) => (
+          <span class="meta-chip px-3 py-1 text-sm font-medium">
+            <span class={`meta-chip__dot meta-chip__dot--${phase.toLowerCase()}`} aria-hidden="true"></span>
+            {phase}
+          </span>
+        ))}
+      </div>
+    </header>
+
+    <ol class="opener-rows" data-pagefind-ignore>
+      {section.chapters.map((chapter) => (
+        <li class="opener-row">
+          <a href={`${section.basePath}/${chapter.slug}`} class="opener-row__read">
+            <span class="opener-row__number">{chapter.number}</span>
+            <span class="opener-row__title">{chapter.title}</span>
+          </a>
+          <span class="opener-row__actions no-print" data-pagefind-ignore>
+            <a
+              href={getPdfUrlForSection(chapter.number)}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="opener-row__action"
+              aria-label={`${chapter.number} ${chapter.title} PDF`}
+            >
+              <Download size={14} aria-hidden="true" />
+              <span>PDF</span>
+            </a>
+            {chapter.resourcesUrl && (
+              <ExternalLink href={chapter.resourcesUrl} class="opener-row__action">
+                <FolderOpen size={14} aria-hidden="true" />
+                <span>Resources</span>
+              </ExternalLink>
+            )}
+          </span>
+        </li>
+      ))}
+    </ol>
+
+    <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
+      {prev && (
+        <a href={prev.href} class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Previous: {prev.label}</span>
+        </a>
+      )}
+      {next && (
+        <a href={next.href} class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors ml-auto">
+          <span class="mr-2">Next: {next.label}</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      )}
+    </nav>
+  </article>
+</div>
+
+<ReadingBar currentPath={Astro.url.pathname} sectionNumber="" />

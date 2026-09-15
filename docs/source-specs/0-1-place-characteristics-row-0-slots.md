@@ -16,8 +16,8 @@ prose_scope:
   # from the sibling DataTable spec's prose_scope (56-72) so proseMatches
   # does not double-count paragraph drift across the two specs that now
   # share knowing-your-community.astro.
-  start_line: 47
-  end_line: 54
+  start_line: 29
+  end_line: 36
 subheadings:
   # titleMatches runs file-globally per-spec (not scoped to prose_scope),
   # so this list mirrors the sibling 0-1-place-characteristics.md spec

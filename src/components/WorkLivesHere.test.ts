@@ -11,11 +11,23 @@ import { describe, it, expect } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-import WorkLivesHere from './WorkLivesHere';
+import WorkLivesHere, { WorkLivesHereCard, deviceHoldsWork } from './WorkLivesHere';
+
+const cardProps = { backupLine: '', status: 'idle' as const, onBackup: () => {} };
 
 describe('WorkLivesHere', () => {
+  it('renders nothing before the device is read: no card and no claim for a reader with no work', () => {
+    expect(renderToStaticMarkup(createElement(WorkLivesHere))).toBe('');
+  });
+
+  it('reads work the way the storage strip does: the canary of modules that have held work', () => {
+    expect(deviceHoldsWork(null)).toBe(false);
+    expect(deviceHoldsWork({ modules: {}, updatedAt: '2026-09-14T00:00:00Z' })).toBe(false);
+    expect(deviceHoldsWork({ modules: { 'knowing-community': true }, updatedAt: '2026-09-14T00:00:00Z' })).toBe(true);
+  });
+
   it('states the work lives on this device and keeps the privacy promise', () => {
-    const html = renderToStaticMarkup(createElement(WorkLivesHere));
+    const html = renderToStaticMarkup(createElement(WorkLivesHereCard, cardProps));
     expect(html).toMatch(/saved on this device/i);
     expect(html).toMatch(/private/i);
     // Names the durability caveat: nothing goes to the cloud.
@@ -23,7 +35,7 @@ describe('WorkLivesHere', () => {
   });
 
   it('offers a one-tap backup with no state claim before the cue resolves', () => {
-    const html = renderToStaticMarkup(createElement(WorkLivesHere));
+    const html = renderToStaticMarkup(createElement(WorkLivesHereCard, cardProps));
     expect(html).toMatch(/Back up my work/i);
     // The backup line renders from the shared work-based cue after mount;
     // the server shell claims no state it cannot know (and never a

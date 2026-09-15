@@ -2,10 +2,33 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
+import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
+import ReadingRail from '@/components/reading/ReadingRail.astro';
+import ReadingBar from '@/components/reading/ReadingBar.astro';
+import ArticleBody from '@/components/reading/ArticleBody.astro';
+import { chainFor, frontMatter, knowingYourCommunityActivities } from '@/data/contents';
+
+// DR2: the introduction reads in the same 3C grammar as the chapters,
+// the tree left with its row active and the page's own sections resting
+// right as On this page, holding the Then begin exits.
+const next = chainFor(frontMatter.number).next;
 ---
 
 <BaseLayout title="Introduction | Resilience Hub Toolkit" description="Understanding what this toolkit is for, how to use it, and what resilience means for your community.">
-  <article class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="reading-grid py-8" data-rail="on-this-page">
+    <ToolkitContentsTree currentPath="/introduction" />
+    <ReadingRail moduleKey="introduction" sectionNumber="">
+      <div slot="on-this-page-extra" class="start-here">
+        <h3 class="start-here__label">Start here</h3>
+        <a href="/modules/knowing-your-community" class="start-here__row">0.1 Knowing Your Community</a>
+        {knowingYourCommunityActivities.map((activity) => (
+          <ExternalLink href={activity.href} class="start-here__row">
+            {activity.title}
+          </ExternalLink>
+        ))}
+      </div>
+    </ReadingRail>
+    <article data-pagefind-body class="reading-content">
     <!-- Page header -->
     <header class="mb-8">
       <h1 class="text-hero font-semibold mb-2">
@@ -14,6 +37,7 @@ import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
     </header>
 
     <!-- Content -->
+    <ArticleBody blockKey="intro">
     <div class="space-y-8">
       <section>
         <h2 class="text-title font-semibold mb-4">Who and what is this toolkit for?</h2>
@@ -80,17 +104,23 @@ import RecoveryContinuum from '@/components/RecoveryContinuum.astro';
       </section>
     </div>
 
-    <!-- Navigation to next section -->
-    <nav class="mt-12 pt-8 border-t border-border flex justify-end">
-      <a
-        href="/modules/knowing-your-community"
-        class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
-      >
-        <span class="mr-2">Next: Knowing Your Community</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </nav>
-  </article>
+    </ArticleBody>
+
+    <!-- Navigation into the reading chain -->
+    {next && (
+      <nav class="mt-12 pt-8 border-t border-border flex justify-end no-print" data-pagefind-ignore>
+        <a
+          href={next.href}
+          class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
+        >
+          <span class="mr-2">Next: {next.label}</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </nav>
+    )}
+    </article>
+  </div>
+  <ReadingBar currentPath="/introduction" sectionNumber="" />
 </BaseLayout>

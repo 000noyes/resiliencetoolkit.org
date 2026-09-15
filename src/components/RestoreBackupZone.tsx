@@ -255,7 +255,7 @@ export default function RestoreBackupZone() {
                         type="button"
                         data-testid="rt-restore-backup-first"
                         onClick={() => handleBackupFirst(dialog.file, dialog.filename)}
-                        className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground transition-colors"
                       >
                         Back up this device first
                       </button>
@@ -263,7 +263,7 @@ export default function RestoreBackupZone() {
                         type="button"
                         data-testid="rt-restore-replace"
                         onClick={() => handleReplace(dialog.file)}
-                        className="w-full px-4 py-2.5 rounded-lg font-medium text-sm border border-primary text-primary hover:bg-primary/10 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-lg font-medium text-sm border border-primary text-primary transition-colors"
                       >
                         Replace everything on this device
                       </button>
@@ -273,7 +273,7 @@ export default function RestoreBackupZone() {
                       type="button"
                       data-testid="rt-restore-replace"
                       onClick={() => handleReplace(dialog.file)}
-                      className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground transition-colors"
                     >
                       Replace everything on this device
                     </button>
@@ -291,7 +291,7 @@ export default function RestoreBackupZone() {
 
             {(dialog.kind === 'importing' || dialog.kind === 'backing-up-first') && (
               <div className="flex items-center justify-center py-8">
-                <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-t-primary rounded-full animate-spin" />
               </div>
             )}
 
@@ -311,7 +311,7 @@ export default function RestoreBackupZone() {
                   type="button"
                   data-testid="rt-restore-finish"
                   onClick={() => finishRestore(dialog)}
-                  className="mt-4 w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  className="mt-4 w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground transition-colors"
                 >
                   Bring my work into view
                 </button>
@@ -330,7 +330,7 @@ export default function RestoreBackupZone() {
                       setDialog({ kind: 'closed' });
                       fileInputRef.current?.click();
                     }}
-                    className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-lg font-medium text-sm bg-primary text-primary-foreground transition-colors"
                   >
                     Choose a different file
                   </button>

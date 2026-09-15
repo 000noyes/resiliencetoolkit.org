@@ -2,20 +2,11 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "1.5",
-  title: "Warming/Cooling/Emergency Shelter",
-  moduleTitle: "Emergency Preparedness and Response",
-  modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.4", title: "Power supply", slug: "1-4" },
-  nextSection: { number: "1.6", title: "Vehicles and Equipment", slug: "1-6" }
-};
 ---
 
 <!-- source: docs/source-specs/1-5-warming-cooling-emergency-shelter.md page: 45 -->
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="1.5">
       <table class="guide-table">
         <thead>
           <tr>

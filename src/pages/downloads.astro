@@ -5,14 +5,30 @@ import ActionButton from '@/components/ActionButton.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { Download, FileText, FolderOpen, FileSpreadsheet, ExternalLink as ExternalLinkIcon, ChevronDown } from 'lucide-react';
 import { featuredDownloads, getModulesBySection } from '@/data/downloads';
+import { contents } from '@/data/contents';
 
 const modulesBySection = getModulesBySection();
-const sectionOrder = ['Section 0', 'Section 1', 'Section 2'];
-const sectionNames: Record<string, string> = {
-  'Section 0': 'Section 0: Knowing Your Community',
-  'Section 1': 'Section 1: Emergency Preparedness and Response',
-  'Section 2': 'Section 2: Baseline Community Resilience'
+const sectionOrder = contents.map((s) => `Section ${s.number}`);
+// Section headings derive from the one contents model; the numbered
+// "Section N" vocabulary existed nowhere else and retires (DR10)
+const sectionTitles: Record<string, string> = Object.fromEntries(
+  contents.map((s) => [`Section ${s.number}`, s.title])
+);
+// Short forms for the phone jump row and accordion summaries (DR10)
+const shortTitles: Record<string, string> = {
+  'Section 0': 'Knowing Your Community',
+  'Section 1': 'Emergency Preparedness',
+  'Section 2': 'Baseline Resilience',
 };
+const sectionAnchor = (name: string) => `dl-${name.replace('Section ', 's')}`;
+
+// The two coalition activity artifacts lead beside the complete toolkit
+// (the container card was never built; these are the shipped cards, moved)
+const leadArtifactTitles = ['Community Needs Assessment', 'Interactive Toolkit Activity'];
+const leadArtifacts = featuredDownloads.filter((d) => leadArtifactTitles.includes(d.title));
+const onlineDownloads = featuredDownloads.filter(
+  (d) => d.isExternal && !leadArtifactTitles.includes(d.title)
+);
 ---
 
 <BaseLayout title="Resource Downloads | Resilience Hub Toolkit" description="Download PDFs, templates, and resources for building community resilience.">
@@ -51,7 +67,7 @@ const sectionNames: Record<string, string> = {
 
     <!-- How Automatic Offline Works -->
     <!-- <section class="mb-12">
-      <div class="bg-primary/5 border border-primary/20 rounded-lg p-6">
+      <div class="border rounded-lg p-6">
         <h2 class="text-2xl font-semibold text-foreground mb-4">How Offline Access Works (Automatic)</h2>
         <p class="text-muted-foreground mb-4">
           When you visit this toolkit for the first time, your browser automatically downloads and saves all pages. This happens in the background (you don't need to do anything).
@@ -81,15 +97,12 @@ const sectionNames: Record<string, string> = {
       </div>
     </section> -->
 
-    <!-- Featured Downloads Section -->
-    <section class="mb-16">
-      <h2 class="text-title font-semibold mb-6">Featured Downloads</h2>
+    <!-- The complete toolkit leads the room; the two activity artifacts
+         ride beside it (board 7 as amended: no container card) -->
+    <section class="mb-16" id="complete-toolkit">
+      <h2 class="text-title font-semibold mb-6">The complete toolkit</h2>
 
-      <!-- Download PDF Group -->
-      <section aria-labelledby="download-pdf-heading">
-        <h3 id="download-pdf-heading" class="text-body-small font-semibold text-text-muted uppercase tracking-wide mb-4">
-          Download PDF
-        </h3>
+      <section aria-label="The complete toolkit downloads">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           {featuredDownloads.filter(d => !d.isExternal).map((download) => (
             <Card class="flex flex-col h-full">
@@ -138,13 +151,49 @@ const sectionNames: Record<string, string> = {
         </div>
       </section>
 
+      <!-- The two activity artifacts, under their own shipped names -->
+      <section class="mt-6" aria-label="Toolkit activities">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {leadArtifacts.map((download) => (
+            <Card class="flex flex-col h-full">
+              <div class="flex-1">
+                <div class="mb-4 text-primary">
+                  {download.icon === 'spreadsheet' ? (
+                    <FileSpreadsheet size={32} />
+                  ) : (
+                    <FileText size={32} />
+                  )}
+                </div>
+                <h4 class="text-subtitle font-semibold mb-2 text-text-primary">
+                  {download.title}
+                </h4>
+                <p class="text-body text-text-secondary mb-4">
+                  {download.description}
+                </p>
+              </div>
+              <div class="mt-auto">
+                <ExternalLink href={download.downloadUrl} class="inline-block w-full">
+                  <ActionButton
+                    variant="outline"
+                    class="w-full flex items-center justify-center gap-2 pointer-events-none"
+                  >
+                    <ExternalLinkIcon size={18} />
+                    <span>View Online</span>
+                  </ActionButton>
+                </ExternalLink>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
       <!-- View Online Group -->
       <section class="mb-8 mt-12" aria-labelledby="view-online-heading">
         <h3 id="view-online-heading" class="text-body-small font-semibold text-text-muted uppercase tracking-wide mb-4">
           View Online
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredDownloads.filter(d => d.isExternal).map((download) => (
+          {onlineDownloads.map((download) => (
             <Card class="flex flex-col h-full">
               <div class="flex-1">
                 <!-- Icon -->
@@ -223,10 +272,10 @@ const sectionNames: Record<string, string> = {
               const modules = modulesBySection.get(sectionName) || [];
               return (
                 <>
-                  {/* Section Header */}
+                  {/* Section Header (the model's real name; "Section N" retires) */}
                   <tr class="section-header">
                     <td colspan="5">
-                      <strong>{sectionName}</strong>
+                      <strong>{sectionTitles[sectionName]}</strong>
                     </td>
                   </tr>
 
@@ -285,14 +334,19 @@ const sectionNames: Record<string, string> = {
 
     <!-- Mobile Collapsible View -->
     <div class="downloads-table-mobile">
+      <nav class="dl-jump-row" aria-label="Jump to a section">
+        <a href="#complete-toolkit">Complete toolkit</a>
+        {sectionOrder.map((sectionName) => (
+          <a href={`#${sectionAnchor(sectionName)}`}>{shortTitles[sectionName]}</a>
+        ))}
+      </nav>
       {sectionOrder.map((sectionName) => {
         const modules = modulesBySection.get(sectionName) || [];
-        const fullSectionName = sectionNames[sectionName];
 
         return (
-          <details class="section-details" data-section={sectionName}>
+          <details class="section-details" data-section={sectionName} id={sectionAnchor(sectionName)}>
             <summary class="section-summary">
-              <span class="section-name">{fullSectionName}</span>
+              <span class="section-name">{shortTitles[sectionName]}</span>
               <ChevronDown size={20} className="section-chevron" aria-hidden="true" />
             </summary>
 
@@ -453,6 +507,19 @@ const sectionNames: Record<string, string> = {
       </a>
     </nav>
   </article>
+
+<script>
+  // A jump-row anchor should land on an OPEN accordion; without JS the
+  // link still scrolls to the section summary
+  function openTargetSection() {
+    const id = location.hash.slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (target instanceof HTMLDetailsElement) target.open = true;
+  }
+  openTargetSection();
+  window.addEventListener('hashchange', openTargetSection);
+</script>
 </BaseLayout>
 
 <style>

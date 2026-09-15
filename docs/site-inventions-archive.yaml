@@ -1617,6 +1617,27 @@ categories:
 
   # Any site-authored list items (e.g. 1-8 "Plan for service animals") that
   # extend or substitute workbook items.
+    - id: archive-0-1-vermont-town-directory-callout
+      module: 0-1
+      location: knowing-your-community.astro, the boxed callout above the first h2 (site-added, never in the workbook)
+      type: invented_prose
+      content: |
+        Vermont Town Directory
+        Looking for specific town contacts and resources? Learn about jurisdictions and service areas for your town - what county you're in, which Regional Planning Commission (RPC) to ask for technical assistance, and which Long Term Recovery Group (LTRG) can help you if individuals are impacted by flooding.
+        View Town Directory -> https://docs.google.com/spreadsheets/d/17SYNgwm49HYJ2YZm_hskr9mrPq7NcxofVJ9OSsph2ls/preview
+      inferred_source: 'Live Vermont Town Directory sheet shared by the coalition 2026-06-29 (the link itself stays on the site)'
+      date_removed: '2026-09-14'
+      removed_in_commit: 'The Vermont Town Directory leaves the top of 0.1; it lives in the contents as an activity'
+      rationale: |
+        The directory now renders as an activity row under Knowing Your
+        Community in the Toolkit Contents tree and on the cover, and the
+        downloads room keeps its card with the same description. The box was
+        one of three site-added blocks a reader met on 0.1 before the first
+        sentence of the toolkit; the entry-experience review (2026-09-14)
+        removed it from the arrival stack. Candidate future home for the
+        prose: a Footnotes addition on 0.1 under the governed path.
+      proposed_canonical_field: null
+
   invented_items:
     - id: archive-kyc-agenda-invented-bullet-discuss-sections
       module: knowing-your-community
@@ -3363,4 +3384,94 @@ categories:
       rationale: |
         Link label of the removed mobile focus detail panel. The module links
         row now links each title directly.
+      proposed_canonical_field: null
+    - id: archive-homepage-explore-all-modules-button
+      module: homepage
+      location: HomeSurface.astro find-your-path CTA under the module links row
+      type: homepage_explorer_removals
+      content: |
+        Explore All Modules
+      inferred_source: null
+      date_removed: '2026-09-06'
+      removed_in_commit: 'Cover contents: the homepage carries the full chapter list'
+      rationale: |
+        A button promising the contents cannot compete with the contents
+        themselves (DR9): the full chapter list replaces the five-link row,
+        so the outline CTA is redundant. /modules stays one nav click away.
+      proposed_canonical_field: null
+    - id: archive-homepage-start-from-a-module-line
+      module: homepage
+      location: HomeSurface.astro lead-in line above the module links row
+      type: homepage_explorer_removals
+      content: |
+        Or start from a module:
+      inferred_source: null
+      date_removed: '2026-09-06'
+      removed_in_commit: 'Cover contents: the homepage carries the full chapter list'
+      rationale: |
+        Lead-in for the retired five-link module row; the inline contents
+        need no narration.
+      proposed_canonical_field: null
+    - id: archive-homepage-search-row
+      module: homepage
+      location: HomeSurface.astro search row under the module links (label, status line, no-results copy)
+      type: homepage_explorer_removals
+      content: |
+        Search by keyword:
+        Searching...
+      inferred_source: null
+      date_removed: '2026-09-06'
+      removed_in_commit: 'Cover contents: the homepage carries the full chapter list'
+      rationale: |
+        The cover lands row-less (SE3): the one search surface moves to the
+        site header with the search end-state build. The teaching
+        placeholder ("Try 'mutual aid' or 'go bag'") is not archived: it
+        re-houses to the header box sitewide (SR7).
+      proposed_canonical_field: null
+    - id: archive-homepage-noscript-all-modules
+      module: homepage
+      location: HomeSurface.astro noscript fallback list heading
+      type: homepage_explorer_removals
+      content: |
+        All Modules
+      inferred_source: null
+      date_removed: '2026-09-06'
+      removed_in_commit: 'Cover contents: the homepage carries the full chapter list'
+      rationale: |
+        The noscript module list existed because the row above needed JS
+        polish; the inline contents are plain HTML and are themselves the
+        no-JS floor, so the duplicate list retires. Module summaries remain
+        on /modules.
+      proposed_canonical_field: null
+    - id: archive-downloads-featured-downloads-heading
+      module: downloads
+      location: downloads.astro featured section h2 and its Download PDF group label
+      type: homepage_explorer_removals
+      content: |
+        Featured Downloads
+        Download PDF
+      inferred_source: null
+      date_removed: '2026-09-06'
+      removed_in_commit: 'Downloads room: the complete toolkit leads, ordered by the one model'
+      rationale: |
+        The room now opens with "The complete toolkit" (the one model's
+        back-matter framing); the generic featured grouping and its
+        redundant sub-label retire with it.
+      proposed_canonical_field: null
+    - id: archive-downloads-section-n-headings
+      module: downloads
+      location: downloads.astro table section headers and phone accordion summaries
+      type: homepage_explorer_removals
+      content: |
+        Section 0: Knowing Your Community
+        Section 1: Emergency Preparedness and Response
+        Section 2: Baseline Community Resilience
+      inferred_source: null
+      date_removed: '2026-09-06'
+      removed_in_commit: 'Downloads room: the complete toolkit leads, ordered by the one model'
+      rationale: |
+        DR10 retires the numbered "Section N" vocabulary, which existed
+        nowhere else; the headings now derive from the one contents model's
+        real section names. "Baseline Community Resilience" was also a
+        variant naming drift ("Baseline Resilience" everywhere else).
       proposed_canonical_field: null

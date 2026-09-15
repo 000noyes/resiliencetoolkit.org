@@ -103,11 +103,18 @@ function stripTagsAndCollapse(s: string): string {
 }
 
 /**
- * Extract the section number from the module page's authored sectionData
- * object. ModuleLayout uses this number to render the automatic "See
- * Additional Resources" link, so runner checks can use it as static context.
+ * Extract the section number from the module page's authored
+ * `<ModuleLayout sectionNumber="...">` prop (the contents-model contract).
+ * ModuleLayout uses this number to render the automatic "See Additional
+ * Resources" link, so runner checks can use it as static context. The
+ * retired authored sectionData object form is still recognized so historic
+ * page revisions verify.
  */
 export function extractSectionNumber(content: string): string | null {
+  const propRe = /<ModuleLayout\s[^>]*\bsectionNumber\s*=\s*(['"])([^'"]+)\1/;
+  const prop = propRe.exec(content);
+  if (prop) return prop[2];
+
   const blockRe =
     /const\s+sectionData(?:\s*:\s*SectionData)?\s*=\s*\{([\s\S]*?)\};/m;
   const block = blockRe.exec(content);

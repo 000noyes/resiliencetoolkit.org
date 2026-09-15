@@ -2,20 +2,11 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import Todo from '@/design-system/blocks/Todo';
 import ExternalLink from '@/components/ExternalLink.astro';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "2.2",
-  title: "Shared Tools",
-  moduleTitle: "Baseline Resilience",
-  modulePath: "/modules/baseline-resilience",
-  prevSection: { number: "2.1", title: "Basic Needs", slug: "2-1" },
-  nextSection: { number: "2.3", title: "Community Building", slug: "2-3" }
-};
 ---
 
 <!-- source: docs/source-specs/2-2-shared-tools.md page: 86 -->
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="2.2">
       <section>
         <h2 class="text-title font-semibold mb-4">Tool lending library</h2>
 

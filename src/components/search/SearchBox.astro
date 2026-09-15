@@ -1,0 +1,122 @@
+---
+/**
+ * The ONE SearchBox (2A), mounted three ways: the header panel, the phone
+ * search sheet, and /search. A native GET form to /search so it works
+ * with JS off (SR4); with JS the anchored suggestion-first panel arrives
+ * as progressive enhancement, loaded on first focus (ES7). The teaching
+ * placeholder survives sitewide (SR7).
+ */
+import { Search } from 'lucide-react';
+import { searchRoute } from '@/data/contents';
+
+interface Props {
+  /** Unique per mount; wires ids for the combobox and its listbox */
+  id: string;
+  mode: 'panel' | 'page';
+}
+
+const { id, mode } = Astro.props;
+const listboxId = `${id}-listbox`;
+---
+
+<div class="search-box" data-search-root data-search-mode={mode}>
+  <form action={searchRoute} method="get" role="search" class="search-box__form">
+    <span class="search-box__lens" aria-hidden="true">
+      <Search size={15} strokeWidth={2} />
+    </span>
+    <input
+      type="search"
+      name="q"
+      id={id}
+      class="search-box__input"
+      placeholder="Try 'mutual aid' or 'go bag'"
+      aria-label="Search the toolkit"
+      autocomplete="off"
+      role="combobox"
+      aria-expanded="false"
+      aria-controls={listboxId}
+      aria-autocomplete="list"
+    />
+  </form>
+  <p class="sr-only" data-search-live aria-live="polite"></p>
+  {mode === 'page' && (
+    <p class="search-page__count" data-search-count aria-live="polite" hidden></p>
+  )}
+  <div class="search-panel" data-search-panel hidden>
+    <p class="search-panel__status" data-search-status role="status" hidden></p>
+    <div role="listbox" id={listboxId} class="search-results" aria-label="Search results"></div>
+    {mode === 'panel' && (
+      <div class="search-panel__footer" data-search-footer hidden>
+        <span class="search-panel__more" data-search-more></span>
+        <a href={searchRoute} class="search-panel__see-all" data-search-see-all>
+          See all results
+        </a>
+      </div>
+    )}
+  </div>
+</div>
+
+<script>
+  // Tiny always-on wiring: the search module itself loads on first focus
+  // or keystroke (ES7: zero search JS at page load). Also completes the
+  // landing a search pick handed over (BR5): the searched words under the
+  // named header, marked and focused after the travel down from the top.
+  function wireSearchBoxes() {
+    document.querySelectorAll<HTMLElement>('[data-search-root]').forEach((root) => {
+      if (root.dataset.searchWired) return;
+      root.dataset.searchWired = 'true';
+      const input = root.querySelector<HTMLInputElement>('input[type="search"]');
+      const form = root.querySelector<HTMLFormElement>('form');
+      if (!input || !form) return;
+      const mode = (root.dataset.searchMode as 'panel' | 'page') ?? 'panel';
+      let mounting = false;
+      const mount = async () => {
+        if (mounting) return;
+        mounting = true;
+        const mod = await import('@/lib/search/search-client');
+        const pageRegion = document.querySelector<HTMLElement>('[data-search-page]');
+        const m = mod.mountSearch({
+          form,
+          mode,
+          countEl: root.querySelector<HTMLElement>('[data-search-count]'),
+          contentsEl: pageRegion?.querySelector<HTMLElement>('[data-search-contents]'),
+        });
+        // /search restores from its URL; the URL beats storage (ES5)
+        if (mode === 'page') {
+          const q = new URLSearchParams(location.search).get('q') ?? '';
+          if (q) {
+            input.value = q;
+            mod.storeQuery(q);
+            m.runQuery(q);
+          }
+        }
+      };
+      input.addEventListener('focus', mount);
+      input.addEventListener('input', mount);
+      if (mode === 'page') mount();
+    });
+  }
+  wireSearchBoxes();
+
+  // A landing handed over by a search pick (BR5): the page opened at its
+  // top; travel down to the searched words under the named header, mark
+  // them, focus them, settle the URL. Ordinary hash navigation is untouched
+  try {
+    const raw = sessionStorage.getItem('rt-search-landing');
+    if (raw) {
+      sessionStorage.removeItem('rt-search-landing');
+      const landing = JSON.parse(raw) as { id?: unknown; q?: unknown };
+      if (
+        landing &&
+        typeof landing.id === 'string' &&
+        typeof landing.q === 'string' &&
+        document.getElementById(landing.id)
+      ) {
+        const settled = { id: landing.id, q: landing.q };
+        import('@/lib/search/landing').then((m) => m.landOnSearch(settled, { fromTop: true }));
+      }
+    }
+  } catch {
+    /* landing hand-off off (private mode): the hash link itself landed */
+  }
+</script>

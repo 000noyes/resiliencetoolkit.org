@@ -2,6 +2,51 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.1.0] - 2026-09-15
+
+From this release the version is three-part semantic versioning. The
+fourth digit used through 0.0.15.0 is retired; fixes to a shipped release
+bump the third number. This release is a minor version because it adds a
+capability: the reading grammar, the cover, and search.
+
+
+### Added
+- The home page is now the cover of the toolkit: the full contents are on it,
+  section by section, and the introduction reads as the toolkit's front
+  matter, with Start here pointing at the first activity.
+- Every chapter now reads with the toolkit's contents on the left and On this
+  page on the right, so you always know where you are and what is on the page.
+  Both close to a labeled button at the edge and open again from it; the site
+  remembers your choice on this device. The article keeps its width either way.
+- Footnotes, beside On this page, holds each chapter's citation to the printed
+  toolkit. Chapters whose printed pages are still being checked show an honest
+  empty state until they are confirmed.
+- One search box in the header on every page. Results group by chapter and
+  open on the words you searched for: the page opens at its top and travels
+  to the match, which stays marked. A full results page at /search restores
+  from its address and from the back button. Search works offline.
+- On phones, the contents and Footnotes live in a bar at the bottom of the
+  page that opens a sheet, and On this page sits at the top of the chapter.
+- The Community Needs Assessment, the Interactive Toolkit Activity, and the
+  Vermont Town Directory sit beside 0.1 in every contents list, marked as
+  outside links, and lead the Downloads room beside the complete toolkit.
+- Section pages for Emergency Preparedness and Baseline Resilience open with
+  the section's chapters and their actions, and the reading order runs
+  straight through them with Previous and Next.
+- Printing a chapter drops the reading chrome and keeps the citation.
+
+### Changed
+- The header stays fixed in place, so typing in the search box never scrolls
+  the page, and notices (the contact banner, updates, storage) appear under
+  it in one place.
+- The storage card on chapter pages appears only once this device holds work;
+  a first visit meets the chapter, not a backup prompt.
+- The Vermont Town Directory box at the top of 0.1 moved into the contents
+  and the Downloads room; its description is on the Downloads card.
+- The old On this page sidebar, the drawer, and the floating button are
+  retired; the home page search row moved to the header.
+- The /modules index is unchanged.
+
 ## [0.0.15.0] - 2026-07-24
 
 ### Added

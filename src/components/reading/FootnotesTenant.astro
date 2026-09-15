@@ -1,0 +1,39 @@
+---
+/**
+ * The Footnotes tenant: two classes a reader tells apart without a legend.
+ *
+ * Citations (workbook provenance) and Additions (consented editorial
+ * supplements) render as two labeled lists, never mixed (D3). At launch
+ * the one citation is the page-level provenance line (DR17), presented
+ * from the same model field as the in-article static line, never a second
+ * copy (ER7). Until a chapter's printed range is operator-confirmed the
+ * citation stays dark and the honest empty state shows. In-text markers
+ * and all additions arrive only through the governed path; module
+ * contents never change.
+ */
+import { chapterCitation } from '@/data/contents';
+
+interface Props {
+  sectionNumber: string;
+}
+
+const { sectionNumber } = Astro.props;
+const citation = chapterCitation(sectionNumber);
+---
+
+<div class="footnotes-tenant">
+  {
+    citation ? (
+      <>
+        <h3 class="footnotes-tenant__label">Citations</h3>
+        <ol class="footnotes-tenant__list">
+          <li class="footnotes-tenant__note footnotes-tenant__note--citation">
+            {citation}
+          </li>
+        </ol>
+      </>
+    ) : (
+      <p class="footnotes-tenant__empty">No notes on this page.</p>
+    )
+  }
+</div>

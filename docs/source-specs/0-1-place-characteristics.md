@@ -12,8 +12,8 @@ fields:
 matching:
   require_cluster: false
 prose_scope:
-  start_line: 56
-  end_line: 72
+  start_line: 38
+  end_line: 54
 subheadings:
   - text: 'Organizing your community: who is here and what are they doing?'
   - text: Who is in your community/place?

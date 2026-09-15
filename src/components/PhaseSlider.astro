@@ -50,7 +50,17 @@ const { heading, class: className, showDescriptions = false } = Astro.props;
                 <span class="phase-cards__description">{stop.description}</span>
               )}
               <span class="phase-cards__time text-uppercase-accent">{stop.time}</span>
-              {stop.lead && <span class="phase-cards__lead text-uppercase-accent">{stop.lead}</span>}
+              {stop.lead && (
+                <span
+                  class:list={[
+                    'phase-cards__lead',
+                    'text-uppercase-accent',
+                    stop.phase === 'After' && 'phase-cards__lead--after',
+                  ]}
+                >
+                  {stop.lead}
+                </span>
+              )}
             </span>
           </a>
         </li>
@@ -167,7 +177,13 @@ const { heading, class: className, showDescriptions = false } = Astro.props;
     .phase-cards__description { font-size: clamp(12.5px, 1.1vw + 4px, 14px); }
   }
   .phase-cards__time { color: var(--muted-foreground); margin-top: 0.1rem; }
-  .phase-cards__lead { color: var(--primary); margin-top: 0.35rem; } /* the only accent text */
+  /* Leads match their node: orange for the work of now, and the After
+     lead renders in the After ring's green (DR12 superseded the old
+     one-accent rule deliberately). The green is --chart-1, never
+     --secondary: the token named "secondary" is blue in code even though
+     the design language calls green "secondary" (ER5). */
+  .phase-cards__lead { color: var(--primary); margin-top: 0.35rem; }
+  .phase-cards__lead--after { color: var(--chart-1); }
 
   .phase-cards__link:hover .phase-cards__card {
     box-shadow: var(--shadow-raised);

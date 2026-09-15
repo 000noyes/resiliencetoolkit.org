@@ -1,0 +1,35 @@
+---
+/**
+ * /search: the full result surface, deep-link home, and no-JS floor
+ * (SR1/SR4). Unlisted site chrome: never a nav item, never a tree row;
+ * reached via the box, the contents-render jumps, and direct URL. Three
+ * states: empty query (the box plus the contents list), a query (results
+ * replace the contents, echo and count), and no-JS (the honest fallback
+ * line above the contents list). The page restores from its URL; the URL
+ * beats stored recall (ES5).
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SearchBox from '@/components/search/SearchBox.astro';
+import CoverContents from '@/components/reading/CoverContents.astro';
+---
+
+<BaseLayout title="Search | Resilience Hub Toolkit" description="Search the Resilience Hub Toolkit.">
+  <article class="container mx-auto px-4 py-8 max-w-3xl" data-search-page>
+    <header class="mb-6">
+      <h1 class="text-hero font-semibold mb-4">Search the toolkit</h1>
+      <div class="search-page__box">
+        <SearchBox id="page-search-input" mode="page" />
+      </div>
+    </header>
+
+    <noscript>
+      <p class="search-page__nojs">
+        Search needs JavaScript. Every module is listed below.
+      </p>
+    </noscript>
+
+    <div data-search-contents>
+      <CoverContents showExits={false} />
+    </div>
+  </article>
+</BaseLayout>
