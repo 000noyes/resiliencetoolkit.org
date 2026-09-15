@@ -73,7 +73,7 @@ tests/e2e/                  # Playwright tests
 - **Astro 5** — static output, no server rendering
 - **React 18** — interactive islands only (checkboxes, tables, dashboard)
 - **Tailwind CSS 3** — utility classes + CSS variable design tokens
-- **IndexedDB via `idb`** — all user data stored locally, nothing leaves the device
+- **IndexedDB via `idb`** - all user data stored locally on the reader's device. We count page visits on our own server and collect nothing from the device.
 - **TypeScript** — strict mode
 - **pnpm** — package manager
 - **Vitest** — unit tests (storage layer + data preservation)
