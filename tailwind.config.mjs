@@ -23,11 +23,28 @@
  * @see src/styles/base.css for CSS variable definitions
  * @see src/layouts/BaseLayout.astro for dark mode initialization
  */
+import { breakpoints } from './src/lib/breakpoints.mjs';
+
+/** One type-scale step: size and line height from base.css, plus its weight and tracking */
+function step(name, extra) {
+  return { [name]: [`var(--text-${name})`, { lineHeight: `var(--leading-${name})`, ...extra }] };
+}
+
+/** A Tailwind default name mapped to a step's size and line height only */
+function alias(name, stepName) {
+  return { [name]: [`var(--text-${stepName})`, { lineHeight: `var(--leading-${stepName})` }] };
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   darkMode: 'class', // Toggle via .dark class (controlled by BaseLayout.astro)
   theme: {
+    // The five breakpoints, from the one source (src/lib/breakpoints.mjs);
+    // asserted equal by tests/build/breakpoints.test.ts
+    screens: Object.fromEntries(
+      Object.entries(breakpoints).map(([name, px]) => [name, `${px}px`])
+    ),
     extend: {
       // Color tokens: All use CSS variables for theme switching
       colors: {
@@ -121,16 +138,35 @@ export default {
         mono: ['var(--font-mono)'],
       },
       fontSize: {
-        'display': ['56px', { lineHeight: '1.1', fontWeight: '600', letterSpacing: '0.025em' }],
-        'hero': ['44px', { lineHeight: '1.1', fontWeight: '500', letterSpacing: '0.025em' }],
-        'headline': ['32px', { lineHeight: '1.2', fontWeight: '500' }],
-        'title': ['24px', { lineHeight: '1.3', fontWeight: '500' }],
-        'subtitle': ['20px', { lineHeight: '1.4', fontWeight: '500' }],
-        'body-large': ['18px', { lineHeight: '1.6', fontWeight: '400' }],
-        'body': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
-        'body-small': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
-        'label': ['12px', { lineHeight: '1.5', fontWeight: '500' }],
-        'uppercase-accent': ['11px', { lineHeight: '1.5', fontWeight: '600', letterSpacing: '0.1em' }],
+        // The one type scale (see DESIGN.md, Typography): every name reads
+        // its size and line height from the custom properties in base.css.
+        // The custom names carry weight and tracking; Tailwind's default
+        // names map to the same size and line height ONLY, so a default
+        // utility never changes weight. The pairing is asserted by
+        // tests/build/type-scale.test.ts.
+        ...step('display', { fontWeight: '600', letterSpacing: '0.025em' }),
+        ...step('hero', { fontWeight: '500', letterSpacing: '0.025em' }),
+        ...step('headline', { fontWeight: '500' }),
+        ...step('title', { fontWeight: '500' }),
+        ...step('subtitle', { fontWeight: '500' }),
+        ...step('body-large', { fontWeight: '400' }),
+        ...step('body', { fontWeight: '400' }),
+        ...step('body-small', { fontWeight: '400' }),
+        ...step('chrome', { fontWeight: '400' }),
+        ...step('label', { fontWeight: '500' }),
+        'uppercase-accent': [
+          'var(--text-label)',
+          { lineHeight: 'var(--leading-label)', fontWeight: '600', letterSpacing: '0.1em' },
+        ],
+        ...alias('xs', 'label'),
+        ...alias('sm', 'body-small'),
+        ...alias('base', 'body'),
+        ...alias('lg', 'body-large'),
+        ...alias('xl', 'subtitle'),
+        ...alias('2xl', 'title'),
+        ...alias('3xl', 'headline'),
+        ...alias('4xl', 'hero'),
+        ...alias('5xl', 'display'),
       },
       boxShadow: {
         'ambient': 'var(--shadow-ambient)',

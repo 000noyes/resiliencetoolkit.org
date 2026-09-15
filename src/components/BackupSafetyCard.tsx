@@ -243,7 +243,7 @@ export default function BackupSafetyCard() {
         </h2>
         <p
           data-testid="rt-safety-headline"
-          className="mt-2 text-2xl sm:text-3xl font-medium text-foreground"
+          className="mt-2 text-title sm:text-headline font-medium text-foreground"
           style={{ textWrap: 'balance' }}
         >
           Your work is saved on this device, and only here.
@@ -277,7 +277,7 @@ export default function BackupSafetyCard() {
       </h2>
       <p
         data-testid="rt-safety-headline"
-        className="mt-2 text-2xl sm:text-3xl font-medium text-foreground"
+        className="mt-2 text-title sm:text-headline font-medium text-foreground"
         style={{ textWrap: 'balance' }}
       >
         {card.headline}

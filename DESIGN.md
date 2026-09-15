@@ -13,21 +13,26 @@
 - **Reference sites:** Ready.gov (institutional baseline), USWDS (accessibility standards), Preparewise.com (modern prep), MyPlan app (interactive safety tools). These calibrate against preparedness institutions; resilience is the destination the design moves toward, not a reference to inherit from.
 
 ## Typography
-- **Display/Hero:** Outfit (600 weight) — geometric but warm, strong at large sizes, already established in the codebase
-- **Body:** Outfit (400 weight) — clean readability at body sizes, optical sizing helps at small sizes
-- **UI/Labels:** Outfit (500 weight) — medium weight for interactive element labels, badges, nav
-- **Data/Tables:** Outfit (400 weight, tabular-nums via font-feature-settings) — Outfit supports tabular figures for data alignment
-- **Code:** System monospace (no code blocks in this product)
-- **Loading:** `@fontsource/outfit` (self-hosted, weights 400/500/600)
-- **Scale (px / rem at 16px base):**
-  - display: 56px / 3.5rem (hero headings, landing page)
-  - h1: 36px / 2.25rem
-  - h2: 24px / 1.5rem
-  - h3: 18px / 1.125rem
-  - body: 16px / 1rem
-  - small: 14px / 0.875rem
-  - caption: 12px / 0.75rem
-  - uppercase-accent: 11px / 0.6875rem (letter-spacing 0.05em)
+- **Typeface:** Outfit throughout, self-hosted via `@fontsource/outfit` (weights 400/500/600). Display and page titles 600 or 500; body 400; labels and interactive text 500; tables and counters use tabular figures.
+- **One scale, as tokens.** Ten steps in rem at a 16px base, each with one line height. The steps are CSS custom properties in `base.css` (`--text-<step>` and `--leading-<step>`); Tailwind's `fontSize` is REPLACED by these names, so `text-<step>` is the only way markup sets a size and base.css reads the same properties. Tailwind's default names (`text-xs` to `text-5xl`) remain as aliases to a step's size and line height only; they carry no weight or tracking. A build test asserts the pairing.
+
+  | Step | Size | Line height | Role |
+  |---|---|---|---|
+  | `label` | 12px / 0.75rem | 1.4 | uppercase tracked labels, tabular numerals, chips (`uppercase-accent` shares the size, 600 weight, 0.1em tracking) |
+  | `chrome` | 13px / 0.8125rem | 1.45 | chrome running text: the contents tree, On this page, footnotes, excerpts, captions |
+  | `body-small` | 14px / 0.875rem | 1.5 | buttons, breadcrumb, table heads, bar doors, meta |
+  | `body` | 16px / 1rem | 1.5 | body, sheet rows, inputs, /search rows |
+  | `body-large` | 18px / 1.125rem | 1.5 | lead paragraph |
+  | `subtitle` | 20px / 1.25rem | 1.4 | h3, card names |
+  | `title` | 24px / 1.5rem | 1.3 | article h2 |
+  | `headline` | 32px / 2rem | 1.2 | section headline, page h2 |
+  | `hero` | fluid, 32px at 375 to 44px at 768 and above | 1.1 | page h1 |
+  | `display` | fluid, 36px at 375 to 56px at 800 and above | 1.1 | opener titles, the cover |
+
+- **The floors.** Two, by register. Lowercase running text is never below 13px (`chrome`), because lowercase legibility is set by x-height (Outfit: 0.48em). Uppercase tracked labels and tabular numerals may sit at 12px (`label`), because capitals and figures carry more glyph height per pixel (cap height 0.70em). Nothing below 12. On phones (below `md`) text a reader navigates or reads is 14 or more: sheet rows 16 with 14 secondary lines, On this page rows in flow 14, bar doors 14; the 13 and 12 steps exist there only for uppercase labels and numerals. Desktop rails keep 13 and 12.
+- **Units.** Tokens are rem, so a browser's default font size comes through. No Dynamic Type hook this release (roadmap: test the reading pages at 130 and 160 percent text, then decide). Page zoom scales everything.
+- **Print** keeps its point sizes (9pt, 11pt, 13pt, 14pt, 18pt) in the print block; they are not on the scale.
+- **Tracking:** body 0.025em (`--tracking-normal`), uppercase labels 0.1em (`--tracking-wide`). `text-wrap: balance` on page titles, opener titles, and article h2 and h3.
 
 ## Color
 - **Approach:** Restrained with 2 accents — color is rare and meaningful. The split is temporal: **orange = the work of preparing right now; green = the resilience that work builds toward.** Immediate action is warm; durable capacity is grown.
@@ -62,11 +67,22 @@
 
 ## Layout
 - **Approach:** Grid-disciplined
-- **Grid:** Single column on mobile (<1024px), 220px sidebar + fluid content on desktop
-- **Max content width:** 1200px (module pages), 1280px (container), 4xl/56rem (standalone content)
+- **Breakpoints:** five, mobile first, from the one source `src/lib/breakpoints.mjs` (Tailwind `screens` is built from it; base.css and scoped styles use `@screen <name>` for at-or-above and `@media not all and (min-width: theme(screens.<name>))` for below, so a threshold never applies twice at one width; scripts import the module). A build test asserts the config equals the module.
+
+  | Name | Value | Owns |
+  |---|---|---|
+  | `sm` | 640 | cover contents in two columns; the logo word |
+  | `md` | 768 | header nav visible; guide tables unstacked; the expanding search lens; the search sheet retires; main top padding |
+  | `lg` | 1024 | header search box always visible (180px) |
+  | `reading` | 1200 | the three-column reading grid, rails, and gutters; below it the docked bar and its sheets |
+  | `wide` | 1340 | header search box 230px |
+
+  Two sheet lifecycles: the search sheet exists below `md` and the header box takes over from there; the reading sheets (Toolkit Contents, Footnotes, Make Comments) exist below `reading` and the rails take over from there. Crossing either line with a sheet open closes it, releases its scroll lock, and returns focus to the control that replaces it.
+- **The reading grid:** at `reading` and above, three columns (the contents tree 264px, the article at `minmax(0, 1fr)`, the right rail 296px plus a 48px gutter); both rails close to labeled edge buttons and the article keeps its measure either way. Below `reading`, one column: the page header (breadcrumb, title, the quiet action row), then On this page in flow, then the article; the tree and Footnotes live in the docked bar's sheets. Side padding is 16px (`--spacing-md`) at every phone width; the body measure at 375px is the 343px column, about 45ch at 16px.
+- **Width discipline:** nothing exceeds its column. Article links wrap anywhere, flex text children carry `min-width: 0`, code blocks scroll in their own container, the external-link modal is `min(480px, 100% - 32px)`. Block chrome (the bar, the sheets, the search input, On this page, stacked tables, notice strips) fills the column; inline text never stretches; number and glyph columns share one width. A layout test sweeps every route at 320, 375, and 414.
+- **Max content width:** 1600px (the reading grid), 1200px (openers), 1280px (container), 4xl/56rem (standalone content)
 - **Border radius:** Hierarchical: sm=4px, md=6px, lg=8px, xl=12px (matches base.css CSS variables)
 - **Full radius (9999px) is reserved for true circles:** phase/step nodes, dots, spinners, circular icon buttons, and progress tracks. Text surfaces — chips, badges, labels, and buttons of every size — always use the sm/md/lg/xl scale (full-radius capsules on text are default-AI styling, not this system). Floating action buttons (the corner panel trigger, mobile TOC trigger) sit at the top of the scale (xl), never beyond it.
-- **Mobile spacing fix (KNOWN ISSUE):** On mobile (<1024px), the `.module-layout` grid collapses to `1fr` but retains `padding: 0 var(--spacing-md)` (16px each side). Combined with parent container padding, this wastes horizontal space on narrow screens (especially 375px). Fix: reduce mobile horizontal padding to `--spacing-sm` (12px) or `--spacing-xs` (8px) on module pages below 640px. The `.module-content` should also reset `grid-column` to `1 / -1` on mobile to prevent layout artifacts from the 2-column desktop grid.
 
 ## Motion
 - **Approach:** Minimal-functional (transitions that aid comprehension, nothing decorative)
@@ -169,3 +185,4 @@ border), no animation, removed by the reload itself.
 | 2026-09-14 | The header is fixed, never sticky; notices render under it | A text input inside a sticky header makes browsers scroll the page toward it on every edit; fixed has no in-flow position to scroll to, and a header that never moves gives every notice one slot |
 | 2026-09-14 | Search lands on the searched words, marked, after opening the page at its top | Landing on a header with a focus ring read as a jolt; the words are what the reader searched for |
 | 2026-09-14 | Activity rows in the contents: unnumbered, glyph leading in the number column, secondary color, no label | Numbers belong to printed chapters only; the row style, not a label, says "not a chapter" |
+| 2026-09-15 | One type scale as tokens; five breakpoints from one source; title first on phones | Three scales disagreed (Tailwind defaults, the config, this file) and 74 hardcoded sizes sat outside all of them, so nobody had written a phone scale and the largest size got used. Ten steps with one line height each replace them, Tailwind's default names become aliases to the same steps, and eight breakpoint values collapse to five with the 768 overlap fixed by construction. On phones the chapter opens with its title and On this page follows in flow, server-rendered, h2 rows only. The 2026-04-06 mobile spacing flag is retired: the padding it named no longer exists; the blank right strip was horizontal overflow on four routes, fixed by width discipline. |
