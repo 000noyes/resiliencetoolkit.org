@@ -2067,6 +2067,9 @@ body.has-site-header {
 .reading-bar__door {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  /* Doors share the bar evenly whether two or three are present */
+  flex: 1 1 0;
   gap: 8px;
   min-height: 44px;
   padding: 0 var(--spacing-md);
@@ -2783,7 +2786,8 @@ a.cover-contents__section:hover {
 
 .search-sheet__input .search-box__input {
   height: 44px;
-  font-size: 15px;
+  /* 16px is the floor below which iOS zooms the page on focus */
+  font-size: 16px;
 }
 
 .search-sheet__input .search-panel {

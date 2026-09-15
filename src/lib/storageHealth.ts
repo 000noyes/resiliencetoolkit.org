@@ -14,7 +14,7 @@
  * promise: your data is private and offline (true), AND it lives only on this
  * device and a browser can clear it, so back it up.
  */
-import { getMetadata } from '@/lib/storage';
+import { getMetadata, storageOpenTimedOut } from '@/lib/storage';
 import type { WorkCanary } from '@/lib/backup-cue';
 
 /** Editors dispatch this on the document when the storage picture changes (e.g. quota hit). */
@@ -129,7 +129,8 @@ export function shouldClaimStorageSoft(inputs: {
  *   - IDB works and the origin is persisted -> healthy (no banner)
  */
 export async function checkStorageHealth(): Promise<StorageHealth> {
-  const idbAvailable = typeof window !== 'undefined' && !!window.indexedDB;
+  const idbAvailable =
+    typeof window !== 'undefined' && !!window.indexedDB && !storageOpenTimedOut();
   if (!idbAvailable) {
     return { status: 'unavailable', idbAvailable: false, persisted: false, message: UNAVAILABLE_MESSAGE };
   }

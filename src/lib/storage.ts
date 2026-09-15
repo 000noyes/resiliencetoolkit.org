@@ -100,12 +100,40 @@ let dbInstance: IDBPDatabase<ResilienceDB> | null = null;
  *
  * @returns {Promise<IDBPDatabase>} Database connection (singleton)
  */
+/**
+ * How long an IndexedDB open may take before the app treats storage as
+ * unavailable. WebKit can leave an open request that never fires success or
+ * error, most often on a first visit to a new origin; without a bound every
+ * editor on the page waits forever in its loading state.
+ */
+export const STORAGE_OPEN_TIMEOUT_MS = 10_000;
+
+let openTimedOut = false;
+
+/** True once an open has exceeded STORAGE_OPEN_TIMEOUT_MS; read by storage health. */
+export function storageOpenTimedOut(): boolean {
+  return openTimedOut;
+}
+
 async function getDB(): Promise<IDBPDatabase<ResilienceDB>> {
   if (dbInstance) {
     return dbInstance;
   }
 
-  dbInstance = await openDB<ResilienceDB>('resilience-toolkit', 1, {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      openTimedOut = true;
+      reject(
+        new DOMException(
+          `IndexedDB did not open within ${STORAGE_OPEN_TIMEOUT_MS}ms`,
+          'TimeoutError'
+        )
+      );
+    }, STORAGE_OPEN_TIMEOUT_MS);
+  });
+
+  const opening = openDB<ResilienceDB>('resilience-toolkit', 1, {
     upgrade(db) {
       // Todos store: Checklist completion state
       const todoStore = db.createObjectStore('todos', { keyPath: 'id' });
@@ -119,6 +147,12 @@ async function getDB(): Promise<IDBPDatabase<ResilienceDB>> {
       db.createObjectStore('metadata', { keyPath: 'key' });
     },
   });
+
+  try {
+    dbInstance = await Promise.race([opening, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
 
   return dbInstance;
 }

@@ -6,7 +6,7 @@ import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro'
 import ReadingRail from '@/components/reading/ReadingRail.astro';
 import ReadingBar from '@/components/reading/ReadingBar.astro';
 import ArticleBody from '@/components/reading/ArticleBody.astro';
-import { chainFor, frontMatter } from '@/data/contents';
+import { chainFor, frontMatter, knowingYourCommunityActivities } from '@/data/contents';
 
 // DR2: the introduction reads in the same 3C grammar as the chapters,
 // the tree left with its row active and the page's own sections resting
@@ -21,9 +21,11 @@ const next = chainFor(frontMatter.number).next;
       <div slot="on-this-page-extra" class="start-here">
         <h3 class="start-here__label">Start here</h3>
         <a href="/modules/knowing-your-community" class="start-here__row">0.1 Knowing Your Community</a>
-        <ExternalLink href="https://drive.google.com/file/d/10PfAqefQWzjC_BwJvK1PySATl3W4t843/view" class="start-here__row">
-          Interactive Toolkit Activity
-        </ExternalLink>
+        {knowingYourCommunityActivities.map((activity) => (
+          <ExternalLink href={activity.href} class="start-here__row">
+            {activity.title}
+          </ExternalLink>
+        ))}
       </div>
     </ReadingRail>
     <article data-pagefind-body class="reading-content">
