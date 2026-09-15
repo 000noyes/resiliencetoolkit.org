@@ -2,7 +2,13 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
-## [0.0.16.0] - 2026-09-14
+## [0.1.0] - 2026-09-15
+
+From this release the version is three-part semantic versioning. The
+fourth digit used through 0.0.15.0 is retired; fixes to a shipped release
+bump the third number. This release is a minor version because it adds a
+capability: the reading grammar, the cover, and search.
+
 
 ### Added
 - The home page is now the cover of the toolkit: the full contents are on it,
