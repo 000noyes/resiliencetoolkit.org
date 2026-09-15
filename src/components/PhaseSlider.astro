@@ -179,7 +179,8 @@ const { heading, class: className, showDescriptions = false } = Astro.props;
      one-accent rule deliberately). The green is --chart-1, never
      --secondary: the token named "secondary" is blue in code even though
      the design language calls green "secondary" (ER5). */
-  .phase-cards__lead { color: var(--primary); margin-top: 0.35rem; }
+  /* 12px text on the primary orange reads 4.49:1 on the page; the darker primary clears it */
+  .phase-cards__lead { color: var(--primary-hover); margin-top: 0.35rem; }
   .phase-cards__lead--after { color: var(--chart-1); }
 
   .phase-cards__link:hover .phase-cards__card {

@@ -1679,11 +1679,10 @@ body.has-site-header {
   min-width: 26px;
 }
 
-/* In the dark theme the table accent falls under 4.5:1 on the background
-   at 12px; the numbers take the sidebar primary there (8A) */
-.dark .contents-tree__number,
-.dark .cover-contents__number,
-.dark .opener-row__number {
+/* The table accent falls under 4.5:1 on the background at 12px (4.33 in
+   the light theme, 3.70 in the dark); every number column takes the
+   sidebar primary in both themes (8A, measured in the build) */
+.contents-tree__number {
   color: var(--sidebar-primary);
 }
 
@@ -2455,7 +2454,7 @@ a.cover-contents__section:hover {
   line-height: var(--leading-label);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--table-accent);
+  color: var(--sidebar-primary);
 }
 
 .cover-contents__exits {
@@ -2584,7 +2583,7 @@ a.cover-contents__section:hover {
   line-height: var(--leading-label);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--table-accent);
+  color: var(--sidebar-primary);
 }
 
 .opener-row__title {
