@@ -55,7 +55,7 @@ const { prev, next } = chainFor(`opener-${section.number}`);
       </div>
     </header>
 
-    <ol class="opener-rows">
+    <ol class="opener-rows" data-pagefind-ignore>
       {section.chapters.map((chapter) => (
         <li class="opener-row">
           <a href={`${section.basePath}/${chapter.slug}`} class="opener-row__read">
