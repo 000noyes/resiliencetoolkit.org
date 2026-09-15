@@ -61,11 +61,17 @@ The build handles this automatically. `pnpm build` generates the correct `PRECAC
 
 ## Versioning
 
-The authoritative release version lives in the `VERSION` file as a 4-part
-number (e.g. `0.0.13.0`). `package.json`'s `version` tracks only the 3-part head
-(`0.0.13`) for tooling compatibility — the 4th segment is managed in `VERSION`
-and `CHANGELOG.md`, not in `package.json`. Don't hand-edit `package.json` to add
-a 4th segment; bump `VERSION` and add a `CHANGELOG.md` entry instead.
+Releases follow three-part semantic versioning: MAJOR.MINOR.PATCH, in the
+`VERSION` file and `package.json` together, with a matching `CHANGELOG.md`
+entry.
+
+- MAJOR 1.0.0 is declared when the toolkit can be relied on in the field:
+  offline use and cross-device sync both live. Until then the major stays 0.
+- MINOR for a new capability a reader can notice (a reading surface, search,
+  sync).
+- PATCH for polish, fixes, and hotfixes to a shipped release.
+
+Versions before 0.1.0 used a four-part number; those entries stay as written.
 
 The package manager is pinned via `package.json`'s `packageManager` field
 (`pnpm@10.30.3`) so contributors get a deterministic toolchain.

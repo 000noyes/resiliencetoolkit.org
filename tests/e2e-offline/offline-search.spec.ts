@@ -1,30 +1,51 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
- * Offline search — the homepage's "Everything works offline." now includes
- * Pagefind search: the SW precaches the pagefind core subset (pagefind.js,
- * entry, meta, wasm, index/ + fragment/ chunks; see
- * scripts/pagefind-precache.mjs), so a first visit followed by a dead network
- * still returns real results.
+ * Offline search (SR6 as a requirement; ES1/ES2 invariants): the header
+ * box on a chapter page returns real results with the network dead,
+ * because the service worker precaches the Pagefind core set inside the
+ * same atomic per-build generation as the shell (scripts/pagefind-precache.mjs).
+ * Three states are proven: after install, with a NEW worker waiting, and
+ * after that worker activates.
  *
- * Harness rules match offline-durability.spec.ts (Chromium only): run against
- * the built artifact via astro preview; wait for the worker's own precache
- * completeness sentinel; cut the network with context.route abort (setOffline
- * alone does not block loopback in Chromium) and prove the cut with a
- * guaranteed-cache-miss probe. Never unify this with the WebKit spec — WebKit
- * cannot simulate offline in front of a service worker via route interception.
+ * Harness rules match offline-durability.spec.ts (Chromium only): run
+ * against the built artifact via astro preview; wait for the worker's own
+ * precache completeness sentinel; cut the network with context.route abort
+ * (setOffline alone does not block loopback in Chromium) and prove the cut
+ * with a guaranteed-cache-miss probe. A second deploy is simulated by
+ * rewriting dist/sw.js on disk, as sw-update-rotation.spec.ts does.
  */
 
-// Pagefind lazy-loads its index only when a query runs, so the whole search
-// path below happens strictly AFTER the network is cut: import + init + index
-// chunks must all come from the SW cache.
-const SEARCH_QUERY = 'mutual aid';
+const CHAPTER = '/modules/emergency-preparedness/1-2/';
+const QUERY = 'mutual aid';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const SW_DIST_PATH = join(__dirname, '../../dist/sw.js');
+const BUILD_B_VERSION = 'v-build-99999999999999998';
+
+let originalSw: string;
+test.beforeEach(() => {
+  originalSw = readFileSync(SW_DIST_PATH, 'utf-8');
+});
+test.afterEach(() => {
+  writeFileSync(SW_DIST_PATH, originalSw);
+});
+test.setTimeout(180_000);
+
+function deployBuildB() {
+  writeFileSync(
+    SW_DIST_PATH,
+    originalSw.replace(/const CACHE_VERSION = '[^']*';/, `const CACHE_VERSION = '${BUILD_B_VERSION}';`)
+  );
+}
 
 // expect.poll, not page.waitForFunction: an async predicate passed to
 // waitForFunction resolves on its pending Promise (truthy) under this repo's
 // Playwright pin, so the gate can pass before the awaited condition holds.
-// expect.poll genuinely awaits page.evaluate's async body (#106).
-async function waitForServiceWorker(page: import('@playwright/test').Page) {
+async function waitForServiceWorker(page: Page) {
   await expect
     .poll(
       () =>
@@ -33,65 +54,136 @@ async function waitForServiceWorker(page: import('@playwright/test').Page) {
           const reg = await navigator.serviceWorker.ready.catch(() => null);
           return !!(reg && reg.active && navigator.serviceWorker.controller);
         }),
-      { timeout: 20_000 },
+      { timeout: 20_000 }
     )
     .toBe(true);
 }
 
-test('homepage search returns real results while offline', async ({ page, context }) => {
-  // 1) Bootstrap the SW online; a controlled reload guarantees SW-served
-  //    navigations from here on.
+async function waitForSentinel(page: Page) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          const names = await caches.keys();
+          for (const name of names) {
+            const cache = await caches.open(name);
+            if (await cache.match('/__rt-precache-complete__')) return true;
+          }
+          return false;
+        }),
+      { timeout: 30_000 }
+    )
+    .toBe(true);
+}
+
+async function bootstrap(page: Page) {
   await page.goto('/', { waitUntil: 'load' });
   await waitForServiceWorker(page);
   await page.reload({ waitUntil: 'load' });
   await waitForServiceWorker(page);
+  await waitForSentinel(page);
+}
 
-  // 2) Wait for the precache completeness sentinel (the fill runs detached
-  //    from activation; SW-active does not mean the pagefind chunks landed).
-  //    Polled via evaluate — an async waitForFunction predicate is not awaited.
-  const sentinelDeadline = Date.now() + 15_000;
-  for (;;) {
-    const complete = await page.evaluate(async () => {
-      const names = await caches.keys();
-      for (const name of names) {
-        const cache = await caches.open(name);
-        if (await cache.match('/__rt-precache-complete__')) return true;
-      }
-      return false;
-    });
-    if (complete) break;
-    if (Date.now() > sentinelDeadline) {
-      throw new Error('precache did not write its completeness sentinel within 15s');
-    }
-    await page.waitForTimeout(250);
-  }
-
-  // 3) Cut the network. Route-abort is REQUIRED in Chromium (setOffline does
-  //    not block loopback); keep setOffline so navigator.onLine behaves.
+async function cutNetwork(page: Page, context: import('@playwright/test').BrowserContext) {
   await context.setOffline(true);
   await context.route('**/*', (route) => route.abort());
-
-  // Harness self-check: a unique query string is never a precache key, so this
-  // must NOT return 200. If it does, the harness is secretly online.
   const probeStatus = await page.evaluate(async () => {
     const res = await fetch(`/?_offlineprobe=${Date.now()}`, { cache: 'no-store' }).catch(() => null);
     return res ? res.status : 0;
   });
-  expect(probeStatus, 'harness is not actually offline — a network request succeeded').not.toBe(200);
+  expect(probeStatus, 'harness is not actually offline').not.toBe(200);
+}
 
-  // 4) Search. The row ships hidden and is revealed by the init script.
-  const input = page.locator('#pagefind-search');
+async function restoreNetwork(context: import('@playwright/test').BrowserContext) {
+  await context.unroute('**/*');
+  await context.setOffline(false);
+}
+
+// The whole search path runs strictly AFTER the cut: the module, Pagefind,
+// its wasm and index chunks all come from the worker's cache.
+async function expectSearchWorks(page: Page) {
+  const input = page.locator('#header-search-input');
   await expect(input).toBeVisible({ timeout: 10_000 });
-  await input.fill(SEARCH_QUERY);
+  await input.click();
+  await input.pressSequentially(QUERY, { delay: 30 });
+  const rows = page.locator('#header-search [role="option"]');
+  await expect(rows.first()).toBeVisible({ timeout: 20_000 });
+  expect(await rows.count()).toBeGreaterThan(0);
+  await expect(page.locator('#header-search [data-search-status]')).not.toContainText('unavailable');
+}
 
-  // 5) Real results must render: pagefind.js + wasm + index + fragment chunks
-  //    all served from the SW cache. A result is an anchor into the hits list.
-  const hits = page.locator('[data-search-hits] a');
-  await expect(hits.first()).toBeVisible({ timeout: 15_000 });
-  expect(await hits.count()).toBeGreaterThan(0);
+async function triggerUpdateCheck(page: Page) {
+  await page.evaluate(async () => {
+    const reg = await navigator.serviceWorker.getRegistration();
+    await reg?.update();
+  });
+}
 
-  // The status element must not be stuck on an error/unavailable message.
-  const status = page.locator('[data-search-status]');
-  await expect(status).not.toContainText('unavailable');
-  await expect(status).not.toContainText('requires a production build');
+test('search on a chapter page returns real results while offline after install', async ({ page, context }) => {
+  await bootstrap(page);
+  await page.goto(CHAPTER, { waitUntil: 'load' });
+  await waitForServiceWorker(page);
+  await cutNetwork(page, context);
+  await expectSearchWorks(page);
+  await restoreNetwork(context);
+});
+
+test('with a new worker waiting, offline search still serves from the complete generation', async ({
+  page,
+  context,
+}) => {
+  await bootstrap(page);
+  await page.goto(CHAPTER, { waitUntil: 'load' });
+  await waitForServiceWorker(page);
+
+  deployBuildB();
+  await triggerUpdateCheck(page);
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          const reg = await navigator.serviceWorker.getRegistration();
+          return !!reg?.waiting;
+        }),
+      { timeout: 45_000 }
+    )
+    .toBe(true);
+
+  await cutNetwork(page, context);
+  await expectSearchWorks(page);
+  await restoreNetwork(context);
+});
+
+test('after the new worker activates, search serves from the new atomic generation', async ({ page, context }) => {
+  await bootstrap(page);
+  await page.goto(CHAPTER, { waitUntil: 'load' });
+  await waitForServiceWorker(page);
+
+  deployBuildB();
+  await triggerUpdateCheck(page);
+  const banner = page.getByRole('status').filter({ hasText: 'A newer version of this site is ready.' });
+  await expect(banner).toBeVisible({ timeout: 60_000 });
+  await banner.getByRole('button', { name: 'Refresh' }).click();
+  await expect
+    .poll(() => page.evaluate(() => caches.keys()).catch(() => [] as string[]), { timeout: 30_000 })
+    .toContain(`resilience-hub-v2-${BUILD_B_VERSION}`);
+  await page.waitForLoadState('load');
+  await waitForServiceWorker(page);
+
+  // ES2: the shell and the search assets live in ONE generation
+  const generation = await page.evaluate(async (name) => {
+    const cache = await caches.open(name);
+    const paths = (await cache.keys()).map((r) => new URL(r.url).pathname);
+    return {
+      pagefind: paths.some((p) => p === '/pagefind/pagefind.js'),
+      index: paths.some((p) => p.startsWith('/pagefind/index/')),
+      chapter: paths.some((p) => p.startsWith('/modules/emergency-preparedness/1-2')),
+      sentinel: paths.includes('/__rt-precache-complete__'),
+    };
+  }, `resilience-hub-v2-${BUILD_B_VERSION}`);
+  expect(generation).toEqual({ pagefind: true, index: true, chapter: true, sentinel: true });
+
+  await cutNetwork(page, context);
+  await expectSearchWorks(page);
+  await restoreNetwork(context);
 });

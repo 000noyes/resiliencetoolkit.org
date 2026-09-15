@@ -4,11 +4,26 @@ import ExternalLinkComponent from './ExternalLink.tsx';
 interface Props {
   href: string;
   class?: string;
+  /**
+   * When to hydrate the notice. "idle" (default) for links in the reading
+   * flow; "visible" for index rows that repeat across a page (the contents
+   * tree renders in the rail and again in the phone sheet), so hidden copies
+   * never hydrate and the todo islands keep the idle queue.
+   */
+  hydrate?: 'idle' | 'visible';
 }
 
-const { href, class: className } = Astro.props;
+const { href, class: className, hydrate = 'idle' } = Astro.props;
 ---
 
-<ExternalLinkComponent href={href} className={className} client:idle>
-  <slot />
-</ExternalLinkComponent>
+{
+  hydrate === 'visible' ? (
+    <ExternalLinkComponent href={href} className={className} client:visible>
+      <slot />
+    </ExternalLinkComponent>
+  ) : (
+    <ExternalLinkComponent href={href} className={className} client:idle>
+      <slot />
+    </ExternalLinkComponent>
+  )
+}

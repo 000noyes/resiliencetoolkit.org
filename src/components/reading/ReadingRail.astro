@@ -1,0 +1,174 @@
+---
+/**
+ * The right rail: the house for the reading page's right-hand tenants.
+ *
+ * On this page rests here (the re-housed contents scanner keeps its
+ * progress counters); Footnotes lives beside it. One tenant is open at a
+ * time: opening another swaps the panel, never stacks. Closed tenants are
+ * labeled edge buttons in a reserved 48px gutter that is part of the
+ * layout, never floating over content. Closing a tenant returns to On
+ * this page; closing On this page itself collapses the rail to the
+ * gutter and returns the measure to the reader (DR3). Desktop panels are
+ * regions, never dialogs (ER7). Below 1200px the rail never translates
+ * down: On this page renders in flow at the top of the chapter and the
+ * doors live in the docked bar.
+ *
+ * The Make Comments tenant mounts beside these on a workshop round: the
+ * same panel grammar, its feed and compose foot rendered by the
+ * annotation island into the tenant's mount (DR19/DR20).
+ */
+import { TableOfContents } from '@/components/TableOfContents';
+import FootnotesTenant from './FootnotesTenant.astro';
+
+interface Props {
+  moduleKey: string;
+  sectionNumber: string;
+  /** Openers are index-shaped: they carry the doors but no page scanner */
+  showOnThisPage?: boolean;
+  /** A workshop round: the Make Comments tenant joins the rail */
+  comments?: boolean;
+  /** The tenant open at load (the grid's initial data-rail) */
+  resting?: string;
+}
+
+const {
+  moduleKey,
+  sectionNumber,
+  showOnThisPage = true,
+  comments = false,
+  resting = showOnThisPage ? 'on-this-page' : 'closed',
+} = Astro.props;
+
+const tenants = [
+  ...(showOnThisPage ? [{ id: 'on-this-page', label: 'On this page' }] : []),
+  { id: 'footnotes', label: 'Footnotes' },
+  ...(comments ? [{ id: 'make-comments', label: 'Make Comments' }] : []),
+];
+---
+
+<aside class="reading-rail">
+  {showOnThisPage && (
+  <section
+    class="reading-rail__panel"
+    id="rail-panel-on-this-page"
+    data-rail-panel="on-this-page"
+    aria-label="On this page"
+    tabindex="-1"
+  >
+    <div class="reading-rail__panel-bar" data-annot-ui>
+      <button
+        type="button"
+        class="reading-rail__close"
+        data-rail-close="on-this-page"
+        aria-controls="rail-panel-on-this-page"
+      >
+        Close
+      </button>
+    </div>
+    <TableOfContents client:load moduleKey={moduleKey} />
+    <slot name="on-this-page-extra" />
+  </section>
+  )}
+
+  <section
+    class="reading-rail__panel"
+    id="rail-panel-footnotes"
+    data-rail-panel="footnotes"
+    aria-label="Footnotes"
+    tabindex="-1"
+  >
+    <div class="reading-rail__panel-bar" data-annot-ui>
+      <h2 class="reading-rail__panel-title">Footnotes</h2>
+      <button
+        type="button"
+        class="reading-rail__close"
+        data-rail-close="footnotes"
+        aria-controls="rail-panel-footnotes"
+      >
+        Close
+      </button>
+    </div>
+    <FootnotesTenant sectionNumber={sectionNumber} />
+  </section>
+
+  {comments && (
+    <section
+      class="reading-rail__panel reading-rail__panel--comments"
+      id="rail-panel-make-comments"
+      data-rail-panel="make-comments"
+      aria-label="Make Comments"
+      tabindex="-1"
+    >
+      <div class="reading-rail__panel-bar" data-annot-ui>
+        <h2 class="reading-rail__panel-title">Make Comments</h2>
+        <button
+          type="button"
+          class="reading-rail__close"
+          data-rail-close="make-comments"
+          aria-controls="rail-panel-make-comments"
+        >
+          Close
+        </button>
+      </div>
+      <div class="comments-tenant" data-comments-mount="rail" data-annot-ui></div>
+    </section>
+  )}
+
+  <div class="reading-rail__gutter" data-annot-ui>
+    {
+      tenants.map((t) => (
+        <button
+          type="button"
+          class="reading-rail__edge-btn"
+          data-rail-btn={t.id}
+          aria-expanded={t.id === resting ? 'true' : 'false'}
+          aria-controls={`rail-panel-${t.id}`}
+        >
+          <span class="reading-rail__edge-open">{t.label}</span>
+        </button>
+      ))
+    }
+  </div>
+</aside>
+
+<script>
+  // One tenant open at a time; opening another swaps the panel, never
+  // stacks. Closing a tenant returns to On this page; closing On this
+  // page collapses to the gutter (the test-plan state machine).
+  const RESTING = document.querySelector('[data-rail-panel="on-this-page"]')
+    ? 'on-this-page'
+    : 'closed';
+
+  function setRail(state: string) {
+    const grid = document.querySelector('.reading-grid');
+    if (!grid) return;
+    grid.setAttribute('data-rail', state);
+    grid.querySelectorAll<HTMLButtonElement>('[data-rail-btn]').forEach((b) => {
+      b.setAttribute('aria-expanded', String(b.getAttribute('data-rail-btn') === state));
+    });
+    if (state !== 'closed') {
+      grid
+        .querySelector<HTMLElement>(`[data-rail-panel="${state}"]`)
+        ?.focus();
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-rail-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-rail-btn')!;
+      const grid = document.querySelector('.reading-grid');
+      const open = grid?.getAttribute('data-rail');
+      setRail(open === id ? (id === RESTING ? 'closed' : RESTING) : id);
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-rail-close]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-rail-close')!;
+      setRail(id === RESTING ? 'closed' : RESTING);
+      document
+        .querySelector<HTMLElement>(`[data-rail-btn="${id}"]`)
+        ?.focus();
+    });
+  });
+</script>

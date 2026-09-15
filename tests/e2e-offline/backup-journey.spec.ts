@@ -147,6 +147,12 @@ test.describe('the journey', () => {
 
     // Back up. The anchor transport fires a real download whose filename is
     // dictation-stable (DR10): the name, then the date, then the time.
+    // The button is an island: wait for hydration so the click drives the
+    // backup, not a still-static shell
+    await page.waitForFunction(() => {
+      const el = document.querySelector('[data-testid="rt-backup-button"]')?.closest('astro-island');
+      return el && !el.hasAttribute('ssr');
+    });
     const downloadPromise = page.waitForEvent('download');
     await backupButton.click();
     const download = await downloadPromise;

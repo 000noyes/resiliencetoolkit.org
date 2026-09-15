@@ -25,6 +25,13 @@ export default defineConfig({
     {
       name: 'workshop-phone',
       use: { ...devices['Pixel 7'] },
+      testIgnore: '**/round-rail.spec.ts',
+    },
+    // The rail grammar at 1360: the Make Comments tenant as a rail panel
+    {
+      name: 'workshop-desktop',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1360, height: 900 } },
+      testMatch: '**/round-rail.spec.ts',
     },
   ],
   webServer: {

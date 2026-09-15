@@ -4,7 +4,7 @@
 
 :root {
   /* Layout dimensions */
-  --header-height: 56px;
+  --header-height: 49px; /* the fixed header's real height: 40px mark + 8px padding + 1px border */
   scroll-padding-top: calc(var(--header-height) + var(--spacing-md));
   scroll-padding-bottom: var(--spacing-lg);
 
@@ -998,38 +998,45 @@ a.button-link:focus-visible {
    Table of Contents Sidebar
    ======================================== */
 
-/* Layout wrapper for module pages with TOC */
-.module-layout {
+/* ========================================
+   3C reading grid (the reading surface)
+   Tree left, content center, right rail; the rail's open panel is 296px
+   plus hairline, the closed state a reserved 48px gutter (DR3). Below
+   1200px the phone grammar takes over: single column, tree hidden (it
+   lives in the docked bar's sheet), On this page in flow at chapter top.
+   ======================================== */
+:root {
+  --reading-tree-w: 264px;
+  --reading-rail-w: 296px;
+  --reading-gutter-w: 48px;
+  --reading-bar-h: 56px;
+}
+
+.reading-grid {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: var(--spacing-xl);
-  max-width: 1200px;
+  grid-template-columns: var(--reading-tree-w) minmax(0, 1fr) calc(var(--reading-rail-w) + var(--reading-gutter-w));
+  gap: var(--spacing-lg);
   margin: 0 auto;
   padding: 0 var(--spacing-md);
+  max-width: 1600px;
 }
 
-.module-layout .module-content {
-  grid-column: 2; /* Stay in content column even while TOC is hydrating */
+.reading-grid .reading-content {
+  grid-column: 2;
+  grid-row: 1;
   min-width: 0; /* Prevent grid blowout */
+  container-type: inline-size;
+  container-name: reading;
 }
 
-/* When TableOfContents returns null (no headings found), expand content to full width */
-.module-layout:not(:has(.toc-sidebar)) .module-content {
-  grid-column: 1 / -1;
-}
-
-.module-layout .toc-sidebar {
-  align-self: start;
-}
-
-@media (max-width: 1023px) {
-  .module-layout {
-    grid-template-columns: 1fr;
-    padding: 0 var(--spacing-md);
-  }
-
-  .toc-sidebar:not(.toc-sidebar--mobile) {
-    display: none;
+/* Tables scroll inside their own container below the 680px content
+   threshold (DR3); the page body never scrolls horizontally */
+@container reading (max-width: 680px) {
+  .reading-content .guide-table,
+  .reading-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 
@@ -1160,18 +1167,6 @@ a.button-link:focus-visible {
   color: var(--sidebar-primary);
 }
 
-.toc-item--active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 16px;
-  background: var(--sidebar-primary);
-  border-radius: 0 2px 2px 0;
-}
-
 .toc-item--nested {
   font-size: 12px;
   color: var(--text-secondary);
@@ -1292,138 +1287,6 @@ table tr td:only-child strong[id] {
   scroll-margin-top: calc(var(--header-height) + 16px);
 }
 
-/* ========================================
-   Mobile TOC
-   ======================================== */
-
-/* Mobile trigger button */
-.toc-mobile-trigger {
-  display: none;
-  position: fixed;
-  bottom: var(--spacing-lg);
-  left: var(--spacing-lg);
-  z-index: 40;
-  height: 40px;
-  padding: 0 var(--spacing-md);
-  border-radius: var(--radius-xl);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  box-shadow: var(--shadow-lg);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.toc-mobile-trigger:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
-}
-
-.toc-mobile-trigger:active {
-  transform: translateY(1px);
-}
-
-@media (max-width: 1023px) {
-  .toc-mobile-trigger {
-    display: flex;
-  }
-}
-
-/* Mobile backdrop */
-.toc-mobile-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 45;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.toc-mobile-backdrop--visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-@media (max-width: 1023px) {
-  .toc-mobile-backdrop {
-    display: block;
-  }
-}
-
-/* Mobile drawer */
-.toc-mobile-drawer {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 50;
-  width: 280px;
-  max-width: 85vw;
-  background: var(--sidebar);
-  box-shadow: var(--shadow-xl);
-  transform: translateX(-100%);
-  transition: transform 0.25s ease;
-  flex-direction: column;
-}
-
-.toc-mobile-drawer--open {
-  transform: translateX(0);
-}
-
-@media (max-width: 1023px) {
-  .toc-mobile-drawer {
-    display: flex;
-  }
-}
-
-.toc-mobile-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--sidebar-border);
-}
-
-.toc-mobile-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--foreground);
-  margin: 0;
-}
-
-.toc-mobile-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
-  background: transparent;
-  border: none;
-  color: var(--sidebar-foreground);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.toc-mobile-close:hover {
-  background: var(--sidebar-accent);
-}
-
-.toc-mobile-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--spacing-md);
-}
-
 /* Print mode - hide external link icons and modals */
 @media print {
   .external-link__icon,
@@ -1435,16 +1298,47 @@ table tr td:only-child strong[id] {
     display: none !important;
   }
 
-  /* Hide TOC in print mode */
-  .toc-sidebar,
-  .toc-mobile-trigger,
-  .toc-mobile-backdrop,
-  .toc-mobile-drawer {
+  /* T9 global: annotation and rail chrome never prints (ER7) */
+  [data-annot-ui] {
     display: none !important;
   }
 
-  .module-layout {
+  /* Reading chrome resets: tree, rail, bar, and sheet leave the page;
+     the grid returns to one column; no reserved gutter or bar height */
+  .toc-sidebar,
+  .contents-tree,
+  .reading-rail,
+  .reading-bar,
+  .reading-sheet {
+    display: none !important;
+  }
+
+  .reading-grid {
     display: block;
+    padding: 0;
+  }
+}
+
+/* The header is fixed, never sticky (BR7). A text input inside a sticky
+   header makes browsers scroll the page toward the input's in-flow
+   position on every edit (WebKit: one header height per keystroke). Out
+   of the flow there is nothing to scroll toward. The body reserves the
+   header's height; banners and the workshop strip stay in flow below it. */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: var(--header-height);
+}
+
+body.has-site-header {
+  padding-top: var(--header-height);
+}
+
+@media print {
+  body.has-site-header {
+    padding-top: 0;
   }
 }
 
@@ -1534,4 +1428,1374 @@ table tr td:only-child strong[id] {
 .meta-chip__dot--after {
   background: transparent;
   border: 2px solid var(--chart-1); /* open ring: still being shaped */
+}
+
+/* ========================================
+   Toolkit Contents tree (left column render of the one contents model)
+   ======================================== */
+.contents-tree {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  max-height: calc(100vh - var(--header-height) - var(--spacing-2xl));
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  background: var(--sidebar);
+  border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius-lg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+}
+
+/* The tree closes to its edge button in a left gutter (BR8). The column
+   keeps its width, so the measure holds (BR3) and the freed space is
+   margin. Below 1200px the sheet carries the tree and no gutter renders. */
+.reading-tree__gutter {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  width: var(--reading-gutter-w);
+  padding-top: 2px;
+}
+
+.reading-grid[data-tree='closed'] .contents-tree--rail {
+  display: none;
+}
+
+.reading-grid[data-tree='closed'] .reading-tree__gutter {
+  display: flex;
+}
+
+.contents-tree--rail:focus {
+  outline: none;
+}
+
+.contents-tree__title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.contents-tree__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contents-tree__link {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 5px var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--sidebar-foreground);
+  text-decoration: none;
+}
+
+.contents-tree__link:hover {
+  background: var(--sidebar-accent);
+  color: var(--foreground);
+}
+
+.contents-tree__row--front-matter,
+.contents-tree__row--back-matter {
+  margin: 2px 0;
+}
+
+.contents-tree__row--section {
+  margin-top: var(--spacing-sm);
+}
+
+.contents-tree__link--plain {
+  cursor: default;
+}
+
+.contents-tree__link--plain:hover {
+  background: transparent;
+}
+
+.contents-tree__row--section .contents-tree__link {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* A section's activities: unnumbered rows in the secondary color that lead
+   with the outside-link glyph where a chapter number would sit, so the eye
+   reads "not a chapter" before the words (BR17). The glyph is drawn by the
+   outside-link notice component after its text; order moves it first. */
+.contents-tree__row--activity .contents-tree__link {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.contents-tree__row--activity .external-link__icon {
+  order: -1;
+  display: inline-flex;
+  flex: none;
+  width: 2.4em;
+  color: var(--text-secondary);
+}
+
+.contents-tree__row--chapter .contents-tree__link {
+  padding-left: var(--spacing-md);
+}
+
+.contents-tree__number {
+  flex: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--table-accent);
+  min-width: 26px;
+}
+
+.contents-tree__row--active > .contents-tree__link {
+  background: var(--sidebar-accent);
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.contents-tree__foot {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.contents-tree__search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary, var(--sidebar-foreground));
+  text-decoration: none;
+  padding: 4px var(--spacing-sm);
+  border-radius: var(--radius-md);
+}
+
+.contents-tree__search:hover {
+  background: var(--sidebar-accent);
+  color: var(--foreground);
+}
+
+/* ========================================
+   The right rail (tenant house)
+   ======================================== */
+.reading-rail {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--header-height) + var(--spacing-lg));
+  max-height: calc(100vh - var(--header-height) - var(--spacing-2xl));
+  display: flex;
+  justify-content: flex-end; /* the edge buttons stay at the right edge when the panel leaves (BR16) */
+}
+
+.reading-rail__gutter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: var(--reading-gutter-w);
+  flex: none;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.reading-rail__panel {
+  display: none;
+}
+
+.reading-grid[data-rail='on-this-page'] [data-rail-panel='on-this-page'],
+.reading-grid[data-rail='footnotes'] [data-rail-panel='footnotes'],
+.reading-grid[data-rail='make-comments'] [data-rail-panel='make-comments'] {
+  display: block;
+}
+
+.reading-rail__edge-btn {
+  writing-mode: vertical-rl;
+  padding: var(--spacing-sm) 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--sidebar-foreground);
+  background: var(--sidebar);
+  border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.reading-rail__edge-btn:hover {
+  background: var(--sidebar-accent);
+  color: var(--foreground);
+}
+
+/* The open tenant's edge button reads the tenant name, pressed */
+.reading-rail__edge-btn[aria-expanded='true'] {
+  background: color-mix(in srgb, var(--sidebar-primary) 12%, transparent);
+  border-color: var(--sidebar-primary);
+  color: var(--sidebar-primary);
+}
+
+.reading-grid .reading-rail__panel {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--border);
+  padding-left: var(--spacing-md);
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+}
+
+.reading-rail__panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  margin: 0;
+}
+
+.reading-rail__panel-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 2px;
+}
+
+.reading-rail__panel-bar:not(:has(.reading-rail__panel-title)) {
+  justify-content: flex-end;
+}
+
+/* The Make Comments tenant (workshop rounds): the feed scrolls, the foot
+   owns compose (DR20). The panel becomes a column so the foot rests at
+   its bottom; in the phone sheet the same mount fills the scroll area. */
+.reading-rail__panel--comments {
+  display: none;
+  flex-direction: column;
+}
+
+.reading-grid[data-rail='make-comments'] [data-rail-panel='make-comments'] {
+  display: flex;
+}
+
+.comments-tenant {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.comments-feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-sm) 0;
+}
+
+.comments-feed__line {
+  font-size: 13px;
+  color: var(--sidebar-foreground);
+  margin: var(--spacing-sm) 0;
+}
+
+.comments-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: 0 0 var(--spacing-sm);
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.comments-card[aria-current='true'] {
+  border-color: var(--primary);
+}
+
+.comments-card__who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--sidebar-foreground);
+  margin-bottom: 4px;
+}
+
+.comments-card__pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.comments-card__text {
+  font-size: 13px;
+  color: var(--foreground);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.comments-card__text + .comments-card__who {
+  margin-top: var(--spacing-sm);
+}
+
+.comments-foot {
+  flex: none;
+  border-top: 1px solid var(--border);
+  padding: var(--spacing-sm) 0 var(--spacing-xs);
+  font-size: 13px;
+}
+
+.comments-foot__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.comments-foot__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: var(--spacing-sm) 0 4px;
+}
+
+.comments-foot__target {
+  font-size: 12px;
+  color: var(--sidebar-foreground);
+  margin: 0;
+}
+
+.comments-foot__quote {
+  display: block;
+  font-size: 12px;
+  color: var(--sidebar-foreground);
+  border-left: 2px solid var(--border);
+  padding-left: var(--spacing-sm);
+  margin: 4px 0 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.comments-foot textarea,
+.comments-foot input[type='text'] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--input);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+}
+
+.comments-foot textarea {
+  resize: none;
+  min-height: 84px;
+}
+
+.comments-foot__btn {
+  min-height: 40px;
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.comments-foot__btn--primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: transparent;
+}
+
+.comments-foot__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comments-foot__link {
+  background: none;
+  border: none;
+  padding: 0;
+  min-height: 44px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.comments-foot__failed {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--muted);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+
+/* The placing hint on phones: the bar carries it in place of its doors */
+.reading-bar__hint {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex: 1;
+  font-size: 14px;
+}
+
+.reading-bar[data-placing] .reading-bar__door {
+  display: none;
+}
+
+.reading-bar[data-placing] .reading-bar__hint {
+  display: flex;
+}
+
+/* Pins at the block's edge (DR18), portaled into the block's pin host */
+.annot-pin {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.annot-pin__dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-card);
+}
+
+.annot-pin--closed .annot-pin__dot {
+  background: var(--muted-foreground);
+  color: var(--background);
+}
+
+.annot-pin--current .annot-pin__dot {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+[data-annot-pin-host] {
+  position: relative;
+}
+
+@media print {
+  /* The round prints whole for the meeting: the notes list stays */
+  .annot-notes-print {
+    display: block !important;
+  }
+}
+
+/* Footnotes tenant */
+.footnotes-tenant__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  margin: var(--spacing-sm) 0 var(--spacing-xs);
+}
+
+.footnotes-tenant__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footnotes-tenant__note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  padding: var(--spacing-xs) 0;
+}
+
+.footnotes-tenant__empty {
+  font-size: 13px;
+  color: var(--sidebar-foreground);
+  margin: var(--spacing-sm) 0;
+}
+
+.reading-rail__close,
+.reading-sheet__close {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, var(--sidebar-foreground));
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.reading-rail__close:hover,
+.reading-sheet__close:hover {
+  background: var(--sidebar-accent);
+  color: var(--foreground);
+}
+
+/* Inside the rail the scanner sheds its standalone sidebar chrome:
+   the rail owns position, scroll, and border */
+.reading-rail__panel .toc-sidebar {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+/* ========================================
+   Phone grammar (below 1200px): tree hidden (the bar's sheet carries
+   it), On this page in flow at chapter top, docked bar reserves height
+   ======================================== */
+@media (max-width: 1199px) {
+  .reading-grid,
+  .reading-grid[data-rail='closed'] {
+    grid-template-columns: 1fr;
+    padding-bottom: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px) + var(--spacing-lg));
+  }
+
+  .reading-grid .contents-tree,
+  .reading-tree__gutter,
+  .reading-grid[data-tree='closed'] .reading-tree__gutter {
+    display: none;
+  }
+
+  .reading-rail {
+    grid-column: 1;
+    grid-row: 1;
+    position: static;
+    max-height: none;
+    display: block;
+  }
+
+  .reading-grid .reading-content {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .reading-rail__gutter,
+  .reading-grid[data-rail='closed'] .reading-rail__gutter,
+  .reading-rail__panel-bar {
+    display: none;
+  }
+
+  .reading-grid .reading-rail__panel {
+    display: none;
+  }
+
+  .reading-grid [data-rail-panel='on-this-page'] {
+    display: block;
+    border-left: 0;
+    padding-left: 0;
+    overflow: visible;
+  }
+
+  /* ER8: on bar-carrying pages the corner door anchors above the
+     reserved bar; layout, never overlay */
+  body:has(.reading-bar) div[data-annot='corner-panel'] {
+    bottom: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px) + var(--spacing-md));
+  }
+}
+
+/* ========================================
+   The docked bar and its sheets
+   ======================================== */
+.reading-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 55;
+  height: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px));
+  padding: 0 var(--spacing-md) env(safe-area-inset-bottom, 0px);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--sidebar);
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.reading-bar__door {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Doors share the bar evenly whether two or three are present */
+  flex: 1 1 0;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 var(--spacing-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sidebar-foreground);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.reading-bar__door:hover {
+  background: var(--sidebar-accent);
+  color: var(--foreground);
+}
+
+.reading-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+}
+
+.reading-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.reading-sheet__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.reading-sheet__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--sidebar-border);
+  margin: 8px auto 0;
+}
+
+.reading-sheet__bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px var(--spacing-md) 0;
+}
+
+.reading-sheet__scroll {
+  overflow-y: auto;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.reading-sheet .contents-tree {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.reading-sheet .contents-tree__link {
+  min-height: 44px;
+  align-items: center;
+  font-size: 15px;
+}
+
+/* Desktop: the bar and its sheets do not exist; declared after their base
+   styles so the hide wins */
+@media (min-width: 1200px) {
+  .reading-bar,
+  .reading-sheet {
+    display: none;
+  }
+}
+
+/* The in-article page-level citation (DR17/ER7): quiet provenance that
+   prints and survives no-JS; the Footnotes tenant presents the same string */
+.module-citation {
+  margin-top: var(--spacing-xl);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.reading-sheet__bar:has(.reading-rail__panel-title) {
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ========================================
+   Cover contents (the homepage render of the one model)
+   Scan order equals tree order (DR6): the list flows down each column
+   ======================================== */
+.cover-contents {
+  margin-top: var(--spacing-xl);
+  text-align: left;
+}
+
+.cover-contents__flow {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 760px;
+}
+
+@media (min-width: 640px) {
+  .cover-contents__flow {
+    columns: 2;
+    column-gap: var(--spacing-2xl);
+  }
+}
+
+.cover-contents__group {
+  break-inside: avoid-column;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Section 1 is taller than a column: let its chapters continue across */
+.cover-contents__group:nth-child(3) {
+  break-inside: auto;
+}
+
+.cover-contents__lead-row {
+  display: block;
+  text-decoration: none;
+  padding: 6px 0;
+}
+
+.cover-contents__lead-title,
+.cover-contents__section {
+  display: block;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.cover-contents__lead-sub {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.cover-contents__lead-row:hover .cover-contents__lead-title,
+a.cover-contents__section:hover {
+  color: var(--primary);
+}
+
+.cover-contents__section {
+  padding: 6px 0 2px;
+}
+
+.cover-contents__chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A row never fragments across the column break: its number and title
+   stay together even inside the one group that is allowed to continue */
+.cover-contents__chapters > li {
+  break-inside: avoid-column;
+}
+
+.cover-contents__chapter {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 3px 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+/* Activity rows: the glyph leads in the number column, the text in the secondary color (BR17) */
+.cover-contents__chapter--activity {
+  color: var(--text-secondary);
+}
+
+.cover-contents__chapter--activity .external-link__icon {
+  order: -1;
+  display: inline-flex;
+  flex: none;
+  width: 2.4em;
+  color: var(--text-secondary);
+}
+
+.cover-contents__chapter:hover span:last-child {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.cover-contents__number {
+  flex: none;
+  min-width: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--table-accent);
+}
+
+.cover-contents__exits {
+  max-width: 760px;
+  margin: var(--spacing-lg) auto 0;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 6px;
+}
+
+.cover-contents__exits p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.cover-contents__exits a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.cover-contents__exits a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* The introduction's Start here exits, resting with On this page (DR2) */
+.start-here {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.start-here__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  margin: 0 0 var(--spacing-xs);
+}
+
+.start-here__row {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--foreground);
+  text-decoration: none;
+  padding: 4px 0;
+}
+
+.start-here__row:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* /downloads phone jump row (DR10: real names, never "Section N") */
+.dl-jump-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.dl-jump-row a {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dl-jump-row a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Section openers: the action grammar rows */
+.reading-grid--no-tree {
+  grid-template-columns: minmax(0, 1fr) calc(var(--reading-rail-w) + var(--reading-gutter-w));
+  max-width: 1200px;
+}
+
+.reading-grid--no-tree .reading-content {
+  grid-column: 1;
+}
+
+.reading-grid--no-tree .reading-rail {
+  grid-column: 2;
+}
+
+.opener-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.opener-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+}
+
+.opener-row__read {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: baseline;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.opener-row__number {
+  flex: none;
+  min-width: 34px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--table-accent);
+}
+
+.opener-row__title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.opener-row__read:hover .opener-row__title {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.opener-row__actions {
+  display: inline-flex;
+  gap: var(--spacing-md);
+  flex: none;
+}
+
+.opener-row__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.opener-row__action:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 1199px) {
+  .reading-grid--no-tree,
+  .reading-grid--no-tree[data-rail='closed'] {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-grid--no-tree .reading-content {
+    grid-row: 2;
+  }
+
+  .opener-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* ========================================
+   Search: the one box, its panel, the sheet, and /search (P3s)
+   ======================================== */
+.search-box {
+  position: relative;
+}
+
+.search-box__form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box__lens {
+  position: absolute;
+  left: 10px;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  display: inline-flex;
+}
+
+.search-box__input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px 0 32px;
+  font-size: 13px;
+  color: var(--foreground);
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.search-box__input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.search-box__input:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus-ring);
+  background: var(--background);
+}
+
+/* Header bands (SR8): visible input at 1024px+, 230px wide, narrowing to
+   180px through the tight desktop band; the lens carries 768 to 1024 and
+   any width where the row cannot fit the input (ES4) */
+.header-search {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  header:not([data-search-overflow]) .header-search {
+    display: block;
+    flex: 0 0 auto; /* never shrinks below the minimum: the row overflows instead, and ES4 sees it */
+    width: 180px;
+  }
+
+  header:not([data-search-overflow]) .header-search-lens {
+    display: none;
+  }
+}
+
+@media (min-width: 1340px) {
+  header:not([data-search-overflow]) .header-search {
+    width: 230px;
+  }
+}
+
+/* The 768 to 1024 expanding lens, and the ES4 overflow fallback: the
+   lens opens the box in place of the centered nav */
+@media (min-width: 768px) {
+  header[data-search-expanded] .header-search {
+    display: block;
+    flex: 1;
+    max-width: 480px;
+  }
+
+  header[data-search-expanded] nav.hidden.md\:flex,
+  header[data-search-expanded] .header-search-lens {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-search,
+  .header-search-lens {
+    display: none;
+  }
+}
+
+/* The anchored suggestion panel: shipped modal shadow, no entrance
+   animation (SR10) */
+.search-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 280px;
+  z-index: 70;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  max-height: min(60vh, 480px);
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+}
+
+/* In the header the panel hangs from the box's right edge and grows
+   leftward, wider than the box, never past the viewport */
+.header-search .search-panel {
+  left: auto;
+  right: 0;
+  width: min(380px, calc(100vw - 32px));
+}
+
+/* /search owns its panel in flow, not anchored */
+[data-search-page] .search-panel {
+  position: static;
+  box-shadow: none;
+  border: 0;
+  max-height: none;
+  padding: 0;
+  margin-top: var(--spacing-md);
+  background: transparent;
+}
+
+.search-panel__status {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: var(--spacing-xs);
+}
+
+.search-results__group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  padding: var(--spacing-xs) var(--spacing-xs) 2px;
+}
+
+.search-results__row {
+  display: block;
+  padding: 6px var(--spacing-xs);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.search-results__row:hover,
+.search-results__row[aria-selected='true'] {
+  background: var(--sidebar-accent);
+}
+
+.search-results__row-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.search-results__row-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* /search: two-line snippets (SR9) */
+[data-search-page] .search-results__row-excerpt {
+  -webkit-line-clamp: 2;
+}
+
+/* The site's first highlight token: primary at low alpha, both themes */
+.search-mark {
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  color: inherit;
+  border-radius: 2px;
+}
+
+/* The words a search pick landed on: the mark plus the ring (BR5) */
+.search-landing {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+
+.search-panel__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--border);
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs);
+}
+
+.search-panel__more {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.search-panel__see-all {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.search-panel__see-all:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.search-page__count {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: var(--spacing-sm) 0 0;
+}
+
+.search-page__nojs {
+  font-size: 14px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* The phone search sheet (same grammar as the reading sheets). The
+   container tracks the visual viewport (top and height set by the header
+   script while open), so the sheet's bottom sits above the keyboard */
+.search-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  z-index: 75;
+}
+
+@media (min-width: 768px) {
+  .search-sheet {
+    display: none;
+  }
+}
+
+.search-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.search-sheet__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 85%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.search-sheet__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--sidebar-border);
+  margin: 8px auto 0;
+}
+
+.search-sheet__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px var(--spacing-md) 0;
+}
+
+.search-sheet__title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sidebar-foreground);
+  margin: 0;
+}
+
+.search-sheet__close {
+  min-height: 44px;
+  min-width: 44px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* 44px targets in the sheet (SR11) */
+.search-sheet .search-results__row,
+.search-sheet .search-panel__see-all {
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Input pinned at the sheet top; the panel scrolls beneath it */
+.search-sheet__input {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  overflow-y: auto;
+}
+
+.search-sheet__input .search-box__form {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: var(--spacing-sm);
+  background: var(--surface);
+}
+
+.search-sheet__input .search-box__input {
+  height: 44px;
+  /* 16px is the floor below which iOS zooms the page on focus */
+  font-size: 16px;
+}
+
+.search-sheet__input .search-panel {
+  position: static;
+  box-shadow: none;
+  max-height: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* deliberately no entrance animation on the panel (SR10) */
 }

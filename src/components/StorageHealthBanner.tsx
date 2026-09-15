@@ -138,9 +138,9 @@ function StorageHealthBannerInner() {
       aria-label="Storage notice"
     >
       <div className="container mx-auto px-4 py-3">
-        <div className="relative flex items-start justify-center">
+        <div className="relative flex items-center justify-center">
           <p
-            className={`max-w-3xl text-sm text-foreground text-center max-[400px]:text-left ${
+            className={`max-w-5xl text-sm text-foreground text-center max-[400px]:text-left ${
               dismissible ? 'pe-11' : ''
             }`}
             style={{ textWrap: 'balance' }}
@@ -165,7 +165,7 @@ function StorageHealthBannerInner() {
             <button
               type="button"
               onClick={handleDismiss}
-              className="absolute end-0 top-0 flex h-11 w-11 items-center justify-center text-foreground opacity-70 transition-opacity hover:opacity-100"
+              className="absolute end-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-foreground opacity-70 transition-opacity hover:opacity-100"
               aria-label="Dismiss storage notice"
               title="Dismiss"
             >

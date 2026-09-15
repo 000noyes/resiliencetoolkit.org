@@ -12,34 +12,28 @@
  * ## Dual-Mode Rendering:
  * Supports two content modes:
  * 1. **Frontmatter mode**: For MDX files with frontmatter metadata
- * 2. **SectionData mode**: For .astro files with programmatic section data
- *
- * This allows both legacy MDX content and new structured .astro sections.
+ * 2. **Section mode**: For .astro section pages, which pass ONLY their
+ *    printed section number; title, breadcrumb, prev/next, PDF, and
+ *    resources all resolve from the one contents model (src/data/contents.ts)
  *
  * ## Navigation:
  * - Breadcrumb: Home → Modules → Module → Section
  * - Prev/Next buttons between sections within a module
  * - "Back to Modules" link to module index
  * - Table of Contents sidebar for section pages
- *
- * @see src/types/section-navigation.ts for SectionData type definition
  */
 import BaseLayout from './BaseLayout.astro';
+import { findChapter, chainFor, chapterCitation } from '@/data/contents';
 import { getPdfUrlForSection } from '@/lib/pdfLookup';
 import { getResourcesUrlForSection } from '@/lib/resourcesLookup';
 import ExternalLink from '@/components/ExternalLink.astro';
 import { FolderOpen } from 'lucide-react';
-import { TableOfContents, TableOfContentsMobile } from '@/components/TableOfContents';
+import ToolkitContentsTree from '@/components/reading/ToolkitContentsTree.astro';
+import ReadingRail from '@/components/reading/ReadingRail.astro';
+import ReadingBar from '@/components/reading/ReadingBar.astro';
 import WorkLivesHere from '@/components/WorkLivesHere.tsx';
-
-interface SectionData {
-  number: string;
-  title: string;
-  moduleTitle: string;
-  modulePath?: string;
-  prevSection?: { number: string; title: string; slug: string } | null;
-  nextSection?: { number: string; title: string; slug: string } | null;
-}
+import ArticleBody from '@/components/reading/ArticleBody.astro';
+import AnnotationIsland from '@/components/annotation/AnnotationIsland.tsx';
 
 interface Props {
   frontmatter?: {
@@ -52,11 +46,27 @@ interface Props {
     time_to_complete?: string;
     difficulty?: 'Easy' | 'Medium' | 'Hard';
   };
-  sectionData?: SectionData;
+  /** Printed section number, e.g. "1.2"; everything else resolves from the model */
+  sectionNumber?: string;
   title?: string;
 }
 
-const { frontmatter, sectionData, title } = Astro.props;
+const { frontmatter, sectionNumber, title } = Astro.props;
+
+const found = sectionNumber ? findChapter(sectionNumber) : null;
+if (sectionNumber && !found) {
+  throw new Error(`ModuleLayout: section ${sectionNumber} is not in the contents model`);
+}
+const sectionData = found
+  ? {
+      number: found.chapter.number,
+      title: found.chapter.title,
+      // Section 0 has no opener: its single chapter is its own module title
+      moduleTitle: found.section.openerPath === null ? found.chapter.title : found.section.title,
+      modulePath: found.section.basePath,
+      ...chainFor(found.chapter.number),
+    }
+  : null;
 
 // Look up PDF URL if we have section data
 const pdfUrl = sectionData ? getPdfUrlForSection(sectionData.number) : null;
@@ -75,19 +85,44 @@ const moduleKey = sectionData
 // Determine if we should show the TOC (only for section pages)
 const showTOC = !!sectionData;
 
+// A workshop round renders this chapter at /rounds/<id>/ (the round page
+// imports the chapter component): the strip, the Make Comments tenant,
+// and the annotation island mount here, and the page leaves the search
+// index. Nothing else about the page changes (the P6 seam).
+const roundMatch = /^\/rounds\/([^/]+)\/?$/.exec(Astro.url.pathname);
+const roundId = roundMatch ? roundMatch[1] : null;
+
+// The page-level citation (DR17): a static in-flow line so print and
+// no-JS readers keep their provenance (ER7); the Footnotes tenant
+// presents the same string from the same field. Null until the chapter's
+// printed range is operator-confirmed.
+const citation = sectionData ? chapterCitation(sectionData.number) : null;
+
 ---
 
 <BaseLayout title={pageTitle} description={frontmatter?.summary}>
-  <!-- Wrapper: Grid layout for section pages, standard container otherwise -->
-  <div class={showTOC ? "module-layout py-8" : ""}>
+  <!-- Wrapper: 3C reading grid for section pages, standard container otherwise -->
+  {roundId && <div id="round-status-slot" data-annot-ui></div>}
+  <div
+    class={showTOC ? "reading-grid py-8" : ""}
+    data-rail={showTOC ? (roundId ? "make-comments" : "on-this-page") : undefined}
+  >
     {showTOC && (
-      <TableOfContents client:load moduleKey={moduleKey} />
+      <ToolkitContentsTree currentPath={Astro.url.pathname} />
+    )}
+    {showTOC && (
+      <ReadingRail
+        moduleKey={moduleKey}
+        sectionNumber={sectionData.number}
+        comments={!!roundId}
+        resting={roundId ? "make-comments" : "on-this-page"}
+      />
     )}
 
-    <article data-pagefind-body class={showTOC ? "module-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
+    <article data-pagefind-body={roundId ? undefined : true} class={showTOC ? "reading-content" : "container mx-auto px-4 py-8 max-w-4xl"}>
       {sectionData && (
         <!-- Breadcrumb navigation for section pages -->
-        <nav class="mb-6 text-sm text-text-muted no-print">
+        <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
           <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
           <span class="mx-2">/</span>
           <a href={sectionData.modulePath || "/modules"} class="hover:text-text-primary transition-colors">
@@ -151,13 +186,15 @@ const showTOC = !!sectionData;
       </header>
 
       <!-- Action Bar with View PDF and Export Buttons -->
-      <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print">
+      <div class="flex flex-wrap gap-3 mb-8 pb-6 border-b border-border no-print" data-pagefind-ignore>
         {pdfUrl ? (
+          <!-- DR21: the chapter action bar carries the quiet action grammar; same
+               two actions, same position, the reading surface's quietest treatment -->
           <a
             href={pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+            class="px-4 py-2 rounded-md border border-border text-text-secondary no-underline hover:text-text-primary hover:border-table-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -177,7 +214,7 @@ const showTOC = !!sectionData;
         {resourcesUrl ? (
           <ExternalLink href={resourcesUrl} class="inline-block">
             <button
-              class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium inline-flex items-center gap-2"
+              class="px-4 py-2 rounded-md border border-border text-text-secondary hover:text-text-primary hover:border-table-accent transition-colors text-sm font-medium inline-flex items-center gap-2"
             >
               <FolderOpen size={18} />
               <span>See Additional Resources</span>
@@ -190,21 +227,25 @@ const showTOC = !!sectionData;
 
       <!-- Module Content -->
       <div class={sectionData ? "space-y-8" : "prose prose-lg max-w-none prose-headings:text-foreground prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-4 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mb-3 prose-h2:mt-8 prose-h3:text-xl prose-h3:font-semibold prose-h3:mb-2 prose-h3:mt-6 prose-p:text-foreground prose-p:mb-4 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-strong:font-semibold prose-ul:my-4 prose-ul:list-disc prose-ul:pl-6 prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-6 prose-li:text-foreground prose-li:mb-1 prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-lg prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic"}>
-        <slot />
+        <ArticleBody blockKey={sectionData ? sectionData.number.replace('.', '-') : undefined}><slot /></ArticleBody>
       </div>
+
+      {citation && (
+        <p class="module-citation" data-pagefind-ignore>{citation}</p>
+      )}
 
       {sectionData && (
         <!-- Section navigation for section-based pages -->
-        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print">
-          {sectionData.prevSection ? (
+        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
+          {sectionData.prev ? (
             <a
-              href={`${sectionData.modulePath || '/modules'}/${sectionData.prevSection.slug}`}
+              href={sectionData.prev.href}
               class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
-              <span>Previous: {sectionData.prevSection.number} {sectionData.prevSection.title}</span>
+              <span>Previous: {sectionData.prev.label}</span>
             </a>
           ) : (
             <a
@@ -218,12 +259,12 @@ const showTOC = !!sectionData;
             </a>
           )}
 
-          {sectionData.nextSection && (
+          {sectionData.next && (
             <a
-              href={`${sectionData.modulePath || '/modules'}/${sectionData.nextSection.slug}`}
+              href={sectionData.next.href}
               class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors ml-auto"
             >
-              <span class="mr-2">Next: {sectionData.nextSection.number} {sectionData.nextSection.title}</span>
+              <span class="mr-2">Next: {sectionData.next.label}</span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
@@ -235,6 +276,9 @@ const showTOC = !!sectionData;
   </div>
 
   {showTOC && (
-    <TableOfContentsMobile client:visible moduleKey={moduleKey} />
+    <>
+      <ReadingBar currentPath={Astro.url.pathname} sectionNumber={sectionData?.number ?? ""} comments={!!roundId} />
+      {roundId && <AnnotationIsland roundId={roundId} client:load />}
+    </>
   )}
 </BaseLayout>

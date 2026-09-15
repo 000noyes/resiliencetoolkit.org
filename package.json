@@ -1,7 +1,7 @@
 {
   "name": "resilience-hub-toolkit",
   "type": "module",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "packageManager": "pnpm@10.30.3",
   "scripts": {
     "dev": "astro dev",
@@ -18,7 +18,10 @@
     "scaffold-spec": "tsx scripts/scaffold-spec.ts",
     "generate-icons": "node scripts/generate-icons.mjs",
     "knip": "knip",
-    "knip:files": "knip --include files"
+    "knip:files": "knip --include files",
+    "test:layout": "playwright test --config playwright.layout.config.ts",
+    "test:search": "playwright test --config playwright.search.config.ts",
+    "annot:registry": "node scripts/annot-registry.mjs"
   },
   "pnpm": {
     "overrides": {

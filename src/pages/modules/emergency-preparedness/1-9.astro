@@ -2,19 +2,10 @@
 import ModuleLayout from '@/layouts/ModuleLayout.astro';
 import ExternalLink from '@/components/ExternalLink.astro';
 import DataTable from '@/components/DataTable';
-import type { SectionData } from '@/types/section-navigation';
 
-const sectionData: SectionData = {
-  number: "1.9",
-  title: "Community Emergency Response Plans",
-  moduleTitle: "Emergency Preparedness and Response",
-  modulePath: "/modules/emergency-preparedness",
-  prevSection: { number: "1.8", title: "Populations with Specific Needs", slug: "1-8" },
-  nextSection: { number: "1.10", title: "Volunteer Management", slug: "1-10" }
-};
 ---
 
-<ModuleLayout sectionData={sectionData}>
+<ModuleLayout sectionNumber="1.9">
       <h3 class="text-title font-semibold">Before disaster</h3>
       <ul class="list-disc pl-6 space-y-3">
         <li>Identify if there are already local documents outlining the emergency response plan for your town and town’s leaders during an emergency:

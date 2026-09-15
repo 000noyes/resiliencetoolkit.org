@@ -8,7 +8,8 @@
 
 // Wrapper keeps Astro's React renderer from invoking hook logic during detection.
 import UserMenuWrapper from './UserMenuWrapper.tsx';
-import { Sun, Moon, Menu, Home, NotepadText, Download, MapPin, Info } from 'lucide-react';
+import SearchBox from './search/SearchBox.astro';
+import { Sun, Moon, Menu, Search, Home, NotepadText, Download, MapPin, Info } from 'lucide-react';
 
 const currentPath = Astro.url.pathname;
 
@@ -26,6 +27,9 @@ const navItems = [
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
+    /* Labels never wrap: a row that cannot fit them overflows measurably,
+       so the ES4 guard sees it and collapses the search box to the lens */
+    white-space: nowrap;
     /* transform: rotate(-30deg); */
     font-size: 1em;
   }
@@ -47,7 +51,7 @@ const navItems = [
   }
 </style>
 
-<header class="bg-card border-b border-border sticky top-0 z-50 no-print shadow-ambient">
+<header class="site-header bg-card border-b border-border z-50 no-print shadow-ambient">
   <div class="container mx-auto px-lg max-w-[1600px]" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
     <div class="flex items-center justify-between gap-3">
       <!-- Logo (Left) -->
@@ -61,7 +65,7 @@ const navItems = [
       </a>
 
       <!-- Desktop Navigation (Centered) -->
-      <nav class="hidden md:flex items-center gap-lg lg:gap-xl flex-1 justify-center">
+      <nav class="hidden md:flex items-center gap-md lg:gap-lg xl:gap-xl flex-1 justify-center">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -85,8 +89,26 @@ const navItems = [
         })}
       </nav>
 
+      <!-- The one search box: rightmost before the theme toggle, after
+           the nav in DOM and tab order (SR8). Visible input at 1024px+;
+           an expanding lens in the 768 to 1024 band; the lens next to the
+           burger opens the search sheet below 768. -->
+      <div class="header-search" id="header-search">
+        <SearchBox id="header-search-input" mode="panel" />
+      </div>
+      <button
+        type="button"
+        id="header-search-lens"
+        class="header-search-lens hidden md:inline-flex shrink-0 items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-muted transition-colors duration-default ease-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        aria-label="Search the toolkit"
+        aria-expanded="false"
+        aria-controls="header-search"
+      >
+        <Search className="w-5 h-5" strokeWidth={1.5} />
+      </button>
+
       <!-- Utilities (Right) -->
-      <div class="hidden md:flex items-center gap-sm">
+      <div class="hidden md:flex shrink-0 items-center gap-sm">
         <!-- Theme Toggle (Icon Button) -->
         <button
           id="theme-toggle"
@@ -102,14 +124,30 @@ const navItems = [
         <UserMenuWrapper client:load />
       </div>
 
-      <!-- Mobile Menu Button -->
-      <button
-        id="mobile-menu-button"
-        class="md:hidden p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
-        aria-label="Toggle menu"
-      >
-        <Menu className="w-6 h-6" strokeWidth={1.5} />
-      </button>
+      <!-- Phone search lens: left of the burger, opens the search sheet;
+           the lens and the burger close each other. Search never lives
+           inside the burger menu (SR8). -->
+      <div class="md:hidden flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          id="mobile-search-lens"
+          class="p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
+          aria-label="Search the toolkit"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+        >
+          <Search className="w-6 h-6" strokeWidth={1.5} />
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button
+          id="mobile-menu-button"
+          class="p-2 rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-default ease-default"
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-6 h-6" strokeWidth={1.5} />
+        </button>
+      </div>
     </div>
 
     <!-- Mobile Navigation -->
@@ -130,7 +168,7 @@ const navItems = [
                 'transition-colors duration-default ease-default',
                 'hover:bg-muted',
                 currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                  ? 'text-primary bg-primary/10'
+                  ? 'text-primary '
                   : 'text-muted-foreground'
               ]}
             >
@@ -161,14 +199,167 @@ const navItems = [
   </div>
 </header>
 
+<!-- The phone search sheet: input pinned at the top, sized to the visual
+     viewport; opening claims exactly one history entry so back closes it
+     (ES6); outside tap dismisses but the typed text is preserved. -->
+<div class="search-sheet" id="search-sheet" hidden>
+  <div class="search-sheet__backdrop" data-search-sheet-dismiss></div>
+  <div
+    class="search-sheet__body"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search the toolkit"
+    tabindex="-1"
+  >
+    <div class="search-sheet__handle" aria-hidden="true"></div>
+    <div class="search-sheet__bar">
+      <h2 class="search-sheet__title">Search the toolkit</h2>
+      <button type="button" class="search-sheet__close" data-search-sheet-dismiss>
+        Close
+      </button>
+    </div>
+    <div class="search-sheet__input">
+      <SearchBox id="sheet-search-input" mode="panel" />
+    </div>
+  </div>
+</div>
+
 <script>
-  // Mobile menu toggle
+  // Mobile menu toggle; the burger and the search lens close each other
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
   mobileMenuButton?.addEventListener('click', () => {
+    closeSearchSheet();
     mobileMenu?.classList.toggle('hidden');
   });
+
+  // ---- Search chrome ----
+  const searchSheet = document.getElementById('search-sheet');
+  const mobileSearchLens = document.getElementById('mobile-search-lens');
+  const headerSearchLens = document.getElementById('header-search-lens');
+  const headerEl = document.querySelector('header');
+  const visualViewport = window.visualViewport;
+  let sheetHasHistoryEntry = false;
+  let afterSheetPop: (() => void) | null = null;
+
+  // The sheet tracks the visual viewport, so its input pins at the top
+  // and results scroll between the input and the keyboard (SR11)
+  function sizeSearchSheet() {
+    if (!searchSheet || searchSheet.hidden || !visualViewport) return;
+    searchSheet.style.top = `${visualViewport.offsetTop}px`;
+    searchSheet.style.height = `${visualViewport.height}px`;
+  }
+  visualViewport?.addEventListener('resize', sizeSearchSheet);
+  visualViewport?.addEventListener('scroll', sizeSearchSheet);
+
+  function openSearchSheet() {
+    if (!searchSheet) return;
+    mobileMenu?.classList.add('hidden');
+    searchSheet.hidden = false;
+    sizeSearchSheet();
+    mobileSearchLens?.setAttribute('aria-expanded', 'true');
+    document.documentElement.style.setProperty('overflow', 'hidden');
+    if (!sheetHasHistoryEntry) {
+      history.pushState({ searchSheet: true }, '');
+      sheetHasHistoryEntry = true;
+    }
+    searchSheet.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+  }
+
+  // Every close settles the sheet's one history entry through back (ES6);
+  // the popstate arm closes without it, since the entry is already gone
+  function closeSearchSheet(popHistory = true) {
+    if (!searchSheet || searchSheet.hidden) return;
+    searchSheet.hidden = true;
+    searchSheet.style.removeProperty('top');
+    searchSheet.style.removeProperty('height');
+    mobileSearchLens?.setAttribute('aria-expanded', 'false');
+    document.documentElement.style.removeProperty('overflow');
+    const hadEntry = sheetHasHistoryEntry;
+    sheetHasHistoryEntry = false;
+    if (hadEntry && popHistory) history.back();
+  }
+
+  mobileSearchLens?.addEventListener('click', () => {
+    if (searchSheet?.hidden) openSearchSheet();
+    else closeSearchSheet();
+  });
+  searchSheet?.querySelectorAll('[data-search-sheet-dismiss]').forEach((el) => {
+    // Outside tap dismisses; the typed text stays in the input for reopen
+    el.addEventListener('click', () => {
+      closeSearchSheet();
+      mobileSearchLens?.focus();
+    });
+  });
+  searchSheet?.addEventListener('keydown', (e) => {
+    if ((e as KeyboardEvent).key === 'Escape') {
+      closeSearchSheet();
+      mobileSearchLens?.focus();
+    }
+  });
+  // A pick inside the sheet settles the sheet's entry first, then goes,
+  // so back from the result returns to the page and not to the sheet
+  searchSheet?.addEventListener('rt-search-navigate', (e) => {
+    if (!sheetHasHistoryEntry) return;
+    e.preventDefault();
+    afterSheetPop = (e as CustomEvent<{ go: () => void }>).detail.go;
+    closeSearchSheet();
+  });
+  window.addEventListener('popstate', () => {
+    if (sheetHasHistoryEntry) {
+      sheetHasHistoryEntry = false;
+      closeSearchSheet(false);
+    }
+    if (afterSheetPop) {
+      const go = afterSheetPop;
+      afterSheetPop = null;
+      go();
+    }
+  });
+
+  // The 768 to 1024 expanding lens; also the ES4 overflow fallback at
+  // any width: the lens opens the box in place of the centered nav
+  function setSearchExpanded(open: boolean) {
+    headerEl?.toggleAttribute('data-search-expanded', open);
+    headerSearchLens?.setAttribute('aria-expanded', String(open));
+    if (open) {
+      document
+        .querySelector<HTMLInputElement>('#header-search input[type="search"]')
+        ?.focus();
+    }
+  }
+  headerSearchLens?.addEventListener('click', () => {
+    setSearchExpanded(!headerEl?.hasAttribute('data-search-expanded'));
+  });
+  document.addEventListener('click', (e) => {
+    if (
+      headerEl?.hasAttribute('data-search-expanded') &&
+      !document.getElementById('header-search')?.contains(e.target as Node) &&
+      e.target !== headerSearchLens &&
+      !headerSearchLens?.contains(e.target as Node)
+    ) {
+      setSearchExpanded(false);
+    }
+  });
+
+  // ES4: if the row cannot fit the input at its minimum (zoom, font
+  // scaling), collapse to the lens at any width. Measured with the input
+  // shown, so a collapse never hides the overflow that caused it.
+  const headerRow = headerEl?.querySelector<HTMLElement>('.container > div') ?? null;
+  function checkSearchOverflow() {
+    if (!headerEl || !headerRow) return;
+    headerEl.removeAttribute('data-search-overflow');
+    if (headerRow.scrollWidth > headerRow.clientWidth + 1) {
+      headerEl.setAttribute('data-search-overflow', '');
+    }
+  }
+  checkSearchOverflow();
+  window.addEventListener('resize', checkSearchOverflow);
+  if (headerRow && 'ResizeObserver' in window) {
+    new ResizeObserver(checkSearchOverflow).observe(headerRow);
+  }
+  document.fonts?.ready.then(checkSearchOverflow).catch(() => {});
 
   // Dark mode toggle
   const themeToggle = document.getElementById('theme-toggle');

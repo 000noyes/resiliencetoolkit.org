@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Download, Check, AlertCircle, HardDrive } from 'lucide-react';
 import { downloadFullBackup } from '@/lib/backup';
-import { getCueState } from '@/lib/backup-cue';
+import { getCueState, readCanary, type WorkCanary } from '@/lib/backup-cue';
 import { moduleCardBackupLine } from '@/lib/safety-card-state';
 
 /**
@@ -14,13 +14,29 @@ import { moduleCardBackupLine } from '@/lib/safety-card-state';
  * full-toolkit backup as the dashboard, and the backup line renders from the
  * same work-based cue as the dashboard card (moduleCardBackupLine), so the
  * two surfaces can never disagree. Time alone never triggers a prompt here.
+ *
+ * The card appears only once the device holds work, read from the same
+ * canary the storage-health strip reads (the modules that have ever held
+ * user work on this device): one synchronous localStorage read, never a
+ * database export on page load. A reader who has done nothing yet meets
+ * the chapter, not a backup prompt; the server shell renders nothing, so
+ * no state is claimed before the device is read.
  */
+
+/** True when the device has held any user work, by the storage strip's own rule */
+export function deviceHoldsWork(canary: WorkCanary | null): boolean {
+  return canary !== null && Object.keys(canary.modules).length > 0;
+}
+
 export default function WorkLivesHere() {
+  const [hasWork, setHasWork] = useState<boolean>(false);
   const [status, setStatus] = useState<'idle' | 'exporting' | 'success' | 'error'>('idle');
   const [backupLine, setBackupLine] = useState<string>('');
 
   useEffect(() => {
     let mounted = true;
+    if (!deviceHoldsWork(readCanary())) return;
+    setHasWork(true);
     getCueState()
       .then((cue) => {
         if (mounted) setBackupLine(moduleCardBackupLine(cue));
@@ -52,6 +68,23 @@ export default function WorkLivesHere() {
     }
   }
 
+  if (!hasWork) return null;
+
+  return (
+    <WorkLivesHereCard backupLine={backupLine} status={status} onBackup={handleBackup} />
+  );
+}
+
+/** The card itself, rendered once the device is known to hold work */
+export function WorkLivesHereCard({
+  backupLine,
+  status,
+  onBackup,
+}: {
+  backupLine: string;
+  status: 'idle' | 'exporting' | 'success' | 'error';
+  onBackup: () => void;
+}) {
   return (
     <div className="w-full rounded-md border border-border bg-card p-4 flex flex-col gap-3 sm:flex-row sm:items-center">
       <HardDrive className="h-5 w-5 flex-shrink-0 text-muted-foreground" strokeWidth={1.75} aria-hidden="true" />
@@ -64,14 +97,14 @@ export default function WorkLivesHere() {
       </div>
       <button
         type="button"
-        onClick={handleBackup}
+        onClick={onBackup}
         disabled={status === 'exporting'}
         className={`inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
           status === 'success'
             ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
             : status === 'error'
               ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
-              : 'bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50'
+              : 'bg-primary text-primary-foreground disabled:opacity-50'
         }`}
         style={{ minHeight: 44 }}
       >
