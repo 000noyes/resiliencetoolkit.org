@@ -4,8 +4,8 @@ All notable changes to ResilienceToolkit.org are documented here.
 
 ## [0.1.1] - 2026-09-16
 
-A patch release for phones. One set of text sizes, the title first, and
-nothing running off the screen. Nothing new to learn.
+A patch release for phones. Text sizes are consistent now, and nothing runs
+off the side of the screen. Nothing new to learn.
 
 ### Changed
 - One set of text sizes across the whole site. Page titles now follow the
