@@ -1,15 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Network purity — the product's second headline promise ("nothing leaves the
- * device", "no tracking") enforced as a real-browser test.
+ * Network purity. The built site must issue ZERO cross-origin requests. Any
+ * request to a different origin (analytics services, fonts, embeds, a future
+ * dependency) is a third-party contact the privacy promise forbids, and this
+ * turns that from an asserted claim into an enforced gate.
  *
- * The built site must issue ZERO cross-origin requests. Any request to a
- * different origin (analytics, fonts, embeds, a future dependency) is a
- * third-party contact the privacy promise forbids. This turns "no tracking"
- * from an asserted claim into an enforced gate, the same "enforce, not assert"
- * discipline as the offline test and Source Fidelity — so a dependency can't
- * silently re-add a tracker.
+ * First-party counting on this site's own origin is deliberately outside this
+ * assertion: it never leaves the origin and carries nothing from the reader's
+ * device.
  *
  * Runs against the built artifact via astro preview (see
  * playwright.offline.config.ts), same as the offline test.

@@ -5,6 +5,7 @@
     "scripts/**/*.{ts,mjs}",
     "tests/**/*.{ts,tsx}",
     "functions/api/**/*.ts",
+    "functions/_middleware.ts",
     "playwright.offline.config.ts",
     "playwright.workshop.config.ts",
     "playwright.layout.config.ts",
