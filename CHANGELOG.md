@@ -2,37 +2,36 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
-## [0.1.1] - 2026-09-15
+## [0.1.1] - 2026-09-16
 
-A patch release for phones: one type scale, the title first, and nothing
-running off the screen. Nothing new to learn.
+A patch release for phones. One set of text sizes, the title first, and
+nothing running off the screen. Nothing new to learn.
 
 ### Changed
-- One type scale on every page, ten steps, each with one line height. Page
-  titles follow the screen: 32px on a phone, 44px on a desktop; section
-  openers 36px to 56px. The /modules title joins the scale; it was the one
-  page held out of the reading grammar in 0.1.0.
-- A chapter opens with its title on phones. The order is breadcrumb, title,
-  the two actions (View PDF, See Additional Resources) as one quiet row of
-  links, then On this page, then the chapter. On this page is on the page
-  from the start, lists the chapter's sections only on phones (subsections
-  return at tablet widths), and does not appear on a chapter with a single
-  heading.
-- Phone reading sizes: rows in the contents, Footnotes, and search sheets are
-  16px with 14px secondary lines; On this page rows and the bar's two doors
-  are 14px; /search results read at 16px and 14px. Small labels and
-  numerals sit at 12px and never smaller, and every label color clears
-  4.5:1 in both themes.
-- Five breakpoints, written once: 640, 768, 1024, 1200, and 1340. A 768px
-  tablet no longer gets the phone and the desktop rules at once. Crossing
-  768 with the search sheet open, or 1200 with a reading sheet open, closes
-  the sheet and returns focus to the control that replaces it.
+- One set of text sizes across the whole site. Page titles now follow the
+  screen, smaller on a phone and larger on a desktop. The /modules index
+  joins the rest; it was the one page held back from the reading grammar
+  in 0.1.0.
+- A chapter opens with its title on a phone. Breadcrumb, then the title,
+  then View PDF and See Additional Resources as one quiet row of links,
+  then On this page, then the chapter.
+- On this page lists the chapter's sections on a phone, brings subsections
+  back on wider screens, and does not appear at all on a chapter with only
+  one heading.
+- Small text has a floor. Nothing on a phone reads smaller than 12px, and
+  every label meets the contrast standard in both light and dark.
+- A tablet at 768px no longer gets the phone rules and the desktop rules at
+  the same time. Turning a phone sideways with a sheet open now closes the
+  sheet and puts you back on the control that replaces it.
 
 ### Fixed
-- Nothing runs off a 375px phone: long links wrap, code blocks scroll in
-  place, the outside-link notice fits the screen, and each bar door holds
-  one line. 0.1, the Emergency Preparedness opener, and About no longer
-  scroll sideways. A check now runs every route at 320, 375, and 414 wide.
+- Nothing runs off the side of a 375px phone. Long links wrap, code blocks
+  scroll on their own, the outside-link notice fits, and each door in the
+  bottom bar holds one line.
+- 0.1, the Emergency Preparedness opener, and About no longer scroll sideways.
+
+### For contributors
+- Every route is checked at 320, 375 and 414 wide.
 
 ## [0.1.0] - 2026-09-15
 
