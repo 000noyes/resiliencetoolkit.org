@@ -3,6 +3,11 @@
 Notable changes to ResilienceToolkit.org. Versions have three parts from
 0.1.0 onward; earlier releases used four.
 
+## [0.1.2] - 2026-09-16
+
+### Changed
+- The changelog page lists every release.
+
 ## [0.1.1] - 2026-09-16
 
 A patch release for phones. Text sizes are consistent now, and nothing runs
