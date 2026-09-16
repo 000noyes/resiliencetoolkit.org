@@ -123,6 +123,33 @@
   --tracking-tight: 0em;
   --tracking-wide: 0.1em;
 
+  /* Type scale: ten steps in rem at a 16px base, one line height per
+     step. Tailwind's fontSize reads these names; base.css and scoped
+     styles consume the same custom properties, so every size on the
+     site resolves to one of these ten. The two fluid steps follow the
+     viewport: hero is 32px at 375 and 44px from 768 up; display is 36px
+     at 375 and 56px from 800 up. See DESIGN.md, Typography. */
+  --text-label: 0.75rem; /* 12: uppercase tracked labels, tabular numerals, chips */
+  --text-chrome: 0.8125rem; /* 13: chrome running text (tree, On this page, notes, excerpts) */
+  --text-body-small: 0.875rem; /* 14: buttons, breadcrumb, table heads, bar doors, meta */
+  --text-body: 1rem; /* 16: body, sheet rows, inputs, /search rows */
+  --text-body-large: 1.125rem; /* 18: lead paragraph */
+  --text-subtitle: 1.25rem; /* 20: h3, card names */
+  --text-title: 1.5rem; /* 24: article h2 */
+  --text-headline: 2rem; /* 32: section headline */
+  --text-hero: clamp(2rem, 1.284rem + 3.053vw, 2.75rem); /* page h1 */
+  --text-display: clamp(2.25rem, 1.147rem + 4.706vw, 3.5rem); /* opener and cover titles */
+  --leading-label: 1.4;
+  --leading-chrome: 1.45;
+  --leading-body-small: 1.5;
+  --leading-body: 1.5;
+  --leading-body-large: 1.5;
+  --leading-subtitle: 1.4;
+  --leading-title: 1.3;
+  --leading-headline: 1.2;
+  --leading-hero: 1.1;
+  --leading-display: 1.1;
+
   /* Legacy spacing */
   --spacing: 0.25rem;
 
@@ -305,12 +332,34 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Titles balance their lines where the browser can (Safari 17.4 and
+   later; Chromium up to six lines). Paragraphs keep their wrapping. */
+h1,
+.opener-row__title,
+.prose h2,
+.prose h3 {
+  text-wrap: balance;
+}
+
+/* Width discipline (DESIGN.md, Layout): nothing exceeds its column. A
+   link's address may be one unbreakable word, so links in content may
+   break anywhere; code blocks scroll inside their own box. */
+article a,
+main .container a {
+  overflow-wrap: anywhere;
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 main {
   padding-top: var(--spacing-md);
   padding-bottom: var(--spacing-2xl);
 }
 
-@media (min-width: 768px) {
+@screen md {
   main {
     padding-top: var(--spacing-lg);
   }
@@ -446,8 +495,8 @@ a.button-link:focus-visible {
     margin-bottom: 0.3em;
   }
 
-  /* Article header */
-  article > header {
+  /* The page header */
+  .reading-header {
     page-break-after: avoid;
     margin-bottom: 0.5em;
   }
@@ -620,7 +669,8 @@ a.button-link:focus-visible {
 
 .guide-table th {
   font-weight: 600;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   background-color: var(--table-surface-subtle);
@@ -647,8 +697,8 @@ a.button-link:focus-visible {
   margin-right: 0.5rem;
 }
 
-/* Responsive table - stack on small screens */
-@media (max-width: 768px) {
+/* Responsive table - stack below md */
+@media not all and (min-width: theme(screens.md)) {
   .guide-table {
     border: none;
   }
@@ -681,11 +731,26 @@ a.button-link:focus-visible {
     border-bottom: none;
   }
 
+  /* A table band row (one spanning cell) is a heading line between the
+     cards, not a card of its own, so it reads like the bold lines inside
+     the cells */
+  .guide-table tr:has(> td[colspan]:only-child) {
+    border: 0;
+    border-radius: 0;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .guide-table tr:has(> td[colspan]:only-child) > td {
+    padding: var(--spacing-sm) 0 0;
+    border-bottom: 0;
+  }
+
   .guide-table td:before {
     content: attr(data-label);
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: var(--text-label);
+    line-height: var(--leading-label);
     letter-spacing: var(--tracking-wide);
     color: var(--table-text-muted);
     display: block;
@@ -725,7 +790,8 @@ a.button-link:focus-visible {
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-raised);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   pointer-events: none;
   transform: translateX(-50%);
   white-space: nowrap;
@@ -754,8 +820,7 @@ a.button-link:focus-visible {
   border: none;
   background: transparent;
   padding: 0;
-  max-width: 480px;
-  width: calc(100% - 2rem);
+  width: min(480px, 100% - 32px);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
   animation: modal-fade-in var(--motion-duration-base) var(--motion-easing-emphasized);
@@ -834,18 +899,19 @@ a.button-link:focus-visible {
 }
 
 .external-link-modal__title {
-  font-size: 20px;
+  font-size: var(--text-subtitle);
+  line-height: var(--leading-subtitle);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
 
 .external-link-modal__domain {
-  font-size: 24px;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--primary);
   word-break: break-all;
-  line-height: 1.3;
+  line-height: var(--leading-title);
 }
 
 .external-link-modal__url-container {
@@ -861,7 +927,8 @@ a.button-link:focus-visible {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--text-muted);
   word-break: break-all;
   text-align: left;
@@ -871,8 +938,8 @@ a.button-link:focus-visible {
   font-family: var(--font-mono);
   background: none;
   padding: 0;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
 }
 
 .external-link-modal__https-indicator {
@@ -884,10 +951,10 @@ a.button-link:focus-visible {
 }
 
 .external-link-modal__description {
-  font-size: 14px;
+  font-size: var(--text-body-small);
   color: var(--text-secondary);
   margin: 0;
-  line-height: 1.5;
+  line-height: var(--leading-body-small);
 }
 
 .external-link-modal__checkbox-label {
@@ -895,7 +962,8 @@ a.button-link:focus-visible {
   align-items: center;
   gap: var(--spacing-xs);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--text-secondary);
   user-select: none;
   margin-top: var(--spacing-xs);
@@ -933,7 +1001,8 @@ a.button-link:focus-visible {
 .external-link-modal__button {
   flex: 1;
   padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: 16px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
   font-weight: 500;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -973,60 +1042,88 @@ a.button-link:focus-visible {
   outline-offset: 2px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 400px) {
-  .external-link-modal {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 0;
-  }
-
-  .external-link-modal__content {
-    padding: var(--spacing-lg);
-  }
-
-  .external-link-modal__actions {
-    flex-direction: column;
-  }
-
-  .external-link-modal__button {
-    width: 100%;
-  }
-}
-
 /* ========================================
    Table of Contents Sidebar
    ======================================== */
 
 /* ========================================
    3C reading grid (the reading surface)
-   Tree left, content center, right rail; the rail's open panel is 296px
-   plus hairline, the closed state a reserved 48px gutter (DR3). Below
-   1200px the phone grammar takes over: single column, tree hidden (it
-   lives in the docked bar's sheet), On this page in flow at chapter top.
+   Tree left, the page header and the article center (the header is its
+   own grid child before the rail in source, at every width), right rail;
+   the rail's open panel is 296px plus hairline, the closed state a
+   reserved 48px gutter (DR3). Below the reading width the phone grammar
+   takes over: single column, tree hidden (it lives in the docked bar's
+   sheet), then header, On this page in flow, article.
    ======================================== */
 :root {
   --reading-tree-w: 264px;
   --reading-rail-w: 296px;
   --reading-gutter-w: 48px;
-  --reading-bar-h: 56px;
+  --reading-bar-floor: 56px; /* the bar's minimum; a wrapped label makes it taller */
+  --reading-bar-h: var(--reading-bar-floor); /* the bar's actual height, kept current by its script */
 }
 
 .reading-grid {
   display: grid;
   grid-template-columns: var(--reading-tree-w) minmax(0, 1fr) calc(var(--reading-rail-w) + var(--reading-gutter-w));
-  gap: var(--spacing-lg);
+  column-gap: var(--spacing-lg);
+  row-gap: 0; /* the header carries its own rhythm below */
   margin: 0 auto;
   padding: 0 var(--spacing-md);
   max-width: 1600px;
 }
 
-.reading-grid .reading-content {
+.reading-grid .reading-header {
   grid-column: 2;
   grid-row: 1;
+  min-width: 0;
+}
+
+.reading-grid .reading-content {
+  grid-column: 2;
+  grid-row: 2;
   min-width: 0; /* Prevent grid blowout */
   container-type: inline-size;
   container-name: reading;
+}
+
+/* The chapter actions (DR21, 4A): one inline row of text links, icon and
+   label, 44px tap height from padding, left-aligned; the quietest place
+   these actions appear */
+.reading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.reading-actions .reading-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.reading-actions a.reading-action:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.reading-actions .reading-action--off {
+  opacity: 0.6;
+}
+
+.reading-actions .work-lives-here,
+.reading-actions > astro-island {
+  flex: 1 0 100%;
 }
 
 /* Tables scroll inside their own container below the 680px content
@@ -1084,7 +1181,8 @@ a.button-link:focus-visible {
 }
 
 .toc-title {
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1117,7 +1215,8 @@ a.button-link:focus-visible {
 }
 
 .toc-progress-text {
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   color: var(--sidebar-foreground);
   font-variant-numeric: tabular-nums;
 }
@@ -1150,8 +1249,8 @@ a.button-link:focus-visible {
   border-radius: var(--radius-md);
   color: var(--sidebar-foreground);
   text-decoration: none;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   transition: all 0.15s ease;
   position: relative;
   cursor: pointer;
@@ -1159,7 +1258,7 @@ a.button-link:focus-visible {
 
 .toc-item:hover {
   background: var(--sidebar-accent);
-  color: var(--sidebar-accent-foreground);
+  color: var(--foreground);
 }
 
 .toc-item--active {
@@ -1168,7 +1267,8 @@ a.button-link:focus-visible {
 }
 
 .toc-item--nested {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
@@ -1187,7 +1287,8 @@ a.button-link:focus-visible {
 /* H3 - Subsection headers */
 .toc-item--h3 {
   font-weight: 500;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   padding-left: calc(var(--spacing-sm) + 8px);
 }
@@ -1199,7 +1300,8 @@ a.button-link:focus-visible {
 /* Table section headers - with small square indicator */
 .toc-item--table {
   font-weight: 500;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   padding-left: calc(var(--spacing-sm) + 8px);
 }
@@ -1254,9 +1356,10 @@ a.button-link:focus-visible {
 
 /* Section progress indicator */
 .toc-progress {
-  font-size: 10px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 500;
-  color: var(--sidebar-foreground);
+  color: var(--text-secondary);
   background: var(--sidebar-accent);
   padding: 1px 5px;
   border-radius: 8px;
@@ -1268,15 +1371,27 @@ a.button-link:focus-visible {
   color: var(--sidebar-primary);
 }
 
-/* Loading state */
-.toc-loading {
-  padding: var(--spacing-md);
-  text-align: center;
+/* Below md the list shows its top level only: on a page with h2 rows,
+   those, each carrying its children's counts rolled up (2A, D2 A); a
+   chapter that reads by table band labels alone keeps those rows. At md
+   and above every level shows and an h2 row carries its own count */
+.toc-item-meta--rollup {
+  display: none;
 }
 
-.toc-loading-text {
-  font-size: 12px;
-  color: var(--sidebar-foreground);
+@media not all and (min-width: theme(screens.md)) {
+  [data-toc-top='h2'] .toc-item-wrapper[data-level='h3'],
+  [data-toc-top='h2'] .toc-item-wrapper[data-level='table'] {
+    display: none;
+  }
+
+  [data-toc-top='h2'] .toc-item-meta--own {
+    display: none;
+  }
+
+  [data-toc-top='h2'] .toc-item-meta--rollup {
+    display: flex;
+  }
 }
 
 /* Scroll offset for sticky header when navigating to TOC sections */
@@ -1435,7 +1550,7 @@ body.has-site-header {
    ======================================== */
 .contents-tree {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 1 / 3;
   align-self: start;
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-lg));
@@ -1454,7 +1569,7 @@ body.has-site-header {
    margin. Below 1200px the sheet carries the tree and no gutter renders. */
 .reading-tree__gutter {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 1 / 3;
   align-self: start;
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-lg));
@@ -1478,7 +1593,8 @@ body.has-site-header {
 }
 
 .contents-tree__title {
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1498,8 +1614,8 @@ body.has-site-header {
   align-items: baseline;
   padding: 5px var(--spacing-sm);
   border-radius: var(--radius-md);
-  font-size: 13px;
-  line-height: 1.35;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   text-decoration: none;
 }
@@ -1534,18 +1650,33 @@ body.has-site-header {
 /* A section's activities: unnumbered rows in the secondary color that lead
    with the outside-link glyph where a chapter number would sit, so the eye
    reads "not a chapter" before the words (BR17). The glyph is drawn by the
-   outside-link notice component after its text; order moves it first. */
+   outside-link notice component after its text; order moves it first. The
+   rows share the chapter indent, and the glyph column is the number
+   column's 26px, so the labels align. */
 .contents-tree__row--activity .contents-tree__link {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
+  padding-left: var(--spacing-md);
 }
 
 .contents-tree__row--activity .external-link__icon {
   order: -1;
   display: inline-flex;
   flex: none;
-  width: 2.4em;
+  width: 26px;
   color: var(--text-secondary);
+}
+
+/* Text inside a flex row shrinks to its column instead of pushing it */
+.contents-tree__link,
+.contents-tree__label,
+.cover-contents__chapter > span:last-child,
+.reading-bar__door > span,
+.opener-row__title,
+.search-results__row-title,
+.search-results__row-excerpt {
+  min-width: 0;
 }
 
 .contents-tree__row--chapter .contents-tree__link {
@@ -1554,10 +1685,19 @@ body.has-site-header {
 
 .contents-tree__number {
   flex: none;
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--table-accent);
   min-width: 26px;
+}
+
+/* The table accent falls under 4.5:1 on the background at 12px (4.33 in
+   the light theme, 3.70 in the dark); every number column takes the
+   sidebar primary in both themes (8A, measured in the build) */
+.contents-tree__number {
+  color: var(--sidebar-primary);
 }
 
 .contents-tree__row--active > .contents-tree__link {
@@ -1576,7 +1716,8 @@ body.has-site-header {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary, var(--sidebar-foreground));
   text-decoration: none;
   padding: 4px var(--spacing-sm);
@@ -1593,7 +1734,7 @@ body.has-site-header {
    ======================================== */
 .reading-rail {
   grid-column: 3;
-  grid-row: 1;
+  grid-row: 1 / 3;
   align-self: start;
   position: sticky;
   top: calc(var(--header-height) + var(--spacing-lg));
@@ -1625,7 +1766,8 @@ body.has-site-header {
 .reading-rail__edge-btn {
   writing-mode: vertical-rl;
   padding: var(--spacing-sm) 6px;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--sidebar-foreground);
@@ -1658,7 +1800,8 @@ body.has-site-header {
 }
 
 .reading-rail__panel-title {
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1704,7 +1847,8 @@ body.has-site-header {
 }
 
 .comments-feed__line {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin: var(--spacing-sm) 0;
 }
@@ -1730,7 +1874,8 @@ body.has-site-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin-bottom: 4px;
 }
@@ -1744,14 +1889,16 @@ body.has-site-header {
   border-radius: 9999px;
   border: 2px solid var(--primary);
   color: var(--primary);
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   flex: none;
 }
 
 .comments-card__text {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--foreground);
   white-space: pre-wrap;
   margin: 0;
@@ -1765,7 +1912,8 @@ body.has-site-header {
   flex: none;
   border-top: 1px solid var(--border);
   padding: var(--spacing-sm) 0 var(--spacing-xs);
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
 }
 
 .comments-foot__row {
@@ -1777,21 +1925,24 @@ body.has-site-header {
 
 .comments-foot__label {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--foreground);
   margin: var(--spacing-sm) 0 4px;
 }
 
 .comments-foot__target {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin: 0;
 }
 
 .comments-foot__quote {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   border-left: 2px solid var(--border);
   padding-left: var(--spacing-sm);
@@ -1810,7 +1961,8 @@ body.has-site-header {
   background: var(--input);
   color: var(--foreground);
   font: inherit;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   padding: 8px 10px;
 }
 
@@ -1823,7 +1975,8 @@ body.has-site-header {
   min-height: 40px;
   padding: 0 var(--spacing-md);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   font-weight: 500;
   cursor: pointer;
   border: 1px solid var(--border);
@@ -1848,7 +2001,8 @@ body.has-site-header {
   padding: 0;
   min-height: 44px;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--foreground);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -1870,7 +2024,8 @@ body.has-site-header {
   justify-content: center;
   gap: var(--spacing-md);
   flex: 1;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
 }
 
 .reading-bar[data-placing] .reading-bar__door {
@@ -1906,8 +2061,10 @@ body.has-site-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   background: var(--primary);
   color: var(--primary-foreground);
   box-shadow: var(--shadow-card);
@@ -1936,7 +2093,8 @@ body.has-site-header {
 
 /* Footnotes tenant */
 .footnotes-tenant__label {
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1951,21 +2109,23 @@ body.has-site-header {
 }
 
 .footnotes-tenant__note {
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   padding: var(--spacing-xs) 0;
 }
 
 .footnotes-tenant__empty {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--sidebar-foreground);
   margin: var(--spacing-sm) 0;
 }
 
 .reading-rail__close,
 .reading-sheet__close {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--text-secondary, var(--sidebar-foreground));
   background: transparent;
@@ -1993,10 +2153,10 @@ body.has-site-header {
 }
 
 /* ========================================
-   Phone grammar (below 1200px): tree hidden (the bar's sheet carries
-   it), On this page in flow at chapter top, docked bar reserves height
+   Phone grammar (below reading): tree hidden (the bar's sheet carries
+   it), On this page in flow, docked bar reserves height
    ======================================== */
-@media (max-width: 1199px) {
+@media not all and (min-width: theme(screens.reading)) {
   .reading-grid,
   .reading-grid[data-rail='closed'] {
     grid-template-columns: 1fr;
@@ -2009,9 +2169,14 @@ body.has-site-header {
     display: none;
   }
 
-  .reading-rail {
+  .reading-grid .reading-header {
     grid-column: 1;
     grid-row: 1;
+  }
+
+  .reading-rail {
+    grid-column: 1;
+    grid-row: 2;
     position: static;
     max-height: none;
     display: block;
@@ -2019,7 +2184,7 @@ body.has-site-header {
 
   .reading-grid .reading-content {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
   }
 
   .reading-rail__gutter,
@@ -2037,6 +2202,23 @@ body.has-site-header {
     border-left: 0;
     padding-left: 0;
     overflow: visible;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* A page with fewer than two headings goes straight from its title to
+     its body (3A); the desktop rail keeps its panel regardless */
+  .reading-grid [data-rail-panel='on-this-page'][data-toc-count='0'],
+  .reading-grid [data-rail-panel='on-this-page'][data-toc-count='1'] {
+    display: none;
+  }
+
+  /* Text a reader navigates by is 14 or more on the phone (7A): the
+     in-flow On this page rows and the Footnotes sheet's notes */
+  .reading-grid [data-rail-panel='on-this-page'] .toc-item,
+  .reading-sheet .footnotes-tenant__note,
+  .reading-sheet .footnotes-tenant__empty {
+    font-size: var(--text-body-small);
+    line-height: var(--leading-body-small);
   }
 
   /* ER8: on bar-carrying pages the corner door anchors above the
@@ -2055,7 +2237,7 @@ body.has-site-header {
   right: 0;
   bottom: 0;
   z-index: 55;
-  height: calc(var(--reading-bar-h) + env(safe-area-inset-bottom, 0px));
+  min-height: calc(var(--reading-bar-floor) + env(safe-area-inset-bottom, 0px));
   padding: 0 var(--spacing-md) env(safe-area-inset-bottom, 0px);
   display: flex;
   align-items: center;
@@ -2072,8 +2254,9 @@ body.has-site-header {
   flex: 1 1 0;
   gap: 8px;
   min-height: 44px;
-  padding: 0 var(--spacing-md);
-  font-size: 14px;
+  padding: 6px var(--spacing-xs);
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   font-weight: 600;
   color: var(--sidebar-foreground);
   background: transparent;
@@ -2145,12 +2328,13 @@ body.has-site-header {
 .reading-sheet .contents-tree__link {
   min-height: 44px;
   align-items: center;
-  font-size: 15px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 /* Desktop: the bar and its sheets do not exist; declared after their base
    styles so the hide wins */
-@media (min-width: 1200px) {
+@screen reading {
   .reading-bar,
   .reading-sheet {
     display: none;
@@ -2161,7 +2345,8 @@ body.has-site-header {
    prints and survives no-JS; the Footnotes tenant presents the same string */
 .module-citation {
   margin-top: var(--spacing-xl);
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
@@ -2186,7 +2371,7 @@ body.has-site-header {
   max-width: 760px;
 }
 
-@media (min-width: 640px) {
+@screen sm {
   .cover-contents__flow {
     columns: 2;
     column-gap: var(--spacing-2xl);
@@ -2215,13 +2400,14 @@ body.has-site-header {
   font-weight: 600;
   color: var(--foreground);
   text-decoration: none;
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 .cover-contents__lead-sub {
   display: block;
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
@@ -2251,8 +2437,8 @@ a.cover-contents__section:hover {
   gap: 10px;
   align-items: baseline;
   padding: 3px 0;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--foreground);
   text-decoration: none;
 }
@@ -2266,7 +2452,7 @@ a.cover-contents__section:hover {
   order: -1;
   display: inline-flex;
   flex: none;
-  width: 2.4em;
+  width: 30px;
   color: var(--text-secondary);
 }
 
@@ -2278,9 +2464,11 @@ a.cover-contents__section:hover {
 .cover-contents__number {
   flex: none;
   min-width: 30px;
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
-  color: var(--table-accent);
+  font-variant-numeric: tabular-nums;
+  color: var(--sidebar-primary);
 }
 
 .cover-contents__exits {
@@ -2294,7 +2482,8 @@ a.cover-contents__section:hover {
 
 .cover-contents__exits p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
 }
 
 .cover-contents__exits a {
@@ -2315,7 +2504,8 @@ a.cover-contents__section:hover {
 }
 
 .start-here__label {
-  font-size: 12px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2325,8 +2515,8 @@ a.cover-contents__section:hover {
 
 .start-here__row {
   display: block;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--foreground);
   text-decoration: none;
   padding: 4px 0;
@@ -2346,7 +2536,8 @@ a.cover-contents__section:hover {
 }
 
 .dl-jump-row a {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   text-decoration: none;
   min-height: 44px;
@@ -2365,6 +2556,7 @@ a.cover-contents__section:hover {
   max-width: 1200px;
 }
 
+.reading-grid--no-tree .reading-header,
 .reading-grid--no-tree .reading-content {
   grid-column: 1;
 }
@@ -2401,13 +2593,16 @@ a.cover-contents__section:hover {
 .opener-row__number {
   flex: none;
   min-width: 34px;
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
-  color: var(--table-accent);
+  font-variant-numeric: tabular-nums;
+  color: var(--sidebar-primary);
 }
 
 .opener-row__title {
-  font-size: 15px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
   font-weight: 500;
 }
 
@@ -2426,7 +2621,8 @@ a.cover-contents__section:hover {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12.5px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   text-decoration: none;
 }
@@ -2436,14 +2632,14 @@ a.cover-contents__section:hover {
   text-decoration: underline;
 }
 
-@media (max-width: 1199px) {
+@media not all and (min-width: theme(screens.reading)) {
   .reading-grid--no-tree,
   .reading-grid--no-tree[data-rail='closed'] {
     grid-template-columns: 1fr;
   }
 
   .reading-grid--no-tree .reading-content {
-    grid-row: 2;
+    grid-row: 3;
   }
 
   .opener-row {
@@ -2476,7 +2672,8 @@ a.cover-contents__section:hover {
   width: 100%;
   height: 36px;
   padding: 0 10px 0 32px;
-  font-size: 13px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--foreground);
   background: var(--input);
   border: 1px solid var(--border);
@@ -2500,7 +2697,7 @@ a.cover-contents__section:hover {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@screen lg {
   header:not([data-search-overflow]) .header-search {
     display: block;
     flex: 0 0 auto; /* never shrinks below the minimum: the row overflows instead, and ES4 sees it */
@@ -2512,7 +2709,7 @@ a.cover-contents__section:hover {
   }
 }
 
-@media (min-width: 1340px) {
+@screen wide {
   header:not([data-search-overflow]) .header-search {
     width: 230px;
   }
@@ -2520,7 +2717,7 @@ a.cover-contents__section:hover {
 
 /* The 768 to 1024 expanding lens, and the ES4 overflow fallback: the
    lens opens the box in place of the centered nav */
-@media (min-width: 768px) {
+@screen md {
   header[data-search-expanded] .header-search {
     display: block;
     flex: 1;
@@ -2533,7 +2730,7 @@ a.cover-contents__section:hover {
   }
 }
 
-@media (max-width: 767px) {
+@media not all and (min-width: theme(screens.md)) {
   .header-search,
   .header-search-lens {
     display: none;
@@ -2578,13 +2775,15 @@ a.cover-contents__section:hover {
 }
 
 .search-panel__status {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   margin: var(--spacing-xs);
 }
 
 .search-results__group-label {
-  font-size: 11px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2607,9 +2806,9 @@ a.cover-contents__section:hover {
 
 .search-results__row-title {
   display: block;
-  font-size: 13px;
+  font-size: var(--text-chrome);
   font-weight: 600;
-  line-height: 1.35;
+  line-height: var(--leading-chrome);
 }
 
 .search-results__row-excerpt {
@@ -2617,12 +2816,25 @@ a.cover-contents__section:hover {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 12.5px;
-  line-height: 1.4;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
-/* /search: two-line snippets (SR9) */
+/* /search: two-line snippets (SR9) at reading sizes; the sheet's rows
+   read at the same sizes, since on a phone the sheet is the page (7A) */
+[data-search-page] .search-results__row-title,
+.search-sheet .search-results__row-title {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+[data-search-page] .search-results__row-excerpt,
+.search-sheet .search-results__row-excerpt {
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
+}
+
 [data-search-page] .search-results__row-excerpt {
   -webkit-line-clamp: 2;
 }
@@ -2652,12 +2864,14 @@ a.cover-contents__section:hover {
 }
 
 .search-panel__more {
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
 }
 
 .search-panel__see-all {
-  font-size: 12.5px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--foreground);
   text-decoration: none;
@@ -2669,13 +2883,15 @@ a.cover-contents__section:hover {
 }
 
 .search-page__count {
-  font-size: 13px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   color: var(--text-secondary);
   margin: var(--spacing-sm) 0 0;
 }
 
 .search-page__nojs {
-  font-size: 14px;
+  font-size: var(--text-body-small);
+  line-height: var(--leading-body-small);
   color: var(--text-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -2695,7 +2911,7 @@ a.cover-contents__section:hover {
   z-index: 75;
 }
 
-@media (min-width: 768px) {
+@screen md {
   .search-sheet {
     display: none;
   }
@@ -2738,7 +2954,8 @@ a.cover-contents__section:hover {
 }
 
 .search-sheet__title {
-  font-size: 13px;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2749,7 +2966,8 @@ a.cover-contents__section:hover {
 .search-sheet__close {
   min-height: 44px;
   min-width: 44px;
-  font-size: 12px;
+  font-size: var(--text-chrome);
+  line-height: var(--leading-chrome);
   font-weight: 600;
   color: var(--text-secondary);
   background: transparent;
@@ -2787,7 +3005,8 @@ a.cover-contents__section:hover {
 .search-sheet__input .search-box__input {
   height: 44px;
   /* 16px is the floor below which iOS zooms the page on focus */
-  font-size: 16px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 .search-sheet__input .search-panel {

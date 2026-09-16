@@ -2,6 +2,37 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.1.1] - 2026-09-16
+
+A patch release for phones. Text sizes are consistent now, and nothing runs
+off the side of the screen. Nothing new to learn.
+
+### Changed
+- One set of text sizes across the whole site. Page titles now follow the
+  screen, smaller on a phone and larger on a desktop. The /modules index
+  joins the rest; it was the one page held back from the reading grammar
+  in 0.1.0.
+- A chapter opens with its title on a phone. Breadcrumb, then the title,
+  then View PDF and See Additional Resources as one quiet row of links,
+  then On this page, then the chapter.
+- On this page lists the chapter's sections on a phone, brings subsections
+  back on wider screens, and does not appear at all on a chapter with only
+  one heading.
+- Small text has a floor. Nothing on a phone reads smaller than 12px, and
+  every label meets the contrast standard in both light and dark.
+- A tablet at 768px no longer gets the phone rules and the desktop rules at
+  the same time. Turning a phone sideways with a sheet open now closes the
+  sheet and puts you back on the control that replaces it.
+
+### Fixed
+- Nothing runs off the side of a 375px phone. Long links wrap, code blocks
+  scroll on their own, the outside-link notice fits, and each door in the
+  bottom bar holds one line.
+- 0.1, the Emergency Preparedness opener, and About no longer scroll sideways.
+
+### For contributors
+- Every route is checked at 320, 375 and 414 wide.
+
 ## [0.1.0] - 2026-09-15
 
 From this release the version is three-part semantic versioning. The

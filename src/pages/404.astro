@@ -54,7 +54,9 @@
         padding: 3rem 1rem;
       }
       h1 {
-        font-size: 1.75rem;
+        /* the hero step, mirrored: 32px at 375 to 44px from 768 up */
+        font-size: clamp(2rem, 1.284rem + 3.053vw, 2.75rem);
+        line-height: 1.1;
         font-weight: 600;
         margin: 0 0 1rem;
       }

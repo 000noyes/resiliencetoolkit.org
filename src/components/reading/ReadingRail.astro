@@ -9,20 +9,31 @@
  * layout, never floating over content. Closing a tenant returns to On
  * this page; closing On this page itself collapses the rail to the
  * gutter and returns the measure to the reader (DR3). Desktop panels are
- * regions, never dialogs (ER7). Below 1200px the rail never translates
- * down: On this page renders in flow at the top of the chapter and the
- * doors live in the docked bar.
+ * regions, never dialogs (ER7). Below the reading width the rail never
+ * translates down: On this page renders in flow under the page header
+ * and the doors live in the docked bar.
+ *
+ * On this page is seeded from the build: the layout reads the headers
+ * from the rendered body and hands them here as data, so the list is on
+ * the page before any script runs; the island adds counts and the active
+ * item. The panel carries the count of headings, and below the reading
+ * width the in-flow block hides itself under two.
  *
  * The Make Comments tenant mounts beside these on a workshop round: the
  * same panel grammar, its feed and compose foot rendered by the
  * annotation island into the tenant's mount (DR19/DR20).
  */
 import { TableOfContents } from '@/components/TableOfContents';
+import type { SeededHeading } from '@/lib/heading-ids';
 import FootnotesTenant from './FootnotesTenant.astro';
 
 interface Props {
   moduleKey: string;
   sectionNumber: string;
+  /** The headers On this page lists, read from the body at build */
+  headings?: SeededHeading[];
+  /** The list's top level: h2 when the page has h2 rows, else the level it reads by */
+  tocTop?: 'h2' | 'h3' | 'table';
   /** Openers are index-shaped: they carry the doors but no page scanner */
   showOnThisPage?: boolean;
   /** A workshop round: the Make Comments tenant joins the rail */
@@ -34,6 +45,8 @@ interface Props {
 const {
   moduleKey,
   sectionNumber,
+  headings = [],
+  tocTop = 'h2',
   showOnThisPage = true,
   comments = false,
   resting = showOnThisPage ? 'on-this-page' : 'closed',
@@ -52,6 +65,8 @@ const tenants = [
     class="reading-rail__panel"
     id="rail-panel-on-this-page"
     data-rail-panel="on-this-page"
+    data-toc-count={headings.length}
+    data-toc-top={tocTop}
     aria-label="On this page"
     tabindex="-1"
   >
@@ -65,7 +80,7 @@ const tenants = [
         Close
       </button>
     </div>
-    <TableOfContents client:load moduleKey={moduleKey} />
+    <TableOfContents client:load moduleKey={moduleKey} headings={headings} />
     <slot name="on-this-page-extra" />
   </section>
   )}

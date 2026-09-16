@@ -65,7 +65,7 @@ const navItems = [
       </a>
 
       <!-- Desktop Navigation (Centered) -->
-      <nav class="hidden md:flex items-center gap-md lg:gap-lg xl:gap-xl flex-1 justify-center">
+      <nav class="hidden md:flex items-center gap-md lg:gap-lg wide:gap-xl flex-1 justify-center">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -225,6 +225,8 @@ const navItems = [
 </div>
 
 <script>
+  import { atOrAbove } from '@/lib/breakpoints.mjs';
+
   // Mobile menu toggle; the burger and the search lens close each other
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -316,6 +318,16 @@ const navItems = [
       afterSheetPop = null;
       go();
     }
+  });
+
+  // The sheet's lifecycle ends at md: crossing the line with it open
+  // closes it, releases the scroll lock, and hands focus to the header
+  // lens that takes over from there
+  const mdQuery = window.matchMedia(atOrAbove('md'));
+  mdQuery.addEventListener('change', (e) => {
+    if (!e.matches || !searchSheet || searchSheet.hidden) return;
+    closeSearchSheet();
+    headerSearchLens?.focus();
   });
 
   // The 768 to 1024 expanding lens; also the ES4 overflow fallback at

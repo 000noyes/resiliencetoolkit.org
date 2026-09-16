@@ -2,40 +2,54 @@ import { useMemo } from 'react';
 import { useTableOfContents } from './useTableOfContents';
 import { useActiveSection, scrollToSection } from './useActiveSection';
 import { TableOfContentsItem } from './TableOfContentsItem';
-import type { TableOfContentsProps, SectionProgress } from './types';
+import type { TableOfContentsProps, SectionProgress, TOCEntry } from './types';
 
 /**
- * Wikipedia-style table of contents sidebar
- *
- * Features:
- * - Auto-detects headers (H2, H3) and table section headers
- * - Tracks active section on scroll
- * - Shows interactive element indicators
- * - Displays progress for sections with todos
- * - Smooth scroll navigation
+ * On this page: the page's section headers as a list, seeded from the
+ * build so it is on the page before any script runs and identical after
+ * hydration. Effects add the todo counts and the active item only; the
+ * list never changes under the reader. Below md, CSS shows h2 rows only,
+ * each carrying the counts of its h3 and band children rolled up, so the
+ * rows still sum to the header.
  */
 export function TableOfContents({
   moduleKey: _moduleKey, // Reserved for future progress tracking integration
+  headings,
   containerSelector = 'article',
   className = '',
 }: TableOfContentsProps) {
-  const { entries, isLoading } = useTableOfContents(containerSelector);
+  const { entries } = useTableOfContents(headings, containerSelector);
   const activeId = useActiveSection(entries);
+
+  const progressOf = (completed: number, total: number): SectionProgress => ({
+    completed,
+    total,
+    percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+  });
 
   // Build progress map from entry data
   const progressMap = useMemo(() => {
     const map = new Map<string, SectionProgress>();
     entries.forEach((entry) => {
       if (entry.interactiveCount > 0) {
-        map.set(entry.id, {
-          completed: entry.completedCount,
-          total: entry.interactiveCount,
-          percentage:
-            entry.interactiveCount > 0
-              ? Math.round((entry.completedCount / entry.interactiveCount) * 100)
-              : 0,
-        });
+        map.set(entry.id, progressOf(entry.completedCount, entry.interactiveCount));
       }
+    });
+    return map;
+  }, [entries]);
+
+  // An h2 row's roll-up: its own counts plus every h3 and band row until the next h2
+  const rollupMap = useMemo(() => {
+    const map = new Map<string, SectionProgress>();
+    entries.forEach((entry, i) => {
+      if (entry.level !== 'h2') return;
+      let total = entry.interactiveCount;
+      let completed = entry.completedCount;
+      for (let j = i + 1; j < entries.length && entries[j].level !== 'h2'; j++) {
+        total += entries[j].interactiveCount;
+        completed += entries[j].completedCount;
+      }
+      if (total > 0) map.set(entry.id, progressOf(completed, total));
     });
     return map;
   }, [entries]);
@@ -44,25 +58,16 @@ export function TableOfContents({
   const overallProgress = useMemo(() => {
     let total = 0;
     let completed = 0;
-    entries.forEach((entry) => {
+    entries.forEach((entry: TOCEntry) => {
       total += entry.interactiveCount;
       completed += entry.completedCount;
     });
-    return {
-      completed,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
-    };
+    return progressOf(completed, total);
   }, [entries]);
 
   const handleItemClick = (id: string) => {
     scrollToSection(id);
   };
-
-  // Don't render if no entries found
-  if (!isLoading && entries.length === 0) {
-    return null;
-  }
 
   return (
     <aside className={`toc-sidebar ${className}`}>
@@ -84,23 +89,18 @@ export function TableOfContents({
           )}
         </header>
 
-        {isLoading ? (
-          <div className="toc-loading">
-            <span className="toc-loading-text">Loading...</span>
-          </div>
-        ) : (
-          <ol className="toc-list">
-            {entries.map((entry) => (
-              <TableOfContentsItem
-                key={entry.id}
-                entry={entry}
-                isActive={activeId === entry.id}
-                progress={progressMap.get(entry.id)}
-                onClick={handleItemClick}
-              />
-            ))}
-          </ol>
-        )}
+        <ol className="toc-list">
+          {entries.map((entry) => (
+            <TableOfContentsItem
+              key={entry.id}
+              entry={entry}
+              isActive={activeId === entry.id}
+              progress={progressMap.get(entry.id)}
+              rollup={rollupMap.get(entry.id)}
+              onClick={handleItemClick}
+            />
+          ))}
+        </ol>
       </nav>
     </aside>
   );

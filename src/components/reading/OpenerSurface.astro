@@ -7,7 +7,8 @@
  * same quiet actions every render carries), then linear prev/next walking
  * the one reading chain (DR4: openers sit IN the chain). No tree: the
  * opener IS the section-zoom render and never carries a second copy of
- * itself; the gutter doors and the phone bar stay (DR5).
+ * itself; the gutter doors and the phone bar stay (DR5). The page header
+ * is its own grid child before the rail, as on every reading page.
  */
 import { contents, chainFor } from '@/data/contents';
 import { getPdfUrlForSection } from '@/lib/pdfLookup';
@@ -31,17 +32,15 @@ const { prev, next } = chainFor(`opener-${section.number}`);
 ---
 
 <div class="reading-grid reading-grid--no-tree py-8" data-rail="closed">
-  <ReadingRail moduleKey={`${section.slug}-opener`} sectionNumber="" showOnThisPage={false} />
-
-  <article data-pagefind-body class="reading-content">
+  <header class="reading-header" data-pagefind-body>
     <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
       <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
       <span class="mx-2">/</span>
       <span class="text-text-primary">{section.title}</span>
     </nav>
 
-    <header class="mb-8">
-      <h1 class="text-display font-semibold mb-4">{section.title}</h1>
+    <div class="mb-8">
+      <h1 class="text-display font-semibold mb-4" data-pagefind-meta="title">{section.title}</h1>
       <p class="text-body-large text-text-secondary leading-relaxed">
         {summary}
       </p>
@@ -53,8 +52,12 @@ const { prev, next } = chainFor(`opener-${section.number}`);
           </span>
         ))}
       </div>
-    </header>
+    </div>
+  </header>
 
+  <ReadingRail moduleKey={`${section.slug}-opener`} sectionNumber="" showOnThisPage={false} />
+
+  <article data-pagefind-body class="reading-content">
     <ol class="opener-rows" data-pagefind-ignore>
       {section.chapters.map((chapter) => (
         <li class="opener-row">

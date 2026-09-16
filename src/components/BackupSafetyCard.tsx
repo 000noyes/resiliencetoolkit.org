@@ -243,7 +243,7 @@ export default function BackupSafetyCard() {
         </h2>
         <p
           data-testid="rt-safety-headline"
-          className="mt-2 text-2xl sm:text-3xl font-medium text-foreground"
+          className="mt-2 text-title sm:text-headline font-medium text-foreground"
           style={{ textWrap: 'balance' }}
         >
           Your work is saved on this device, and only here.
@@ -277,7 +277,7 @@ export default function BackupSafetyCard() {
       </h2>
       <p
         data-testid="rt-safety-headline"
-        className="mt-2 text-2xl sm:text-3xl font-medium text-foreground"
+        className="mt-2 text-title sm:text-headline font-medium text-foreground"
         style={{ textWrap: 'balance' }}
       >
         {card.headline}
@@ -312,7 +312,7 @@ export default function BackupSafetyCard() {
       )}
 
       {card.state !== 'empty' && (
-        <p className="mt-2 text-xs text-muted-foreground" data-testid="rt-device-name">
+        <p className="mt-2 text-chrome text-muted-foreground" data-testid="rt-device-name">
           {namingDevice ? (
             <NameDeviceInput initial={deviceName} onSave={saveDeviceName} onCancel={() => setNamingDevice(false)} />
           ) : deviceName ? (
@@ -374,12 +374,12 @@ export default function BackupSafetyCard() {
       )}
 
       {showBackupHygiene && (
-        <p className="mt-2 text-xs text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
+        <p className="mt-2 text-chrome text-muted-foreground max-w-prose" data-testid="rt-keep-a-copy">
           Keep a copy on another device you own too.
         </p>
       )}
       {card.quietLines.map((line) => (
-        <p key={line} className="mt-2 text-xs text-muted-foreground" data-testid="rt-quiet-line">
+        <p key={line} className="mt-2 text-chrome text-muted-foreground" data-testid="rt-quiet-line">
           {line}
         </p>
       ))}
@@ -389,7 +389,7 @@ export default function BackupSafetyCard() {
           <h3 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             Work on this device
           </h3>
-          <p className="mt-1 text-xs text-muted-foreground">Everything here goes into your backup.</p>
+          <p className="mt-1 text-chrome text-muted-foreground">Everything here goes into your backup.</p>
 
           {/* Desktop and tablet: the table form */}
           <div className="mt-3 hidden sm:block rounded-lg border border-border bg-card overflow-hidden">
@@ -509,7 +509,7 @@ function NameDeviceInput({
         }}
         placeholder="Kitchen laptop"
         aria-label="Device name"
-        className="rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground"
+        className="rounded-md border border-border bg-background px-2 py-1 text-chrome text-foreground"
       />
       <button type="button" className="underline underline-offset-2" onClick={() => onSave(value)}>
         Save

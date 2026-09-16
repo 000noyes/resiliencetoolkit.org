@@ -4,6 +4,7 @@ import ActionButton from '@/components/ActionButton.astro';
 import Badge from '@/components/Badge.astro';
 import Card from '@/components/Card.astro';
 import PhaseSlider from '@/components/PhaseSlider.astro';
+import { breakpoints } from '@/lib/breakpoints.mjs';
 import CoverContents from '@/components/reading/CoverContents.astro';
 import culvertRoad from '@/assets/culvert-road.png';
 import riverBendWashout from '@/assets/river-bend-washout.png';
@@ -18,6 +19,9 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
 // Origin Story section below (the rotating Field Snapshot gallery removed
 // 2026-03-28 stays retired). Sources live in src/assets/ so astro:assets
 // emits optimized /_astro derivatives, which the service worker precaches.
+
+// The origin photos render at 434px from md up and full width below
+const photoSizes = `(min-width: ${breakpoints.md}px) 434px, calc(100vw - 2rem)`;
 ---
   <!-- Hero Section -->
   <section class="relative pt-16 pb-8" data-annot="hero">
@@ -126,7 +130,7 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
             src={culvertRoad}
             alt="Orange road-closed sign blocking a rural Vermont dirt road for culvert repairs."
             widths={[480, 896, 1344]}
-            sizes="(min-width: 768px) 434px, calc(100vw - 2rem)"
+            sizes={photoSizes}
             loading="lazy"
             decoding="async"
             class="origin-photo__img"
@@ -138,7 +142,7 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
             src={riverBendWashout}
             alt="The Great Brook cutting off a meander, floodwater carving a new channel beside the gravel road."
             widths={[480, 896, 1344]}
-            sizes="(min-width: 768px) 434px, calc(100vw - 2rem)"
+            sizes={photoSizes}
             loading="lazy"
             decoding="async"
             class="origin-photo__img"
@@ -163,8 +167,8 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
     }
     .origin-photo__caption {
       margin-top: 0.5rem;
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: var(--text-chrome);
+      line-height: var(--leading-chrome);
       color: var(--muted-foreground);
     }
   </style>
@@ -199,7 +203,7 @@ import riverBendWashout from '@/assets/river-bend-washout.png';
   <section id="offline" class="py-12 bg-card" data-annot="works-offline">
     <div class="container mx-auto px-4 max-w-4xl">
       <div class="text-center mb-10">
-        <Badge variant="primary" class="mb-4">Works Offline</Badge>
+        <Badge variant="success" class="mb-4">Works Offline</Badge>
         <h2 class="text-headline font-semibold text-foreground mb-3">
           Works Without Internet After First Visit
         </h2>

@@ -59,7 +59,7 @@ test('the 1200px floor: no horizontal scroll, tree fixed, rail closes to the gut
   await ctx.close();
 });
 
-test('phone grammar: contents in flow at top, bar reserves height, sheet is modal', async ({
+test('phone grammar: title first, contents in flow under it, bar reserves height, sheet is modal', async ({
   browser,
 }) => {
   const ctx = await browser.newContext({
@@ -73,10 +73,21 @@ test('phone grammar: contents in flow at top, bar reserves height, sheet is moda
   const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(scrollWidth).toBeLessThanOrEqual(390);
 
-  // On this page renders in flow at the top of the chapter, above the h1
+  // The reader lands on the title: the page header (breadcrumb, h1, the
+  // action row) comes first, On this page renders in flow below it, and
+  // the article follows (BR20)
+  const h1Box = await page.locator('h1').first().boundingBox();
   const tocBox = await page.locator('#rail-panel-on-this-page').boundingBox();
-  const h1Box = await page.locator('article h1').boundingBox();
-  expect(tocBox!.y).toBeLessThan(h1Box!.y);
+  const articleBox = await page.locator('.reading-content').boundingBox();
+  expect(tocBox!.y).toBeGreaterThan(h1Box!.y + h1Box!.height);
+  expect(articleBox!.y).toBeGreaterThanOrEqual(tocBox!.y + tocBox!.height);
+
+  // Below md only the list's top level shows: on a page with h2 rows, the
+  // children hide and the h2 rows carry them rolled up
+  if ((await page.locator('#rail-panel-on-this-page').getAttribute('data-toc-top')) === 'h2') {
+    await expect(page.locator('#rail-panel-on-this-page [data-level="h3"]:visible')).toHaveCount(0);
+    await expect(page.locator('#rail-panel-on-this-page [data-level="table"]:visible')).toHaveCount(0);
+  }
 
   // The tree column is hidden; the bar is visible, docked, and the page
   // reserves its height (layout, not overlay)
@@ -247,4 +258,53 @@ test('the tree closes to its edge button, the measure holds, and the choice pers
   await page.reload();
   await expect(page.locator('.contents-tree--rail')).toBeVisible();
   await ctx.close();
+});
+
+test('On this page is on the page before any script runs, and nothing shifts after hydration', async ({
+  browser,
+}) => {
+  // The list is server-rendered from the body's headings; the island adds
+  // counts and the active item only, so the title and the article sit at
+  // the same place with and without JavaScript (2A, PE2)
+  const measure = async (javaScriptEnabled: boolean) => {
+    const ctx = await browser.newContext({
+      viewport: { width: 375, height: 667 },
+      hasTouch: true,
+      javaScriptEnabled,
+    });
+    const page = await ctx.newPage();
+    await page.goto('/modules/knowing-your-community', { waitUntil: 'networkidle' });
+    if (javaScriptEnabled) await page.waitForTimeout(800);
+    const rows = await page.locator('#rail-panel-on-this-page .toc-item').count();
+    const panel = await page.locator('#rail-panel-on-this-page').boundingBox();
+    const article = await page.locator('.reading-content').boundingBox();
+    const h1 = await page.locator('h1').first().boundingBox();
+    await ctx.close();
+    // Distances from the title: the notice strips above the header are
+    // islands too and only render with script, so absolute positions differ
+    return { rows, panelHeight: panel!.height, articleBelowTitle: article!.y - h1!.y };
+  };
+  const still = await measure(false);
+  const hydrated = await measure(true);
+  expect(still.rows).toBeGreaterThan(1);
+  expect(hydrated.rows).toBe(still.rows);
+  expect(Math.abs(hydrated.panelHeight - still.panelHeight)).toBeLessThanOrEqual(1);
+  expect(Math.abs(hydrated.articleBelowTitle - still.articleBelowTitle)).toBeLessThanOrEqual(1);
+});
+
+test('a page with one heading goes from its title to its body on the phone (3A)', async ({
+  browser,
+}) => {
+  const ctx = await browser.newContext({ viewport: { width: 375, height: 667 }, hasTouch: true });
+  const page = await ctx.newPage();
+  // 1.12 has no section headers: the desktop rail keeps its one-entry panel,
+  // the phone shows no block
+  await page.goto('/modules/emergency-preparedness/1-12');
+  await expect(page.locator('#rail-panel-on-this-page')).toBeHidden();
+  await ctx.close();
+  const desktop = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  const dpage = await desktop.newPage();
+  await dpage.goto('/modules/emergency-preparedness/1-12');
+  await expect(dpage.locator('#rail-panel-on-this-page')).toBeVisible();
+  await desktop.close();
 });

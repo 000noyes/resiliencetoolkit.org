@@ -8,6 +8,7 @@ import {
   type PostOutcome,
 } from '@/lib/annotation/post-contract';
 import { copyNoteText } from '@/lib/annotation/copy-note';
+import { atOrAbove } from '@/lib/breakpoints.mjs';
 
 /**
  * The round page's one hydrated island, re-housed into the rail grammar:
@@ -57,7 +58,7 @@ type Compose =
 // selector after passing the same shape rule the API enforces, so a hostile
 // value can neither throw in querySelector nor address another element.
 const TARGET_ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/i;
-const DESKTOP = '(min-width: 1200px)';
+const DESKTOP = atOrAbove('reading');
 const COARSE = '(pointer: coarse)';
 const QUOTE_MAX = 160;
 

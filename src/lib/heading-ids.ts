@@ -122,3 +122,63 @@ export function withHeadingIds(html: string): string {
     }
   );
 }
+
+/** A section header as On this page lists it, read from the built body */
+export interface SeededHeading {
+  id: string;
+  text: string;
+  level: 'h2' | 'h3' | 'table';
+  /** Todo islands between this header and the next, in document order */
+  interactiveCount: number;
+}
+
+const ISLAND = /<astro-island\b[^>]*?(?:component-url="[^"]*\/Todo[^"/]*\.js"|name(?:&quot;|"):(?:&quot;|")Todo(?:&quot;|"))[^>]*>/gi;
+
+function countIslands(html: string): number {
+  return (html.match(ISLAND) ?? []).length;
+}
+
+/**
+ * The On this page entries, read once from a body that has been through
+ * withHeadingIds: the same headers the scanner selects (h2, h3, the table
+ * band labels, link-only bands skipped), in document order, each with its
+ * static id and the count of todo islands before the next header. The
+ * island seeds its list from these, so the list is on the page before
+ * any script runs; the scanner only adds counts and the active item.
+ */
+export function extractHeadings(html: string): SeededHeading[] {
+  const found: { id: string; text: string; level: SeededHeading['level']; start: number; end: number }[] = [];
+  for (const m of html.matchAll(TARGET)) {
+    const [whole, hLevel, hAttrs, hInner, bandOpen, bandAttrs, bandInner, , rowAttrs, rowInner] = m;
+    let attrs: string;
+    let inner: string;
+    let level: SeededHeading['level'];
+    if (hLevel !== undefined) {
+      attrs = hAttrs ?? '';
+      inner = hInner ?? '';
+      level = hLevel === '2' ? 'h2' : 'h3';
+    } else if (bandOpen !== undefined) {
+      attrs = bandAttrs ?? '';
+      inner = bandInner ?? '';
+      level = 'table';
+      if (isLinkOnly(inner)) continue;
+    } else {
+      attrs = rowAttrs ?? '';
+      inner = rowInner ?? '';
+      level = 'table';
+      if (isLinkOnly(inner)) continue;
+    }
+    const idMatch = ID_ATTR.exec(attrs);
+    if (!idMatch) continue;
+    const id = idMatch[1].replace(/^["']|["']$/g, '');
+    const text = textOf(inner);
+    if (!id || !text) continue;
+    found.push({ id, text, level, start: m.index ?? 0, end: (m.index ?? 0) + whole.length });
+  }
+  return found.map((h, i) => ({
+    id: h.id,
+    text: h.text,
+    level: h.level,
+    interactiveCount: countIslands(html.slice(h.end, i + 1 < found.length ? found[i + 1].start : html.length)),
+  }));
+}

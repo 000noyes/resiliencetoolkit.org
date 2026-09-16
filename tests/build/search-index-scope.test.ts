@@ -34,15 +34,21 @@ function routeOf(file: string): string {
 describe('search index scope (dist)', () => {
   const files = DIST_PRESENT ? htmlFiles(distDir) : [];
 
-  it.skipIf(!DIST_PRESENT)('every data-pagefind-body sits on one article of a contents-model page', () => {
+  it.skipIf(!DIST_PRESENT)('every data-pagefind-body sits on the header and article pair of a contents-model page', () => {
     const indexed: string[] = [];
     for (const file of files) {
       const html = readFileSync(file, 'utf-8');
       const bodies = html.match(/data-pagefind-body/g) ?? [];
       if (bodies.length === 0) continue;
       const route = routeOf(file);
-      expect(bodies, `${route} carries more than one index body`).toHaveLength(1);
+      // The page header (the h1 and its title words) and the article are
+      // the two indexed bodies; Pagefind combines them
+      expect(bodies.length, `${route} carries more than two index bodies`).toBeLessThanOrEqual(2);
       expect(/<article[^>]*\sdata-pagefind-body/.test(html), `${route}: the body is not an article`).toBe(true);
+      if (bodies.length === 2) {
+        expect(/<header[^>]*class="[^"]*reading-header[^"]*"[^>]*\sdata-pagefind-body/.test(html), `${route}: the second body is not the page header`).toBe(true);
+        expect(/<h1[^>]*data-pagefind-meta="title"/.test(html), `${route}: the h1 carries no title meta`).toBe(true);
+      }
       expect(urlToChapter(route), `${route} is indexed but outside the contents model`).not.toBeNull();
       indexed.push(route);
     }
@@ -60,10 +66,12 @@ describe('search index scope (dist)', () => {
   it.skipIf(!DIST_PRESENT)('chrome inside an indexed article is excluded and every heading carries an id', () => {
     for (const file of files) {
       const html = readFileSync(file, 'utf-8');
-      const start = html.indexOf('data-pagefind-body');
-      if (start < 0) continue;
+      const start = html.indexOf('<article');
+      if (start < 0 || !html.includes('data-pagefind-body')) continue;
       const route = routeOf(file);
       const article = html.slice(start, html.indexOf('</article>', start));
+      const headerStart = html.indexOf('<header class="reading-header"');
+      const header = headerStart >= 0 ? html.slice(headerStart, html.indexOf('</header>', headerStart)) : '';
       // The reading chrome inside the article (breadcrumb, prev/next: the
       // no-print navs) is index chrome; content navs such as the recovery
       // continuum stay indexed
@@ -75,9 +83,13 @@ describe('search index scope (dist)', () => {
       for (const cite of article.match(/<p[^>]*class="[^"]*module-citation[^"]*"[^>]*>/g) ?? []) {
         expect(cite, `${route}: citation indexed`).toContain('data-pagefind-ignore');
       }
-      // The chapter action bar is chrome
+      // The reading chrome in the page header (breadcrumb, the action row) is index chrome
+      for (const nav of header.match(/<nav[^>]*>/g) ?? []) {
+        if (!/no-print/.test(nav)) continue;
+        expect(nav, `${route}: header nav without data-pagefind-ignore`).toContain('data-pagefind-ignore');
+      }
       if (route !== '/introduction' && !/emergency-preparedness$|baseline-resilience$/.test(route)) {
-        expect(article, `${route}: action bar not ignored`).toMatch(/<div[^>]*no-print[^>]*data-pagefind-ignore|<div[^>]*data-pagefind-ignore[^>]*no-print/);
+        expect(header, `${route}: action row not ignored`).toMatch(/<div[^>]*reading-actions[^>]*data-pagefind-ignore|<div[^>]*data-pagefind-ignore[^>]*reading-actions/);
       }
       // The static anchors search lands on (ES3)
       for (const h of article.match(/<h[23][^>]*>/g) ?? []) {

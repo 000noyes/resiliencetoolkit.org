@@ -23,7 +23,8 @@ const { variant = 'neutral', class: className = '' } = Astro.props;
 const variantStyles = {
   primary: 'bg-primary text-primary-foreground shadow-sm',
   neutral: 'bg-muted text-muted-foreground border border-border shadow-ambient',
-  success: ' text-primary border  shadow-ambient',
+  // 12px text on the primary orange reads 4.49:1 on the page; the darker primary clears it
+  success: ' text-primary-hover border  shadow-ambient',
   warning: 'bg-amber-100 text-amber-900 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30 shadow-ambient',
   info: 'bg-blue-100 text-blue-900 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-200 dark:border-blue-900/30 shadow-ambient',
   danger: ' text-destructive border  shadow-ambient'

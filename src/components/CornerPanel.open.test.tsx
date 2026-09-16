@@ -53,6 +53,8 @@ describe('CornerPanel — open state through the real trigger', () => {
     const fundAt = html.indexOf('Fund this work');
     expect(questionsAt).toBeGreaterThan(-1);
     expect(fundAt).toBeGreaterThan(questionsAt);
+    expect(container.querySelectorAll('.rounded-xl.border.border-border.bg-background')).toHaveLength(2);
+    expect(container.querySelector('a[href="/replicate"]')).toBeNull();
     expect(html).toContain('Write to the people who tend this toolkit.');
     expect(html).toContain('Help keep the hubs and this toolkit going.');
     expect(html).toContain('text-table-accent');

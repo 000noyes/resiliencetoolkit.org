@@ -127,6 +127,10 @@ const { currentPath, sectionNumber, comments = false } = Astro.props;
 )}
 
 <script>
+  import { atOrAbove } from '@/lib/breakpoints.mjs';
+
+  const closers = new Map<string, () => void>();
+
   function wireSheets() {
     document.querySelectorAll<HTMLElement>('[data-sheet]').forEach((sheet) => {
       const name = sheet.getAttribute('data-sheet');
@@ -142,6 +146,7 @@ const { currentPath, sectionNumber, comments = false } = Astro.props;
         document.documentElement.style.removeProperty('overflow');
         opener.focus();
       };
+      closers.set(name ?? '', close);
       const open = () => {
         sheet.hidden = false;
         opener.setAttribute('aria-expanded', 'true');
@@ -163,4 +168,40 @@ const { currentPath, sectionNumber, comments = false } = Astro.props;
     });
   }
   wireSheets();
+
+  // The page reserves the bar's actual height (a label that wraps at a
+  // large text size makes the bar taller than its floor). The safe-area
+  // inset is the bar's own bottom padding, so it is measured out.
+  const bar = document.querySelector<HTMLElement>('.reading-bar');
+  if (bar && 'ResizeObserver' in window) {
+    const reserve = () => {
+      const inset = parseFloat(getComputedStyle(bar).paddingBottom) || 0;
+      document.documentElement.style.setProperty(
+        '--reading-bar-h',
+        `${Math.max(56, Math.round(bar.offsetHeight - inset))}px`
+      );
+    };
+    new ResizeObserver(reserve).observe(bar);
+    reserve();
+  }
+
+  // The sheets' lifecycle ends at reading: crossing the line with one open
+  // closes it (the lock releases with it) and focus goes to what replaces
+  // it: the contents tree, or the tenant's edge button in the rail
+  const readingQuery = window.matchMedia(atOrAbove('reading'));
+  readingQuery.addEventListener('change', (e) => {
+    if (!e.matches) return;
+    document.querySelectorAll<HTMLElement>('[data-sheet]').forEach((sheet) => {
+      if (sheet.hidden) return;
+      const name = sheet.getAttribute('data-sheet') ?? '';
+      closers.get(name)?.();
+      const replacement =
+        name === 'contents'
+          ? document.querySelector<HTMLElement>(
+              '.reading-grid[data-tree="closed"] [data-tree-btn], #toolkit-contents-tree'
+            )
+          : document.querySelector<HTMLElement>(`[data-rail-btn="${name}"]`);
+      replacement?.focus();
+    });
+  });
 </script>

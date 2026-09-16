@@ -16,6 +16,8 @@
 - Cloudflare Pages preview builds of the workshop project do not receive ROUND_ID; the
   production branch does. Branch previews therefore never build the round page.
 - An activities page: the three activities as a guided path, later.
+- A visited-link color for content links in both themes: the site has no `:visited` style, so a
+  reader cannot tell which chapters or resources they have already opened.
 
 
 ## Source Fidelity (1-9 QA findings — Step 1a scope)
