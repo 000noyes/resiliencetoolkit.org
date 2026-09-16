@@ -10,9 +10,8 @@ off the side of the screen. Nothing new to learn.
 
 ### Changed
 - One set of text sizes across the whole site. Page titles are smaller on a
-  phone and larger on a desktop. The /modules index
-  joins the rest; it was the one page held back from the reading grammar
-  in 0.1.0.
+  phone and larger on a desktop. The /modules index joins the rest; it was
+  the one page held back from the reading grammar in 0.1.0.
 - A chapter opens with its title on a phone. Breadcrumb, then the title,
   then View PDF and See Additional Resources as one quiet row of links,
   then On this page, then the chapter.
