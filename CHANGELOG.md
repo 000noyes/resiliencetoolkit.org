@@ -26,7 +26,7 @@ off the side of the screen. Nothing new to learn.
 
 ### Fixed
 - Nothing runs off the side of a 375px phone. Long links wrap, code blocks
-  scroll on their own, the outside-link notice fits, and each door in the
+  scroll on their own, the outside-link notice fits, and each button in the
   bottom bar holds one line.
 - 0.1, the Emergency Preparedness opener, and About no longer scroll sideways.
 
@@ -72,12 +72,13 @@ off the side of the screen. Nothing new to learn.
   which had no heading to land on.
 - If storage does not answer within ten seconds, the page says so and offers
   Retry, instead of waiting forever. Some browsers never answer at all.
-- The two doors in the phone bar share the bar evenly. They sat left with a gap.
+- Toolkit Contents and Footnotes are spaced evenly in the phone bar. They sat
+  left with a gap.
 
 ## [0.0.15.0] - 2026-07-24
 
 ### Added
-- The corner button opens a panel of doors. Questions holds the message form.
+- The corner button opens a small panel. Questions holds the message form.
   Fund this work shows both ways to give: online, or a check with Toolkit in
   the memo.
 - The site can build a workshop copy of itself for review sessions. Every page
