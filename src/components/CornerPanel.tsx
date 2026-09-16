@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, X, Sprout, MapPin } from 'lucide-react';
+import { Plus, X, Sprout } from 'lucide-react';
 
 /**
  * The corner panel, successor to the "Have Questions?" pill. Closed, it is
  * an icon-only plus button (the phone speed-dial convention: a small set of
  * actions lives here). Open, it holds one row per door that really opens:
- * Questions (the mailto modal the pill always led to), Bring it to your
- * town (a link to /replicate, the page that says yes to a copy for another
- * place), and Fund this work (the coalition's donate paths). Doors that do not open yet do
- * not render.
+ * Questions (the mailto modal the pill always led to) and Fund this work
+ * (the coalition's donate paths). Doors that do not open yet do not render;
+ * a door can be a link to a page (the held Bring it to your town door).
  *
  * Workshop round pages mount this same component, hydrated, closed: the
  * doors there behave exactly as they do here. The round page positions it
@@ -269,12 +268,6 @@ export default function CornerPanel() {
               label="Questions"
               subline="Write to the people who tend this toolkit."
               onOpen={() => openDoor('questions')}
-            />
-            <DoorRow
-              icon={<MapPin className="w-5 h-5 text-muted-foreground" strokeWidth={2} />}
-              label="Bring it to your town"
-              subline="Most of this toolkit works anywhere. Ask us about a copy for your place."
-              href="/replicate"
             />
             <DoorRow
               icon={<Sprout className="w-5 h-5 text-table-accent" strokeWidth={2} />}

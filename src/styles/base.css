@@ -731,6 +731,20 @@ a.button-link:focus-visible {
     border-bottom: none;
   }
 
+  /* A table band row (one spanning cell) is a heading line between the
+     cards, not a card of its own, so it reads like the bold lines inside
+     the cells */
+  .guide-table tr:has(> td[colspan]:only-child) {
+    border: 0;
+    border-radius: 0;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .guide-table tr:has(> td[colspan]:only-child) > td {
+    padding: var(--spacing-sm) 0 0;
+    border-bottom: 0;
+  }
+
   .guide-table td:before {
     content: attr(data-label);
     font-weight: 600;
