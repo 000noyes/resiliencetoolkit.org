@@ -13,16 +13,16 @@ off the side of the screen. Nothing new to learn.
   phone and larger on a desktop. The /modules index joins the rest; it was
   the one page held back from the reading grammar in 0.1.0.
 - A chapter opens with its title on a phone. Breadcrumb, then the title,
-  then View PDF and See Additional Resources as one quiet row of links,
-  then On this page, then the chapter.
+  then View PDF and See Additional Resources as one row of links, then On
+  this page, then the chapter.
 - On this page lists the chapter's sections on a phone, brings subsections
-  back on wider screens, and does not appear at all on a chapter with only
-  one heading.
+  back on wider screens, and does not appear on a chapter with only one
+  heading.
 - Nothing on a phone reads smaller than 12px. Every label meets the contrast
   standard in both light and dark.
 - A tablet at 768px no longer gets the phone rules and the desktop rules at
-  the same time. Turning a phone sideways with a sheet open now closes the
-  sheet and puts you back on the control that replaces it.
+  the same time. Turning a phone sideways with a sheet open closes the
+  sheet and returns you to the page.
 
 ### Fixed
 - Nothing runs off the side of a 375px phone. Long links wrap, code blocks
@@ -34,9 +34,6 @@ off the side of the screen. Nothing new to learn.
 - Every route is checked at 320, 375 and 414 wide.
 
 ## [0.1.0] - 2026-09-15
-
-Version numbers have three parts from this release. The fourth digit used
-through 0.0.15.0 is retired.
 
 ### Added
 - The home page is the cover of the toolkit. The full contents sit on it,
