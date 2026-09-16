@@ -2,6 +2,38 @@
 
 All notable changes to ResilienceToolkit.org are documented here.
 
+## [0.1.1] - 2026-09-15
+
+A patch release for phones: one type scale, the title first, and nothing
+running off the screen. Nothing new to learn.
+
+### Changed
+- One type scale on every page, ten steps, each with one line height. Page
+  titles follow the screen: 32px on a phone, 44px on a desktop; section
+  openers 36px to 56px. The /modules title joins the scale; it was the one
+  page held out of the reading grammar in 0.1.0.
+- A chapter opens with its title on phones. The order is breadcrumb, title,
+  the two actions (View PDF, See Additional Resources) as one quiet row of
+  links, then On this page, then the chapter. On this page is on the page
+  from the start, lists the chapter's sections only on phones (subsections
+  return at tablet widths), and does not appear on a chapter with a single
+  heading.
+- Phone reading sizes: rows in the contents, Footnotes, and search sheets are
+  16px with 14px secondary lines; On this page rows and the bar's two doors
+  are 14px; /search results read at 16px and 14px. Small labels and
+  numerals sit at 12px and never smaller, and every label color clears
+  4.5:1 in both themes.
+- Five breakpoints, written once: 640, 768, 1024, 1200, and 1340. A 768px
+  tablet no longer gets the phone and the desktop rules at once. Crossing
+  768 with the search sheet open, or 1200 with a reading sheet open, closes
+  the sheet and returns focus to the control that replaces it.
+
+### Fixed
+- Nothing runs off a 375px phone: long links wrap, code blocks scroll in
+  place, the outside-link notice fits the screen, and each bar door holds
+  one line. 0.1, the Emergency Preparedness opener, and About no longer
+  scroll sideways. A check now runs every route at 320, 375, and 414 wide.
+
 ## [0.1.0] - 2026-09-15
 
 From this release the version is three-part semantic versioning. The
