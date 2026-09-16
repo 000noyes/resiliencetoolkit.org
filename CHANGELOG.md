@@ -1,8 +1,7 @@
 # Changelog
 
-Notable changes to ResilienceToolkit.org. Written for the people who use it.
-This project follows semantic versioning from 0.1.0 onward; earlier releases
-used a four-part scheme.
+Notable changes to ResilienceToolkit.org. Versions have three parts from
+0.1.0 onward; earlier releases used four.
 
 ## [0.1.1] - 2026-09-16
 
