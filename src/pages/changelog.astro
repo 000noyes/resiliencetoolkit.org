@@ -1,51 +1,23 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import ChangelogEntry from '@/components/ChangelogEntry.astro';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe.astro';
-import { getSortedEntries } from '@/data/changelog';
-
-const entries = getSortedEntries();
+import { Content as ChangelogContent } from '../../CHANGELOG.md';
 ---
 
-<!-- STATUS 2026-03-28: In development. Not linked from site navigation.
-     Content may be incomplete or out of date.
-     Link in Footer.astro is commented out — restore it when this page is current. -->
+<!-- STATUS 2026-09-16: Current. The page renders the repository's
+     CHANGELOG.md, so the page and the file cannot disagree. Reachable by
+     URL only; the link in Footer.astro stays commented out by decision,
+     not by oversight. -->
 
 <BaseLayout
   title="Changelog | Resilience Hub Toolkit"
   description="What's new in the Resilience Hub Toolkit."
 >
   <article class="container mx-auto px-4 py-8 max-w-3xl">
-    <!-- Page Header -->
-    <header class="mb-8">
-      <h1 class="text-hero font-semibold mb-4 text-foreground">Changelog</h1>
-      <p class="text-body-large text-muted-foreground">
-        New in the toolkit.
-      </p>
-    </header>
-
-    <!-- Changelog Entries -->
-    <div class="changelog-entries">
-      {entries.map(entry => (
-        <ChangelogEntry
-          id={entry.id}
-          date={entry.date}
-          title={entry.title}
-          summary={entry.summary}
-          sections={entry.sections}
-          tags={entry.tags}
-        />
-      ))}
+    <!-- The file's own heading and opening paragraph are the page header -->
+    <div class="changelog-file prose prose-lg max-w-none">
+      <ChangelogContent />
     </div>
-
-    <!-- Empty State -->
-    {entries.length === 0 && (
-      <div class="text-center py-16">
-        <p class="text-body-large text-muted-foreground">
-          No entries yet.
-        </p>
-      </div>
-    )}
 
     <!-- Bottom Subscribe CTA -->
     <div class="mt-12">
@@ -69,3 +41,90 @@ const entries = getSortedEntries();
     </nav>
   </article>
 </BaseLayout>
+
+<style>
+  /* The rendered file sits on the site's type scale: every size below is
+     one of the ten steps in base.css. No sizes are introduced here. */
+  .changelog-file :global(h1) {
+    font-size: var(--text-hero);
+    line-height: var(--leading-hero);
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+  }
+
+  .changelog-file :global(h1 + p) {
+    font-size: var(--text-body-large);
+    line-height: var(--leading-body-large);
+    color: var(--muted-foreground);
+  }
+
+  .changelog-file :global(h2) {
+    font-size: var(--text-title);
+    line-height: var(--leading-title);
+    font-weight: 600;
+    color: var(--foreground);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .changelog-file :global(h3) {
+    font-size: var(--text-subtitle);
+    line-height: var(--leading-subtitle);
+    font-weight: 600;
+    color: var(--foreground);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .changelog-file :global(p) {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    margin-bottom: 1rem;
+  }
+
+  .changelog-file :global(ul),
+  .changelog-file :global(ol) {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .changelog-file :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .changelog-file :global(ul) {
+    list-style-type: disc;
+  }
+
+  .changelog-file :global(ol) {
+    list-style-type: decimal;
+  }
+
+  .changelog-file :global(strong) {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .changelog-file :global(a) {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .changelog-file :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  .changelog-file :global(code) {
+    font-family: ui-monospace, monospace;
+    font-size: var(--text-body-small);
+    background-color: var(--muted);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+</style>
