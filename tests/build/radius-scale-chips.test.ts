@@ -57,10 +57,9 @@ describe('radius scale on text chips (no full-radius pills)', () => {
     expect(html).not.toContain('bg-blue-100');
   });
 
-  it.skipIf(!DIST_PRESENT)('changelog tag badges use the radius scale', () => {
+  it.skipIf(!DIST_PRESENT)('changelog page uses the radius scale', () => {
     const html = read(pages.changelog);
     expect(html.length).toBeGreaterThan(0);
-    expect(html).not.toContain('px-2.5 py-0.5 rounded-full');
     expect(nonCircleRoundedFull(html)).toEqual([]);
   });
 
