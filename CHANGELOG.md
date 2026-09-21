@@ -3,6 +3,13 @@
 Notable changes to ResilienceToolkit.org. Versions have three parts from
 0.1.0 onward; earlier releases used four.
 
+## [0.1.2] - 2026-09-21
+
+### Changed
+- Pages opened from the copy saved on your device now count as a visit. The
+  request carries the page address and nothing about you, and nothing is sent
+  while you are offline.
+
 ## [0.1.1] - 2026-09-16
 
 A patch release for phones. Text sizes are consistent now, and nothing runs
