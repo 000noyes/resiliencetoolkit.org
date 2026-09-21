@@ -24,11 +24,29 @@
 -- counter is carried across before the drop, and the rename carries the
 -- row in sqlite_sequence with it.
 --
--- Account-side step, not in this repo: apply this migration to the
--- production ARRIVALS_DB after the release that sends the check is live.
--- Until it is applied, a cached-browser write fails the CHECK and is
--- swallowed by the middleware, so pages serve as before and the fourth
--- label reads as zero.
+-- Account-side step, not in this repo. Apply it BEFORE the release that
+-- sends the check goes live, or right after: the wider constraint is
+-- harmless to the current code, while every cached-browser write made
+-- before it is applied fails the old CHECK, is swallowed by the middleware,
+-- and is lost. Pages serve as before either way. The report says whether
+-- the table accepts every label (schema.accepts_every_label), so a pending
+-- migration is not read as zero visits.
+--
+-- How to apply: as ONE invocation, so the statements run as one batch,
+--   wrangler d1 execute <arrivals database> --remote --file migrations/0003_arrivals_cached_label.sql
+-- Not `wrangler d1 migrations apply`: migrations/ serves two databases (0001
+-- is the workshop notes database) and there is no per-database migrations
+-- directory. Not statement by statement in the dashboard console: a stop
+-- between the copy and the rename would leave both tables, or neither.
+-- Prove it on a scratch database first (apply 0002, add a few rows, apply
+-- this file, read sqlite_sequence). If D1 refuses the UPDATE of
+-- sqlite_sequence, drop that statement: with append-only rows the copied ids
+-- already set the counter to the same value.
+-- Recovery if a run stopped part way: both tables present, rerun this file
+-- (the first statement clears the leftover); only arrivals_next present, run
+-- the RENAME and the two CREATE INDEX statements.
+
+DROP TABLE IF EXISTS arrivals_next;
 
 CREATE TABLE arrivals_next (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
