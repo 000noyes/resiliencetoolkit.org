@@ -15,15 +15,18 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { pageHash } from '../../scripts/generate-sw-precache.mjs';
+
 const ROOT = resolve(__dirname, '../..');
 const SCRIPT_PATH = join(ROOT, 'scripts/generate-sw-precache.mjs');
 const PUBLIC_SW = join(ROOT, 'public/sw.js');
 const MAP_RELATIVE = 'functions/lib/page-hashes.generated.js';
 
-let tmpRoot: string;
+const tmpRoots: string[] = [];
 
 function setupTmpProject(): string {
-  tmpRoot = mkdtempSync(join(tmpdir(), 'page-hashes-test-'));
+  const tmpRoot = mkdtempSync(join(tmpdir(), 'page-hashes-test-'));
+  tmpRoots.push(tmpRoot);
   const scriptsDir = join(tmpRoot, 'scripts');
   const distDir = join(tmpRoot, 'dist');
   mkdirSync(scriptsDir, { recursive: true });
@@ -58,7 +61,7 @@ async function readMap(root: string): Promise<Record<string, string>> {
 }
 
 afterAll(() => {
-  if (tmpRoot) rmSync(tmpRoot, { recursive: true, force: true });
+  for (const root of tmpRoots) rmSync(root, { recursive: true, force: true });
 });
 
 // Each case spawns the generator once or twice; on a loaded machine one spawn
@@ -82,6 +85,18 @@ describe('generate-sw-precache.mjs writes the page hash map', { timeout: 30_000 
     expect(after['/modules/1-1/']).not.toBe(before['/modules/1-1/']);
     expect(after['/']).toBe(before['/']);
     expect(after['/changelog/']).toBe(before['/changelog/']);
+  });
+
+  it('ignores the footer build stamp, so a rebuild on a new day keeps the hash', () => {
+    const monday = '<!doctype html><p>Last updated <time datetime="2026-09-21">2026-09-21</time></p>';
+    const tuesday = '<!doctype html><p>Last updated <time datetime="2026-09-22">2026-09-22</time></p>';
+    const edited = '<!doctype html><p>Edited. Last updated <time datetime="2026-09-22">2026-09-22</time></p>';
+    expect(pageHash(monday)).toBe(pageHash(tuesday));
+    expect(pageHash(edited)).not.toBe(pageHash(monday));
+    // Other dates still count.
+    expect(pageHash('<time datetime="2026-01-01">2026-01-01</time>')).not.toBe(
+      pageHash('<time datetime="2026-01-02">2026-01-02</time>')
+    );
   });
 
   it('is a plain module the functions bundle can import', () => {

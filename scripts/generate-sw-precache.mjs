@@ -25,7 +25,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, relative, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { findPagefindAssets } from './pagefind-precache.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -38,6 +38,19 @@ const pageHashesPath = join(pageHashesDir, 'page-hashes.generated.js');
 // Hex length of a page hash. 64 bits is far more than the few hundred pages
 // this site has, and it keeps the ETag short.
 const PAGE_HASH_LENGTH = 16;
+
+// The footer prints the build date ("Last updated <time>"), so every build on
+// a new day would change every page's hash and no page could ever answer 304
+// after a deploy. The stamp is blanked before hashing; the page itself is
+// untouched. Everything else on the page, including other dates, still counts.
+const BUILD_STAMP_RE = /Last updated\s*<time datetime="[^"]*">[^<]*<\/time>/g;
+
+export function pageHash(html) {
+  return createHash('sha256')
+    .update(html.replace(BUILD_STAMP_RE, 'Last updated <time></time>'))
+    .digest('hex')
+    .slice(0, PAGE_HASH_LENGTH);
+}
 
 const SENTINEL_START = '// __PRECACHE_ASSETS_START__';
 const SENTINEL_END = '// __PRECACHE_ASSETS_END__';
@@ -117,6 +130,12 @@ function distPathToRoute(htmlPath) {
 
 // --- Validation ---
 
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (!isMain) {
+  // Imported for pageHash (the build test); the postbuild body below only
+  // runs when this file is the entry point.
+} else {
+
 if (!existsSync(distDir)) {
   console.error('SW generator: dist/ does not exist. Run astro build first.');
   process.exit(1);
@@ -145,10 +164,7 @@ const pageHashes = {};
 
 for (const htmlPath of htmlFiles) {
   const route = distPathToRoute(htmlPath);
-  pageHashes[route] = createHash('sha256')
-    .update(readFileSync(htmlPath))
-    .digest('hex')
-    .slice(0, PAGE_HASH_LENGTH);
+  pageHashes[route] = pageHash(readFileSync(htmlPath, 'utf-8'));
   if (EXCLUDE_PREFIXES.some(prefix => route.startsWith(prefix))) continue;
   routes.push(route);
 }
@@ -250,3 +266,5 @@ console.log(
   `${astroAssets.length} /_astro bundles + ${pagefindAssets.length} pagefind assets → dist/sw.js (${cacheVersion}); ` +
   `${Object.keys(sortedHashes).length} page hashes → functions/lib/page-hashes.generated.js`
 );
+
+}
