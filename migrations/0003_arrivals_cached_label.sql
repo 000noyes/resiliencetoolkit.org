@@ -15,8 +15,14 @@
 --
 -- SQLite cannot alter a CHECK constraint in place, so the table is rebuilt:
 -- a new table with the wider constraint, every row copied with its id and
--- time, the old table dropped, the new one renamed, the two indexes
--- recreated. Rows stay append-only.
+-- time, the id sequence carried over, the old table dropped, the new one
+-- renamed, the two indexes recreated. Rows stay append-only.
+--
+-- The sequence step matters: copying rows starts the new table's sequence at
+-- the highest id copied, not at the old table's high-water mark, so if any
+-- id had ever been removed the next insert would reuse it. The old table's
+-- counter is carried across before the drop, and the rename carries the
+-- row in sqlite_sequence with it.
 --
 -- Account-side step, not in this repo: apply this migration to the
 -- production ARRIVALS_DB after the release that sends the check is live.
@@ -33,6 +39,10 @@ CREATE TABLE arrivals_next (
 
 INSERT INTO arrivals_next (id, path, label, created_at)
   SELECT id, path, label, created_at FROM arrivals;
+
+UPDATE sqlite_sequence
+  SET seq = (SELECT MAX(seq) FROM sqlite_sequence WHERE name IN ('arrivals', 'arrivals_next'))
+  WHERE name = 'arrivals_next';
 
 DROP TABLE arrivals;
 
