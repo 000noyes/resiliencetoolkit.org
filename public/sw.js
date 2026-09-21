@@ -499,34 +499,49 @@ async function matchNavigation(request) {
 // holds), so one fresh page written into it would break offline. The request
 // bypasses the HTTP cache both ways (no-store), sends no credentials, and
 // carries nothing per reader, session or device. Offline it fails, is not
-// retried and is not queued. The navigation never waits on it. The marker
-// literals are mirrored in functions/lib/arrival-counting.ts.
+// retried and is not queued. A check that gets no headers within the deadline
+// is abandoned, so a stalled connection cannot hold the worker open. The
+// navigation never waits on it. The marker literals are mirrored in
+// functions/lib/arrival-counting.ts.
+//
+// The update kick runs once per worker startup: after a deploy every page's
+// check answers 200 until the new generation rotates in, and a second update
+// while a worker is already installing or waiting is a no-op that still
+// fetches sw.js. One kick is what starts the cycle; the page side keeps its
+// own checks.
 const SAVED_COPY_HEADER = 'x-rt-saved-copy';
 const SAVED_COPY_VALUE = 'check';
+const SAVED_COPY_DEADLINE_MS = 30000;
+let updateKicked = false;
 
 async function checkSavedCopy(route, cached) {
   try {
     const headers = {};
     headers[SAVED_COPY_HEADER] = SAVED_COPY_VALUE;
-    const etag =
-      cached.headers && typeof cached.headers.get === 'function' ? cached.headers.get('etag') : null;
+    const etag = cached.headers.get('etag');
     if (etag) headers['if-none-match'] = etag;
-    const response = await fetch(
-      new Request(route, { cache: 'no-store', credentials: 'omit', headers })
-    );
-    if (!response) return;
-    if (response.body && typeof response.body.cancel === 'function') {
-      response.body.cancel().catch(() => {});
+    const abort = new AbortController();
+    const deadline = setTimeout(() => abort.abort(), SAVED_COPY_DEADLINE_MS);
+    let response;
+    try {
+      response = await fetch(
+        new Request(route, { cache: 'no-store', credentials: 'omit', headers, signal: abort.signal })
+      );
+    } finally {
+      clearTimeout(deadline);
     }
+    if (response.body) response.body.cancel().catch(() => {});
     if (
       response.status === 200 &&
-      self.registration &&
-      typeof self.registration.update === 'function'
+      !updateKicked &&
+      !self.registration.installing &&
+      !self.registration.waiting
     ) {
+      updateKicked = true;
       await self.registration.update().catch(() => {});
     }
   } catch {
-    /* offline or refused: nothing to do, nothing to retry */
+    /* offline, refused or past the deadline: nothing to do, nothing to retry */
   }
 }
 
@@ -550,16 +565,16 @@ async function handleNavigation(event) {
   if (path.endsWith('/index.html')) {
     path = path.slice(0, -'index.html'.length);
   }
-  const isPrecachedRoute =
-    PRECACHE_ROUTES.has(path) ||
-    (!path.endsWith('/') && PRECACHE_ROUTES.has(path + '/'));
+  // The built route form (trailing slash): the precache key, and the URL
+  // the saved-copy check goes to, so a slashless link is counted as its
+  // page and not answered with a redirect.
+  const route = path.endsWith('/') ? path : path + '/';
+  const isPrecachedRoute = PRECACHE_ROUTES.has(path) || PRECACHE_ROUTES.has(route);
 
   if (isPrecachedRoute) {
     const cached = await matchNavigation(event.request);
     if (cached) {
-      // The check goes to the built route (trailing slash), so a slashless
-      // link is counted as its page and not answered with a redirect.
-      event.waitUntil(checkSavedCopy(path.endsWith('/') ? path : path + '/', cached));
+      event.waitUntil(checkSavedCopy(route, cached));
       return cached;
     }
   }

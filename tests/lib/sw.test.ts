@@ -53,6 +53,8 @@ class FakeResponse {
   redirected: boolean;
   status: number;
   body: any;
+  /** Present on responses the saved-copy check receives: a stream to cancel. */
+  bodyCancel?: ReturnType<typeof vi.fn>;
   headers: { get: (name: string) => string | null };
   private headerMap: Record<string, string>;
   constructor(
@@ -81,14 +83,16 @@ class FakeRequest {
   url: string;
   cache?: string;
   credentials?: string;
+  signal?: AbortSignal;
   headers: Record<string, string>;
   constructor(
     url: string,
-    init?: { cache?: string; credentials?: string; headers?: Record<string, string> }
+    init?: { cache?: string; credentials?: string; signal?: AbortSignal; headers?: Record<string, string> }
   ) {
     this.url = url.startsWith('http') ? url : ORIGIN + url;
     this.cache = init?.cache;
     this.credentials = init?.credentials;
+    this.signal = init?.signal;
     this.headers = Object.fromEntries(
       Object.entries(init?.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v])
     );
@@ -271,6 +275,8 @@ function createSandbox(opts?: {
     },
     registration: {
       active: {},
+      installing: null,
+      waiting: null,
       unregister: () => {
         sandbox.unregisterCalls += 1;
         return Promise.resolve(true);
@@ -302,6 +308,8 @@ function createSandbox(opts?: {
     location: { origin: ORIGIN, hostname: opts?.hostname ?? 'resiliencetoolkit.org' },
     console: { warn: () => {}, log: () => {}, error: () => {} },
     setTimeout,
+    clearTimeout,
+    AbortController,
   };
   vm.createContext(context);
   vm.runInContext(swSrc, context);
@@ -1128,15 +1136,29 @@ function navigate(sandbox: SWSandbox, path: string) {
   return event;
 }
 
+/** A response with a cancellable body stream, as fetch returns. */
+function streamed(body: string, init?: { status?: number; headers?: Record<string, string> }): FakeResponse {
+  const res = new FakeResponse(body, init);
+  const cancel = vi.fn().mockResolvedValue(undefined);
+  res.bodyCancel = cancel;
+  res.body = init?.status === 304 ? null : { cancel };
+  return res;
+}
+
 describe('sw.js — the saved-copy check (one conditional GET after a cache hit, never stored)', () => {
-  function readySandbox() {
-    const { sandbox } = createSandbox();
+  function readySandboxWithContext() {
+    const { sandbox, context } = createSandbox();
     const store = fillCurrentComplete(sandbox);
     store.entries.set(SENTINEL, new FakeResponse('complete'));
     store.entries.set(
       '/modules/1-1/',
       new FakeResponse('cached:/modules/1-1/', { headers: { etag: 'W/"fedcba9876543210"' } })
     );
+    return { sandbox, store, context };
+  }
+
+  function readySandbox() {
+    const { sandbox, store } = readySandboxWithContext();
     return { sandbox, store };
   }
 
@@ -1154,8 +1176,73 @@ describe('sw.js — the saved-copy check (one conditional GET after a cache hit,
     expect(check.url).toBe(`${ORIGIN}/modules/1-1/`);
     expect(check.cache).toBe('no-store');
     expect(check.credentials).toBe('omit');
+    expect(check.signal).toBeInstanceOf(AbortSignal);
     expect(check.headers['if-none-match']).toBe('W/"fedcba9876543210"');
     expect(check.headers[SAVED_COPY_HEADER]).toBe(SAVED_COPY_VALUE);
+  });
+
+  it('never reads the body: a 200 body stream is cancelled at once', async () => {
+    const { sandbox } = readySandbox();
+    const answer = streamed('<html>fresh</html>');
+    sandbox.fetchMock.mockResolvedValue(answer);
+    const event = navigate(sandbox, '/modules/1-1/');
+    await event._response;
+    await event._waitPromise;
+    expect(answer.bodyCancel).toHaveBeenCalledOnce();
+  });
+
+  it('is abandoned past the deadline, leaving the response and the caches untouched', async () => {
+    vi.useFakeTimers();
+    try {
+      const { sandbox } = readySandbox();
+      const before = cacheSnapshot(sandbox);
+      // A connection that accepts the request and never answers: the fetch
+      // settles only when its signal aborts.
+      sandbox.fetchMock.mockImplementation(
+        (req: FakeRequest) =>
+          new Promise((_, reject) => req.signal!.addEventListener('abort', () => reject(new Error('aborted'))))
+      );
+      const event = navigate(sandbox, '/modules/1-1/');
+      expect((await event._response).body).toBe('cached:/modules/1-1/');
+      expect(sandbox.fetchMock.mock.calls[0][0].signal.aborted).toBe(false);
+      await vi.advanceTimersByTimeAsync(30_000);
+      expect(sandbox.fetchMock.mock.calls[0][0].signal.aborted).toBe(true);
+      await expect(event._waitPromise).resolves.toBeDefined();
+      expect(cacheSnapshot(sandbox)).toEqual(before);
+      expect(sandbox.updateCalls).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('kicks the update once per worker startup', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    for (const route of ['/modules/1-1/', '/dashboard/', '/modules/1-1/']) {
+      const event = navigate(sandbox, route);
+      await event._response;
+      await event._waitPromise;
+    }
+    expect(sandbox.updateCalls).toBe(1);
+  });
+
+  it('a rejected update() never escapes the check', async () => {
+    const { sandbox, context } = readySandboxWithContext();
+    context.self.registration.update = () => Promise.reject(new Error('update refused'));
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    const event = navigate(sandbox, '/modules/1-1/');
+    expect((await event._response).body).toBe('cached:/modules/1-1/');
+    await expect(event._waitPromise).resolves.toBeDefined();
+  });
+
+  it('does not kick the update while a new worker is already waiting', async () => {
+    const { sandbox, context } = readySandboxWithContext();
+    context.self.registration.waiting = {};
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    const event = navigate(sandbox, '/modules/1-1/');
+    await event._response;
+    await event._waitPromise;
+    expect(sandbox.updateCalls).toBe(0);
   });
 
   it('carries nothing per reader: the marker and the validator are the only headers', async () => {
@@ -1171,7 +1258,7 @@ describe('sw.js — the saved-copy check (one conditional GET after a cache hit,
 
   it('sends no validator when the saved copy carries no ETag', async () => {
     const { sandbox } = readySandbox();
-    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html>fresh</html>'));
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
     const event = navigate(sandbox, '/dashboard/');
     await event._response;
     await event._waitPromise;
@@ -1192,7 +1279,7 @@ describe('sw.js — the saved-copy check (one conditional GET after a cache hit,
   it('never writes to any cache, whatever the origin answers', async () => {
     for (const answer of [
       new FakeResponse('', { status: 304 }),
-      new FakeResponse('<html>fresh</html>', { headers: { etag: 'W/"0000000000000000"' } }),
+      streamed('<html>fresh</html>', { headers: { etag: 'W/"0000000000000000"' } }),
     ]) {
       const { sandbox } = readySandbox();
       sandbox.fetchMock.mockResolvedValue(answer);
@@ -1209,7 +1296,7 @@ describe('sw.js — the saved-copy check (one conditional GET after a cache hit,
 
   it('a 200 (the page changed) starts the worker update now; a 304 does not', async () => {
     const changed = readySandbox();
-    changed.sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html>fresh</html>'));
+    changed.sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
     const e1 = navigate(changed.sandbox, '/modules/1-1/');
     await e1._response;
     await e1._waitPromise;
