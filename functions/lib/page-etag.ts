@@ -19,10 +19,12 @@
  * validate: for a page the map knows, the request sent on has its validators
  * removed, so the origin answers 200 and the comparison happens here against
  * the map. Should the origin answer 304 for a known page anyway, that 304 is
- * given the tag and the HTML content type, so the count still sees a page
- * load. Without a map, or for a path the map does not know, both request and
- * response pass through untouched. Nothing here reads a body or writes
- * anything.
+ * given the HTML content type, so the count still sees a page load, and the
+ * tag only when the request's own validator matches it: a 304 says the
+ * client's copy is current, and the tag must not claim a copy this code never
+ * checked is the current build. Without a map, or for a path the map does
+ * not know, both request and response pass through untouched. Nothing here
+ * reads a body or writes anything.
  */
 
 export type PageHashes = Readonly<Record<string, string>>;
@@ -36,12 +38,16 @@ function opaqueTag(tag: string): string {
   return trimmed.startsWith('W/') ? trimmed.slice(2) : trimmed;
 }
 
-/** Weak comparison of an If-None-Match header value against one ETag. */
+/**
+ * Weak comparison of an If-None-Match header value against one ETag. The
+ * `*` form is not honoured: nothing legitimate sends it on a GET here, and
+ * honouring it would hand a bodyless 304 to any client that never held the
+ * page.
+ */
 export function etagMatches(ifNoneMatch: string | null, etag: string): boolean {
   if (ifNoneMatch === null) return false;
   const value = ifNoneMatch.trim();
   if (value.length === 0) return false;
-  if (value === '*') return true;
   const wanted = opaqueTag(etag);
   return value.split(',').some((candidate) => opaqueTag(candidate) === wanted);
 }
@@ -96,7 +102,8 @@ export function withPageEtag(
 
   if (response.status === 304) {
     const headers = new Headers(response.headers);
-    headers.set('etag', etag);
+    if (etagMatches(request.headers.get('if-none-match'), etag)) headers.set('etag', etag);
+    else headers.delete('etag');
     if (!headers.has('content-type')) headers.set('content-type', HTML_CONTENT_TYPE);
     return new Response(null, { status: 304, headers });
   }

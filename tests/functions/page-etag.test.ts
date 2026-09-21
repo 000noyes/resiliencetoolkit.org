@@ -6,7 +6,7 @@
  * 304 shape, the miss cases, and the two "behave as today" cases: a path the
  * map does not know, and no map at all.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import { withPageEtag, pageEtag, etagMatches, originRequest } from '../../functions/lib/page-etag';
 
@@ -24,6 +24,8 @@ function htmlResponse(body = '<!doctype html><title>page</title>', status = 200)
       'content-type': 'text/html; charset=utf-8',
       'cache-control': 'public, max-age=0, must-revalidate',
       'content-length': String(body.length),
+      'content-encoding': 'br',
+      'transfer-encoding': 'chunked',
     },
   });
 }
@@ -38,7 +40,7 @@ describe('the tag', () => {
     expect(etagMatches('W/"0123456789abcdef"', etag)).toBe(true);
     expect(etagMatches('"0123456789abcdef"', etag)).toBe(true);
     expect(etagMatches('"other", W/"0123456789abcdef"', etag)).toBe(true);
-    expect(etagMatches('*', etag)).toBe(true);
+    expect(etagMatches('*', etag)).toBe(false);
     expect(etagMatches('"other"', etag)).toBe(false);
     expect(etagMatches(null, etag)).toBe(false);
     expect(etagMatches('', etag)).toBe(false);
@@ -64,7 +66,30 @@ describe('a page the map knows', () => {
     expect(res.headers.get('cache-control')).toBe('public, max-age=0, must-revalidate');
     expect(res.headers.get('content-type')).toContain('text/html');
     expect(res.headers.get('content-length')).toBeNull();
+    expect(res.headers.get('content-encoding')).toBeNull();
+    expect(res.headers.get('transfer-encoding')).toBeNull();
     expect(await res.text()).toBe('');
+  });
+
+  it('releases the upstream body it never reads on a 304', () => {
+    const upstream = htmlResponse();
+    const cancel = vi.spyOn(upstream.body!, 'cancel');
+    withPageEtag(
+      pageRequest('/modules/1-1/', { 'if-none-match': 'W/"fedcba9876543210"' }),
+      upstream,
+      HASHES
+    );
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it('answers 304 to a HEAD with a matching validator', async () => {
+    const res = withPageEtag(
+      pageRequest('/', { 'if-none-match': '"0123456789abcdef"' }, 'HEAD'),
+      htmlResponse(''),
+      HASHES
+    );
+    expect(res.status).toBe(304);
+    expect(res.headers.get('etag')).toBe('W/"0123456789abcdef"');
   });
 
   it('answers 200 with the ETag when If-None-Match does not match', async () => {
@@ -119,10 +144,10 @@ describe('the request sent on to the origin', () => {
 });
 
 describe('an upstream 304 for a page the map knows', () => {
-  it('gets the tag and the HTML content type, so it is counted like any page load', async () => {
+  it('gets the HTML content type, so it is counted like any page load, and the tag when the validator matches', async () => {
     const upstream = new Response(null, { status: 304, headers: { 'cache-control': 'public, max-age=0' } });
     const res = withPageEtag(
-      pageRequest('/modules/1-1/', { 'if-none-match': 'W/"something-else"' }),
+      pageRequest('/modules/1-1/', { 'if-none-match': 'W/"fedcba9876543210"' }),
       upstream,
       HASHES
     );
@@ -131,6 +156,18 @@ describe('an upstream 304 for a page the map knows', () => {
     expect(res.headers.get('content-type')).toContain('text/html');
     expect(res.headers.get('cache-control')).toBe('public, max-age=0');
     expect(await res.text()).toBe('');
+  });
+
+  it('never claims the current tag for a copy it did not check', () => {
+    const upstream = new Response(null, { status: 304, headers: { etag: '"origin-tag"' } });
+    const res = withPageEtag(
+      pageRequest('/modules/1-1/', { 'if-none-match': 'W/"something-else"' }),
+      upstream,
+      HASHES
+    );
+    expect(res.status).toBe(304);
+    expect(res.headers.get('etag')).toBeNull();
+    expect(res.headers.get('content-type')).toContain('text/html');
   });
 
   it('is left alone for a path the map does not know', () => {
