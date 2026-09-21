@@ -216,7 +216,25 @@ function secretsMatch(given: string, expected: string): boolean {
 type LabelCounts = Record<ArrivalLabel, number>;
 
 function emptyCounts(): LabelCounts {
-  return { 'likely-browser': 0, 'cached-browser': 0, 'declared-agent': 0, unknown: 0 };
+  return Object.fromEntries(ARRIVAL_LABELS.map((label) => [label, 0])) as LabelCounts;
+}
+
+/**
+ * Whether the table accepts every label in ARRIVAL_LABELS, read from the
+ * table's own definition. A label the CHECK constraint refuses is written
+ * and swallowed, so without this the report could not tell "no such visits"
+ * from "the migration has not been applied". Never throws.
+ */
+async function schemaAcceptsLabels(db: D1Database): Promise<boolean | null> {
+  try {
+    const row = await db
+      .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'arrivals'")
+      .first<{ sql: string }>();
+    if (!row || typeof row.sql !== 'string') return null;
+    return ARRIVAL_LABELS.every((label) => row.sql.includes(`'${label}'`));
+  } catch {
+    return null;
+  }
 }
 
 function isLabel(value: unknown): value is ArrivalLabel {
@@ -313,6 +331,7 @@ export async function handleArrivalsReport(
   return json(200, {
     ok: true,
     window: { since, until },
+    schema: { accepts_every_label: await schemaAcceptsLabels(db) },
     what_this_counts:
       'One row per HTML page served by this origin, and one per page a browser opened from ' +
       'its saved copy while online. No cookie, no identifier.',

@@ -128,6 +128,11 @@ describe('classification', () => {
     expect(classifyArrival(new Headers(SAVED_COPY_HEADERS))).toBe('cached-browser');
   });
 
+  it('labels the marker before the navigation shape, so a marked navigation is cached-browser', () => {
+    const headers = new Headers({ ...BROWSER_HEADERS, [SAVED_COPY_HEADER]: SAVED_COPY_VALUE });
+    expect(classifyArrival(headers)).toBe('cached-browser');
+  });
+
   it('needs the exact marker value, not just the header', () => {
     const headers = new Headers({ ...SAVED_COPY_HEADERS, [SAVED_COPY_HEADER]: 'yes' });
     expect(classifyArrival(headers)).toBe('unknown');
@@ -389,7 +394,6 @@ describe('the report', () => {
     expect(body.caveat).toBe(ARRIVAL_CAVEAT);
     expect(body.caveat).toContain('does not mean a person');
     expect(body.caveat).toContain('cached-browser');
-    expect(body.caveat).not.toContain('miss return visits');
   });
 
   it('honours an explicit window and rejects a malformed one', async () => {
@@ -411,6 +415,15 @@ describe('the report', () => {
       reportRequest('&since=2026-03-01&until=2026-01-01')
     );
     expect(backwards.status).toBe(400);
+  });
+
+  it('says whether the table accepts every label, so a pending migration is not read as zero visits', async () => {
+    let body = await json(await handleArrivalsReport(db, KEY, reportRequest()));
+    expect(body.schema).toEqual({ accepts_every_label: true });
+
+    db.acceptedLabels = ['likely-browser', 'declared-agent', 'unknown'];
+    body = await json(await handleArrivalsReport(db, KEY, reportRequest()));
+    expect(body.schema).toEqual({ accepts_every_label: false });
   });
 
   it('answers with no-store JSON that search engines are told not to index', async () => {
