@@ -1,10 +1,13 @@
 /**
- * Root middleware: counts one arrival per HTML page this origin serves.
+ * Root middleware: sets an ETag on every HTML page and answers 304 to a
+ * matching If-None-Match, then counts one arrival per page load.
  *
  * There is no client script anywhere in this. The page request itself is the
  * arrival, which is why the count lives here rather than in a route a page
- * would have to call. All behavior is in functions/lib/arrival-counting.ts,
- * which the unit suite covers directly.
+ * would have to call. All behavior is in functions/lib/page-etag.ts and
+ * functions/lib/arrival-counting.ts, which the unit suite covers directly.
+ * The page hash map is written by scripts/generate-sw-precache.mjs at
+ * postbuild; Cloudflare bundles this file after the build, so it is present.
  *
  * Delivery comes first, always. The response is produced before anything is
  * counted, the write is handed to waitUntil so it never delays the reader, and
@@ -12,8 +15,8 @@
  * site that cannot serve is not.
  *
  * Without the ARRIVALS_DB binding this records nothing and passes every
- * request straight through, which is what the production project does today
- * and what the workshop project does permanently.
+ * request straight through, which is what the workshop project does
+ * permanently. The ETag needs no binding.
  *
  * Note for whoever tunes this later: with a middleware at the functions root,
  * Cloudflare Pages routes every request through the Worker, including static
@@ -23,6 +26,8 @@
  * to exclude any path that is also a page.
  */
 import { recordArrival, type D1Database } from './lib/arrival-counting';
+import { withPageEtag } from './lib/page-etag';
+import { PAGE_HASHES } from './lib/page-hashes.generated';
 
 interface MiddlewareContext {
   request: Request;
@@ -32,7 +37,14 @@ interface MiddlewareContext {
 }
 
 export async function onRequest(context: MiddlewareContext): Promise<Response> {
-  const response = await context.next();
+  const upstream = await context.next();
+
+  let response = upstream;
+  try {
+    response = withPageEtag(context.request, upstream, PAGE_HASHES);
+  } catch {
+    response = upstream;
+  }
 
   try {
     const write = recordArrival(context.env.ARRIVALS_DB, context.request, response);
