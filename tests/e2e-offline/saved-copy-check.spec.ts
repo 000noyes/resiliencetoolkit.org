@@ -26,7 +26,11 @@ import http from 'node:http';
  *      answered 200, the worker starts its update at once (a sw.js request
  *      follows), and the changed page is never stored;
  *   3. the server is gone: the navigation still serves and no request is
- *      logged. Nothing is queued for later.
+ *      logged. Nothing is queued for later;
+ *   4. the server holds the check open without answering: the navigation
+ *      finishes while the check is still pending, so no navigation waits on
+ *      the origin. A stopped server refuses at once, which a worker that
+ *      awaited the check would survive; only a held response proves it.
  */
 
 // Every test here fills the whole precache from scratch before it can
@@ -74,6 +78,17 @@ const log: LogLine[] = [];
 // Paths the server currently serves in a "changed" form: a different body
 // and therefore a different ETag, without touching dist/ on disk.
 const changed = new Set<string>();
+// While true, a marked request is logged and its response held open until
+// releaseHeld() runs. Only marked requests are held; everything else answers.
+let holdChecks = false;
+const held: Array<{ res: http.ServerResponse; etag: string }> = [];
+
+function releaseHeld() {
+  for (const { res, etag } of held.splice(0)) {
+    res.writeHead(304, { etag, 'cache-control': 'public, max-age=0, must-revalidate' });
+    res.end();
+  }
+}
 
 function weakEtag(body: Buffer): string {
   return `W/"${createHash('sha256').update(body).digest('hex').slice(0, 16)}"`;
@@ -109,6 +124,11 @@ function servePage(req: http.IncomingMessage, res: http.ServerResponse, pathname
     etag,
     'x-content-type-options': 'nosniff',
   };
+  if (holdChecks && req.headers[MARKER_HEADER] !== undefined) {
+    record(req, 0);
+    held.push({ res, etag });
+    return;
+  }
   if (etagMatches(req.headers['if-none-match'], etag)) {
     record(req, 304);
     res.writeHead(304, headers);
@@ -187,10 +207,12 @@ async function stopServer() {
 test.beforeEach(async () => {
   log.length = 0;
   changed.clear();
+  holdChecks = false;
   await startServer();
 });
 
 test.afterEach(async () => {
+  releaseHeld();
   await stopServer().catch(() => {});
 });
 
@@ -351,4 +373,29 @@ test('the server is gone: the navigation still serves and no request is logged',
   expect(log.filter((line) => line.marker !== null)[0].path).toBe('/downloads/');
   await page.waitForTimeout(1_000);
   expect(log.filter((line) => line.marker !== null && line.path === ROUTE)).toHaveLength(0);
+});
+
+test('the server holds the check open: the navigation finishes without waiting on it', async ({ page }) => {
+  await bootstrap(page);
+  holdChecks = true;
+
+  const response = await page.goto(`${ORIGIN}${ROUTE}`, { waitUntil: 'load' });
+  expect(response?.status()).toBe(200);
+  await expect(page.getByTestId('rt-safety-card')).toBeVisible({ timeout: 10_000 });
+
+  // The check reached the server and is still unanswered while the page is
+  // already on screen.
+  await expect.poll(() => held.length, { timeout: 10_000 }).toBe(1);
+  expect(checks()).toHaveLength(1);
+  expect(checks()[0].status).toBe(0);
+  expect(forRoute(), 'the page itself was never fetched from the origin').toHaveLength(1);
+
+  // A second page opens the same way while the first check is still held.
+  await page.goto(`${ORIGIN}/downloads/`, { waitUntil: 'load' });
+  await expect(page.locator('h1').first()).toBeVisible({ timeout: 10_000 });
+  await expect.poll(() => held.length, { timeout: 10_000 }).toBe(2);
+
+  releaseHeld();
+  await page.waitForTimeout(1_000);
+  expect(await storedCopy(page, ROUTE)).not.toBeNull();
 });
