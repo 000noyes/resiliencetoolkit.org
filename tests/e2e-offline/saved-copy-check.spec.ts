@@ -5,6 +5,9 @@ import { join, dirname, extname, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import http from 'node:http';
 
+import { SAVED_COPY_HEADER, SAVED_COPY_VALUE } from '../../functions/lib/arrival-counting';
+import { etagMatches, pageEtag } from '../../functions/lib/page-etag';
+
 /**
  * The saved-copy check, end to end in Chromium.
  *
@@ -44,8 +47,8 @@ const DIST_DIR = join(__dirname, '../../dist');
 const PORT = 4325;
 const ORIGIN = `http://rt.localhost:${PORT}`;
 const ROUTE = '/dashboard/';
-const MARKER_HEADER = 'x-rt-saved-copy';
-const MARKER_VALUE = 'check';
+const MARKER_HEADER = SAVED_COPY_HEADER;
+const MARKER_VALUE = SAVED_COPY_VALUE;
 
 const CONTENT_TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -90,14 +93,10 @@ function releaseHeld() {
   }
 }
 
+// The hash recipe of scripts/generate-sw-precache.mjs, over the body as
+// served here; the tag and the comparison are the middleware's own.
 function weakEtag(body: Buffer): string {
-  return `W/"${createHash('sha256').update(body).digest('hex').slice(0, 16)}"`;
-}
-
-function etagMatches(ifNoneMatch: string | undefined, etag: string): boolean {
-  if (!ifNoneMatch) return false;
-  const bare = (tag: string) => tag.trim().replace(/^W\//, '');
-  return ifNoneMatch.split(',').some((tag) => bare(tag) === bare(etag));
+  return pageEtag(createHash('sha256').update(body).digest('hex').slice(0, 16));
 }
 
 function record(req: http.IncomingMessage, status: number) {
@@ -129,7 +128,7 @@ function servePage(req: http.IncomingMessage, res: http.ServerResponse, pathname
     held.push({ res, etag });
     return;
   }
-  if (etagMatches(req.headers['if-none-match'], etag)) {
+  if (etagMatches(req.headers['if-none-match'] ?? null, etag)) {
     record(req, 304);
     res.writeHead(304, headers);
     return res.end();
