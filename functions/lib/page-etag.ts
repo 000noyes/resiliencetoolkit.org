@@ -15,8 +15,14 @@
  * never matches. Comparison strips the weak prefix, as If-None-Match's weak
  * comparison does.
  *
- * Without a map, or for a path the map does not know, the response is
- * returned untouched. Nothing here reads a body or writes anything.
+ * The origin behind the middleware (the Pages asset layer) is not asked to
+ * validate: for a page the map knows, the request sent on has its validators
+ * removed, so the origin answers 200 and the comparison happens here against
+ * the map. Should the origin answer 304 for a known page anyway, that 304 is
+ * given the tag and the HTML content type, so the count still sees a page
+ * load. Without a map, or for a path the map does not know, both request and
+ * response pass through untouched. Nothing here reads a body or writes
+ * anything.
  */
 
 export type PageHashes = Readonly<Record<string, string>>;
@@ -43,6 +49,37 @@ export function etagMatches(ifNoneMatch: string | null, etag: string): boolean {
 // Headers that describe the body a 304 does not carry.
 const BODY_HEADERS = ['content-length', 'content-encoding', 'transfer-encoding'];
 
+// Request headers the origin could answer 304 to. Removed for known pages so
+// that the origin always sends the page and the tag here decides.
+const VALIDATOR_HEADERS = ['if-none-match', 'if-modified-since'];
+
+const HTML_CONTENT_TYPE = 'text/html; charset=utf-8';
+
+function knownPageHash(request: Request, hashes: PageHashes | undefined): string | null {
+  if (!hashes) return null;
+  if (request.method !== 'GET' && request.method !== 'HEAD') return null;
+  let pathname: string;
+  try {
+    pathname = new URL(request.url).pathname;
+  } catch {
+    return null;
+  }
+  const hash = hashes[pathname];
+  return typeof hash === 'string' && hash.length > 0 ? hash : null;
+}
+
+/**
+ * The request to send on to the origin: the same request with its validators
+ * removed when the page is one the map knows, otherwise the request itself.
+ */
+export function originRequest(request: Request, hashes: PageHashes | undefined): Request {
+  if (knownPageHash(request, hashes) === null) return request;
+  if (!VALIDATOR_HEADERS.some((name) => request.headers.has(name))) return request;
+  const headers = new Headers(request.headers);
+  for (const name of VALIDATOR_HEADERS) headers.delete(name);
+  return new Request(request, { headers });
+}
+
 /**
  * The response to send for a page request: the upstream response with an
  * ETag, a 304 when the request's If-None-Match matches, or the upstream
@@ -53,23 +90,22 @@ export function withPageEtag(
   response: Response,
   hashes: PageHashes | undefined
 ): Response {
-  if (!hashes) return response;
-  if (request.method !== 'GET' && request.method !== 'HEAD') return response;
+  const hash = knownPageHash(request, hashes);
+  if (hash === null) return response;
+  const etag = pageEtag(hash);
+
+  if (response.status === 304) {
+    const headers = new Headers(response.headers);
+    headers.set('etag', etag);
+    if (!headers.has('content-type')) headers.set('content-type', HTML_CONTENT_TYPE);
+    return new Response(null, { status: 304, headers });
+  }
+
   if (response.status !== 200) return response;
 
   const contentType = (response.headers.get('content-type') ?? '').toLowerCase();
   if (!contentType.startsWith('text/html')) return response;
 
-  let pathname: string;
-  try {
-    pathname = new URL(request.url).pathname;
-  } catch {
-    return response;
-  }
-  const hash = hashes[pathname];
-  if (typeof hash !== 'string' || hash.length === 0) return response;
-
-  const etag = pageEtag(hash);
   const headers = new Headers(response.headers);
   headers.set('etag', etag);
 

@@ -8,7 +8,7 @@
  */
 import { describe, it, expect } from 'vitest';
 
-import { withPageEtag, pageEtag, etagMatches } from '../../functions/lib/page-etag';
+import { withPageEtag, pageEtag, etagMatches, originRequest } from '../../functions/lib/page-etag';
 
 const ORIGIN = 'https://resiliencetoolkit.org';
 const HASHES = { '/': '0123456789abcdef', '/modules/1-1/': 'fedcba9876543210' };
@@ -86,6 +86,56 @@ describe('a page the map knows', () => {
   it('ignores the query string when looking the page up', () => {
     const res = withPageEtag(pageRequest('/?utm=x'), htmlResponse(), HASHES);
     expect(res.headers.get('etag')).toBe('W/"0123456789abcdef"');
+  });
+});
+
+describe('the request sent on to the origin', () => {
+  it('drops the validators for a page the map knows, so the origin answers 200 and the tag here decides', () => {
+    const req = pageRequest('/modules/1-1/', {
+      'if-none-match': 'W/"fedcba9876543210"',
+      'if-modified-since': 'Mon, 21 Sep 2026 10:00:00 GMT',
+      accept: 'text/html',
+    });
+    const out = originRequest(req, HASHES);
+    expect(out).not.toBe(req);
+    expect(out.headers.get('if-none-match')).toBeNull();
+    expect(out.headers.get('if-modified-since')).toBeNull();
+    expect(out.headers.get('accept')).toBe('text/html');
+    expect(out.url).toBe(req.url);
+    expect(out.method).toBe('GET');
+  });
+
+  it('passes a request through untouched for a path the map does not know, and without a map', () => {
+    const unknown = pageRequest('/changelog/', { 'if-none-match': 'W/"x"' });
+    expect(originRequest(unknown, HASHES)).toBe(unknown);
+    const noMap = pageRequest('/', { 'if-none-match': 'W/"x"' });
+    expect(originRequest(noMap, undefined)).toBe(noMap);
+  });
+
+  it('passes a request with no validators through untouched', () => {
+    const req = pageRequest('/modules/1-1/');
+    expect(originRequest(req, HASHES)).toBe(req);
+  });
+});
+
+describe('an upstream 304 for a page the map knows', () => {
+  it('gets the tag and the HTML content type, so it is counted like any page load', async () => {
+    const upstream = new Response(null, { status: 304, headers: { 'cache-control': 'public, max-age=0' } });
+    const res = withPageEtag(
+      pageRequest('/modules/1-1/', { 'if-none-match': 'W/"something-else"' }),
+      upstream,
+      HASHES
+    );
+    expect(res.status).toBe(304);
+    expect(res.headers.get('etag')).toBe('W/"fedcba9876543210"');
+    expect(res.headers.get('content-type')).toContain('text/html');
+    expect(res.headers.get('cache-control')).toBe('public, max-age=0');
+    expect(await res.text()).toBe('');
+  });
+
+  it('is left alone for a path the map does not know', () => {
+    const upstream = new Response(null, { status: 304 });
+    expect(withPageEtag(pageRequest('/changelog/'), upstream, HASHES)).toBe(upstream);
   });
 });
 

@@ -26,18 +26,26 @@
  * to exclude any path that is also a page.
  */
 import { recordArrival, type D1Database } from './lib/arrival-counting';
-import { withPageEtag } from './lib/page-etag';
+import { originRequest, withPageEtag } from './lib/page-etag';
 import { PAGE_HASHES } from './lib/page-hashes.generated';
 
 interface MiddlewareContext {
   request: Request;
   env: { ARRIVALS_DB?: D1Database };
-  next: () => Promise<Response>;
+  next: (request?: Request) => Promise<Response>;
   waitUntil: (promise: Promise<unknown>) => void;
 }
 
 export async function onRequest(context: MiddlewareContext): Promise<Response> {
-  const upstream = await context.next();
+  // For a page the map knows, the origin is asked for the page itself, never
+  // to validate: the comparison happens below, against the map.
+  let forward = context.request;
+  try {
+    forward = originRequest(context.request, PAGE_HASHES);
+  } catch {
+    forward = context.request;
+  }
+  const upstream = forward === context.request ? await context.next() : await context.next(forward);
 
   let response = upstream;
   try {
