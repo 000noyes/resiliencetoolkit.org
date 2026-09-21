@@ -19,7 +19,10 @@
 // Freshness for cache-first pages comes from the worker update cycle: the
 // browser revalidates sw.js on every load (updateViaCache: 'none'), a new
 // build warms a complete fresh generation in the background, and rotation is
-// completeness-gated as above.
+// completeness-gated as above. After a page is served from the cache, one
+// conditional GET to the same page (the saved-copy check, see
+// checkSavedCopy) lets the origin count the visit and starts that update
+// cycle at once when the page changed. It is never stored.
 const CACHE_VERSION = 'v-build-PENDING';
 const V2_PREFIX = 'resilience-hub-v2-';
 const CACHE_NAME = `resilience-hub-v2-${CACHE_VERSION}`;
@@ -483,16 +486,61 @@ async function matchNavigation(request) {
   return undefined;
 }
 
+// The saved-copy check. A precached page is served from the device's copy
+// without asking the origin, so the origin never sees a returning reader,
+// and a changed page is noticed only by the hourly worker update check.
+// After a cache hit, one conditional GET goes to the same page in the
+// background: If-None-Match set to the ETag the saved copy carries, plus one
+// constant marker header so the origin counts it as a page load. The origin
+// answers 304 (about 1 KB) when the page is unchanged and 200 when it
+// changed; a 200 starts the worker update cycle now instead of within the
+// hour. The body is never read and NOTHING is written to any cache: a
+// generation is atomic (its HTML references only the hashed assets it
+// holds), so one fresh page written into it would break offline. The request
+// bypasses the HTTP cache both ways (no-store), sends no credentials, and
+// carries nothing per reader, session or device. Offline it fails, is not
+// retried and is not queued. The navigation never waits on it. The marker
+// literals are mirrored in functions/lib/arrival-counting.ts.
+const SAVED_COPY_HEADER = 'x-rt-saved-copy';
+const SAVED_COPY_VALUE = 'check';
+
+async function checkSavedCopy(route, cached) {
+  try {
+    const headers = {};
+    headers[SAVED_COPY_HEADER] = SAVED_COPY_VALUE;
+    const etag =
+      cached.headers && typeof cached.headers.get === 'function' ? cached.headers.get('etag') : null;
+    if (etag) headers['if-none-match'] = etag;
+    const response = await fetch(
+      new Request(route, { cache: 'no-store', credentials: 'omit', headers })
+    );
+    if (!response) return;
+    if (response.body && typeof response.body.cancel === 'function') {
+      response.body.cancel().catch(() => {});
+    }
+    if (
+      response.status === 200 &&
+      self.registration &&
+      typeof self.registration.update === 'function'
+    ) {
+      await self.registration.update().catch(() => {});
+    }
+  } catch {
+    /* offline or refused: nothing to do, nothing to retry */
+  }
+}
+
 // Cache-first for precached pages: on a dying connection, network-first
 // makes every tap wait for the network to fail before the saved page
 // appears, and this app's job is to work when the weather does not. The
 // staleness cost is bounded: a deploy ships a new sw.js, which the browser
 // revalidates on the next online load (updateViaCache: 'none') and swaps in
-// only once its generation verifies complete. Routes outside the precache
-// stay network-first so they are always current, with the runtime cache and
-// then the offline page as fallbacks. Precached routes are never runtime
-// cached here; their entries come from the revalidating precache fill, so
-// the completeness accounting stays clean.
+// only once its generation verifies complete, and the saved-copy check above
+// starts that revalidation as soon as a served page has changed. Routes
+// outside the precache stay network-first so they are always current, with
+// the runtime cache and then the offline page as fallbacks. Precached routes
+// are never runtime cached here; their entries come from the revalidating
+// precache fill, so the completeness accounting stays clean.
 async function handleNavigation(event) {
   const url = new URL(event.request.url);
   // Normalize the explicit-file form so `/dashboard/index.html` gets the
@@ -508,7 +556,12 @@ async function handleNavigation(event) {
 
   if (isPrecachedRoute) {
     const cached = await matchNavigation(event.request);
-    if (cached) return cached;
+    if (cached) {
+      // The check goes to the built route (trailing slash), so a slashless
+      // link is counted as its page and not answered with a redirect.
+      event.waitUntil(checkSavedCopy(path.endsWith('/') ? path : path + '/', cached));
+      return cached;
+    }
   }
 
   try {
