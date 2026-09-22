@@ -122,6 +122,19 @@ export function classifyArrival(headers: Headers): ArrivalLabel {
 }
 
 /**
+ * Whether the request is one of the site's own fetches: a same-origin
+ * request that is not a navigation. The service worker's precache fill is
+ * the one that matters (about 34 page fetches per device per deploy, which
+ * used to land as `unknown` rows). Browsers older than the Sec-Fetch headers
+ * send none of them and are not affected; a crawler sends none either.
+ */
+function isOwnFetch(headers: Headers): boolean {
+  const mode = headers.get('sec-fetch-mode');
+  const site = headers.get('sec-fetch-site');
+  return mode !== null && mode !== 'navigate' && (site === 'same-origin' || site === 'same-site');
+}
+
+/**
  * The path to store, or null when this request is not an arrival to count.
  * Only the pathname survives, so a query string is discarded by construction
  * and can never reach the database.
@@ -150,7 +163,9 @@ export function arrivalPath(rawUrl: string): string | null {
  * the worker's saved-copy check, a browser revalidating its HTTP cache, or a
  * crawler sending validators. page-etag.ts keeps the content-type on the 304
  * it builds so this test sees it. Browser prefetches are excluded: nobody
- * arrived.
+ * arrived. So is the site's own fetching of its pages (the worker's precache
+ * fill), unless it carries the saved-copy marker: the fill is the site
+ * counting itself.
  *
  * The returned promise never rejects. Counting must never affect delivery.
  */
@@ -173,6 +188,7 @@ export function recordArrival(
   if (path === null) return null;
 
   const label = classifyArrival(request.headers);
+  if (label !== 'cached-browser' && isOwnFetch(request.headers)) return null;
 
   return db
     .prepare('INSERT INTO arrivals (path, label) VALUES (?1, ?2)')

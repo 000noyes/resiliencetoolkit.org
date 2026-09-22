@@ -216,6 +216,27 @@ describe('what counts as an arrival', () => {
     expect(db.arrivals).toHaveLength(0);
   });
 
+  it("records nothing for the site's own precache fill, on a 200 or a 304", async () => {
+    // What the worker's fill sends: a same-origin fetch that is not a
+    // navigation and carries no marker.
+    const fill = {
+      'user-agent': BROWSER_HEADERS['user-agent'],
+      accept: '*/*',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+    };
+    expect(recordArrival(db, pageRequest('/modules/', fill), htmlResponse())).toBeNull();
+    expect(recordArrival(db, pageRequest('/modules/', fill), htmlResponse(304))).toBeNull();
+    expect(db.arrivals).toHaveLength(0);
+  });
+
+  it('still records a request with no Sec-Fetch headers at all as unknown', async () => {
+    const old = { 'user-agent': BROWSER_HEADERS['user-agent'], accept: BROWSER_HEADERS.accept };
+    await recordArrival(db, pageRequest('/modules/', old), htmlResponse());
+    expect(db.arrivals[0].label).toBe('unknown');
+  });
+
   it('records nothing for the API surface', async () => {
     expect(recordArrival(db, pageRequest('/api/arrivals'), htmlResponse())).toBeNull();
     expect(db.arrivals).toHaveLength(0);
