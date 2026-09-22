@@ -323,8 +323,11 @@ test('an unchanged page: served from the cache, one marked conditional request, 
   expect(check.headerNames).not.toContain('cookie');
   expect(check.headerNames).not.toContain('authorization');
 
-  // A 304 starts no worker update.
-  expect(log.filter((line) => line.path === '/sw.js' && line.at >= check.at)).toHaveLength(0);
+  // A 304 starts no worker update from the check. The page side runs its
+  // own update checks (on load, on return to visible), and those are
+  // indistinguishable from the worker's on the wire, so the absence of a
+  // sw.js request is not asserted here; the unit suite pins that a 304
+  // calls no update().
   expect(await storedCopy(page, ROUTE)).toEqual(before);
 });
 
