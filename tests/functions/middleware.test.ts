@@ -1,16 +1,14 @@
 /**
  * Root middleware composition: the validator-stripped request goes to the
  * origin, the response gets its tag or becomes a 304, and the count sees the
- * response that was sent. The generated hash map is stubbed; the pieces are
+ * response that was sent. The generated hash map is replaced by
+ * page-hashes.stub.ts through the alias in vitest.config.ts; the pieces are
  * covered in page-etag.test.ts and arrival-counting.test.ts.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-vi.mock('../../functions/lib/page-hashes.generated', () => ({
-  PAGE_HASHES: { '/': '0123456789abcdef', '/modules/1-1/': 'fedcba9876543210' },
-}));
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { onRequest } from '../../functions/_middleware';
+import { PAGE_HASHES as STUB } from './page-hashes.stub';
 import { SAVED_COPY_HEADER, SAVED_COPY_VALUE } from '../../functions/lib/arrival-counting';
 import { FakeArrivalsD1 } from './fake-arrivals-d1';
 
@@ -66,7 +64,7 @@ describe('functions/_middleware.ts', () => {
     expect(fake.nextCalls[0]?.headers.get('if-none-match')).toBeNull();
     expect(fake.nextCalls[0]?.headers.get('accept')).toBe('text/html');
     expect(res.status).toBe(200);
-    expect(res.headers.get('etag')).toBe('W/"fedcba9876543210"');
+    expect(res.headers.get('etag')).toBe(`W/"${STUB['/modules/1-1/']}"`);
   });
 
   it('answers 304 to the saved-copy check and counts it as cached-browser', async () => {
