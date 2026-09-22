@@ -231,6 +231,12 @@ describe('what counts as an arrival', () => {
     expect(db.arrivals).toHaveLength(0);
   });
 
+  it('keeps a marked check from a declared agent under declared-agent, not dropped as an own fetch', async () => {
+    const headers = { ...SAVED_COPY_HEADERS, 'user-agent': 'ClaudeBot/1.0' };
+    await recordArrival(db, pageRequest('/modules/', headers), htmlResponse(304));
+    expect(db.arrivals.map((row) => row.label)).toEqual(['declared-agent']);
+  });
+
   it('still records a request with no Sec-Fetch headers at all as unknown', async () => {
     const old = { 'user-agent': BROWSER_HEADERS['user-agent'], accept: BROWSER_HEADERS.accept };
     await recordArrival(db, pageRequest('/modules/', old), htmlResponse());

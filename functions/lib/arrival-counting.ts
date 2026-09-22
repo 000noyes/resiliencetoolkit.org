@@ -164,8 +164,9 @@ export function arrivalPath(rawUrl: string): string | null {
  * crawler sending validators. page-etag.ts keeps the content-type on the 304
  * it builds so this test sees it. Browser prefetches are excluded: nobody
  * arrived. So is the site's own fetching of its pages (the worker's precache
- * fill), unless it carries the saved-copy marker: the fill is the site
- * counting itself.
+ * fill): the fill is the site counting itself. A request carrying the
+ * saved-copy marker is never treated as a fill, whatever its label, so a
+ * declared agent running the worker still counts under its own label.
  *
  * The returned promise never rejects. Counting must never affect delivery.
  */
@@ -187,8 +188,9 @@ export function recordArrival(
   const path = arrivalPath(request.url);
   if (path === null) return null;
 
+  const marked = request.headers.get(SAVED_COPY_HEADER) === SAVED_COPY_VALUE;
+  if (!marked && isOwnFetch(request.headers)) return null;
   const label = classifyArrival(request.headers);
-  if (label !== 'cached-browser' && isOwnFetch(request.headers)) return null;
 
   return db
     .prepare('INSERT INTO arrivals (path, label) VALUES (?1, ?2)')
