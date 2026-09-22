@@ -5,6 +5,7 @@ node_modules/
 
 # Build outputs
 dist/
+functions/lib/page-hashes.generated.js
 .output/
 .astro/
 scratchpad/

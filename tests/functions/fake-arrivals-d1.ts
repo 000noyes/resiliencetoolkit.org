@@ -23,6 +23,8 @@ export interface ArrivalRow {
 export class FakeArrivalsD1 implements D1Database {
   arrivals: ArrivalRow[] = [];
   failNextWrite = false;
+  /** The labels the table's CHECK constraint lists, as migration 0003 leaves it. */
+  acceptedLabels: string[] = ['likely-browser', 'cached-browser', 'declared-agent', 'unknown'];
   private nextId = 1;
 
   seed(partial: Partial<ArrivalRow> & { path: string; label: string }): ArrivalRow {
@@ -69,6 +71,11 @@ class FakeStatement implements D1PreparedStatement {
 
   private execute(): Record<string, unknown>[] {
     const { sql, args, db } = { sql: this.sql, args: this.args, db: this.db };
+
+    if (sql.includes('FROM sqlite_master')) {
+      const list = db.acceptedLabels.map((label) => `'${label}'`).join(', ');
+      return [{ sql: `CREATE TABLE arrivals (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT NOT NULL, label TEXT NOT NULL CHECK (label IN (${list})), created_at TEXT NOT NULL)` }];
+    }
 
     if (sql.includes('INSERT INTO arrivals')) {
       if (db.failNextWrite) {

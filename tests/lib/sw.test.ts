@@ -12,6 +12,7 @@
  *  - essentials-only install (the full page list arrives via top-up)
  *  - navigation URL normalization (slashless links must hit slashed cache keys)
  *  - cache-first for precached pages, network-first outside the precache
+ *  - the saved-copy check: one conditional GET after a cache hit, never stored
  *  - the styled /offline/ page as the miss fallback, never a raw 503
  *  - D7 asset handling (cache-first with ignoreVary) unchanged.
  */
@@ -20,6 +21,8 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
+
+import { SAVED_COPY_HEADER, SAVED_COPY_VALUE } from '../../functions/lib/arrival-counting';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const swSrcRaw = readFileSync(join(__dirname, '../../public/sw.js'), 'utf-8');
@@ -50,6 +53,8 @@ class FakeResponse {
   redirected: boolean;
   status: number;
   body: any;
+  /** Present on responses the saved-copy check receives: a stream to cancel. */
+  bodyCancel?: ReturnType<typeof vi.fn>;
   headers: { get: (name: string) => string | null };
   private headerMap: Record<string, string>;
   constructor(
@@ -77,9 +82,20 @@ class FakeResponse {
 class FakeRequest {
   url: string;
   cache?: string;
-  constructor(url: string, init?: { cache?: string }) {
+  credentials?: string;
+  signal?: AbortSignal;
+  headers: Record<string, string>;
+  constructor(
+    url: string,
+    init?: { cache?: string; credentials?: string; signal?: AbortSignal; headers?: Record<string, string> }
+  ) {
     this.url = url.startsWith('http') ? url : ORIGIN + url;
     this.cache = init?.cache;
+    this.credentials = init?.credentials;
+    this.signal = init?.signal;
+    this.headers = Object.fromEntries(
+      Object.entries(init?.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v])
+    );
   }
 }
 
@@ -148,6 +164,7 @@ interface SWSandbox {
   skipWaitingCalls: number;
   clientsClaimCalls: number;
   unregisterCalls: number;
+  updateCalls: number;
   windowClients: Array<{ visibilityState?: string }>;
   deletedCaches: string[];
   matchAllCalls: any[];
@@ -201,6 +218,7 @@ function createSandbox(opts?: {
     addPoisonsOnce: new Set(),
     skipWaitingCalls: 0,
     unregisterCalls: 0,
+    updateCalls: 0,
     clientsClaimCalls: 0,
     windowClients: [],
     deletedCaches: [],
@@ -257,9 +275,15 @@ function createSandbox(opts?: {
     },
     registration: {
       active: {},
+      installing: null,
+      waiting: null,
       unregister: () => {
         sandbox.unregisterCalls += 1;
         return Promise.resolve(true);
+      },
+      update: () => {
+        sandbox.updateCalls += 1;
+        return Promise.resolve();
       },
     },
     clients: {
@@ -284,6 +308,8 @@ function createSandbox(opts?: {
     location: { origin: ORIGIN, hostname: opts?.hostname ?? 'resiliencetoolkit.org' },
     console: { warn: () => {}, log: () => {}, error: () => {} },
     setTimeout,
+    clearTimeout,
+    AbortController,
   };
   vm.createContext(context);
   vm.runInContext(swSrc, context);
@@ -964,7 +990,9 @@ describe('sw.js — navigation handler (cache-first precache, offline fallback)'
     sandbox.listeners.fetch[0](event);
     const response = await event._response;
     expect(response.body).toBe('cached:/dashboard/');
-    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+    await event._waitPromise;
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    expect(savedCopyChecks(sandbox).map((r) => r.url)).toEqual([`${ORIGIN}/dashboard/`]);
   });
 
   it('treats the explicit /index.html form as the same precached route (cache-first)', async () => {
@@ -979,7 +1007,9 @@ describe('sw.js — navigation handler (cache-first precache, offline fallback)'
     sandbox.listeners.fetch[0](event);
     const response = await event._response;
     expect(response.body).toBe('cached:/dashboard/');
-    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+    await event._waitPromise;
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    expect(savedCopyChecks(sandbox).map((r) => r.url)).toEqual([`${ORIGIN}/dashboard/`]);
   });
 
   it('serves a precached route cache-first at its slashed URL too', async () => {
@@ -994,7 +1024,9 @@ describe('sw.js — navigation handler (cache-first precache, offline fallback)'
     sandbox.listeners.fetch[0](event);
     const response = await event._response;
     expect(response.body).toBe('cached:/modules/1-1/');
-    expect(sandbox.fetchMock).not.toHaveBeenCalled();
+    await event._waitPromise;
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    expect(savedCopyChecks(sandbox).map((r) => r.url)).toEqual([`${ORIGIN}/modules/1-1/`]);
   });
 
   it('a precached route missing from the cache falls through to the network', async () => {
@@ -1081,6 +1113,252 @@ describe('sw.js — navigation handler (cache-first precache, offline fallback)'
     sandbox.listeners.fetch[0](event);
     const response = await event._response;
     expect(response.status).toBe(503);
+  });
+});
+
+/** The fetch calls that carry the saved-copy marker. */
+function savedCopyChecks(sandbox: SWSandbox): FakeRequest[] {
+  return sandbox.fetchMock.mock.calls
+    .map((call) => call[0])
+    .filter((req) => req instanceof FakeRequest && req.headers[SAVED_COPY_HEADER] !== undefined);
+}
+
+/** Every cache store's keys, for before/after comparison. */
+function cacheSnapshot(sandbox: SWSandbox): Record<string, string[]> {
+  return Object.fromEntries(
+    [...sandbox.stores.entries()].map(([name, store]) => [name, [...store.entries.keys()].sort()])
+  );
+}
+
+function navigate(sandbox: SWSandbox, path: string) {
+  const event = makeFetchEvent({ url: `${ORIGIN}${path}`, mode: 'navigate', destination: 'document' });
+  sandbox.listeners.fetch[0](event);
+  return event;
+}
+
+/** A response with a cancellable body stream, as fetch returns. */
+function streamed(body: string, init?: { status?: number; headers?: Record<string, string> }): FakeResponse {
+  const res = new FakeResponse(body, init);
+  const cancel = vi.fn().mockResolvedValue(undefined);
+  res.bodyCancel = cancel;
+  res.body = init?.status === 304 ? null : { cancel };
+  return res;
+}
+
+describe('sw.js — the saved-copy check (one conditional GET after a cache hit, never stored)', () => {
+  function readySandboxWithContext() {
+    const { sandbox, context } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    store.entries.set(
+      '/modules/1-1/',
+      new FakeResponse('cached:/modules/1-1/', { headers: { etag: 'W/"fedcba9876543210"' } })
+    );
+    return { sandbox, store, context };
+  }
+
+  function readySandbox() {
+    const { sandbox, store } = readySandboxWithContext();
+    return { sandbox, store };
+  }
+
+  it('sends exactly one conditional GET to the same page, with the marker, bypassing the HTTP cache', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('', { status: 304 }));
+    const event = navigate(sandbox, '/modules/1-1/');
+    expect((await event._response).body).toBe('cached:/modules/1-1/');
+    await event._waitPromise;
+
+    const checks = savedCopyChecks(sandbox);
+    expect(checks).toHaveLength(1);
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    const check = checks[0];
+    expect(check.url).toBe(`${ORIGIN}/modules/1-1/`);
+    expect(check.cache).toBe('no-store');
+    expect(check.credentials).toBe('omit');
+    expect(check.signal).toBeInstanceOf(AbortSignal);
+    expect(check.headers['if-none-match']).toBe('W/"fedcba9876543210"');
+    expect(check.headers[SAVED_COPY_HEADER]).toBe(SAVED_COPY_VALUE);
+  });
+
+  it('never reads the body: a 200 body stream is cancelled at once', async () => {
+    const { sandbox } = readySandbox();
+    const answer = streamed('<html>fresh</html>');
+    sandbox.fetchMock.mockResolvedValue(answer);
+    const event = navigate(sandbox, '/modules/1-1/');
+    await event._response;
+    await event._waitPromise;
+    expect(answer.bodyCancel).toHaveBeenCalledOnce();
+  });
+
+  it('is abandoned past the deadline, leaving the response and the caches untouched', async () => {
+    vi.useFakeTimers();
+    try {
+      const { sandbox } = readySandbox();
+      const before = cacheSnapshot(sandbox);
+      // A connection that accepts the request and never answers: the fetch
+      // settles only when its signal aborts.
+      sandbox.fetchMock.mockImplementation(
+        (req: FakeRequest) =>
+          new Promise((_, reject) => req.signal!.addEventListener('abort', () => reject(new Error('aborted'))))
+      );
+      const event = navigate(sandbox, '/modules/1-1/');
+      expect((await event._response).body).toBe('cached:/modules/1-1/');
+      expect(sandbox.fetchMock.mock.calls[0][0].signal.aborted).toBe(false);
+      await vi.advanceTimersByTimeAsync(30_000);
+      expect(sandbox.fetchMock.mock.calls[0][0].signal.aborted).toBe(true);
+      await expect(event._waitPromise).resolves.toBeDefined();
+      expect(cacheSnapshot(sandbox)).toEqual(before);
+      expect(sandbox.updateCalls).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('kicks the update once per worker startup', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    for (const route of ['/modules/1-1/', '/dashboard/', '/modules/1-1/']) {
+      const event = navigate(sandbox, route);
+      await event._response;
+      await event._waitPromise;
+    }
+    expect(sandbox.updateCalls).toBe(1);
+  });
+
+  it('a rejected update() never escapes the check', async () => {
+    const { sandbox, context } = readySandboxWithContext();
+    context.self.registration.update = () => Promise.reject(new Error('update refused'));
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    const event = navigate(sandbox, '/modules/1-1/');
+    expect((await event._response).body).toBe('cached:/modules/1-1/');
+    await expect(event._waitPromise).resolves.toBeDefined();
+  });
+
+  it('does not kick the update while a new worker is already waiting', async () => {
+    const { sandbox, context } = readySandboxWithContext();
+    context.self.registration.waiting = {};
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    const event = navigate(sandbox, '/modules/1-1/');
+    await event._response;
+    await event._waitPromise;
+    expect(sandbox.updateCalls).toBe(0);
+  });
+
+  it('carries nothing per reader: the marker and the validator are the only headers', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('', { status: 304 }));
+    const event = navigate(sandbox, '/modules/1-1/');
+    await event._response;
+    await event._waitPromise;
+    expect(Object.keys(savedCopyChecks(sandbox)[0].headers).sort()).toEqual(
+      ['if-none-match', SAVED_COPY_HEADER].sort()
+    );
+  });
+
+  it('sends no validator when the saved copy carries no ETag', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    const event = navigate(sandbox, '/dashboard/');
+    await event._response;
+    await event._waitPromise;
+    const check = savedCopyChecks(sandbox)[0];
+    expect(check.url).toBe(`${ORIGIN}/dashboard/`);
+    expect(Object.keys(check.headers)).toEqual([SAVED_COPY_HEADER]);
+  });
+
+  it('checks the built route for a slashless link, so the origin sees the page and not a redirect', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('', { status: 304 }));
+    const event = navigate(sandbox, '/modules/1-1');
+    expect((await event._response).body).toBe('cached:/modules/1-1/');
+    await event._waitPromise;
+    expect(savedCopyChecks(sandbox).map((r) => r.url)).toEqual([`${ORIGIN}/modules/1-1/`]);
+  });
+
+  it('never writes to any cache, whatever the origin answers', async () => {
+    for (const answer of [
+      new FakeResponse('', { status: 304 }),
+      streamed('<html>fresh</html>', { headers: { etag: 'W/"0000000000000000"' } }),
+    ]) {
+      const { sandbox } = readySandbox();
+      sandbox.fetchMock.mockResolvedValue(answer);
+      const before = cacheSnapshot(sandbox);
+      const event = navigate(sandbox, '/modules/1-1/');
+      await event._response;
+      await event._waitPromise;
+      await new Promise((r) => setTimeout(r, 0));
+      expect(cacheSnapshot(sandbox)).toEqual(before);
+      const stored = await sandbox.stores.get(CURRENT_CACHE)!.match('/modules/1-1/');
+      expect(stored.body).toBe('cached:/modules/1-1/');
+    }
+  });
+
+  it('a 200 (the page changed) starts the worker update now; a 304 does not', async () => {
+    const changed = readySandbox();
+    changed.sandbox.fetchMock.mockResolvedValue(streamed('<html>fresh</html>'));
+    const e1 = navigate(changed.sandbox, '/modules/1-1/');
+    await e1._response;
+    await e1._waitPromise;
+    expect(changed.sandbox.updateCalls).toBe(1);
+
+    const same = readySandbox();
+    same.sandbox.fetchMock.mockResolvedValue(new FakeResponse('', { status: 304 }));
+    const e2 = navigate(same.sandbox, '/modules/1-1/');
+    await e2._response;
+    await e2._waitPromise;
+    expect(same.sandbox.updateCalls).toBe(0);
+  });
+
+  it('a rejected check (offline) leaves the response and the caches untouched, with no retry', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockRejectedValue(new Error('offline'));
+    const before = cacheSnapshot(sandbox);
+    const event = navigate(sandbox, '/modules/1-1/');
+    expect((await event._response).body).toBe('cached:/modules/1-1/');
+    await expect(event._waitPromise).resolves.toBeDefined();
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    expect(cacheSnapshot(sandbox)).toEqual(before);
+    expect(sandbox.updateCalls).toBe(0);
+  });
+
+  it('a cache miss on a precached route sends no check: the origin fetch is the arrival', async () => {
+    const { sandbox, store } = readySandbox();
+    store.entries.delete('/modules/1-1/');
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html>fresh</html>'));
+    const event = navigate(sandbox, '/modules/1-1/');
+    expect((await event._response).body).toBe('<html>fresh</html>');
+    await event._waitPromise;
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    expect(savedCopyChecks(sandbox)).toEqual([]);
+  });
+
+  it('a route outside the precache sends no check', async () => {
+    const { sandbox } = readySandbox();
+    sandbox.fetchMock.mockResolvedValue(new FakeResponse('<html>fresh</html>'));
+    const event = navigate(sandbox, '/changelog/');
+    await event._response;
+    await event._waitPromise;
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+    expect(savedCopyChecks(sandbox)).toEqual([]);
+  });
+
+  it('a copy served after the network failed sends no check: the device is offline', async () => {
+    const { sandbox } = createSandbox();
+    const store = fillCurrentComplete(sandbox);
+    store.entries.set(SENTINEL, new FakeResponse('complete'));
+    store.entries.set('/changelog/', new FakeResponse('<html>runtime cached</html>'));
+    sandbox.fetchMock.mockRejectedValue(new Error('offline'));
+    const event = navigate(sandbox, '/changelog/');
+    expect((await event._response).body).toBe('<html>runtime cached</html>');
+    await event._waitPromise;
+    expect(savedCopyChecks(sandbox)).toEqual([]);
+    expect(sandbox.fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it('uses the same marker literals as functions/lib/arrival-counting.ts', () => {
+    expect(swSrcRaw).toContain(`'${SAVED_COPY_HEADER}'`);
+    expect(swSrcRaw).toContain(`'${SAVED_COPY_VALUE}'`);
   });
 });
 

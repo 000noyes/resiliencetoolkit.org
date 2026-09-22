@@ -16,12 +16,18 @@
  * driving a headless browser sends the same headers a person's browser sends,
  * and this server cannot separate the two. Cloudflare's machine-learned bot
  * score, which could, is an Enterprise feature this account does not have. The
- * counts also miss return visits: the site precaches its pages in a service
- * worker, so a returning reader is served from that cache and the request
- * never reaches this server at all. Both limits ship inside the report output
- * so no number can be quoted without them.
+ * limit ships inside the report output so no number can be quoted without it.
  *
- * The three labels are reported separately and are never added together. There
+ * RETURN VISITS. The site precaches its pages in a service worker, so a
+ * returning reader is served from that cache and the page request never
+ * reaches this server. After serving from the cache the worker sends one
+ * conditional GET to the same path, carrying a constant marker header, and
+ * that request is counted here under `cached-browser`. It is one row per
+ * page load, the same as a first arrival, and the marker carries nothing
+ * about the reader: one fixed value, the same on every device. A page read
+ * offline is not counted and is not queued for later.
+ *
+ * The four labels are reported separately and are never added together. There
  * is no combined "visits" figure anywhere in the output, deliberately: a
  * single number that folds agents in with people is the thing that made the
  * old hosted analytics feel inflated.
@@ -47,14 +53,23 @@ export interface D1Database {
   prepare(sql: string): D1PreparedStatement;
 }
 
-export type ArrivalLabel = 'likely-browser' | 'declared-agent' | 'unknown';
+export type ArrivalLabel = 'likely-browser' | 'cached-browser' | 'declared-agent' | 'unknown';
 
-/** Report order: the headline first, the other two beside it. */
+/** Report order: the headline first, the other three beside it. */
 export const ARRIVAL_LABELS: readonly ArrivalLabel[] = [
   'likely-browser',
+  'cached-browser',
   'declared-agent',
   'unknown',
 ];
+
+/**
+ * The marker the service worker sends on its saved-copy check. One constant
+ * header and one constant value, identical on every device. public/sw.js
+ * carries the same two literals; tests/lib/sw.test.ts keeps them in step.
+ */
+export const SAVED_COPY_HEADER = 'x-rt-saved-copy';
+export const SAVED_COPY_VALUE = 'check';
 
 /** Longer paths are not counted. Nothing this site serves comes close. */
 export const PATH_MAX = 256;
@@ -65,17 +80,20 @@ export const DEFAULT_WINDOW_DAYS = 30;
 export const ARRIVAL_CAVEAT =
   'likely-browser means the request was not identifiable as an agent. It does not mean a ' +
   'person. An agent driving a headless browser sends what a person’s browser sends, and ' +
-  'this server cannot tell them apart. These counts also miss return visits: pages are ' +
-  'precached for offline use, so a returning reader is served from that cache and never ' +
-  'reaches this server. Report first arrivals, not visits, and carry this sentence with them.';
+  'this server cannot tell them apart. cached-browser means a browser opened the page from ' +
+  'the copy saved on the device and sent a check to this server while online; pages read ' +
+  'offline are not counted. Report the labels separately and carry this sentence with them.';
 
 /**
- * Derive one label from request headers. Two signals, in order, both read in
- * memory and neither stored.
+ * Derive one label from request headers. Three signals, in order, all read in
+ * memory and none stored.
  *
  * 1. Declared identity. A well-behaved crawler or AI fetcher announces itself
  *    in the User-Agent, and those are the easy majority of automated traffic.
- * 2. Browser navigation shape. A real browser navigation sends
+ * 2. The saved-copy marker. The service worker sends it on the check that
+ *    follows a page served from the device's copy. That fetch is not a
+ *    navigation, so it is labelled before the navigation shape is read.
+ * 3. Browser navigation shape. A real browser navigation sends
  *    Sec-Fetch-Dest: document, Sec-Fetch-Mode: navigate and an HTML Accept.
  *    Simple crawlers usually send none of the three. Browsers older than the
  *    Sec-Fetch headers fall to `unknown`, which is the honest answer.
@@ -89,6 +107,10 @@ export function classifyArrival(headers: Headers): ArrivalLabel {
     return 'declared-agent';
   }
 
+  if (headers.get(SAVED_COPY_HEADER) === SAVED_COPY_VALUE) {
+    return 'cached-browser';
+  }
+
   const dest = headers.get('sec-fetch-dest');
   const mode = headers.get('sec-fetch-mode');
   const accept = (headers.get('accept') ?? '').toLowerCase();
@@ -97,6 +119,19 @@ export function classifyArrival(headers: Headers): ArrivalLabel {
   }
 
   return 'unknown';
+}
+
+/**
+ * Whether the request is one of the site's own fetches: a same-origin
+ * request that is not a navigation. The service worker's precache fill is
+ * the one that matters (about 34 page fetches per device per deploy, which
+ * used to land as `unknown` rows). Browsers older than the Sec-Fetch headers
+ * send none of them and are not affected; a crawler sends none either.
+ */
+function isOwnFetch(headers: Headers): boolean {
+  const mode = headers.get('sec-fetch-mode');
+  const site = headers.get('sec-fetch-site');
+  return mode !== null && mode !== 'navigate' && (site === 'same-origin' || site === 'same-site');
 }
 
 /**
@@ -121,10 +156,17 @@ export function arrivalPath(rawUrl: string): string | null {
  * as a promise for the caller to hand to waitUntil, or null when the request
  * is not a counted arrival.
  *
- * Counted: a GET that produced a 200 HTML page. That single test does the work
- * of a path filter, because stylesheets, images, the search index and the
- * round-notes JSON are not HTML, and a missing page is not a 200. Browser
- * prefetches are excluded: nobody arrived.
+ * Counted: a GET that produced a 200 HTML page, or a 304 for one. The
+ * content-type test does the work of a path filter, because stylesheets,
+ * images, the search index and the round-notes JSON are not HTML, and a
+ * missing page is not a 200. A 304 is a page load whose copy was current:
+ * the worker's saved-copy check, a browser revalidating its HTTP cache, or a
+ * crawler sending validators. page-etag.ts keeps the content-type on the 304
+ * it builds so this test sees it. Browser prefetches are excluded: nobody
+ * arrived. So is the site's own fetching of its pages (the worker's precache
+ * fill): the fill is the site counting itself. A request carrying the
+ * saved-copy marker is never treated as a fill, whatever its label, so a
+ * declared agent running the worker still counts under its own label.
  *
  * The returned promise never rejects. Counting must never affect delivery.
  */
@@ -135,7 +177,7 @@ export function recordArrival(
 ): Promise<void> | null {
   if (!db) return null;
   if (request.method !== 'GET') return null;
-  if (response.status !== 200) return null;
+  if (response.status !== 200 && response.status !== 304) return null;
 
   const contentType = (response.headers.get('content-type') ?? '').toLowerCase();
   if (!contentType.startsWith('text/html')) return null;
@@ -146,6 +188,8 @@ export function recordArrival(
   const path = arrivalPath(request.url);
   if (path === null) return null;
 
+  const marked = request.headers.get(SAVED_COPY_HEADER) === SAVED_COPY_VALUE;
+  if (!marked && isOwnFetch(request.headers)) return null;
   const label = classifyArrival(request.headers);
 
   return db
@@ -187,14 +231,28 @@ function secretsMatch(given: string, expected: string): boolean {
   return diff === 0;
 }
 
-interface LabelCounts {
-  'likely-browser': number;
-  'declared-agent': number;
-  unknown: number;
-}
+type LabelCounts = Record<ArrivalLabel, number>;
 
 function emptyCounts(): LabelCounts {
-  return { 'likely-browser': 0, 'declared-agent': 0, unknown: 0 };
+  return Object.fromEntries(ARRIVAL_LABELS.map((label) => [label, 0])) as LabelCounts;
+}
+
+/**
+ * Whether the table accepts every label in ARRIVAL_LABELS, read from the
+ * table's own definition. A label the CHECK constraint refuses is written
+ * and swallowed, so without this the report could not tell "no such visits"
+ * from "the migration has not been applied". Never throws.
+ */
+async function schemaAcceptsLabels(db: D1Database): Promise<boolean | null> {
+  try {
+    const row = await db
+      .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'arrivals'")
+      .first<{ sql: string }>();
+    if (!row || typeof row.sql !== 'string') return null;
+    return ARRIVAL_LABELS.every((label) => row.sql.includes(`'${label}'`));
+  } catch {
+    return null;
+  }
 }
 
 function isLabel(value: unknown): value is ArrivalLabel {
@@ -291,7 +349,10 @@ export async function handleArrivalsReport(
   return json(200, {
     ok: true,
     window: { since, until },
-    what_this_counts: 'One row per HTML page served by this origin. No cookie, no identifier.',
+    schema: { accepts_every_label: await schemaAcceptsLabels(db) },
+    what_this_counts:
+      'One row per HTML page served by this origin, and one per page a browser opened from ' +
+      'its saved copy while online. No cookie, no identifier.',
     caveat: ARRIVAL_CAVEAT,
     by_label: byLabel,
     by_path: group(pathRows.results, 'path'),
