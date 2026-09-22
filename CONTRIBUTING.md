@@ -37,6 +37,19 @@ Connect your GitHub fork to [Cloudflare Pages](https://pages.cloudflare.com):
 - Build output directory: `dist`
 - Node version: 20+
 
+Once your domain is attached, two settings on it:
+
+- Turn off Email Address Obfuscation (under the domain's security settings)
+  and Automatic HTTPS Rewrites (under SSL/TLS, Edge Certificates). Leave
+  Rocket Loader off. While any of the three is on, Cloudflare rewrites each
+  HTML page on the way out and drops its ETag. Without the tag a page can
+  never answer 304, so a browser's saved-copy check and the refill after a
+  deploy cost a full page instead of about 1 KB. Cloudflare leaves the
+  `*.pages.dev` address alone; only the custom domain is affected.
+- After the first deploy, and after any change to those settings, run
+  `node scripts/check-page-etags.mjs https://your-domain`. It fails when a
+  page carries no tag or does not answer 304 to its own tag.
+
 Cloudflare Pages auto-deploys on push to your default branch. The site is fully static — no server required.
 
 **4. Service worker cache**
