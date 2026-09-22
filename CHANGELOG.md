@@ -3,7 +3,7 @@
 Notable changes to ResilienceToolkit.org. Versions have three parts from
 0.1.0 onward; earlier releases used four.
 
-## [0.1.2] - 2026-09-21
+## [0.1.2] - 2026-09-22
 
 ### Changed
 - Pages opened from the copy saved on your device now count as a visit. The
