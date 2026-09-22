@@ -3,6 +3,12 @@
 Notable changes to ResilienceToolkit.org. Versions have three parts from
 0.1.0 onward; earlier releases used four.
 
+## [0.1.3] - 2026-09-22
+
+### For contributors
+- Deploy notes name two domain settings to turn off, because Cloudflare drops
+  the page ETag while they are on. A script checks a live site for the tag.
+
 ## [0.1.2] - 2026-09-22
 
 ### Changed

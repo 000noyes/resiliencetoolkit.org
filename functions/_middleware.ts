@@ -37,7 +37,7 @@ interface MiddlewareContext {
 }
 
 export async function onRequest(context: MiddlewareContext): Promise<Response> {
-  // For a page the map knows, the origin is asked for the page itself, never
+  // For a page that is in the map, the origin is asked for the page itself, never
   // to validate: the comparison happens below, against the map.
   let forward = context.request;
   try {

@@ -16,15 +16,22 @@
  * comparison does.
  *
  * The origin behind the middleware (the Pages asset layer) is not asked to
- * validate: for a page the map knows, the request sent on has its validators
+ * validate: for a page that is in the map, the request sent on has its validators
  * removed, so the origin answers 200 and the comparison happens here against
  * the map. Should the origin answer 304 for a known page anyway, that 304 is
- * given the HTML content type, so the count still sees a page load, and the
+ * given the HTML content type, so the count still records a page load, and the
  * tag only when the request's own validator matches it: a 304 says the
  * client's copy is current, and the tag must not claim a copy this code never
- * checked is the current build. Without a map, or for a path the map does
- * not know, both request and response pass through untouched. Nothing here
+ * checked is the current build. Without a map, or for a path that is not in
+ * the map, both request and response pass through untouched. Nothing here
  * reads a body or writes anything.
+ *
+ * The tag leaves the Worker on every HTML page. While Email Address
+ * Obfuscation, Automatic HTTPS Rewrites or Rocket Loader is on for the
+ * domain, Cloudflare rewrites each HTML page on the way out and drops the
+ * ETag, and nothing in this code or its tests covers that hop.
+ * CONTRIBUTING.md names the settings and scripts/check-page-etags.mjs
+ * checks a live site.
  */
 
 export type PageHashes = Readonly<Record<string, string>>;
@@ -76,7 +83,7 @@ function knownPageHash(request: Request, hashes: PageHashes | undefined): string
 
 /**
  * The request to send on to the origin: the same request with its validators
- * removed when the page is one the map knows, otherwise the request itself.
+ * removed when the page is in the map, otherwise the request itself.
  */
 export function originRequest(request: Request, hashes: PageHashes | undefined): Request {
   if (knownPageHash(request, hashes) === null) return request;
