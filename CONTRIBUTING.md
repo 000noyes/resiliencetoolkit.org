@@ -50,7 +50,7 @@ Once your domain is attached, two settings on it:
   `node scripts/check-page-etags.mjs https://your-domain`. It fails when a
   page carries no tag or does not answer 304 to its own tag.
 
-Cloudflare Pages auto-deploys on push to your default branch. The site is fully static — no server required.
+Cloudflare Pages auto-deploys on push to your default branch. The pages are static. Arrival counting runs on Cloudflare Pages Functions (`functions/`) with a D1 database.
 
 **4. Service worker cache**
 
