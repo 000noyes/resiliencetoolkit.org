@@ -73,7 +73,7 @@ export type MatchingConfig = z.infer<typeof matchingConfigSchema>;
  * internal PDF anchor (`*.html#N`) which MUST be rendered as a site-internal
  * route (e.g. `/modules/emergency-preparedness/1-5`), not as an external
  * link back to the Drive-hosted PDF. Violating that mapping is a
- * `link_type_mismatch`. See memory `feedback_internal_anchor_to_site_route.md`.
+ * `link_type_mismatch`.
  */
 export const specLinkSchema = z.object({
   url: z.string().min(1),
@@ -328,9 +328,7 @@ export const verifyStatusSchema = z.enum([
   'spec_parse_error',
   'cache_corrupted',
   'drive_id_not_allowed',
-  // Day-5 additions — Step 1a walk-observed failure modes.
-  // See ~/.gstack/projects/000noyes-resiliencetoolkit.org/checkpoints/
-  //     step1a-inventory-walk-complete-20260424.md for the evidence set.
+  // Day-5 additions: failure modes observed in the April 2026 inventory walk.
   'link_drift',              // workbook URL normalizes differently than site URL (same intent)
   'link_missing',            // workbook link absent on site (no substitution)
   'link_type_mismatch',      // workbook internal_route rendered as external (or vice versa)

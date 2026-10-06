@@ -111,5 +111,3 @@ export function scrollToSection(id: string): void {
   // Update URL hash without scrolling (already scrolled)
   history.pushState(null, '', `#${id}`);
 }
-
-export default useActiveSection;

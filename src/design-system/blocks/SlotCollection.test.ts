@@ -138,7 +138,7 @@ describe('SlotCollection static markup', () => {
 // tableId namespace MUST NOT leak into a DataTable's tableId on the same page.
 //
 // Use isolated moduleKey/tableId per test per the project's "DB singleton means
-// tests share state" gotcha (CLAUDE.md Known Gotcha #2).
+// tests share state" gotcha: storage.ts holds one module-scoped connection.
 // ---------------------------------------------------------------------------
 describe('SlotCollection storage round-trip', () => {
   beforeEach(async () => {

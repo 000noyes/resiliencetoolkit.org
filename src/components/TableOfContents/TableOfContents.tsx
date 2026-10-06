@@ -105,5 +105,3 @@ export function TableOfContents({
     </aside>
   );
 }
-
-export default TableOfContents;
