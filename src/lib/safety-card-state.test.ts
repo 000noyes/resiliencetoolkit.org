@@ -46,7 +46,7 @@ describe('base state headlines (the decided sentence table)', () => {
     expect(card.headline).toBe('No saved work on this device yet.');
     const receipt = card.receipt.join(' ');
     expect(receipt).toContain('this device');
-    // Register cut (operator design review): no "keep it safe" hand-holding.
+    // Register cut (design review): no "keep it safe" hand-holding.
     expect(receipt).not.toContain('keep it safe');
   });
 
@@ -226,7 +226,7 @@ describe('overlay contract', () => {
     expect(card.quietLines.length).toBeGreaterThan(0);
     expect(card.quietLines.join(' ')).toContain('clear saved work');
     expect(card.quietLines.join(' ')).toContain('offline');
-    // Register cut (operator design review): the at-risk line no longer dangles.
+    // Register cut (design review): the at-risk line no longer dangles.
     expect(card.quietLines.join(' ')).not.toContain('matters more');
   });
 

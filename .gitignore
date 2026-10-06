@@ -122,6 +122,9 @@ $RECYCLE.BIN/
 *storybook.log
 storybook-static
 
+# Verify reports (pnpm verify writes one JSONL file per run)
+.verify-reports/
+
 # Folders
 docs2/
 legacy_modules/

@@ -449,7 +449,7 @@ describe('Seniors + Disabilities Migration', () => {
       expect(result.todosCopied).toBe(0);
 
       // Marker stays unset so a future import that brings old-key data in
-      // will trigger a real migration pass (regression: P1 #1 from codex).
+      // will trigger a real migration pass.
       const marker = await getMetadata(MIGRATION_MARKER_KEY);
       expect(marker).toBeUndefined();
 
@@ -481,13 +481,13 @@ describe('Seniors + Disabilities Migration', () => {
     });
   });
 
-  describe('atomicity + delta (codex challenge regressions)', () => {
+  describe('atomicity + delta', () => {
     beforeEach(async () => {
       await clearMigrationFixtures();
     });
 
     it('the merged-key target is authoritative — post-migration writes are never overwritten by deprecated-key drift', async () => {
-      // Codex P1 #3 documented limitation: a stale tab still running the
+      // Documented limitation: a stale tab still running the
       // pre-day-21 UI may keep writing to a deprecated moduleKey after
       // migration ran on another tab. Those writes are orphaned. The
       // migration intentionally never re-imports source state once the
@@ -563,7 +563,7 @@ describe('Seniors + Disabilities Migration', () => {
 
       await importAllData(importPayload);
 
-      // Marker must have been cleared by importAllData (codex P1 #1).
+      // Marker must have been cleared by importAllData.
       const markerAfterImport = await getMetadata(MIGRATION_MARKER_KEY);
       expect(markerAfterImport).toBeUndefined();
 
@@ -577,7 +577,7 @@ describe('Seniors + Disabilities Migration', () => {
     });
 
     it('a non-string migration marker is treated as already-set (does not silently re-run)', async () => {
-      // Codex P2 #5: a malformed import or manual IDB poke could leave
+      // A malformed import or manual IDB poke could leave
       // the marker as a non-string value. The guard is `marker !== undefined`,
       // not `isString(marker)`, so we don't silently redo work.
       await setMetadata(MIGRATION_MARKER_KEY, true);
@@ -589,7 +589,7 @@ describe('Seniors + Disabilities Migration', () => {
     });
 
     it('merged-key counts after migration match the union of distinct todoIds across old keys', async () => {
-      // Codex P2 #6: tests should assert merged-key totals after migration.
+      // Tests should assert merged-key totals after migration.
       await saveTodo({
         moduleKey: 'senior-citizens',
         todoId: 'count-shared',
@@ -625,7 +625,7 @@ describe('Seniors + Disabilities Migration', () => {
     });
   });
 
-  describe('notes preservation (codex P2 #4)', () => {
+  describe('notes preservation', () => {
     beforeEach(async () => {
       await clearMigrationFixtures();
     });
@@ -674,7 +674,7 @@ describe('Seniors + Disabilities Migration', () => {
       expect(merged?.notes).toBe(sharedNote);
     });
 
-    it('keeps completed-side state AND preserves the uncompleted-side note (regression for codex v2 P2 #5)', async () => {
+    it('keeps completed-side state AND preserves the uncompleted-side note', async () => {
       // The completed entry's check + completedAt is authoritative, but
       // the uncompleted-side note is also user-visible intent and must
       // not be silently dropped. mergeWinner concats the note onto the
@@ -700,7 +700,7 @@ describe('Seniors + Disabilities Migration', () => {
       expect(merged?.notes).toBe('Need paratransit follow-up');
     });
 
-    it('preserves the older completed note when the later-completedAt winner has no notes (codex v3 test-gap closure)', async () => {
+    it('preserves the older completed note when the later-completedAt winner has no notes', async () => {
       // Two completed entries; the later-completedAt one is the primary
       // per pickMigrationWinner, but the older one carries the only note.
       // mergeWinner must concat that note onto the primary.
@@ -727,7 +727,7 @@ describe('Seniors + Disabilities Migration', () => {
       expect(merged?.notes).toBe('Initial intake note');
     });
 
-    it('dedupes notes that differ only by surrounding whitespace (regression for codex v2 P2 #4)', async () => {
+    it('dedupes notes that differ only by surrounding whitespace', async () => {
       // people-with-disabilities is lexicographically first, so it's the
       // primary. Its note text is preserved verbatim. The trailing-space
       // candidate from senior-citizens is recognized as a trim-duplicate
@@ -752,7 +752,7 @@ describe('Seniors + Disabilities Migration', () => {
     });
   });
 
-  describe('marker hardening (codex v2 P2 #2)', () => {
+  describe('marker hardening', () => {
     beforeEach(async () => {
       await clearMigrationFixtures();
     });
@@ -770,7 +770,7 @@ describe('Seniors + Disabilities Migration', () => {
     });
   });
 
-  describe('concurrent migrations (codex v2 P2 #3)', () => {
+  describe('concurrent migrations', () => {
     beforeEach(async () => {
       await clearMigrationFixtures();
     });
@@ -912,7 +912,7 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
 
   it('1b. preserves user whitespace — slot-1 stores raw legacy bytes (leading/trailing whitespace intact)', async () => {
     // Trim is the emptiness gate only — the user's exact bytes are written
-    // to slot-1 unchanged (codex P2: do not silently mutate user data).
+    // to slot-1 unchanged: never silently mutate user data.
     await seedLegacyRow('  important thing 1\n  important thing 2  ');
 
     const result = await migratePlaceCharacteristicsRow0();
@@ -950,7 +950,7 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     // via a marker-clearing import). The existence of ANY slot proves the user
     // has engaged with the SlotCollection, so the legacy single-cell row-0 is
     // superseded. Migration must NOT inject it into the empty slot-1 (that
-    // would resurrect stale data — codex round-9 P1); it releases the legacy
+    // would resurrect stale data); it releases the legacy
     // row and reports already_run. (Fresh upgraders with no slots still get
     // the recovery — see test 1.)
     await seedLegacyRow('stale legacy that must NOT be injected into slot-1');
@@ -1022,7 +1022,7 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
     expect(result.slotsCopied).toBe(0);
 
     // Marker MUST stay unset so a future import that brings legacy data in
-    // triggers a real migration pass (codex P1 #1 regression precedent).
+    // triggers a real migration pass.
     const marker = await getMetadata(PLACE_CHAR_ROW0_MIGRATION_MARKER);
     expect(marker).toBeUndefined();
 
@@ -1226,7 +1226,7 @@ describe('Place Characteristics Row-0 Slots Migration', () => {
 
   it('12. marker set + row-0 still present — short-circuit does NOT delete it (no blind sweep)', async () => {
     // The marker short-circuit must not blindly delete a lingering row-0: it
-    // could hold divergent, un-recovered content (codex round-7 P1). The
+    // could hold divergent, un-recovered content. The
     // resurrection race is closed at the source instead (DataTable awaits
     // initializeStorage before reading). Here, with the marker set and a
     // row-0 present, the migration short-circuits and leaves row-0 intact.

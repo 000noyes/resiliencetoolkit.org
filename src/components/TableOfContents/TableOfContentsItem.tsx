@@ -78,5 +78,3 @@ export function TableOfContentsItem({
     </li>
   );
 }
-
-export default TableOfContentsItem;

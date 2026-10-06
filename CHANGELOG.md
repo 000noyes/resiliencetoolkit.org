@@ -3,6 +3,30 @@
 Notable changes to ResilienceToolkit.org. Versions have three parts from
 0.1.0 onward; earlier releases used four.
 
+## [0.1.4] - 2026-10-06
+
+### Changed
+- The license page uses the site's own fonts and requests nothing from another website.
+- Pages no longer print storage messages to the browser console.
+
+### Fixed
+- Fixed the missing focus ring on header, footer, breadcrumb and next-chapter links for keyboard users.
+
+### Removed
+- Removed two old analytics screenshots that were reachable under /other/.
+- Checking a box no longer records streak and weekly counts that nothing displayed.
+
+### For contributors
+- `pnpm verify` writes its report to `.verify-reports/` in the repo, which git ignores.
+- `.env.example` lists the real optional bindings: arrival counts and the workshop copy.
+- `pnpm build` sets `NODE_ENV=production`, so a local build matches the live site.
+- `window.debugStorage` is available on the dev server only.
+- Code comments state the reason for a behavior instead of citing review rounds.
+- Removed the unused PlanForm component, the unused storage functions and one unused dev dependency.
+- The dead-code check reports no configuration hints and no duplicate exports.
+- The build now fails when a chapter, section or contents page is missing, or a chapter is nearly empty.
+- The build also fails when the service worker version placeholder or a local dev URL reaches the output.
+
 ## [0.1.3] - 2026-09-22
 
 ### For contributors

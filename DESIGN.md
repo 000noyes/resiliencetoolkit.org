@@ -101,7 +101,7 @@
 - **EditableTable** (226 lines) — Being replaced by DataTable in Template Kit v2. Row ID strategy (`rowId < 1000` = initial) is fragile. Storage split across localStorage + IndexedDB.
 - **Todo.tsx** (305 lines) — ~70 lines inline print CSS should be extracted. 5-second timeout after save has unclear intent.
 - **ChecklistRow.tsx** (173 lines) — Duplicates Todo logic. Not DRY. Missing print styles.
-- **ExternalLink chain** (~378 lines) — Over-engineered modal for "leaving this site" confirmation. Intent unclear. Flagged P3 in CLAUDE.md.
+- **ExternalLink chain** (~378 lines) — Over-engineered modal for "leaving this site" confirmation. Intent unclear. Low priority.
 - **UserProgressDashboard** (570 lines) — Hardcoded module names/URLs. Event cascade risk on storage changes.
 
 ### Notice strips (single-slot system)
@@ -163,7 +163,7 @@ border), no animation, removed by the reload itself.
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-04-06 | Initial design system created | Codified from existing base.css + tailwind.config.mjs via /design-consultation |
+| 2026-04-06 | Initial design system created | Codified from existing base.css + tailwind.config.mjs |
 | 2026-04-06 | Collapsed teal table-accent into green secondary | Teal (hue 168.9) and green (hue 156.7) only 12 degrees apart in oklch — barely distinguishable. One secondary color is cleaner. |
 | 2026-04-06 | Keep Outfit as sole typeface | Already loaded, well-suited, supports tabular figures. No reason to add font weight. |
 | 2026-04-06 | Warm Industrial aesthetic (not government blue) | RT is a community tool, not a government portal. Orange warmth differentiates from Ready.gov/FEMA institutional blue. |
