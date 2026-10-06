@@ -104,3 +104,12 @@ the safety answer and crushed in the narrow rail. It is replaced by a single qui
 |------|-------------|
 | `src/components/FeedbackWidget.tsx` | The "Have Questions?" pill and its mailto modal are superseded by `CornerPanel.tsx`, whose Questions door carries the same modal and destination |
 | `src/components/FeedbackWidgetWrapper.tsx` | Renderer-probe shield for the removed pill; `CornerPanelWrapper.tsx` plays the same role for the panel |
+
+## 2026-10-06: unused code sweep
+
+| File or export | Why removed |
+|------|-------------|
+| `src/components/PlanForm.tsx` | No page mounts it. The verifier still recognizes `<PlanForm>` in page source, and the form store (`saveFormField`, `getFormData`) stays, so a future form can be wired again. Recover from git history. |
+| `src/lib/planform.test.ts` | Tested copies of PlanForm's helpers, not the component. The form round-trip stays covered in `src/lib/storage.test.ts`. |
+| `storage.ts`: `getStreakData`, `updateStreak`, `getWeeklyProgress`, `incrementWeeklyProgress`, `setWeeklyGoal` | The streak and goal card was retired on 2026-07-18; checking a box still wrote streak and weekly counts that nothing read. Existing values stay in the metadata store and in backups. |
+| `storage.ts`: `getBookmarkedModules`, `toggleBookmark`, `getRecentActivity`, `getModuleData` | No caller. Existing bookmark values stay in the metadata store. |
