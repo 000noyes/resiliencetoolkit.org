@@ -78,7 +78,7 @@ then, run `pnpm knip` locally for the full report (files + exports + deps).
 
 ## 2026-07-18 — dashboard design-review fix pass
 
-Operator design review of the built dashboard overrode parts of the ratified
+My design review of the built dashboard overrode parts of the agreed
 spec. Two surfaces were pulled entirely (each due its own redesign later), which
 orphaned their files under the files-only `knip` gate.
 

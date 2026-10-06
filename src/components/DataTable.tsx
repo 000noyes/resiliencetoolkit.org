@@ -61,7 +61,7 @@ export interface DataTableProps {
   /**
    * Source-fidelity citation. Not rendered. Read by /verify-against-source to
    * trace column headers to a spec in docs/source-specs/ or a PDF in
-   * public/toolkit/ or rt-templates/. See .claude/skills/verify-against-source/SKILL.md.
+   * public/toolkit/ or rt-templates/. See docs/source-specs/README.md.
    */
   source?: string;
   page?: string;
@@ -73,7 +73,7 @@ export interface DataTableProps {
    * until it succeeds (or after a re-import that resurrects one) the stale row
    * could otherwise render as an editable duplicate whose edits are later
    * discarded by the migration. Hiding it here closes that path regardless of
-   * migration state (codex round-8 P1).
+   * migration state.
    */
   hiddenRowIds?: string[];
 }
@@ -578,14 +578,14 @@ export default function DataTable({
       // Drop deprecated rows that must never render (e.g. place-characteristics
       // row-0, owned by the SlotCollection post-restore). Filtering here means
       // a stale/resurrected row is never editable, regardless of whether its
-      // one-shot migration has run yet (codex round-8 P1). The empty-check
+      // one-shot migration has run yet. The empty-check
       // below uses the VISIBLE set so a table holding only hidden rows still
       // re-seeds its initialRows instead of rendering blank.
       //
       // initialRows is filtered the SAME way: a hidden rowId present in both
       // savedRows and initialRows must not slip back in via the seed path, or
       // the "never rendered/edited" contract would break on a cleared table
-      // (codex round-9 P2). Hidden rows therefore never enter `rows` state, so
+      //. Hidden rows therefore never enter `rows` state, so
       // the edit/delete/add handlers — which only operate on `rows` — can
       // never touch them; no separate handler guard is needed.
       const savedRows = hiddenRowIds?.length

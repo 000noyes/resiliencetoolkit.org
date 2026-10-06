@@ -62,7 +62,7 @@ describe('initializeStorage', () => {
     const result = await initializeStorage();
     expect(result.migrationsOk).toBe(true);
     // Per-migration map lets a component gate on just the migration its data
-    // depends on, instead of the global flag (codex round-6 P2).
+    // depends on, instead of the global flag.
     expect(result.migrations.placeCharacteristicsRow0).toBe(true);
     expect(result.migrations.seniorsAndDisabilities).toBe(true);
   });

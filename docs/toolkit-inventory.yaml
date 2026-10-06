@@ -16,8 +16,7 @@
 # structural-fidelity risks, and missing UI affordances the workbook implies.
 # Each flag records its per-module decision (accepted/deferred/rejected + scope).
 #
-# Source-of-truth memory: project_rt_source_truth_pdfs.md
-# Plan artifact: vscode-feat-step1a-priority-ep-eng-review-test-plan-20260421.md §2a
+# Source of truth: the workbook PDF in public/toolkit/.
 
 meta:
   walk_started: "2026-04-21"
@@ -1025,7 +1024,6 @@ modules:
           and 'link drop' (anchor wrapper missing). First occurrence
           on 1-5; retro-audit 1-1..1-4 at walk end to catch any other
           instances silently translated during first-walk methodology.
-          Memory: feedback_internal_anchor_to_site_route.md
         scope: 1a
         retro_audit_required: true
         implication_for_linksmatch: >
@@ -1557,7 +1555,7 @@ modules:
       file: src/lib/storage.ts
       function: migrateSeniorsAndDisabilities
       marker_key: migration_seniors_and_disabilities_v1
-      tests: src/lib/data-preservation.test.ts             # 27 tests, 3 codex challenge rounds (clean on round 3)
+      tests: src/lib/data-preservation.test.ts             # 27 tests, 3 external review rounds (clean on round 3)
       semantics: target_authoritative                      # target wins on existing-target collision
       notes_policy: concat_distinct_with_separator         # \n\n---\n\n; trim-based dedup
       deprecated_keys: [senior-citizens, people-with-disabilities]
@@ -1671,7 +1669,7 @@ modules:
       pre-merge user check-state stored under the deprecated moduleKeys
       senior-citizens + people-with-disabilities into the canonical
       seniors-and-disabilities. Highest-risk gate of the closeout sprint
-      per R5/R6; codex challenge cadence day per decision p (R4).
+      per R5/R6; an external review day per decision p (R4).
       Migration code: src/lib/storage.ts migrateSeniorsAndDisabilities
       (idempotent via metadata marker `migration_seniors_and_disabilities_v1`,
       target-authoritative semantics, mergeWinner with notes-concat across
@@ -1683,7 +1681,7 @@ modules:
       preservation cases including dual-notes concat, whitespace dedup,
       completed-vs-uncompleted note preservation, completed-vs-completed
       asymmetric notes, marker hardening for null/non-string values, and
-      concurrent migrations). Codex challenge rounds: 1 surfaced 6 findings
+      concurrent migrations). External review rounds: 1 surfaced 6 findings
       (3 P1 + 3 P2), all addressed; round 2 surfaced 5 (1 P1 + 4 P2), all
       addressed; round 3 CLEAN. Documented limitations: stale-tab writes
       to deprecated keys after migration are orphaned (target-authoritative
@@ -2405,8 +2403,7 @@ modules:
       checklist content with movement-canon material. User directive:
       restore to workbook strict, but ARCHIVE all deleted site content
       into docs/site-inventions-archive.yaml as foundation for future
-      toolkit growth mechanisms. Memory saved:
-      feedback_site_inventions_archive.md. This decision generalizes
+      toolkit growth mechanisms. This decision generalizes
       to ALL previously-flagged class-c site inventions (1-5 row
       header, 1-8 URL subs, 1-8 service animals item, 1-8 meta-note,
       1-10 AHS/VDH URL, etc.) — all should be archived not deleted.
@@ -2461,9 +2458,9 @@ modules:
 
       Gates: vitest 486/486 green; astro 0 errors / 0 warnings / 10
       pre-existing hints; verify 22 entries / 22 pass / 0 fail
-      (was 21 entries entering session; +1 for new 1-12 spec). NO codex
-      this commit (decision p — mechanical-edit cadence; days 23-28
-      skip codex). Running total now 116 / 142 across 14 modules; 1-12
+      (was 21 entries entering session; +1 for new 1-12 spec). No external
+      review this commit (decision p: mechanical-edit cadence; days 23-28
+      skip it). Running total now 116 / 142 across 14 modules; 1-12
       contributes 0 unresolved class-c. Catastrophic-content-divergence
       pattern resolved end-to-end — the precedent for any 2-x module
       that exhibits the same wholesale-replacement shape.
@@ -2760,8 +2757,8 @@ modules:
       mitigation — first h2 "Community food production" is fragmented in
       pdftotext); citation comment placed AFTER frontmatter (R9). Gates:
       vitest 486/486 green, astro 0/0/10 hints, verify 25 entries exit 0
-      ALL pass (2-1 status: pass). NO codex (decision p — mechanical-edit
-      cadence; days 23-28 skip codex).
+      ALL pass (2-1 status: pass). No external review (decision p:
+      mechanical-edit cadence; days 23-28 skip it).
 
   2-2:
     title: "Shared Tools"

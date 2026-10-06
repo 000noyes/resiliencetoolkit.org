@@ -2,7 +2,6 @@
 import { parseArgs } from 'node:util';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import { homedir } from 'node:os';
 import {
   runVerify,
   type RunVerifyOptions,
@@ -48,16 +47,13 @@ export function makeSelector(values: CliValues): TargetSelector {
   return { kind: 'all' };
 }
 
-export function defaultReportPath(): string {
+/**
+ * Reports land inside the repo in `.verify-reports/` (gitignored), one JSONL
+ * file per run, named by an ISO timestamp.
+ */
+export function defaultReportPath(cwd: string = process.cwd()): string {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  return join(
-    homedir(),
-    '.gstack',
-    'projects',
-    'resiliencetoolkit-org',
-    'verify-reports',
-    `${stamp}.jsonl`,
-  );
+  return join(cwd, '.verify-reports', `${stamp}.jsonl`);
 }
 
 export interface MainOptions {
@@ -87,7 +83,7 @@ export async function main(opts: MainOptions = {}): Promise<number> {
     failOnNeedsReview: Boolean(values['fail-on-needs-review']),
   });
 
-  const reportPath = values.report ? resolve(values.report) : defaultReportPath();
+  const reportPath = values.report ? resolve(values.report) : defaultReportPath(cwd);
   await mkdir(dirname(reportPath), { recursive: true });
   const body =
     result.entries.map((e) => JSON.stringify(e)).join('\n') +

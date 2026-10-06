@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { load } from 'js-yaml';
 
@@ -7,18 +7,13 @@ const ROOT = resolve(__dirname, '../..');
 
 const PACKAGE_JSON = resolve(ROOT, 'package.json');
 const WORKFLOW = resolve(ROOT, '.github/workflows/verify.yml');
-const SKILL = resolve(ROOT, '.claude/skills/verify-against-source/SKILL.md');
-// SKILL.md lives under .claude/, which is gitignored — present locally for
-// authors with the tooling installed, absent in CI. The three SKILL-asserting
-// tests skip when the file is missing instead of failing CI.
-const SKILL_PRESENT = existsSync(SKILL);
 
 /**
- * Axis 6 of the locked eng-review spec: all four invocation paths MUST be
- * three-line thunks calling scripts/verify-against-source.ts with no logic of
- * their own. Why: any per-invocation logic (conditional skips, multi-step
+ * Every invocation path (the verify script, the prebuild hook, the CI step)
+ * MUST be a short thunk calling scripts/verify-against-source.ts with no logic
+ * of its own. Why: any per-invocation logic (conditional skips, multi-step
  * setup embedded in the thunk, alternative entrypoints) forks the verify
- * behavior between local and CI, which is exactly the drift the verify skill
+ * behavior between local and CI, which is exactly the drift the verifier
  * exists to prevent.
  *
  * This test file mixes exact-string equality (for short deterministic thunks)
@@ -95,48 +90,6 @@ describe('verify-against-source invocation purity', () => {
         }
       }
     });
-  });
-
-  it.skipIf(!SKILL_PRESENT)('SKILL.md inline code spans contain no shell metacharacters that would enable chaining', () => {
-    const skill = readFileSync(SKILL, 'utf-8');
-    // Only inspect backtick-wrapped commands (inline code + fenced blocks with
-    // shell invocations); the surrounding markdown table separators use `|`
-    // legitimately and are not command text.
-    const inlineCode = [...skill.matchAll(/`([^`\n]+)`/g)].map((m) => m[1]);
-    const fencedShell = [...skill.matchAll(/```(?:bash|sh)\n([\s\S]*?)\n```/g)].flatMap((m) =>
-      m[1].split('\n').map((l) => l.replace(/\s*\\$/, '').trim()).filter(Boolean),
-    );
-    const commands = [...inlineCode, ...fencedShell].filter((c) =>
-      /pnpm\s|tsx\s|scaffold-spec/.test(c),
-    );
-    expect(commands.length, 'expected at least one documented command').toBeGreaterThan(0);
-    for (const c of commands) {
-      expect(c, `SKILL.md command contains shell metachar: ${c}`).not.toMatch(SHELL_METACHAR);
-    }
-  });
-
-  it.skipIf(!SKILL_PRESENT)('SKILL.md has frontmatter with name = verify-against-source', () => {
-    const skill = readFileSync(SKILL, 'utf-8');
-    const fmMatch = /^---\n([\s\S]*?)\n---/.exec(skill);
-    expect(fmMatch, 'SKILL.md missing YAML frontmatter').not.toBeNull();
-    const fm = load(fmMatch![1]) as { name?: string };
-    expect(fm.name).toBe('verify-against-source');
-  });
-
-  it.skipIf(!SKILL_PRESENT)('all four invocation paths point at the same CLI entrypoint', () => {
-    const pkg = JSON.parse(readFileSync(PACKAGE_JSON, 'utf-8'));
-    const wf = load(readFileSync(WORKFLOW, 'utf-8')) as {
-      jobs: { verify: { steps: Array<{ run?: string }> } };
-    };
-    const skill = readFileSync(SKILL, 'utf-8');
-
-    expect(pkg.scripts.verify).toContain('scripts/verify-against-source.ts');
-    expect(pkg.scripts.prebuild).toContain('pnpm verify');
-    const ciStep = (wf.jobs.verify.steps ?? []).find(
-      (s) => typeof s.run === 'string' && /pnpm verify/.test(s.run),
-    );
-    expect(ciStep?.run).toContain('pnpm verify');
-    expect(skill).toContain('pnpm verify');
   });
 
   it('M2 regression: known evasions would fail the exact-equality guard', () => {

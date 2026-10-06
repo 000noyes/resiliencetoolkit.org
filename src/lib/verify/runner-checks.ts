@@ -1,7 +1,6 @@
 /**
- * Day-5 runner checks (part of Step 1a — see checkpoint
- * ~/.gstack/projects/000noyes-resiliencetoolkit.org/checkpoints/
- *   step1a-inventory-walk-complete-20260424.md).
+ * Day-5 runner checks, added after the April 2026 inventory walk of every
+ * page against the workbook.
  *
  * Each check is a pure function: given a spec, the wired component's source,
  * and the source file path, return zero or more VerifyReportEntry. The runner
@@ -329,7 +328,7 @@ function normalizeHeading(s: string): string {
  * path does NOT short-circuit on `tables.length === 0` — a spec that names a
  * tableId is asserting "this file must render a DataTable with this id";
  * deleting every DataTable from the file must surface as `key_drift`, not
- * silently pass (codex-review finding on day-15-i, fixed in follow-up).
+ * silently pass.
  */
 export function keysMatch(ctx: CheckContext): VerifyReportEntry[] {
   const fields = collectSpecFields(ctx.spec);
@@ -619,8 +618,8 @@ export function structuralFlattenMatches(
  *     differences) annoy authors and erode trust.
  *   - False negatives (invented content slipping through) silently violate
  *     the class-c firewall — the one direction we cannot tolerate.
- *   - See memory `feedback_inventory_walk_paragraph_diff.md` — paragraph
- *     drift is the walk-exposed failure mode the original plan under-weighted.
+ *   - Paragraph drift is the failure mode the inventory walk exposed and the
+ *     original plan under-weighted.
  *
  * Walk cases (all direction: site-only, no workbook analogue):
  *   - 1-8 invented "Note: Much of the guidance for seniors..." meta-note.
