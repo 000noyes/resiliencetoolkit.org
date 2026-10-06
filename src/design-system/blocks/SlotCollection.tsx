@@ -33,7 +33,7 @@ export interface SlotCollectionProps {
    * Name of the one-shot migration (key in initializeStorage's `migrations`
    * map) that populates this collection's data. If set, editing is gated on
    * THAT migration succeeding rather than on all migrations — so an unrelated
-   * migration's failure does not disable this collection (codex round-6 P2).
+   * migration's failure does not disable this collection.
    */
   requiredMigration?: string;
 }
@@ -65,7 +65,7 @@ export default function SlotCollection({
   // Set when migrations failed or the slot read threw. Keeps textareas
   // disabled so the user cannot type into slots whose backing data is
   // unknown — typing now and persisting on blur could clobber legacy bytes
-  // a retried migration would otherwise recover (round-5 P1 #2).
+  // a retried migration would otherwise recover.
   const [loadError, setLoadError] = useState(false);
   const savedValuesRef = useRef<string[]>(Array(count).fill(''));
   const valuesRef = useRef<string[]>(Array(count).fill(''));
@@ -76,7 +76,7 @@ export default function SlotCollection({
   // Count of IDB writes currently IN FLIGHT per slot. The no-op guard in
   // commit() may only skip the write when nothing is in flight; otherwise an
   // in-flight save of a since-discarded value lands with no later restoring
-  // write, and reload resurrects the discarded value (codex round-3 P1).
+  // write, and reload resurrects the discarded value.
   const inFlightSavesRef = useRef<Map<string, number>>(new Map());
   const containerRef = useRef<HTMLFieldSetElement>(null);
 
@@ -104,7 +104,7 @@ export default function SlotCollection({
         // Fail-safe: a declared migration must have EXPLICITLY succeeded
         // (=== true). A missing key — a typo or a migration that never
         // registered a result — is treated as failure so the safety gate
-        // cannot silently vanish if the prop drifts (codex round-7 P3).
+        // cannot silently vanish if the prop drifts.
         let migrationFailed: boolean;
         if (requiredMigration) {
           const status = migrations[requiredMigration];
@@ -168,7 +168,7 @@ export default function SlotCollection({
     // migratePlaceCharacteristicsRow0 treats slot-1 EXISTENCE as authoritative,
     // so an accidental empty row would later cause it to delete un-recovered
     // legacy bytes on a re-import. Only a real content change persists; this
-    // keeps "slot exists" meaning "the user actually edited it" (round-5 P1 #1).
+    // keeps "slot exists" meaning "the user actually edited it".
     const rowId = slotRowId(slotIndex + 1);
 
     if (

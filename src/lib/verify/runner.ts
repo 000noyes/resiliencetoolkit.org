@@ -62,9 +62,9 @@ const INFRA_STATUSES: ReadonlySet<VerifyStatus> = new Set(['cache_corrupted']);
  * and source_drift are intentionally excluded — they are soft statuses that
  * only fail the run under --fail-on-needs-review (see SOFT_FAIL_STATUSES).
  *
- * Why source_drift is soft: per the ResilienceToolkit constitution, raw-byte
- * drift alone (same normalized text) is an advisory — the operator should
- * re-scaffold or update the registry, but the rendered content is unchanged.
+ * Why source_drift is soft: raw-byte drift alone (same normalized text) is
+ * an advisory. The maintainer should re-scaffold or update the registry,
+ * but the rendered content is unchanged.
  * Only content_drift (normalized text moved) is a hard fail.
  */
 const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
@@ -94,7 +94,7 @@ const FAIL_STATUSES: ReadonlySet<VerifyStatus> = new Set([
 ]);
 
 /**
- * Statuses that are soft by default and fail only when the operator opts in
+ * Statuses that are soft by default and fail only when the maintainer opts in
  * via --fail-on-needs-review. source_drift sits alongside needs_human_review
  * because both are "human should look at this, but the build is not broken".
  */
@@ -276,7 +276,7 @@ async function verifySpecMd(
   //   source_hash drift alone (content_hash unchanged) = soft advisory.
   // Both 'fresh' and 'source_drift' reach here; they branch on the
   // content_hash comparison. 'source_drift' + matching content_hash degrades
-  // to needs-review (the operator should re-register, but rendered content
+  // to needs-review (the maintainer should re-register, but rendered content
   // is unchanged). 'source_drift' + drifted content_hash escalates to
   // content_drift — the source_drift alone rule does NOT apply.
   if (freshness.state === 'fresh' || freshness.state === 'source_drift') {

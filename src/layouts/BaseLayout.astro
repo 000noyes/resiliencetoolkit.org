@@ -203,22 +203,23 @@ const isWorkshop = process.env.WORKSHOP === '1';
       // Run immediately (IIFE - Immediately Invoked Function Expression)
       (async () => {
         try {
-          console.log('[BaseLayout] Initializing local storage (no auth)...');
-
           // Always initialize in local-only mode (also pre-warms IndexedDB)
           const { userId } = await initializeStorage();
-          console.log('[BaseLayout] Initialized storage:', { userId });
 
-          // Expose debug utilities on window for developer console access
-          (window as any).debugStorage = {
-            healthCheck: verifyStorage,
-            async inspect(moduleKey: string) {
-              const todos = await getModuleTodos(moduleKey);
-              console.table(todos);
-              return todos;
-            },
-            exportAll: exportAllData,
-          };
+          // Dev server only: log the init and expose debug utilities on
+          // window for developer console access. Production builds drop both.
+          if (import.meta.env.DEV) {
+            console.log('[BaseLayout] Initialized storage:', { userId });
+            (window as any).debugStorage = {
+              healthCheck: verifyStorage,
+              async inspect(moduleKey: string) {
+                const todos = await getModuleTodos(moduleKey);
+                console.table(todos);
+                return todos;
+              },
+              exportAll: exportAllData,
+            };
+          }
         } catch (error) {
           console.error('[BaseLayout] Failed to initialize storage:', error);
         }
