@@ -64,8 +64,8 @@ notes: |
   Identify → site-internal route: the workbook anchors the in-prose word
   "Identify" (in "Identify local restaurants or people to bring meals to the
   shelter") to an intra-PDF page anchor pointing back to the 1.2 Food and water
-  section. Per inventory decision 1a_replace_with_internal_site_link and the
-  feedback_internal_anchor_to_site_route memory, this is rendered as a
+  section. Per inventory decision 1a_replace_with_internal_site_link (a
+  workbook internal anchor becomes a site route), this is rendered as a
   site-internal `/modules/emergency-preparedness/1-2` link, NOT as an
   ExternalLink to the 14BP-QH2d Google Doc the site previously substituted.
   spec-link `kind: internal_route` engages linksMatch's prefix-match path so

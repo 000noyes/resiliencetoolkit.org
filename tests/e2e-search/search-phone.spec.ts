@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Phones: the header lens left of the burger opens the search sheet in
- * the ratified sheet grammar (SE2, SR8, SR11): input pinned at the top,
+ * the agreed sheet grammar (SE2, SR8, SR11): input pinned at the top,
  * 44px targets, typed text preserved on dismissal, exactly one history
  * entry so back closes it (ES6), picks are plain navigations, and the
  * lens and the burger close each other. Search never joins the bar.

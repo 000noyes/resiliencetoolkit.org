@@ -23,7 +23,7 @@ export interface PlanFormProps {
   /**
    * Source-fidelity citation. Not rendered. Read by /verify-against-source
    * to trace user-facing labels to a spec in docs/source-specs/ or a PDF
-   * in public/toolkit/ or rt-templates/. See .claude/skills/verify-against-source/SKILL.md.
+   * in public/toolkit/ or rt-templates/. See docs/source-specs/README.md.
    */
   source?: string;
   page?: string;

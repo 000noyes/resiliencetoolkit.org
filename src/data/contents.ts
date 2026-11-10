@@ -38,8 +38,8 @@ export interface Chapter {
   /**
    * The printed toolkit's own page range for the reader-facing citation,
    * e.g. "35-36" (the workbook's footer numbering). Renders ONLY once
-   * printedPagesConfirmed is true: the extracted values await the
-   * operator's confirmation against the physical copy.
+   * printedPagesConfirmed is true: the extracted values await
+   * confirmation against the physical copy.
    */
   printedPages?: string;
   printedPagesConfirmed?: boolean;
@@ -499,7 +499,7 @@ export function treeRows(): TreeRow[] {
 
 /**
  * The reader-facing page-level citation (DR17), one string per chapter,
- * from the one model field. Format operator-signed: single pages read
+ * from the one model field. Format: single pages read
  * "page N.", ranges "pages N to N." Returns null until the chapter's
  * printed range is confirmed; the render stays dark rather than shipping
  * an unconfirmed number.

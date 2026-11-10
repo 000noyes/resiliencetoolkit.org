@@ -31,7 +31,7 @@ export interface StorageHealth {
 }
 
 /**
- * Structured notice copy (LOCKED at /plan-design-review, 2026-07-15). Each
+ * Structured notice copy (locked in the 2026-07-15 design review). Each
  * state is a 500-weight lead phrase + a body sentence, with an optional action
  * link. The banner renders lead and body separately (the lead carries the
  * severity, since icons were removed); `message` composes them for the

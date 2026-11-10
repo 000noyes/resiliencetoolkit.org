@@ -1,8 +1,7 @@
 # docs/site-inventions-archive.yaml
 #
 # Archive of site-invented (class-c) content removed during Step 1a strict
-# workbook-fidelity restoration. Per feedback_site_inventions_archive.md —
-# class-c content is NOT deleted; it is preserved here as the substrate for
+# workbook-fidelity restoration. Class-c content is NOT deleted; it is preserved here as the substrate for
 # future "toolkit growth" features (topic-branch alt-URLs, movement-canon
 # supplements, community-submitted additions).
 #
@@ -692,8 +691,7 @@ categories:
         Workbook context: anchor wraps "Identify" in a workbook intra-PDF
         page anchor that cross-references Section 1.2 Food and water.
         Restored on site as <a href="/modules/emergency-preparedness/1-2">
-        per the locked feedback_internal_anchor_to_site_route translation
-        rule.
+        per the rule that a workbook internal anchor becomes a site route.
       inferred_source: workbook page 23/45 internal PDF anchor → 1.2 page
       date_removed: '2026-04-26'
       removed_in_commit: 'feat(1-5): source spec + wiring (day 11)'
@@ -701,7 +699,7 @@ categories:
         Link-type substitution: site rendered a workbook intra-PDF page
         anchor as an ExternalLink to the 14BP-QH2d Local Resilience master
         Google Doc instead of as a site-internal /modules/emergency-preparedness/1-2
-        route. Per inventory line 1004-1014 + feedback_internal_anchor_to_site_route
+        route. Per inventory line 1004-1014 (internal anchor becomes a site route)
         decision: 1a_replace_with_site_internal_link. The 14BP-QH2d doc is
         the Local Resilience master Google Doc cited 39× in master-workbook
         TOC and used in src/data/downloads.ts for the Downloads page; site

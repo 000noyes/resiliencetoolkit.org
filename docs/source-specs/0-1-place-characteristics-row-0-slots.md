@@ -69,7 +69,7 @@ notes: |
   (NOT periods). Workbook p10 renders the 3-slot prompt as a counted
   enumeration with colon glyphs; the SlotCollection component renders
   <label> children matching the workbook glyphs. Source-fidelity HARD
-  INVARIANT (CLAUDE.md Architecture Rule 3).
+  INVARIANT: the site renders the workbook's text, never an invented one.
 
   matching.require_cluster: false — same single-token cluster rationale as
   the sibling 0-1-place-characteristics.md (single placeholder anchor;

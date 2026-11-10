@@ -93,7 +93,7 @@ const roundId = roundMatch ? roundMatch[1] : null;
 // The page-level citation (DR17): a static in-flow line so print and
 // no-JS readers keep their provenance (ER7); the Footnotes tenant
 // presents the same string from the same field. Null until the chapter's
-// printed range is operator-confirmed.
+// printed range is confirmed against the printed copy.
 const citation = sectionData ? chapterCitation(sectionData.number) : null;
 
 // A section page renders its body once inside ReadingPage (the heading

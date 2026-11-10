@@ -82,10 +82,10 @@ describe('cli: makeSelector', () => {
 });
 
 describe('cli: defaultReportPath', () => {
-  it('points into ~/.gstack/projects/resiliencetoolkit-org/verify-reports with an ISO stamp', () => {
-    const p = defaultReportPath();
+  it('points into <cwd>/.verify-reports with an ISO stamp', () => {
+    const p = defaultReportPath('/repo');
     expect(p).toMatch(
-      /\.gstack\/projects\/resiliencetoolkit-org\/verify-reports\/\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z\.jsonl$/,
+      /^\/repo\/\.verify-reports\/\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z\.jsonl$/,
     );
   });
 });

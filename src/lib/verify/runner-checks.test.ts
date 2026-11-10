@@ -434,8 +434,8 @@ describe('runner-checks: keysMatch', () => {
     expect(out[0].message).toMatch(/no matching DataTable/);
   });
 
-  it('tableId firewall: spec.tableId set + zero DataTables in file → key_drift (codex P2 fix)', () => {
-    // Codex review on day-15-i flagged that the `tables.length === 0`
+  it('tableId firewall: spec.tableId set + zero DataTables in file → key_drift', () => {
+    // A review on day 15 found that the `tables.length === 0`
     // short-circuit silently passed when a tableId-bearing spec's file had
     // every DataTable removed — undermining the rename/removal guard the
     // schema contract is supposed to provide. This test pins the fix:

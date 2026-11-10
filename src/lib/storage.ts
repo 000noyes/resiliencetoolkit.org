@@ -1536,8 +1536,7 @@ export async function migrateSeniorsAndDisabilities(): Promise<SeniorsAndDisabil
  *                      one slot under the new SlotCollection (target-authoritative).
  *   - `no_data`      — no legacy text to lift; marker NOT set so a future
  *                      `importAllData` that brings legacy data in still
- *                      triggers a real migration (codex P1 #1 regression
- *                      precedent).
+ *                      triggers a real migration.
  */
 export interface PlaceCharRow0MigrationResult {
   status: 'already_run' | 'migrated' | 'no_data';
@@ -1601,7 +1600,7 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
     // the source — DataTable.loadData now awaits initializeStorage() before
     // reading, so it reads post-migration state and never renders row-0.
     // A blind sweep would risk deleting a row-0 that holds divergent,
-    // un-recovered content (codex round-7 P1), so it is intentionally absent.
+    // un-recovered content, so it is intentionally absent.
     await tx.done;
     return { status: 'already_run', slotsCopied: 0 };
   }
@@ -1635,8 +1634,8 @@ export async function migratePlaceCharacteristicsRow0(): Promise<PlaceCharRow0Mi
   // so the legacy single-cell row-0 is superseded. Injecting legacy bytes here
   // would resurrect stale data — e.g. a deliberately-cleared slot-1
   // ({ value: '' }), or slot-2/slot-3 present without slot-1 after an import
-  // that cleared the marker alongside a re-imported legacy row-0 (codex
-  // round-9 P1). Checking only slot-1 missed the slot-2/3-without-slot-1 case.
+  // that cleared the marker alongside a re-imported legacy row-0.
+  // Checking only slot-1 missed the slot-2/3-without-slot-1 case.
   const hasAnySlot = existingSlots.some((r) => /^slot-\d+$/.test(r.rowId));
 
   const now = new Date().toISOString();
@@ -1819,7 +1818,7 @@ export async function initializeStorage(): Promise<{
    * SlotCollection — can refuse to enable editing until migrations are
    * known-complete. Without this, a transient migration failure would let a
    * user type into an empty slot and clobber un-recovered legacy bytes when
-   * the migration retries on the next load (codex round-5 P1 #2).
+   * the migration retries on the next load.
    */
   migrationsOk: boolean;
   /**
@@ -1827,7 +1826,7 @@ export async function initializeStorage(): Promise<{
    * caller should gate on the SPECIFIC migration its data depends on (e.g.
    * SlotCollection gates on `placeCharacteristicsRow0`) rather than the
    * global migrationsOk, so an unrelated migration's failure does not
-   * needlessly disable an otherwise-healthy component (codex round-6 P2).
+   * needlessly disable an otherwise-healthy component.
    */
   migrations: Record<string, boolean>;
 }> {
@@ -1919,7 +1918,7 @@ export async function initializeStorage(): Promise<{
 
 /**
  * Verify storage health - checks DB connection, stores, and record counts.
- * Can be called from browser console via `debugStorage.healthCheck()`
+ * On the dev server, call it from the browser console via `debugStorage.healthCheck()`
  * or used in automated tests.
  */
 export async function verifyStorage(): Promise<{

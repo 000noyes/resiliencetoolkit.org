@@ -269,8 +269,8 @@ export type SourceFreshness =
  * citation.page (or undefined for whole-PDF and raw-PDF citations); the
  * registry is keyed by registryPageKey(page) under the PDF entry's
  * content_hashes record. A registered PDF without a content_hash for the
- * requested page is treated as `unregistered` — the operator must run
- * scaffold-spec on that page before verify can drift-check it.
+ * requested page is treated as `unregistered`: run scaffold-spec on that
+ * page before verify can drift-check it.
  *
  * When `page` is not provided (raw-PDF citation, no spec), the lookup
  * falls back to ANY content_hash on the entry: raw citations only care
