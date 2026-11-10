@@ -8,7 +8,7 @@
     "start": "astro dev",
     "prebuild": "pnpm verify",
     "build": "astro check && NODE_ENV=production astro build && npx pagefind --site dist",
-    "postbuild": "node scripts/generate-sw-precache.mjs && node scripts/append-workshop-headers.mjs",
+    "postbuild": "node scripts/generate-sw-precache.mjs && node scripts/append-workshop-headers.mjs && tsx scripts/check-build-output.ts",
     "preview": "astro preview",
     "test:offline": "playwright test --config playwright.offline.config.ts",
     "test:workshop": "playwright test --config playwright.workshop.config.ts",

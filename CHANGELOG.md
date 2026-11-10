@@ -24,6 +24,8 @@ Notable changes to ResilienceToolkit.org. Versions have three parts from
 - Code comments state the reason for a behavior instead of citing review rounds.
 - Removed the unused PlanForm component, the unused storage functions and one unused dev dependency.
 - The dead-code check reports no configuration hints and no duplicate exports.
+- The build now fails when a chapter, section or contents page is missing, or a chapter is nearly empty.
+- The build also fails when the service worker version placeholder or a local dev URL reaches the output.
 
 ## [0.1.3] - 2026-09-22
 
