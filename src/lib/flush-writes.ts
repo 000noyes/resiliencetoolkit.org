@@ -9,8 +9,8 @@
  * hide while an update is pending), this flush converts pending state into
  * committed state:
  *
- * 1. Blur the focused editor. For the blur-save editors (PlanForm,
- *    SlotCollection) that IS the complete flush, and on Safari a button tap
+ * 1. Blur the focused editor. For the blur-save editor (SlotCollection)
+ *    that IS the complete flush, and on Safari a button tap
  *    does not necessarily blur a focused textarea, so the blur must be
  *    programmatic.
  * 2. Dispatch FLUSH_WRITES_EVENT with a `pending` collector in its detail.

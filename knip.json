@@ -5,11 +5,7 @@
     "scripts/**/*.{ts,mjs}",
     "tests/**/*.{ts,tsx}",
     "functions/api/**/*.ts",
-    "functions/_middleware.ts",
-    "playwright.offline.config.ts",
-    "playwright.workshop.config.ts",
-    "playwright.layout.config.ts",
-    "playwright.search.config.ts"
+    "functions/_middleware.ts"
   ],
   "project": [
     "src/**/*.{astro,ts,tsx}",
@@ -17,10 +13,6 @@
     "functions/**/*.ts"
   ],
   "ignore": [
-    "src/components/PlanForm.tsx",
     "src/components/reading/ColophonLine.astro"
-  ],
-  "ignoreUnresolved": [
-    "/pagefind/pagefind.js"
   ]
 }

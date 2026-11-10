@@ -256,5 +256,3 @@ export function useTableOfContents(
 
   return { entries, rescan };
 }
-
-export default useTableOfContents;

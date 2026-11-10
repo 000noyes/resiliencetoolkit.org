@@ -37,12 +37,6 @@ type MetadataValue = string | number | boolean | null | string[] | Record<string
 function isString(v: unknown): v is string {
   return typeof v === 'string';
 }
-function isNumber(v: unknown): v is number {
-  return typeof v === 'number' && !Number.isNaN(v);
-}
-function isStringArray(v: unknown): v is string[] {
-  return Array.isArray(v) && v.every((item) => typeof item === 'string');
-}
 
 interface ResilienceDB extends DBSchema {
   /** Todo/checklist completion tracking */
@@ -505,37 +499,6 @@ async function noteUserWrite(count: number, moduleKeys: string[]): Promise<void>
 // ============================================================================
 
 /**
- * Export all data for a module
- */
-export async function getModuleData(modulePath: string): Promise<{
-  todos: Todo[];
-  tables: Record<string, TableRow[]>;
-}> {
-  // Extract module key from path
-  const moduleKey = modulePath.split('/').pop()?.replace('.mdx', '') || '';
-
-  const todos = await getModuleTodos(moduleKey);
-
-  // Get all unique table IDs for this module
-  const db = await getDB();
-  const allTableRows = await db.getAllFromIndex('tables', 'by-table');
-  const moduleTableRows = allTableRows.filter((row) =>
-    row.id.startsWith(`${moduleKey}-`)
-  );
-
-  // Group by table ID
-  const tables: Record<string, TableRow[]> = {};
-  moduleTableRows.forEach((row) => {
-    if (!tables[row.tableId]) {
-      tables[row.tableId] = [];
-    }
-    tables[row.tableId].push(row);
-  });
-
-  return { todos, tables };
-}
-
-/**
  * Export all data
  */
 export async function exportAllData(): Promise<{
@@ -812,55 +775,6 @@ export async function getAllTableRows(): Promise<TableRow[]> {
 }
 
 /**
- * Activity item representing a user action
- */
-export interface ActivityItem {
-  type: 'todo_completed' | 'table_edited';
-  moduleKey: string;
-  itemId: string;
-  timestamp: string;
-}
-
-/**
- * Get recent activity items sorted by timestamp
- * Combines completed todos and edited tables
- *
- * @param limit Maximum number of items to return (default 10)
- */
-export async function getRecentActivity(limit: number = 10): Promise<ActivityItem[]> {
-  const [todos, tables] = await Promise.all([getAllTodos(), getAllTableRows()]);
-
-  const activities: ActivityItem[] = [];
-
-  // Add completed todos with timestamps
-  todos
-    .filter((todo) => todo.completed && todo.completedAt)
-    .forEach((todo) => {
-      activities.push({
-        type: 'todo_completed',
-        moduleKey: todo.moduleKey,
-        itemId: todo.todoId,
-        timestamp: todo.completedAt!,
-      });
-    });
-
-  // Add recently edited table rows
-  tables.forEach((row) => {
-    activities.push({
-      type: 'table_edited',
-      moduleKey: row.moduleKey,
-      itemId: `${row.tableId}-${row.rowId}`,
-      timestamp: row.updatedAt,
-    });
-  });
-
-  // Sort by timestamp descending and limit
-  return activities
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, limit);
-}
-
-/**
  * Overall statistics across all modules
  */
 export interface OverallStats {
@@ -1037,154 +951,6 @@ export async function getModuleProgress(): Promise<ModuleProgress[]> {
     if (b.percentage !== a.percentage) return b.percentage - a.percentage;
     return a.displayName.localeCompare(b.displayName);
   });
-}
-
-// ============================================================================
-// STREAK & GOAL TRACKING
-// ============================================================================
-
-/**
- * Streak data for tracking consecutive days of activity
- */
-export interface StreakData {
-  currentStreak: number;
-  lastActivityDate: string | null;
-}
-
-/**
- * Get current streak data
- */
-export async function getStreakData(): Promise<StreakData> {
-  const rawStreak = await getMetadata('currentStreak');
-  const currentStreak = isNumber(rawStreak) ? rawStreak : 0;
-  const rawDate = await getMetadata('streakLastActivityDate');
-  const lastActivityDate = isString(rawDate) ? rawDate : null;
-  return { currentStreak, lastActivityDate };
-}
-
-/**
- * Update streak when user completes an activity
- * Call this when a todo is completed
- */
-export async function updateStreak(): Promise<StreakData> {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const { currentStreak, lastActivityDate } = await getStreakData();
-
-  if (lastActivityDate === today) {
-    // Already counted today
-    return { currentStreak, lastActivityDate };
-  }
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-  let newStreak: number;
-  if (lastActivityDate === yesterdayStr) {
-    // Consecutive day - increment streak
-    newStreak = currentStreak + 1;
-  } else {
-    // Streak broken or first activity - start at 1
-    newStreak = 1;
-  }
-
-  await setMetadata('currentStreak', newStreak);
-  await setMetadata('streakLastActivityDate', today);
-
-  return { currentStreak: newStreak, lastActivityDate: today };
-}
-
-/**
- * Weekly progress data
- */
-export interface WeeklyProgress {
-  completed: number;
-  goal: number;
-  weekStartDate: string;
-}
-
-/**
- * Get the Monday of the current week
- */
-function getCurrentWeekStart(): string {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
-  const monday = new Date(now.setDate(diff));
-  return monday.toISOString().split('T')[0];
-}
-
-/**
- * Get weekly progress data
- */
-export async function getWeeklyProgress(): Promise<WeeklyProgress> {
-  const currentWeekStart = getCurrentWeekStart();
-  const rawWeekStart = await getMetadata('weekStartDate');
-  const storedWeekStart = isString(rawWeekStart) ? rawWeekStart : null;
-  const rawGoal = await getMetadata('weeklyGoal');
-  const goal = isNumber(rawGoal) ? rawGoal : 5; // Default goal: 5 items
-
-  // Reset if we're in a new week
-  if (storedWeekStart !== currentWeekStart) {
-    await setMetadata('weekStartDate', currentWeekStart);
-    await setMetadata('weeklyCompleted', 0);
-    return { completed: 0, goal, weekStartDate: currentWeekStart };
-  }
-
-  const rawCompleted = await getMetadata('weeklyCompleted');
-  const completed = isNumber(rawCompleted) ? rawCompleted : 0;
-  return { completed, goal, weekStartDate: currentWeekStart };
-}
-
-/**
- * Increment weekly completed count
- * Call this when a todo is completed
- */
-export async function incrementWeeklyProgress(): Promise<WeeklyProgress> {
-  const progress = await getWeeklyProgress();
-  const newCompleted = progress.completed + 1;
-  await setMetadata('weeklyCompleted', newCompleted);
-  return { ...progress, completed: newCompleted };
-}
-
-/**
- * Set weekly goal
- */
-export async function setWeeklyGoal(goal: number): Promise<void> {
-  await setMetadata('weeklyGoal', Math.max(1, goal)); // Minimum goal of 1
-}
-
-// ============================================================================
-// BOOKMARKED MODULES
-// ============================================================================
-
-/**
- * Get list of bookmarked module keys
- */
-export async function getBookmarkedModules(): Promise<string[]> {
-  const raw = await getMetadata('bookmarkedModules');
-  return isStringArray(raw) ? raw : [];
-}
-
-/**
- * Toggle bookmark for a module
- * @returns true if now bookmarked, false if unbookmarked
- */
-export async function toggleBookmark(moduleKey: string): Promise<boolean> {
-  const bookmarks = await getBookmarkedModules();
-  const index = bookmarks.indexOf(moduleKey);
-
-  if (index === -1) {
-    // Add bookmark
-    bookmarks.push(moduleKey);
-    await setMetadata('bookmarkedModules', bookmarks);
-    return true;
-  } else {
-    // Remove bookmark
-    bookmarks.splice(index, 1);
-    await setMetadata('bookmarkedModules', bookmarks);
-    return false;
-  }
 }
 
 // ============================================================================
