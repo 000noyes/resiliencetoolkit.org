@@ -314,6 +314,7 @@ const onlineDownloads = featuredDownloads.filter(
                           <ExternalLink
                             href={module.resourcesUrl}
                             class="inline-flex items-center gap-2"
+                            label={`Folder for ${module.name}`}
                           >
                             <FolderOpen size={18} />
                             <span>Folder</span>
@@ -386,6 +387,7 @@ const onlineDownloads = featuredDownloads.filter(
                         <ExternalLink
                           href={module.resourcesUrl}
                           class="module-action-link-wrapper"
+                          label={`Folder for ${module.name}`}
                         >
                           <FolderOpen size={18} />
                           <span>Folder</span>
