@@ -168,7 +168,7 @@
   --table-link-hover: oklch(0.3365 0.09 156.7556);
   --table-checkbox-border: oklch(0.4823 0 0); /* #6a6a6a */
   --table-checkbox-fill: var(--primary);
-  --table-focus-ring: oklch(0.5234 0.1523 257.5432); /* #1a73e8 */
+  --table-focus-ring: var(--ring);
   --table-cell-padding-y: 12px;
   --table-cell-padding-x: 16px;
   --table-checklist-gap: 10px;
