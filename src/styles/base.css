@@ -404,6 +404,12 @@ a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href
   color: var(--primary-hover);
 }
 
+/* An in-site link with no color class on a grey muted panel takes the
+   darker orange too, keyed on the address like the rule above. */
+:where(.bg-muted) a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href^="https://www.resiliencetoolkit.org"]) {
+  color: var(--primary-on-muted);
+}
+
 a:focus-visible {
   outline: 2px solid var(--table-link);
   outline-offset: 2px;

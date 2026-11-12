@@ -40,6 +40,7 @@
 - **Secondary (Green):** `oklch(0.4365 0.1044 156.7)` — resilience as the durable outcome; also growth, nature. Used for sidebar accents, ring/focus states, table headers, secondary actions, and links that leave the site (`--table-link`; dark theme `oklch(0.8348 0.1302 160.9)`, 11.87:1 on the dark background). Consolidates the previous teal table-accent (hue 168.9, only 12 degrees from green) into one secondary.
 - **Primary on muted:** `oklch(0.53 0.1368 42.8)` (`--primary-on-muted`), orange text on the grey muted surface only, 4.78:1 there; the main orange measures 4.12:1 on that grey. Dark theme uses the main dark orange, 7.03:1 on the dark muted surface.
 - **Link color rule:** a link to another page of this site is orange, and a link that leaves the site (including email links) is green and underlined; navigation chrome, buttons, and the quiet grey link rows keep their own styles.
+  The rule keys on the link's address in `base.css`. Forks: write in-site links root-relative (`/path`), or add your own domain to that selector.
 - **Neutrals:** Warm grays via oklch, no chroma:
   - background: `oklch(0.9911 0 0)` (near-white)
   - foreground: `oklch(0.2046 0 0)` (near-black)
