@@ -470,6 +470,13 @@ footer p a:hover {
   color: inherit;
 }
 
+/* The full-width View Online buttons on /downloads carry their own
+   outside-link icon inside the button, so the link's trailing icon
+   would sit outside the button edge as a stray mark. */
+.external-link.w-full > .external-link__icon {
+  display: none;
+}
+
 /* Exclude button-styled links from global link styles */
 a.button-link {
   text-decoration: none;
