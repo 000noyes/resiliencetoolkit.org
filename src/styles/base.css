@@ -28,6 +28,9 @@
   --primary: oklch(0.565 0.1368 42.8);
   --primary-foreground: oklch(0.9940 0.0135 42.8);
   --primary-hover: oklch(0.4756 0.1368 42.8);
+  /* Orange text on the grey muted surface: the main orange measures
+     4.12:1 there; this one 4.78:1. */
+  --primary-on-muted: oklch(0.53 0.1368 42.8);
 
   /* Secondary colors */
   --secondary: oklch(0.91 0.04 220);
@@ -195,6 +198,8 @@
   --primary: oklch(0.75 0.15 42.8);
   --primary-foreground: oklch(0.2626 0.0147 42.8);
   --primary-hover: oklch(0.68 0.15 42.8);
+  /* The dark-theme orange already measures 7.03:1 on the dark muted surface. */
+  --primary-on-muted: var(--primary);
 
   /* Secondary colors */
   --secondary: oklch(0.35 0.06 220);
@@ -375,6 +380,16 @@ a {
 
 a:hover {
   color: var(--table-link-hover);
+}
+
+/* Orange text on a grey muted panel takes the darker orange so it
+   keeps 4.5:1 (DESIGN.md, Color). The main orange and the panels stay. */
+.bg-muted .text-primary {
+  color: var(--primary-on-muted);
+}
+
+.bg-muted a.text-primary:hover {
+  color: var(--primary-hover);
 }
 
 /* Link color rule (DESIGN.md, Color): a link to another page of this
