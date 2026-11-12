@@ -408,6 +408,23 @@ footer p a {
   text-underline-offset: 2px;
 }
 
+/* Below md the corner button (48px, 16px from the bottom edge) sits
+   over the end of the page. The footer reserves that height so its
+   last lines stay readable and tappable at full scroll. */
+@media not all and (min-width: theme(screens.md)) {
+  footer {
+    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* On pages with the docked reading bar the corner button sits above
+   the bar, so the footer reserves the bar's height as well. */
+@media not all and (min-width: theme(screens.reading)) {
+  body:has(.reading-bar) footer {
+    padding-bottom: calc(var(--reading-bar-h) + 2.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* External links wrapping buttons should not have underlines */
 .external-link.inline-block,
 .external-link.block {
