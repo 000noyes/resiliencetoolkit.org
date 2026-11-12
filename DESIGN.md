@@ -36,8 +36,8 @@
 
 ## Color
 - **Approach:** Restrained with 2 accents — color is rare and meaningful. The split is temporal: **orange = the work of preparing right now; green = the resilience that work builds toward.** Immediate action is warm; durable capacity is grown.
-- **Primary (Orange):** `oklch(0.565 0.1368 42.8)` — the work of preparing right now: warmth, action, community energy. Used for CTAs, active states, progress indicators. Differentiates from government blue.
-- **Secondary (Green):** `oklch(0.4365 0.1044 156.7)` — resilience as the durable outcome; also growth, nature. Used for sidebar accents, ring/focus states, table headers, secondary actions. Consolidates the previous teal table-accent (hue 168.9, only 12 degrees from green) into one secondary.
+- **Primary (Orange):** `oklch(0.565 0.1368 42.8)` — the work of preparing right now: warmth, action, community energy. Used for CTAs, active states, progress indicators, and links set with `text-primary` (most cross-references inside the site). Differentiates from government blue.
+- **Secondary (Green):** `oklch(0.4365 0.1044 156.7)` — resilience as the durable outcome; also growth, nature. Used for sidebar accents, ring/focus states, table headers, secondary actions, and plain body links (links with no color class, mostly links that leave the site; `--table-link`). Body links in green are always underlined, because green and orange differ mostly in hue. Consolidates the previous teal table-accent (hue 168.9, only 12 degrees from green) into one secondary.
 - **Neutrals:** Warm grays via oklch, no chroma:
   - background: `oklch(0.9911 0 0)` (near-white)
   - foreground: `oklch(0.2046 0 0)` (near-black)
