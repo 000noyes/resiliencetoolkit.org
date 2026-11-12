@@ -65,7 +65,7 @@ const navItems = [
       </a>
 
       <!-- Desktop Navigation (Centered) -->
-      <nav class="hidden md:flex items-center gap-md lg:gap-lg wide:gap-xl flex-1 justify-center">
+      <nav class="hidden md:flex items-center gap-md lg:gap-lg wide:gap-xl flex-1 justify-center" aria-label="Main">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -153,6 +153,7 @@ const navItems = [
     <!-- Mobile Navigation -->
     <nav
       id="mobile-menu"
+      aria-label="Main"
       class="hidden md:hidden mt-md pt-md border-t border-border"
     >
       <div class="flex flex-col gap-xs">
