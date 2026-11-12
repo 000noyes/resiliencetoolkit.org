@@ -400,6 +400,14 @@ a.group:hover {
   color: inherit;
 }
 
+/* Links inside a footer sentence keep an underline: in the dark theme
+   the orange and the muted footer text are close in lightness, so
+   color alone does not mark them as links. */
+footer p a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 /* External links wrapping buttons should not have underlines */
 .external-link.inline-block,
 .external-link.block {
