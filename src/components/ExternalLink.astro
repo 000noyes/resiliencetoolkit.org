@@ -11,18 +11,20 @@ interface Props {
    * never hydrate and the todo islands keep the idle queue.
    */
   hydrate?: 'idle' | 'visible';
+  /** Fuller accessible name when the visible words need context. */
+  label?: string;
 }
 
-const { href, class: className, hydrate = 'idle' } = Astro.props;
+const { href, class: className, hydrate = 'idle', label } = Astro.props;
 ---
 
 {
   hydrate === 'visible' ? (
-    <ExternalLinkComponent href={href} className={className} client:visible>
+    <ExternalLinkComponent href={href} className={className} label={label} client:visible>
       <slot />
     </ExternalLinkComponent>
   ) : (
-    <ExternalLinkComponent href={href} className={className} client:idle>
+    <ExternalLinkComponent href={href} className={className} label={label} client:idle>
       <slot />
     </ExternalLinkComponent>
   )

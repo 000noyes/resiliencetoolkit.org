@@ -88,7 +88,7 @@ export function QuestionsModal(props: { onClose: () => void }) {
               </p>
               <p className="text-body-small text-muted-foreground mt-xs">
                 If it didn't open, email us directly at{' '}
-                <a href={`mailto:${CONTACT_EMAIL}`} className="text-primary hover:underline">
+                <a href={`mailto:${CONTACT_EMAIL}`}>
                   {CONTACT_EMAIL}
                 </a>
               </p>

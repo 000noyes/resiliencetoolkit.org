@@ -14,7 +14,7 @@ const lastUpdated = now.toISOString().slice(0, 10);
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <!-- About -->
       <div>
-        <h3 class="font-semibold text-foreground mb-3">Resilience Hub Toolkit</h3>
+        <h2 class="font-semibold text-foreground mb-3">Resilience Hub Toolkit</h2>
         <p class="text-sm text-muted-foreground">
           Local-first tools to organize systems, stuff, and people before, during, and after disasters.
         </p>
@@ -22,7 +22,7 @@ const lastUpdated = now.toISOString().slice(0, 10);
 
       <!-- Quick Links -->
       <div>
-        <h3 class="font-semibold text-foreground mb-3">Quick Links</h3>
+        <h2 class="font-semibold text-foreground mb-3">Quick Links</h2>
         <ul class="space-y-2 text-sm">
           <li><a href="/modules" class="text-muted-foreground hover:text-primary transition-colors">Toolkit</a></li>
           <li><a href="/workflows" class="text-muted-foreground hover:text-primary transition-colors">Workflows</a></li>
@@ -34,9 +34,8 @@ const lastUpdated = now.toISOString().slice(0, 10);
 
       <!-- Support -->
       <div>
-        <h3 class="font-semibold text-foreground mb-3">Support</h3>
+        <h2 class="font-semibold text-foreground mb-3">Support</h2>
         <ul class="space-y-2 text-sm">
-          <li><a href="/about#services" class="text-muted-foreground hover:text-primary transition-colors">Get Help</a></li>
           <li><a href="/about#faq" class="text-muted-foreground hover:text-primary transition-colors">FAQ</a></li>
           <!-- DISABLED 2026-03-28: Changelog not linked from footer — page exists but is in development.
                Re-enable by uncommenting this line when changelog content is current and complete. -->
@@ -50,10 +49,10 @@ const lastUpdated = now.toISOString().slice(0, 10);
     <!-- Copyright -->
     <div class="mt-8 pt-6 border-t border-border text-center text-sm text-muted-foreground">
       <p>
-        Resilience Hub Toolkit materials © {currentYear} <a href="https://gocros.org/" class="text-primary transition-colors">CROs</a> and contributors, licensed <ExternalLink href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" class="text-primary transition-colors">CC BY-NC-SA 4.0</ExternalLink>.
+        Resilience Hub Toolkit materials © {currentYear} <a href="https://gocros.org/" class="transition-colors">CROs</a> and contributors, licensed <ExternalLink href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" class="transition-colors">CC BY-NC-SA 4.0</ExternalLink>.
       </p>
       <p>
-        Website © {currentYear} <a href="https://www.accessecologies.com/" class="text-primary transition-colors">Access Ecologies</a>, <a href="/LICENSE" class="text-primary transition-colors">MIT License</a>.
+        Website © {currentYear} <a href="https://www.accessecologies.com/" class="transition-colors">Access Ecologies</a>, <a href="/LICENSE" class="text-primary transition-colors">MIT License</a>.
       </p>
       <p class="mt-2 text-chrome">
         Last updated <time datetime={lastUpdated}>{lastUpdated}</time>

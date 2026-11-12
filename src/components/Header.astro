@@ -60,12 +60,12 @@ const navItems = [
         id="header-logo"
         class="flex items-center gap-sm text-title font-medium text-foreground hover:text-primary transition-colors duration-default ease-default shrink-0"
       >
-        <img src="/RHT_orange.svg" alt="Resilience Hub" class="w-10 h-10" />
-        <span class="hidden sm:inline">Resilience Hub</span>
+        <img src="/RHT_orange.svg" alt="" class="w-10 h-10" />
+        <span class="sr-only sm:not-sr-only">Resilience Hub</span>
       </a>
 
       <!-- Desktop Navigation (Centered) -->
-      <nav class="hidden md:flex items-center gap-md lg:gap-lg wide:gap-xl flex-1 justify-center">
+      <nav class="hidden md:flex items-center gap-md lg:gap-lg wide:gap-xl flex-1 justify-center" aria-label="Main">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -153,6 +153,7 @@ const navItems = [
     <!-- Mobile Navigation -->
     <nav
       id="mobile-menu"
+      aria-label="Main"
       class="hidden md:hidden mt-md pt-md border-t border-border"
     >
       <div class="flex flex-col gap-xs">

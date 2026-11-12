@@ -7,9 +7,12 @@ interface ExternalLinkProps {
   href: string;
   children: ReactNode;
   className?: string;
+  /** Accessible name when the visible text needs context (it must still
+   *  contain the visible words, WCAG 2.5.3). The destination is added. */
+  label?: string;
 }
 
-export default function ExternalLink({ href, children, className = '' }: ExternalLinkProps) {
+export default function ExternalLink({ href, children, className = '', label }: ExternalLinkProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isHoverCapable, setIsHoverCapable] = useState(false);
@@ -145,9 +148,10 @@ export default function ExternalLink({ href, children, className = '' }: Externa
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={`external-link ${className}`}
-        aria-label={`External link to ${domain}`}
+        aria-label={label ? `${label} (opens ${domain})` : undefined}
       >
         {children}
+        {!label && <span className="sr-only"> (opens {domain})</span>}
         <span className="external-link__icon" aria-hidden="true">
           <ExternalLinkIcon size={14} strokeWidth={2} />
         </span>

@@ -119,9 +119,9 @@ const onlineDownloads = featuredDownloads.filter(
                 </div>
 
                 <!-- Title -->
-                <h4 class="text-subtitle font-semibold mb-2 text-text-primary">
+                <h3 class="text-subtitle font-semibold mb-2 text-text-primary">
                   {download.title}
-                </h4>
+                </h3>
 
                 <!-- Description -->
                 <p class="text-body text-text-secondary mb-4">
@@ -164,9 +164,9 @@ const onlineDownloads = featuredDownloads.filter(
                     <FileText size={32} />
                   )}
                 </div>
-                <h4 class="text-subtitle font-semibold mb-2 text-text-primary">
+                <h3 class="text-subtitle font-semibold mb-2 text-text-primary">
                   {download.title}
-                </h4>
+                </h3>
                 <p class="text-body text-text-secondary mb-4">
                   {download.description}
                 </p>
@@ -291,7 +291,7 @@ const onlineDownloads = featuredDownloads.filter(
                       <td data-label="View Online" class="text-center action-cell">
                         <a
                           href={module.onlineUrl}
-                          class="inline-flex items-center gap-2 text-table-link hover:text-table-link-hover transition-colors"
+                          class="inline-flex items-center gap-2 text-primary hover:text-primary-hover transition-colors"
                           aria-label={`View ${module.name} online`}
                         >
                           <FileText size={18} />
@@ -302,7 +302,7 @@ const onlineDownloads = featuredDownloads.filter(
                         <a
                           href={`/toolkit/sections/${module.pdfFilename}`}
                           download
-                          class="inline-flex items-center gap-2 text-table-link hover:text-table-link-hover transition-colors"
+                          class="inline-flex items-center gap-2 text-primary hover:text-primary-hover transition-colors"
                           aria-label={`Download ${module.name} PDF`}
                         >
                           <Download size={18} />
@@ -314,6 +314,7 @@ const onlineDownloads = featuredDownloads.filter(
                           <ExternalLink
                             href={module.resourcesUrl}
                             class="inline-flex items-center gap-2"
+                            label={`Folder for ${module.name}`}
                           >
                             <FolderOpen size={18} />
                             <span>Folder</span>
@@ -386,6 +387,7 @@ const onlineDownloads = featuredDownloads.filter(
                         <ExternalLink
                           href={module.resourcesUrl}
                           class="module-action-link-wrapper"
+                          label={`Folder for ${module.name}`}
                         >
                           <FolderOpen size={18} />
                           <span>Folder</span>
@@ -596,12 +598,9 @@ const onlineDownloads = featuredDownloads.filter(
 
   /* Links in Table */
   .downloads-table a {
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .downloads-table a:hover {
     text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 500;
   }
 
   /* Focus States */
@@ -854,6 +853,16 @@ const onlineDownloads = featuredDownloads.filter(
       background-color: var(--table-accent-subtle);
       border-color: var(--table-accent);
       color: var(--table-link-hover);
+    }
+
+    /* View and PDF stay on this site, so they take the orange (DESIGN.md
+       link color rule); Folder leaves the site and keeps the green. */
+    .module-action-link {
+      color: var(--primary);
+    }
+
+    .module-action-link:hover {
+      color: var(--primary-hover);
     }
 
     /* Focus states */

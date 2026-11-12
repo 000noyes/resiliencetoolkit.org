@@ -20,7 +20,7 @@ const listboxId = `${id}-listbox`;
 ---
 
 <div class="search-box" data-search-root data-search-mode={mode}>
-  <form action={searchRoute} method="get" role="search" class="search-box__form">
+  <form action={searchRoute} method="get" role="search" aria-label={mode === 'page' ? 'Search on this page' : 'Search from the header'} class="search-box__form">
     <span class="search-box__lens" aria-hidden="true">
       <Search size={15} strokeWidth={2} />
     </span>

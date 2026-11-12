@@ -116,7 +116,7 @@ const looseHtml = sectionData ? '' : await Astro.slots.render('default');
     >
       <Fragment slot="header">
         <!-- Breadcrumb navigation for section pages -->
-        <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
+        <nav class="mb-6 text-sm text-text-muted no-print" aria-label="Breadcrumb" data-pagefind-ignore>
           <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
           <span class="mx-2">/</span>
           <a href={sectionData.modulePath || "/modules"} class="hover:text-text-primary transition-colors">
@@ -167,7 +167,7 @@ const looseHtml = sectionData ? '' : await Astro.slots.render('default');
         )}
 
         <!-- Section navigation for section-based pages -->
-        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
+        <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" aria-label="Chapter navigation" data-pagefind-ignore>
           {sectionData.prev ? (
             <a
               href={sectionData.prev.href}

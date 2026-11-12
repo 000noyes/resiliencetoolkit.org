@@ -33,7 +33,7 @@ const { prev, next } = chainFor(`opener-${section.number}`);
 
 <div class="reading-grid reading-grid--no-tree py-8" data-rail="closed">
   <header class="reading-header" data-pagefind-body>
-    <nav class="mb-6 text-sm text-text-muted no-print" data-pagefind-ignore>
+    <nav class="mb-6 text-sm text-text-muted no-print" aria-label="Breadcrumb" data-pagefind-ignore>
       <a href="/modules" class="hover:text-text-primary transition-colors">Modules</a>
       <span class="mx-2">/</span>
       <span class="text-text-primary">{section.title}</span>
@@ -87,7 +87,7 @@ const { prev, next } = chainFor(`opener-${section.number}`);
       ))}
     </ol>
 
-    <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" data-pagefind-ignore>
+    <nav class="mt-12 pt-8 border-t border-border flex justify-between items-center no-print" aria-label="Chapter navigation" data-pagefind-ignore>
       {prev && (
         <a href={prev.href} class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

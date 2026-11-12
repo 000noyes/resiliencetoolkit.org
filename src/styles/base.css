@@ -25,9 +25,12 @@
   --popover-foreground: oklch(0.4386 0 0);
 
   /* Primary colors - Orange accent */
-  --primary: oklch(0.5756 0.1368 42.8);
+  --primary: oklch(0.565 0.1368 42.8);
   --primary-foreground: oklch(0.9940 0.0135 42.8);
   --primary-hover: oklch(0.4756 0.1368 42.8);
+  /* Orange text on the grey muted surface: the main orange measures
+     4.12:1 there; this one 4.78:1. */
+  --primary-on-muted: oklch(0.53 0.1368 42.8);
 
   /* Secondary colors */
   --secondary: oklch(0.91 0.04 220);
@@ -164,11 +167,11 @@
   --table-heading: oklch(0.1822 0 0); /* #1c1c1c */
   --table-body: oklch(0.2393 0 0); /* #2c2c2c */
   --table-text-muted: oklch(0.4386 0 0); /* #5a5a5a */
-  --table-link: oklch(0.4823 0.1423 257.5432); /* #0a5cc3 */
-  --table-link-hover: oklch(0.3234 0.1123 257.5432); /* #053c84 */
+  --table-link: oklch(0.4365 0.1044 156.7556); /* secondary green */
+  --table-link-hover: oklch(0.3365 0.09 156.7556);
   --table-checkbox-border: oklch(0.4823 0 0); /* #6a6a6a */
   --table-checkbox-fill: var(--primary);
-  --table-focus-ring: oklch(0.5234 0.1523 257.5432); /* #1a73e8 */
+  --table-focus-ring: var(--ring);
   --table-cell-padding-y: 12px;
   --table-cell-padding-x: 16px;
   --table-checklist-gap: 10px;
@@ -195,6 +198,8 @@
   --primary: oklch(0.75 0.15 42.8);
   --primary-foreground: oklch(0.2626 0.0147 42.8);
   --primary-hover: oklch(0.68 0.15 42.8);
+  /* The dark-theme orange already measures 7.03:1 on the dark muted surface. */
+  --primary-on-muted: var(--primary);
 
   /* Secondary colors */
   --secondary: oklch(0.35 0.06 220);
@@ -239,8 +244,8 @@
   --table-heading: oklch(0.9288 0.0126 255.5078);
   --table-body: oklch(0.78 0 0);
   --table-text-muted: oklch(0.7 0 0);
-  --table-link: oklch(0.75 0.08 220);
-  --table-link-hover: oklch(0.85 0.08 220);
+  --table-link: oklch(0.8348 0.1302 160.9080);
+  --table-link-hover: oklch(0.90 0.10 160.9080);
   --table-checkbox-border: oklch(0.5452 0 0);
   --table-checkbox-fill: var(--primary);
   --table-accent-subtle: color-mix(in srgb, var(--primary) 18%, transparent);
@@ -377,6 +382,34 @@ a:hover {
   color: var(--table-link-hover);
 }
 
+/* Orange text on a grey muted panel takes the darker orange so it
+   keeps 4.5:1 (DESIGN.md, Color). The main orange and the panels stay. */
+.bg-muted .text-primary {
+  color: var(--primary-on-muted);
+}
+
+.bg-muted a.text-primary:hover {
+  color: var(--primary-hover);
+}
+
+/* Link color rule (DESIGN.md, Color): a link to another page of this
+   site is orange; a link that leaves the site keeps the green above.
+   :where() keeps this at element specificity, so any class that sets a
+   color (buttons, chrome, nav) still wins. */
+a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href^="https://www.resiliencetoolkit.org"]) {
+  color: var(--primary);
+}
+
+a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href^="https://www.resiliencetoolkit.org"]):hover {
+  color: var(--primary-hover);
+}
+
+/* An in-site link with no color class on a grey muted panel takes the
+   darker orange too, keyed on the address like the rule above. */
+:where(.bg-muted) a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href^="https://www.resiliencetoolkit.org"]) {
+  color: var(--primary-on-muted);
+}
+
 a:focus-visible {
   outline: 2px solid var(--table-link);
   outline-offset: 2px;
@@ -400,11 +433,48 @@ a.group:hover {
   color: inherit;
 }
 
+/* Links inside a footer sentence keep an underline: in the dark theme
+   the orange and the muted footer text are close in lightness, so
+   color alone does not mark them as links. */
+footer p a {
+  color: var(--table-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+footer p a:hover {
+  color: var(--table-link-hover);
+}
+
+/* Below md the corner button (48px, 16px from the bottom edge) sits
+   over the end of the page. The footer reserves that height so its
+   last lines stay readable and tappable at full scroll. */
+@media not all and (min-width: theme(screens.md)) {
+  footer {
+    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* On pages with the docked reading bar the corner button sits above
+   the bar, so the footer reserves the bar's height as well. */
+@media not all and (min-width: theme(screens.reading)) {
+  body:has(.reading-bar) footer {
+    padding-bottom: calc(var(--reading-bar-h) + 2.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* External links wrapping buttons should not have underlines */
 .external-link.inline-block,
 .external-link.block {
   text-decoration: none;
   color: inherit;
+}
+
+/* The full-width View Online buttons on /downloads carry their own
+   outside-link icon inside the button, so the link's trailing icon
+   would sit outside the button edge as a stray mark. */
+.external-link.w-full > .external-link__icon {
+  display: none;
 }
 
 /* Exclude button-styled links from global link styles */

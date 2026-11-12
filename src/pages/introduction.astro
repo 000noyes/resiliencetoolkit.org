@@ -102,7 +102,7 @@ const next = chainFor(frontMatter.number).next;
     <!-- Navigation into the reading chain -->
     <Fragment slot="after">
     {next && (
-      <nav class="mt-12 pt-8 border-t border-border flex justify-end no-print" data-pagefind-ignore>
+      <nav class="mt-12 pt-8 border-t border-border flex justify-end no-print" aria-label="Chapter navigation" data-pagefind-ignore>
         <a
           href={next.href}
           class="inline-flex items-center text-text-secondary hover:text-text-primary transition-colors"
