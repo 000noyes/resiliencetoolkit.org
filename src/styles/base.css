@@ -377,6 +377,18 @@ a:hover {
   color: var(--table-link-hover);
 }
 
+/* Link color rule (DESIGN.md, Color): a link to another page of this
+   site is orange; a link that leaves the site keeps the green above.
+   :where() keeps this at element specificity, so any class that sets a
+   color (buttons, chrome, nav) still wins. */
+a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href^="https://www.resiliencetoolkit.org"]) {
+  color: var(--primary);
+}
+
+a:where([href^="/"], [href^="#"], [href^="https://resiliencetoolkit.org"], [href^="https://www.resiliencetoolkit.org"]):hover {
+  color: var(--primary-hover);
+}
+
 a:focus-visible {
   outline: 2px solid var(--table-link);
   outline-offset: 2px;
@@ -404,8 +416,13 @@ a.group:hover {
    the orange and the muted footer text are close in lightness, so
    color alone does not mark them as links. */
 footer p a {
+  color: var(--table-link);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+footer p a:hover {
+  color: var(--table-link-hover);
 }
 
 /* Below md the corner button (48px, 16px from the bottom edge) sits
