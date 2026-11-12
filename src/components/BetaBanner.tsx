@@ -40,7 +40,7 @@ function BetaBannerInner() {
             Contact us for support at{' '}
             <a
               href="mailto:resiliencetoolkit@gocros.org"
-              className="text-primary hover:opacity-80 transition-opacity underline-offset-2 hover:underline [overflow-wrap:anywhere]"
+              className="underline-offset-2 [overflow-wrap:anywhere]"
             >
               resiliencetoolkit@gocros.org
             </a>

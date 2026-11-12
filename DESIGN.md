@@ -98,7 +98,7 @@
 ## Component Notes (for implementation)
 
 ### Active Components — Quality Assessment
-- **BetaBanner.tsx** (the contact strip) — Top-of-every-page contact notice. Neutral chrome (`bg-card border-b border-border`), copy "Contact us for support at resiliencetoolkit@gocros.org", mailto link in `text-primary`, no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Participates in the single-slot notice system as the lowest-priority `contact` claim (see Notice strips below). Mounts in BaseLayout above StatusBanner.
+- **BetaBanner.tsx** (the contact strip) — Top-of-every-page contact notice. Neutral chrome (`bg-card border-b border-border`), copy "Contact us for support at resiliencetoolkit@gocros.org", mailto link in the outside-link green, underlined (the link color rule), no leading icon. Versioned localStorage dismissal (`betaBanner.dismissed.v1`). React island `client:idle`. Participates in the single-slot notice system as the lowest-priority `contact` claim (see Notice strips below). Mounts in BaseLayout above StatusBanner.
 - **Footer "Last updated" stamp** — Small muted line in Footer (`text-xs text-muted-foreground/80`) showing the build date as `<time datetime="YYYY-MM-DD">`. Quiet transparency that the site is being maintained, in lieu of a public changelog or update prompt.
 - **TableOfContents** (4 files) — Well-structured, no issues
 - **EditableTable** (226 lines) — Being replaced by DataTable in Template Kit v2. Row ID strategy (`rowId < 1000` = initial) is fragile. Storage split across localStorage + IndexedDB.
@@ -128,7 +128,7 @@ hue-aligned to the system tokens:
 
 Tokens live in `base.css` as `.notice-soft` / `.notice-acute` / `.notice-online-flash`. Links
 on tinted strips use the strip foreground color + underline + 500 weight (primary orange fails
-contrast on the tint); neutral strips keep the `text-primary` link. Dismiss targets are 44x44px
+contrast on the tint); neutral strips use the outside-link green for their email link. Dismiss targets are 44x44px
 via logical inset (`end-0`); copy uses `text-wrap: balance` and left-aligns below 400px. Strips
 swap instantly — no height or fade animation.
 
