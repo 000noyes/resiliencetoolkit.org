@@ -164,8 +164,8 @@
   --table-heading: oklch(0.1822 0 0); /* #1c1c1c */
   --table-body: oklch(0.2393 0 0); /* #2c2c2c */
   --table-text-muted: oklch(0.4386 0 0); /* #5a5a5a */
-  --table-link: oklch(0.4823 0.1423 257.5432); /* #0a5cc3 */
-  --table-link-hover: oklch(0.3234 0.1123 257.5432); /* #053c84 */
+  --table-link: oklch(0.4365 0.1044 156.7556); /* secondary green */
+  --table-link-hover: oklch(0.3365 0.09 156.7556);
   --table-checkbox-border: oklch(0.4823 0 0); /* #6a6a6a */
   --table-checkbox-fill: var(--primary);
   --table-focus-ring: oklch(0.5234 0.1523 257.5432); /* #1a73e8 */
@@ -239,8 +239,8 @@
   --table-heading: oklch(0.9288 0.0126 255.5078);
   --table-body: oklch(0.78 0 0);
   --table-text-muted: oklch(0.7 0 0);
-  --table-link: oklch(0.75 0.08 220);
-  --table-link-hover: oklch(0.85 0.08 220);
+  --table-link: oklch(0.8348 0.1302 160.9080);
+  --table-link-hover: oklch(0.90 0.10 160.9080);
   --table-checkbox-border: oklch(0.5452 0 0);
   --table-checkbox-fill: var(--primary);
   --table-accent-subtle: color-mix(in srgb, var(--primary) 18%, transparent);
