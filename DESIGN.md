@@ -36,7 +36,7 @@
 
 ## Color
 - **Approach:** Restrained with 2 accents — color is rare and meaningful. The split is temporal: **orange = the work of preparing right now; green = the resilience that work builds toward.** Immediate action is warm; durable capacity is grown.
-- **Primary (Orange):** `oklch(0.5756 0.1368 42.8)` — the work of preparing right now: warmth, action, community energy. Used for CTAs, active states, progress indicators. Differentiates from government blue.
+- **Primary (Orange):** `oklch(0.565 0.1368 42.8)` — the work of preparing right now: warmth, action, community energy. Used for CTAs, active states, progress indicators. Differentiates from government blue.
 - **Secondary (Green):** `oklch(0.4365 0.1044 156.7)` — resilience as the durable outcome; also growth, nature. Used for sidebar accents, ring/focus states, table headers, secondary actions. Consolidates the previous teal table-accent (hue 168.9, only 12 degrees from green) into one secondary.
 - **Neutrals:** Warm grays via oklch, no chroma:
   - background: `oklch(0.9911 0 0)` (near-white)
@@ -186,3 +186,4 @@ border), no animation, removed by the reload itself.
 | 2026-09-14 | Search lands on the searched words, marked, after opening the page at its top | Landing on a header with a focus ring read as a jolt; the words are what the reader searched for |
 | 2026-09-14 | Activity rows in the contents: unnumbered, glyph leading in the number column, secondary color, no label | Numbers belong to printed chapters only; the row style, not a label, says "not a chapter" |
 | 2026-09-15 | One type scale as tokens; five breakpoints from one source; title first on phones | Three scales disagreed (Tailwind defaults, the config, this file) and 74 hardcoded sizes sat outside all of them, so nobody had written a phone scale and the largest size got used. Ten steps with one line height each replace them, Tailwind's default names become aliases to the same steps, and eight breakpoint values collapse to five with the 768 overlap fixed by construction. On phones the chapter opens with its title and On this page follows in flow, server-rendered, h2 rows only. The 2026-04-06 mobile spacing flag is retired: the padding it named no longer exists; the blank right strip was horizontal overflow on four routes, fixed by width discipline. |
+| 2026-11-11 | Primary orange lightness 0.5756 to 0.565, same chroma and hue | At 0.5756 orange text measured 4.49:1 on the page background and button text 4.44:1 on orange, just under the 4.5:1 minimum for normal text. At 0.565 they measure 4.70:1 and 4.67:1. The 404 and offline pages carry their own copy of the value and changed with it. |

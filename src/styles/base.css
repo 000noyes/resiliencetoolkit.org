@@ -25,7 +25,7 @@
   --popover-foreground: oklch(0.4386 0 0);
 
   /* Primary colors - Orange accent */
-  --primary: oklch(0.5756 0.1368 42.8);
+  --primary: oklch(0.565 0.1368 42.8);
   --primary-foreground: oklch(0.9940 0.0135 42.8);
   --primary-hover: oklch(0.4756 0.1368 42.8);
 
